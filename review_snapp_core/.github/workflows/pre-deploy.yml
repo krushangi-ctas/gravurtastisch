@@ -1,0 +1,84 @@
+name: Pre-Deployment Pipeline (Merged to Dev)
+
+on:
+  push:
+    branches: [dev]
+
+concurrency:
+  group: pre-deploy-dev
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Verify on Runner, Sync & Restart (Dev Merge)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies (verifies lockfile on runner)
+        run: npm ci --legacy-peer-deps
+
+      - name: Prepare SSH key & known hosts
+        env:
+          SSH_KEY: ${{ secrets.SSH_KEY }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SERVER_HOST" >> ~/.ssh/known_hosts
+
+      - name: Git sync on server (npm install only if package files changed)
+        env:
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SERVER_HOST: ${{ secrets.SERVER_HOST }}
+          REMOTE_PATH: ${{ secrets.REMOTE_PATH }}
+          PM2_APP_NAME: ${{ secrets.PM2_APP_NAME }}
+        run: |
+          ssh -i ~/.ssh/deploy_key "$SSH_USER@$SERVER_HOST" bash -s -- "$REMOTE_PATH" "$PM2_APP_NAME" <<'REMOTE'
+          set -e
+          cd "$1"
+          echo "[1/4] Fetching latest changes..."
+          git fetch origin dev
+          OLD_HEAD=$(git rev-parse HEAD)
+          echo "[2/4] Resetting to origin/dev..."
+          git switch dev 2>/dev/null || git switch -c dev --track origin/dev
+          git reset --hard origin/dev
+          NEW_HEAD=$(git rev-parse HEAD)
+          echo "Server now at $NEW_HEAD"
+          echo "[3/4] Checking dependencies..."
+          if [ ! -d node_modules ]; then
+            echo "node_modules missing — running npm install"
+            npm install --legacy-peer-deps
+          elif [ "$OLD_HEAD" = "$NEW_HEAD" ]; then
+            echo "No new commits — skipping npm install"
+          elif ! git cat-file -e "$OLD_HEAD" 2>/dev/null; then
+            echo "Previous commit unknown (fresh/shallow clone) — running npm install to be safe"
+            npm install --legacy-peer-deps
+          elif git diff --name-only "$OLD_HEAD" "$NEW_HEAD" -- package.json package-lock.json yarn.lock | grep -q .; then
+            echo "package files changed — installing dependencies"
+            npm install --legacy-peer-deps
+          else
+            echo "No package file changes — skipping npm install"
+          fi
+          echo "[4/4] Restarting PM2..."
+          if pm2 describe "$2" >/dev/null 2>&1; then
+            pm2 restart "$2"
+            pm2 save
+          else
+            echo "PM2 process '$2' not found."
+            exit 1
+          fi
+          echo "Deployment completed successfully."
+          REMOTE

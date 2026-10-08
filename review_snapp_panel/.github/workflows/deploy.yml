@@ -1,0 +1,17 @@
+name: Deploy ReviewSnapp Panel
+
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Trigger VPS Deployment
+        run: |
+          curl --fail --show-error --silent \
+            -X GET \
+            "${{ secrets.DEPLOY_URL }}"

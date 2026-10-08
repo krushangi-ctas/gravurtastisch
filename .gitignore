@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# Build outputs
+dist/
+build/
+.output/
+.wrangler/
+.tanstack/
+*.tsbuildinfo
+
+# Legacy package-manager lockfiles (pnpm-lock.yaml is the source of truth)
+package-lock.json
+yarn.lock
+bun.lock
+bun.lockb
+npm-shrinkwrap.json
+
+# pnpm
+.pnpm-store/
+
+# Logs / OS
+logs/
+*.log
+.DS_Store

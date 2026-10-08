@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" fill="none" role="img" aria-label="Gravurtastisch">
+  <rect x="0" y="8" width="48" height="48" rx="12" fill="#613EA3"/>
+  <path d="M14 38.5V25.5h9.2c3.55 0 5.85 1.95 5.85 4.85 0 1.95-1.05 3.45-2.85 4.2L30.5 38.5h-4.35l-3.7-3.55H18.1V38.5H14zm4.1-7.05h5c1.55 0 2.5-.85 2.5-2.1s-.95-2.1-2.5-2.1h-5v4.2z" fill="#FFFFFF"/>
+  <path d="M33.2 25.2l1.35 3.55 3.75.15-2.95 2.35.95 3.65-3.1-1.95-3.1 1.95.95-3.65-2.95-2.35 3.75-.15 1.35-3.55z" fill="#E89B5C"/>
+  <text x="62" y="40" fill="#2A1848" font-family="Montserrat, Geist, system-ui, sans-serif" font-size="28" font-weight="700" letter-spacing="-0.5">Gravurtastisch</text>
+</svg>

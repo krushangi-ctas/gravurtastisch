@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="Gravurtastisch">
+  <rect width="48" height="48" rx="12" fill="#FFFFFF" fill-opacity="0.14"/>
+  <rect x="1" y="1" width="46" height="46" rx="11" stroke="#FFFFFF" stroke-opacity="0.4"/>
+  <text x="24" y="32" text-anchor="middle" fill="#FFFFFF" font-family="Montserrat, Geist, system-ui, sans-serif" font-size="22" font-weight="800" letter-spacing="-1">G</text>
+  <circle cx="36" cy="14" r="3.5" fill="#E89B5C"/>
+</svg>

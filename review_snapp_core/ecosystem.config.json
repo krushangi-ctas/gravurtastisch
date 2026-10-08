@@ -1,0 +1,17 @@
+{
+  "apps": [
+    {
+      "name": "app",
+      "script": "src/index.ts",
+      "interpreter": "node",
+      "interpreter_args": "--import tsx",
+      "instances": 1,
+      "autorestart": true,
+      "watch": false,
+      "time": true,
+      "env": {
+        "NODE_ENV": "production"
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+	"short_name": "Gravurtastisch",
+	"name": "Gravurtastisch — Custom Engraving & Orders",
+	"icons": [
+		{
+			"src": "/assets/images/logo/gravurstastich-mark.svg",
+			"sizes": "any",
+			"type": "image/svg+xml",
+			"purpose": "any"
+		}
+	],
+	"start_url": "./index.html",
+	"display": "standalone",
+	"theme_color": "#613EA3",
+	"background_color": "#F7F5FA"
+}

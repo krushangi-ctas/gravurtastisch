@@ -1,0 +1,21 @@
+packages:
+  - 'review_snapp_core'
+  - 'review_snapp_panel'
+  - 'review_snapp_web'
+
+# Centralized install / resolution standards (pnpm 12+)
+engineStrict: true
+autoInstallPeers: true
+strictPeerDependencies: false
+
+# node-xlsx pulls xlsx from a CDN tarball; pin to the registry package instead
+overrides:
+  '@apidevtools/json-schema-ref-parser': '9.1.0'
+  'node-xlsx>xlsx': '0.18.5'
+  '@gravurstastich/panel>react': '19.1.0'
+  '@gravurstastich/panel>react-dom': '19.1.0'
+  '@gravurstastich/panel>semver': '7.5.4'
+
+# Lifecycle scripts must be explicitly approved (pnpm 12 / strictDepBuilds)
+allowBuilds:
+  esbuild: true
