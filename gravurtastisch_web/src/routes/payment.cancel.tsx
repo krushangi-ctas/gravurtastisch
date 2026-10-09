@@ -18,7 +18,7 @@ function PaymentCancelPage() {
             <XCircle className="mx-auto h-14 w-14 text-rose-500" />
             <h1 className="mt-6 text-2xl font-extrabold">Checkout canceled</h1>
             <p className="mt-2 text-slate-body text-sm leading-relaxed">
-              No charge was made. You can pick a plan again whenever you are ready — payment goes
+              No charge was made. You can pick a plan again whenever you are ready - payment goes
               through Stripe Checkout securely.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">

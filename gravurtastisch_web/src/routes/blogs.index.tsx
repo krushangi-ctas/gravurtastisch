@@ -31,7 +31,7 @@ export const Route = createFileRoute("/blogs/")({
   pendingComponent: BlogsIndexSkeleton,
   head: () => ({
     meta: [
-      { title: "Gravurtastisch Journal — Custom Engraving, Proofing & Studio Craft" },
+      { title: "Gravurtastisch Journal - Custom Engraving, Proofing & Studio Craft" },
       {
         name: "description",
         content:
@@ -162,7 +162,7 @@ function BlogsPage() {
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
-                Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor—written by the Gravurtastisch studio team.
+                Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Gravurtastisch studio team.
               </p>
 
               {/* Search Bar */}

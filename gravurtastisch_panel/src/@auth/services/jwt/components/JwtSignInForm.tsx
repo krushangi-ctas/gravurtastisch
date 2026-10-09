@@ -296,8 +296,8 @@ function JwtSignInForm() {
                   maxLength={1}
                   className={`h-12 w-10 sm:h-14 sm:w-11 rounded-xl text-center text-xl font-bold transition-all duration-200 outline-none ${
                     digit
-                      ? 'border-2 border-blue-600 bg-blue-50/40 text-blue-900 shadow-sm'
-                      : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-2 focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100'
+                      ? 'border-2 border-primary-600 bg-primary-50/40 text-primary-900 shadow-sm'
+                      : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-2 focus:border-primary-600 focus:bg-white focus:ring-4 focus:ring-primary-100'
                   }`}
                 />
               ))}
@@ -307,8 +307,8 @@ function JwtSignInForm() {
           {/* Submit Button */}
           <Button
             variant="contained"
-            color="secondary"
-            className="h-12 w-full rounded-xl text-sm font-semibold shadow-md transition-all duration-200"
+            color="primary"
+            className="h-12 w-full rounded-xl text-sm font-semibold shadow-md transition-all duration-200 bg-primary-700 hover:bg-primary-800 text-white"
             aria-label="Verify OTP"
             disabled={verifying || !otpComplete}
             type="submit"
@@ -316,17 +316,26 @@ function JwtSignInForm() {
             sx={{
               textTransform: 'none',
               fontWeight: 600,
+              bgcolor: 'primary.main',
+              color: '#ffffff !important',
+              '&:hover': {
+                bgcolor: 'primary.dark',
+              },
+              '&.Mui-disabled': {
+                color: 'rgba(255, 255, 255, 0.7) !important',
+                bgcolor: 'rgba(128, 90, 213, 0.45) !important',
+              },
             }}
           >
             {verifying ? (
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-white">
                 <CircularProgress size={18} color="inherit" />
                 <span>Verifying code...</span>
               </span>
             ) : (
-              <span className="flex items-center gap-1.5">
+              <span className="flex items-center gap-1.5 text-white">
                 <span>Sign in to Dashboard</span>
-                <FuseSvgIcon size={18}>heroicons-outline:arrow-right</FuseSvgIcon>
+                <FuseSvgIcon size={18} className="text-white">heroicons-outline:arrow-right</FuseSvgIcon>
               </span>
             )}
           </Button>
@@ -339,7 +348,7 @@ function JwtSignInForm() {
                   type="button"
                   onClick={handleResendOtp}
                   disabled={sending}
-                  className="font-semibold text-blue-600 hover:text-blue-700 transition-colors cursor-pointer"
+                  className="font-semibold text-primary-700 hover:text-primary-800 transition-colors cursor-pointer"
                 >
                   {sending ? 'Sending...' : 'Resend code'}
                 </button>
@@ -425,7 +434,7 @@ function JwtSignInForm() {
                   '&.Mui-focused fieldset': {
                     borderColor: emailForm.formState.errors.email
                       ? '#ef4444'
-                      : '#2563eb',
+                      : 'primary.main',
                     borderWidth: '1.5px',
                   },
                 },
@@ -455,8 +464,8 @@ function JwtSignInForm() {
 
       <Button
         variant="contained"
-        color="secondary"
-        className="h-12 w-full rounded-xl text-sm font-semibold shadow-md transition-all duration-200"
+        color="primary"
+        className="h-12 w-full rounded-xl text-sm font-semibold shadow-md transition-all duration-200 bg-primary-700 hover:bg-primary-800 text-white"
         aria-label="Continue"
         disabled={sending || verifying || !emailForm.formState.isValid}
         type="submit"
@@ -464,17 +473,26 @@ function JwtSignInForm() {
         sx={{
           textTransform: 'none',
           fontWeight: 600,
+          bgcolor: 'primary.main',
+          color: '#ffffff !important',
+          '&:hover': {
+            bgcolor: 'primary.dark',
+          },
+          '&.Mui-disabled': {
+            color: 'rgba(255, 255, 255, 0.7) !important',
+            bgcolor: 'rgba(128, 90, 213, 0.45) !important',
+          },
         }}
       >
         {sending || verifying ? (
-          <span className="flex items-center gap-2">
+          <span className="flex items-center gap-2 text-white">
             <CircularProgress size={18} color="inherit" />
             <span>{verifying ? 'Signing in...' : 'Sending OTP...'}</span>
           </span>
         ) : (
-          <span className="flex items-center gap-1.5">
+          <span className="flex items-center gap-1.5 text-white">
             <span>Continue</span>
-            <FuseSvgIcon size={18}>heroicons-outline:arrow-right</FuseSvgIcon>
+            <FuseSvgIcon size={18} className="text-white">heroicons-outline:arrow-right</FuseSvgIcon>
           </span>
         )}
       </Button>

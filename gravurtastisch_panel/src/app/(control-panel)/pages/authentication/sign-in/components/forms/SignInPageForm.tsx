@@ -111,12 +111,17 @@ function SignInPageForm() {
 
 			<Button
 				variant="contained"
-				color="secondary"
-				className="w-full"
+				color="primary"
+				className="w-full bg-primary-700 hover:bg-primary-800 text-white font-semibold"
 				aria-label="Sign in"
 				disabled={_.isEmpty(dirtyFields) || !isValid}
 				type="submit"
 				size="medium"
+				sx={{
+					bgcolor: 'primary.main',
+					color: '#ffffff !important',
+					'&:hover': { bgcolor: 'primary.dark' }
+				}}
 			>
 				Sign in
 			</Button>

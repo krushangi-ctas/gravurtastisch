@@ -19,7 +19,6 @@ export function ValueProp() {
       titleKey: "feature1Title",
       bodyKey: "feature1Body",
       tag: t("valueProp.feature1Tag", "Drinkware"),
-      span: "lg:col-span-2",
       accent: "from-[#613EA3] to-[#855FBF]",
     },
     {
@@ -28,7 +27,6 @@ export function ValueProp() {
       titleKey: "feature2Title",
       bodyKey: "feature2Body",
       tag: t("valueProp.feature2Tag", "Laser engraving"),
-      span: "lg:col-span-1",
       accent: "from-[#E89B5C] to-[#C47432]",
     },
     {
@@ -37,7 +35,6 @@ export function ValueProp() {
       titleKey: "feature3Title",
       bodyKey: "feature3Body",
       tag: t("valueProp.feature3Tag", "Lifestyle"),
-      span: "lg:col-span-1",
       accent: "from-[#452B78] to-[#613EA3]",
     },
     {
@@ -46,7 +43,6 @@ export function ValueProp() {
       titleKey: "feature4Title",
       bodyKey: "feature4Body",
       tag: t("valueProp.feature4Tag", "Apparel"),
-      span: "lg:col-span-2",
       accent: "from-[#855FBF] to-[#E89B5C]",
     },
   ];
@@ -64,53 +60,53 @@ export function ValueProp() {
 
       <Container className="relative">
         <Reveal>
-          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 max-w-5xl">
-            <div className="max-w-2xl">
-              <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand">
-                {t("valueProp.sectionLabel")}
+          <div className="max-w-3xl">
+            <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand">
+              {t("valueProp.sectionLabel")}
+            </span>
+            <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
+              {t("valueProp.title1")}{" "}
+              <span className="text-navy-deep">
+                {t("valueProp.title2")}
               </span>
-              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
-                {t("valueProp.title1")}{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand to-[#E89B5C]">
-                  {t("valueProp.title2")}
-                </span>
-              </h2>
-            </div>
-            <p className="text-base text-slate-body leading-relaxed max-w-md lg:text-right">
+            </h2>
+            <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl text-left">
               {t("valueProp.description")}
             </p>
           </div>
         </Reveal>
 
-        <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5">
+        <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
           {features.map((f, i) => {
             const Icon = f.icon;
             return (
               <Reveal key={f.id} delay={i * 60}>
                 <article
-                  className={`group relative h-full overflow-hidden rounded-[1.75rem] border border-[#E8E4EF] bg-white p-7 shadow-[0_1px_0_rgba(42,24,72,0.04)] hover:shadow-[0_24px_60px_-28px_rgba(97,62,163,0.35)] hover:-translate-y-1 transition-all duration-300 ${f.span}`}
+                  className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.75rem] border border-[#E8E4EF] bg-white p-6 sm:p-7 shadow-[0_1px_0_rgba(42,24,72,0.04)] hover:shadow-[0_24px_60px_-28px_rgba(97,62,163,0.35)] hover:-translate-y-1 transition-all duration-300"
                 >
-                  <div
-                    className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${f.accent} opacity-80`}
-                    aria-hidden
-                  />
-                  <div className="flex items-start justify-between gap-4">
+                  <div>
                     <div
-                      className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${f.accent} text-white shadow-md`}
-                    >
-                      <Icon className="h-5 w-5" strokeWidth={1.75} />
+                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${f.accent} opacity-80`}
+                      aria-hidden
+                    />
+                    <div className="flex items-start justify-between gap-4">
+                      <div
+                        className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${f.accent} text-white shadow-md`}
+                      >
+                        <Icon className="h-5 w-5" strokeWidth={1.75} />
+                      </div>
+                      <span className="font-mono text-[11px] font-bold tracking-wider text-slate-400">
+                        {f.id}
+                      </span>
                     </div>
-                    <span className="font-mono text-[11px] font-bold tracking-wider text-slate-400">
-                      {f.id}
-                    </span>
+                    <h3 className="mt-6 text-xl font-bold tracking-tight text-navy-deep group-hover:text-brand transition-colors">
+                      {t(`valueProp.${f.titleKey}`)}
+                    </h3>
+                    <p className="mt-3 text-sm text-slate-600 leading-relaxed">
+                      {t(`valueProp.${f.bodyKey}`)}
+                    </p>
                   </div>
-                  <h3 className="mt-6 text-xl font-bold tracking-tight text-navy-deep group-hover:text-brand transition-colors">
-                    {t(`valueProp.${f.titleKey}`)}
-                  </h3>
-                  <p className="mt-3 text-sm text-slate-600 leading-relaxed max-w-md">
-                    {t(`valueProp.${f.bodyKey}`)}
-                  </p>
-                  <div className="mt-6 flex items-center justify-between">
+                  <div className="mt-6 flex items-center justify-between pt-2">
                     <span className="rounded-full border border-[#E8E4EF] bg-[#F7F5FA] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand">
                       {f.tag}
                     </span>

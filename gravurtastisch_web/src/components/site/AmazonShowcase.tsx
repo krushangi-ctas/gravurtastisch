@@ -237,7 +237,7 @@ export function AmazonShowcase() {
               <p className="mt-4 text-white/60 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                 {t(
                   "amazonShowcase.description",
-                  "From artwork intake to laser engraving and delivery — Gravurtastisch keeps proofs, craft cells, and shipping on one clear timeline."
+                  "From artwork intake to laser engraving and delivery - Gravurtastisch keeps proofs, craft cells, and shipping on one clear timeline."
                 )}
               </p>
             </div>
@@ -403,7 +403,7 @@ export function AmazonShowcase() {
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.autoPoint3", "Zero Risk: Uses Amazon native template — never touches buyer personal email or messaging terms")}</span>
+                    <span>{t("amazonShowcase.autoPoint3", "Zero Risk: Uses Amazon native template - never touches buyer personal email or messaging terms")}</span>
                   </li>
                   <li className="flex items-start gap-3">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />

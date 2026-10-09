@@ -93,7 +93,7 @@ function PaymentSuccessPage() {
                 <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
                 <h1 className="mt-6 text-2xl font-extrabold">Payment received</h1>
                 <p className="mt-2 text-slate-body text-sm leading-relaxed">
-                  Thanks{planName ? ` — your ${planName} plan` : ""} is confirmed
+                  Thanks{planName ? ` - your ${planName} plan` : ""} is confirmed
                   {amount != null ? ` ($${amount}/mo)` : ""}. Our backend recorded this via
                   Stripe webhook, so it stays acknowledged even if the browser closed mid-checkout.
                 </p>

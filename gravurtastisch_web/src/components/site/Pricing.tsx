@@ -139,7 +139,7 @@ export function Pricing() {
     if (!selectedPlan) return;
     const planId = selectedPlan._id || selectedPlan.id;
     if (!planId) {
-      setCheckoutError("Plan id missing — add plans via the admin panel.");
+      setCheckoutError("Plan id missing - add plans via the admin panel.");
       return;
     }
 
@@ -346,11 +346,11 @@ export function Pricing() {
                   Stripe Checkout
                 </p>
                 <h3 id="checkout-title" className="mt-1 text-xl font-extrabold text-navy-deep">
-                  {selectedPlan.name} — ${selectedPlan.price}/mo
+                  {selectedPlan.name} - ${selectedPlan.price}/mo
                 </h3>
                 <p className="mt-1.5 text-sm text-slate-body">
                   Enter your email, then continue to Stripe to pay securely. Closing the Stripe
-                  window is fine — our webhook still records a successful payment.
+                  window is fine - our webhook still records a successful payment.
                 </p>
               </div>
               <button

@@ -32,7 +32,7 @@ export const Route = createFileRoute("/blogs/$blogId")({
   pendingComponent: BlogDetailSkeleton,
   head: () => ({
     meta: [
-      { title: "Gravurtastisch Journal — Studio Insights" },
+      { title: "Gravurtastisch Journal - Studio Insights" },
       {
         name: "description",
         content: "Deep dives on custom engraving workflows, proofing, production scheduling, and gift fulfillment.",
@@ -480,7 +480,7 @@ function BlogDetailPage() {
                   <h3 className="text-lg font-bold font-display">Craft-quality workflow</h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-300">
                     Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage,
-                    and scheduled bench time—no guesswork on the shop floor.
+                    and scheduled bench time - no guesswork on the shop floor.
                   </p>
                   <ul className="mt-4 space-y-2 text-xs text-slate-300">
                     <li className="flex items-center gap-2">

@@ -155,10 +155,9 @@ function Guide() {
                   <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none backdrop-blur-sm">
                     <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                       <div>
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-bright">
-                          <Workflow className="h-3.5 w-3.5" />
+                        <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand dark:text-brand-bright">
                           {t('guide.blueprintBadge')}
-                        </div>
+                        </span>
                         <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
                           {t('guide.flowTitle')}
                         </h2>
@@ -201,10 +200,9 @@ function Guide() {
               <div className="lg:col-span-5">
                 <Reveal delay={80}>
                   <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none backdrop-blur-sm">
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-bright">
-                      <Sparkles className="h-3.5 w-3.5" />
+                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand dark:text-brand-bright">
                       {t('guide.purposeBadge')}
-                    </div>
+                    </span>
                     <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
                       {t('guide.purposeTitle')}
                     </h2>

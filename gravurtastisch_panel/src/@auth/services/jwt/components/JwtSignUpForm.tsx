@@ -177,12 +177,17 @@ function JwtSignUpForm() {
 
 			<Button
 				variant="contained"
-				color="secondary"
-				className="mt-6 w-full"
+				color="primary"
+				className="mt-6 w-full bg-primary-700 hover:bg-primary-800 text-white font-semibold"
 				aria-label="Register"
 				disabled={_.isEmpty(dirtyFields) || !isValid}
 				type="submit"
 				size="large"
+				sx={{
+					bgcolor: 'primary.main',
+					color: '#ffffff !important',
+					'&:hover': { bgcolor: 'primary.dark' }
+				}}
 			>
 				Create your free account
 			</Button>
