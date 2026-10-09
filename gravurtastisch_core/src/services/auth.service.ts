@@ -59,7 +59,11 @@ const sendOtp = async (bodyData) => {
 
   console.log(` [LOGIN OTP CODE] Email: ${normalizedEmail} | OTP: ${otp}`);
 
-  await emailService.sendOtpEmail(normalizedEmail, otp);
+  try {
+    await emailService.sendOtpEmail(normalizedEmail, otp);
+  } catch (emailErr) {
+    console.error(`Failed to send OTP email to ${normalizedEmail}:`, emailErr);
+  }
 
   return createResponse(httpStatus.OK, 'OTP sent to your email.');
 };

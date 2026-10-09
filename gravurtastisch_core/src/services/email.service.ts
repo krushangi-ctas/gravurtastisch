@@ -8,26 +8,44 @@ const mongoose = require('mongoose');
 let db = mongoose.connection;
 const RoleModel = require('../models/role.model');
 
-const smtpPort = Number(config.email.smtp?.port) || 587;
-const transport = nodemailer.createTransport({
-  ...config.email.smtp,
-  port: smtpPort,
-  secure: smtpPort === 465,
-  connectionTimeout: 5000,
-  greetingTimeout: 5000,
-  socketTimeout: 5000,
-  tls: {
-    rejectUnauthorized: false, // Disable SSL certificate verification
-  },
-});
+const smtpHost = config.email.smtp?.host || '';
+const smtpUser = config.email.smtp?.auth?.user || '';
+const isGmail = smtpHost.includes('gmail') || smtpUser.includes('@gmail.com');
+const smtpPort = Number(config.email.smtp?.port) || (isGmail ? 465 : 587);
+
+const transportOptions = isGmail
+  ? {
+      service: 'gmail',
+      auth: {
+        user: smtpUser,
+        pass: config.email.smtp?.auth?.pass,
+      },
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+    }
+  : {
+      ...config.email.smtp,
+      port: smtpPort,
+      secure: smtpPort === 465,
+      connectionTimeout: 10000,
+      greetingTimeout: 10000,
+      socketTimeout: 10000,
+      tls: {
+        rejectUnauthorized: false, // Disable SSL certificate verification
+      },
+    };
+
+const transport = nodemailer.createTransport(transportOptions);
+
 /* istanbul ignore next */
-if (config.env !== 'test' && config.email.smtp?.host) {
+if (config.env !== 'test' && (smtpHost || smtpUser)) {
   transport
     .verify()
     .then(() => logger.info('Connected to email server'))
-    .catch(() =>
+    .catch((err) =>
       logger.warn(
-        'Unable to connect to email server. Make sure you have configured the SMTP options in .env'
+        `Unable to connect to email server: ${err?.message || err}. Make sure SMTP options are set in .env`
       )
     );
 }
