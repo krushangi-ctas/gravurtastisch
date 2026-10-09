@@ -208,10 +208,13 @@ function BlogDetailPage() {
         {/* ==================================================== */}
         {/* 1. HERO & ARTICLE HEADER */}
         {/* ==================================================== */}
-        <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-gradient-to-b from-slate-950 via-navy-deep to-slate-900 text-white border-b border-white/10 overflow-hidden">
+        {/* 1. HERO HEADER */}
+        {/* ==================================================== */}
+        <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white border-b border-white/10 overflow-hidden">
           <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
-          <div className="absolute -top-40 right-1/4 w-96 h-96 bg-brand/20 rounded-full blur-[140px] pointer-events-none" />
-          <div className="absolute bottom-0 left-10 w-80 h-80 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute -top-40 right-1/4 w-96 h-96 bg-brand/30 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-0 left-10 w-80 h-80 bg-amber-500/15 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-brand-bright/20 rounded-full blur-[100px] pointer-events-none" />
 
           <Container className="relative max-w-4xl">
             {/* Navigation back */}
@@ -247,13 +250,14 @@ function BlogDetailPage() {
               {/* Metadata Bar */}
               <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-400">
                 <div className="flex items-center gap-4">
-                  <div className="h-11 w-11 rounded-full bg-gradient-to-br from-brand to-cyan-500 flex items-center justify-center text-white font-bold shadow-md ring-2 ring-white/10">
-                    RS
+                  <div className="relative h-11 w-11 rounded-2xl bg-gradient-to-br from-[#613EA3] to-[#855FBF] border border-white/20 flex items-center justify-center text-white font-extrabold shadow-md">
+                    <span className="text-base font-bold">G</span>
+                    <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#E89B5C]" />
                   </div>
                   <div>
                     <div className="font-semibold text-white flex items-center gap-1.5">
                       Gravurtastisch Editorial Team
-                      <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                      <ShieldCheck className="h-4 w-4 text-brand-bright" />
                     </div>
                     <div className="text-xs text-slate-400">Custom engraving & order fulfillment</div>
                   </div>
@@ -265,7 +269,7 @@ function BlogDetailPage() {
                     <span>{formattedDate}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-cyan-400" />
+                    <Clock className="h-4 w-4 text-amber-400" />
                     <span>{readingTime} min read</span>
                   </div>
                 </div>
@@ -472,9 +476,10 @@ function BlogDetailPage() {
               {/* Sidebar Column */}
               <div className="lg:col-span-4 space-y-6">
                 {/* Studio quality guarantee box */}
-                <div className="p-6 rounded-3xl bg-gradient-to-br from-slate-950 to-navy-deep text-white border border-white/10 shadow-lg relative overflow-hidden">
-                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-brand/20 rounded-full blur-2xl pointer-events-none" />
-                  <div className="h-10 w-10 rounded-xl bg-brand/20 flex items-center justify-center mb-4 text-brand-bright border border-brand/30">
+                <div className="p-6 rounded-3xl bg-gradient-to-br from-navy-deep via-navy to-brand/40 text-white border border-brand/30 shadow-xl relative overflow-hidden">
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-brand/30 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
+                  <div className="h-10 w-10 rounded-xl bg-brand/25 flex items-center justify-center mb-4 text-brand-bright border border-brand/40 shadow-sm">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
                   <h3 className="text-lg font-bold font-display">Craft-quality workflow</h3>
@@ -484,15 +489,15 @@ function BlogDetailPage() {
                   </p>
                   <ul className="mt-4 space-y-2 text-xs text-slate-300">
                     <li className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-cyan-400" />
+                      <Zap className="h-3.5 w-3.5 text-brand-bright" />
                       Proof-before-production on every SKU
                     </li>
                     <li className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-cyan-400" />
+                      <Zap className="h-3.5 w-3.5 text-brand-bright" />
                       Encrypted uploads & scoped shop tokens
                     </li>
                     <li className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-cyan-400" />
+                      <Zap className="h-3.5 w-3.5 text-brand-bright" />
                       Webshop, wholesale & counter orders
                     </li>
                   </ul>

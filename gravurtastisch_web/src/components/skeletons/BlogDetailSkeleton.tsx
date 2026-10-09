@@ -10,7 +10,7 @@ export function BlogDetailSkeleton() {
       <Nav />
 
       {/* Blog Detail Hero Skeleton */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-gradient-to-b from-slate-950 via-navy-deep to-slate-900 text-white border-b border-white/10">
+      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white border-b border-white/10 overflow-hidden">
         <Container className="max-w-4xl space-y-6">
           <Skeleton className="h-5 w-32 rounded-full bg-white/10" />
           <Skeleton className="h-6 w-52 rounded-full bg-brand/30" />
