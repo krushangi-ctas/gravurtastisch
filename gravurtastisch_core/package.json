@@ -48,9 +48,7 @@
     "tsx": "^4.19.3",
     "validator": "^13.0.0",
     "winston": "^3.8.2",
-    "xlsx": "^0.18.5"
-  },
-  "devDependencies": {
+    "xlsx": "^0.18.5",
     "@types/bcryptjs": "^2.4.6",
     "@types/compression": "^1.7.5",
     "@types/cors": "^2.8.17",
@@ -63,7 +61,9 @@
     "@types/nodemailer": "^6.4.17",
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
-    "@types/validator": "^13.12.2",
+    "@types/validator": "^13.12.2"
+  },
+  "devDependencies": {
     "concurrently": "6.1.0",
     "eslint": "7.26.0",
     "eslint-config-prettier": "8.3.0",
