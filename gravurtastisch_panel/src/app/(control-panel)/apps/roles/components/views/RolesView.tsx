@@ -16,6 +16,7 @@ import {
 	DialogTitle,
 	FormControlLabel,
 	IconButton,
+	InputAdornment,
 	Paper,
 	Table,
 	TableBody,
@@ -161,6 +162,16 @@ function RolesView() {
 	const [description, setDescription] = useState('');
 	const [matrix, setMatrix] = useState<Record<string, ReturnType<typeof emptyFlags>>>({});
 
+	// Delete confirmation state
+	const [confirmDeleteState, setConfirmDeleteState] = useState<{
+		open: boolean;
+		role: Role | null;
+	}>({
+		open: false,
+		role: null
+	});
+	const [isActionLoading, setIsActionLoading] = useState(false);
+
 	useEffect(() => {
 		if (!sections.length) return;
 		const next: Record<string, ReturnType<typeof emptyFlags>> = {};
@@ -252,22 +263,35 @@ function RolesView() {
 		}
 	};
 
-	const handleDelete = useCallback(
-		async (role: Role) => {
-			const roleId = role.id || role._id;
-			if (!roleId) return;
-			try {
-				await deleteMutation.mutateAsync(roleId);
-				enqueueSnackbar('Role deleted.', { variant: 'success' });
-			} catch (err: unknown) {
-				const errMsg = err instanceof Error ? err.message : String(err);
-				enqueueSnackbar(errMsg || 'Failed to delete role.', {
-					variant: 'error'
-				});
-			}
-		},
-		[deleteMutation, enqueueSnackbar]
-	);
+	const handleOpenDeleteConfirm = (role: Role) => {
+		setConfirmDeleteState({
+			open: true,
+			role
+		});
+	};
+
+	const handleConfirmDelete = async () => {
+		if (!confirmDeleteState.role) return;
+		const roleId = confirmDeleteState.role.id || confirmDeleteState.role._id;
+		if (!roleId) return;
+
+		setIsActionLoading(true);
+		try {
+			await deleteMutation.mutateAsync(roleId);
+			enqueueSnackbar(`Role "${confirmDeleteState.role.role_name}" has been deleted.`, {
+				variant: 'success',
+				autoHideDuration: 2000
+			});
+			setConfirmDeleteState({ open: false, role: null });
+		} catch (err: unknown) {
+			const errMsg = err instanceof Error ? err.message : String(err);
+			enqueueSnackbar(errMsg || 'Failed to delete role. Please try again.', {
+				variant: 'error'
+			});
+		} finally {
+			setIsActionLoading(false);
+		}
+	};
 
 	const handleRefresh = useCallback(() => {
 		refetch();
@@ -533,7 +557,7 @@ function RolesView() {
 										<IconButton
 											size="small"
 											className="text-red-500 hover:text-red-700 p-1.5"
-											onClick={() => handleDelete(row.original)}
+											onClick={() => handleOpenDeleteConfirm(row.original)}
 										>
 											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
 										</IconButton>
@@ -543,6 +567,7 @@ function RolesView() {
 						)}
 					/>
 
+					{/* Create / Edit Role Dialog */}
 					<Dialog
 						open={dialogOpen}
 						onClose={() => setDialogOpen(false)}
@@ -550,74 +575,256 @@ function RolesView() {
 						fullWidth
 						PaperProps={{
 							sx: {
-								borderRadius: '16px',
-								overflow: 'hidden'
+								borderRadius: 3,
+								overflow: 'hidden',
+								p: 0,
+								boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+								m: { xs: 1.5, sm: 2 }
 							}
 						}}
 					>
-						<DialogTitle className="font-bold">{editing ? 'Edit Role' : 'Create Role'}</DialogTitle>
-						<DialogContent className="flex flex-col gap-4 pt-2">
-							<TextField
-								label="Role name"
-								value={roleName}
-								onChange={(e) => setRoleName(e.target.value)}
-								fullWidth
-							/>
-							<TextField
-								label="Description"
-								value={description}
-								onChange={(e) => setDescription(e.target.value)}
-								fullWidth
-								multiline
-								minRows={2}
-							/>
-							<Typography className="font-semibold">Section permissions</Typography>
-							<Table size="small">
-								<TableHead>
-									<TableRow>
-										<TableCell>Section</TableCell>
-										<TableCell align="center">View</TableCell>
-										<TableCell align="center">Create</TableCell>
-										<TableCell align="center">Update</TableCell>
-										<TableCell align="center">Delete</TableCell>
-									</TableRow>
-								</TableHead>
-								<TableBody>
-									{sections.map((section) => (
-										<TableRow key={section.key}>
-											<TableCell>{section.title}</TableCell>
-											{(['canView', 'canCreate', 'canUpdate', 'canDelete'] as const).map(
-												(flag) => (
-													<TableCell
-														key={flag}
-														align="center"
-													>
-														<FormControlLabel
-															control={
-																<Checkbox
-																	checked={Boolean(matrix[section.key]?.[flag])}
-																	onChange={() => toggleFlag(section.key, flag)}
-																/>
-															}
-															label=""
-														/>
-													</TableCell>
-												)
-											)}
-										</TableRow>
-									))}
-								</TableBody>
-							</Table>
-						</DialogContent>
-						<DialogActions className="p-4 bg-slate-50">
-							<Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-							<Button
-								variant="contained"
-								onClick={handleSave}
+						<div className="flex flex-col h-full min-h-0 overflow-hidden">
+							{/* Top Banner Header */}
+							<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+								<div className="flex items-center gap-2.5">
+									<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
+										<FuseSvgIcon size={18} className="text-white">
+											heroicons-outline:shield-check
+										</FuseSvgIcon>
+									</div>
+									<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+										{editing ? 'Edit Role' : 'Create Role'}
+									</h1>
+								</div>
+
+								<button
+									type="button"
+									onClick={() => setDialogOpen(false)}
+									className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
+								>
+									<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>
+									<span>Close</span>
+								</button>
+							</div>
+
+							<DialogContent
+								className="p-4 sm:p-6 flex flex-col gap-4 bg-gray-50/60"
+								sx={{
+									flex: '1 1 auto',
+									overflowY: 'auto',
+									minHeight: 0
+								}}
 							>
-								Save
-							</Button>
-						</DialogActions>
+								{/* Role Details Card */}
+								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Role Name <span className="text-red-500">*</span>
+										</Typography>
+										<TextField
+											fullWidth
+											required
+											placeholder="e.g., Production Lead, Support Specialist"
+											value={roleName}
+											onChange={(e) => setRoleName(e.target.value)}
+											variant="outlined"
+											size="small"
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:tag
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Description
+										</Typography>
+										<TextField
+											fullWidth
+											placeholder="Briefly describe responsibilities and scope for this role..."
+											value={description}
+											onChange={(e) => setDescription(e.target.value)}
+											variant="outlined"
+											size="small"
+											multiline
+											minRows={2}
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1 }}>
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:document-text
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+								</div>
+
+								{/* Section Permissions Table Card */}
+								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-3">
+									<div className="flex items-center gap-2">
+										<FuseSvgIcon size={16} className="text-primary-700">
+											heroicons-outline:key
+										</FuseSvgIcon>
+										<Typography className="text-xs font-bold text-gray-800 uppercase tracking-wider">
+											Section Permissions
+										</Typography>
+									</div>
+
+									<div className="border border-gray-200 rounded-lg overflow-x-auto">
+										<Table size="small">
+											<TableHead className="bg-gray-100">
+												<TableRow>
+													<TableCell sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
+														Section
+													</TableCell>
+													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
+														View
+													</TableCell>
+													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
+														Create
+													</TableCell>
+													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
+														Update
+													</TableCell>
+													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
+														Delete
+													</TableCell>
+												</TableRow>
+											</TableHead>
+											<TableBody>
+												{sections.map((section) => (
+													<TableRow key={section.key} className="hover:bg-slate-50 transition-colors">
+														<TableCell sx={{ fontSize: 12.5, fontWeight: 500, color: 'text.primary' }}>
+															{section.title}
+														</TableCell>
+														{(['canView', 'canCreate', 'canUpdate', 'canDelete'] as const).map(
+															(flag) => (
+																<TableCell key={flag} align="center" sx={{ py: 0.5 }}>
+																	<Checkbox
+																		checked={Boolean(matrix[section.key]?.[flag])}
+																		onChange={() => toggleFlag(section.key, flag)}
+																		size="small"
+																		color="primary"
+																	/>
+																</TableCell>
+															)
+														)}
+													</TableRow>
+												))}
+											</TableBody>
+										</Table>
+									</div>
+								</div>
+							</DialogContent>
+
+							{/* Bottom Action Footer */}
+							<DialogActions
+								className="px-4 sm:px-6 py-3 bg-slate-50/90 border-t border-slate-200 flex justify-end gap-3 shrink-0"
+								sx={{
+									flexShrink: 0,
+									borderTop: '1px solid #e2e8f0',
+									bgcolor: '#f8fafc',
+									px: { xs: 2, sm: 3 },
+									py: 1.5
+								}}
+							>
+								<Button
+									onClick={() => setDialogOpen(false)}
+									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
+									sx={{
+										borderRadius: '12px',
+										textTransform: 'capitalize'
+									}}
+								>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									onClick={handleSave}
+									className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm"
+									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+									sx={{
+										bgcolor: 'primary.main',
+										'&:hover': { bgcolor: 'primary.dark' },
+										borderRadius: '12px',
+										textTransform: 'capitalize',
+										px: { xs: 2.5, sm: 3.5 },
+										py: 1
+									}}
+								>
+									{editing ? 'Save Changes' : 'Create Role'}
+								</Button>
+							</DialogActions>
+						</div>
+					</Dialog>
+
+					{/* Custom Confirmation Dialog for Role Delete */}
+					<Dialog
+						open={confirmDeleteState.open}
+						onClose={() => !isActionLoading && setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
+						maxWidth="xs"
+						fullWidth
+						PaperProps={{
+							sx: {
+								borderRadius: '16px',
+								overflow: 'hidden',
+								p: 0,
+								boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
+							}
+						}}
+					>
+						<div className="p-6 pb-5 bg-white flex items-start justify-between gap-4">
+							<div className="flex items-start gap-3.5">
+								<div className="w-11 h-11 rounded-full bg-red-100 flex items-center justify-center shrink-0 text-red-500">
+									<FuseSvgIcon size={24} className="text-red-500">
+										heroicons-outline:trash
+									</FuseSvgIcon>
+								</div>
+								<div className="flex flex-col">
+									<h3 className="text-base font-bold text-slate-800 m-0">Delete Role</h3>
+									<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
+										Are you sure you want to delete role{' '}
+										<strong className="text-slate-800 font-semibold">{confirmDeleteState.role?.role_name}</strong>?
+										Users assigned to this role may lose their permissions.
+									</p>
+								</div>
+							</div>
+							<IconButton
+								size="small"
+								onClick={() => !isActionLoading && setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
+								className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
+							>
+								<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+							</IconButton>
+						</div>
+
+						<div className="bg-slate-50/70 px-6 py-3.5 flex items-center justify-end gap-3 border-t border-slate-100">
+							<button
+								type="button"
+								onClick={() => setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
+								disabled={isActionLoading}
+								className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								onClick={handleConfirmDelete}
+								disabled={isActionLoading}
+								className="h-9 px-5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5"
+							>
+								{isActionLoading && <CircularProgress size={14} color="inherit" />}
+								<span>Delete</span>
+							</button>
+						</div>
 					</Dialog>
 				</Paper>
 			}

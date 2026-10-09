@@ -37,6 +37,7 @@ const errorHandler = (err, req, res, next) => {
     logger.error(err);
   }
 
+  res.header('Access-Control-Allow-Origin', '*');
   res.status(statusCode).send(response);
 };
 

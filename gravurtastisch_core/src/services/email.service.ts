@@ -8,8 +8,11 @@ const mongoose = require('mongoose');
 let db = mongoose.connection;
 const RoleModel = require('../models/role.model');
 
+const smtpPort = Number(config.email.smtp?.port) || 587;
 const transport = nodemailer.createTransport({
   ...config.email.smtp,
+  port: smtpPort,
+  secure: smtpPort === 465,
   tls: {
     rejectUnauthorized: false, // Disable SSL certificate verification
   },

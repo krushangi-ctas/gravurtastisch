@@ -24,7 +24,7 @@ type ListParams = {
 export const useAdminSellers = (params: ListParams = {}, enabled = true) => {
 	return useQuery<PaginationResponse<User>>({
 		queryFn: () => getAdminSellers(params),
-		queryKey: [...sellersQueryKey, params],
+		queryKey: [...sellersQueryKey, params.page, params.limit, params.search, params.sortBy],
 		enabled,
 		refetchOnWindowFocus: true,
 		staleTime: 1500
@@ -34,7 +34,7 @@ export const useAdminSellers = (params: ListParams = {}, enabled = true) => {
 export const useAdminStaffUsers = (params: ListParams = {}, enabled = true) => {
 	return useQuery<PaginationResponse<User>>({
 		queryFn: () => getAdminStaffUsers(params),
-		queryKey: [...adminStaffQueryKey, params],
+		queryKey: [...adminStaffQueryKey, params.page, params.limit, params.search, params.sortBy],
 		enabled,
 		refetchOnWindowFocus: true,
 		staleTime: 1500
@@ -44,7 +44,7 @@ export const useAdminStaffUsers = (params: ListParams = {}, enabled = true) => {
 export const useTeamUsers = (params: ListParams = {}, enabled = true) => {
 	return useQuery<PaginationResponse<User>>({
 		queryFn: () => getTeamUsers(params),
-		queryKey: [...teamQueryKey, params],
+		queryKey: [...teamQueryKey, params.page, params.limit, params.search, params.sortBy],
 		enabled,
 		refetchOnWindowFocus: true,
 		staleTime: 1500

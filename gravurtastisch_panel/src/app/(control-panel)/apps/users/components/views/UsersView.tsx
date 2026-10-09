@@ -8,12 +8,14 @@ import { styled } from '@mui/material/styles';
 import {
 	Box,
 	Button,
+	CircularProgress,
 	Dialog,
 	DialogActions,
 	DialogContent,
 	DialogTitle,
 	FormControl,
 	IconButton,
+	InputAdornment,
 	InputLabel,
 	MenuItem,
 	Paper,
@@ -205,6 +207,19 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const [editOpen, setEditOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+	// Confirmation Dialog state
+	const [confirmState, setConfirmState] = useState<{
+		open: boolean;
+		type: 'status' | 'delete';
+		user: User | null;
+		targetStatus?: number;
+	}>({
+		open: false,
+		type: 'status',
+		user: null
+	});
+	const [isActionLoading, setIsActionLoading] = useState(false);
+
 	const [formName, setFormName] = useState('');
 	const [formEmail, setFormEmail] = useState('');
 	const [formPhone, setFormPhone] = useState('');
@@ -215,11 +230,46 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 
 	useEffect(() => {
 		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
-	}, [globalFilter, sortBy, variant]);
+	}, [variant]);
 
-	const users = activeQuery.data?.data || [];
-	const totalPages = activeQuery.data?.pagination?.lastPage || 1;
-	const totalResults = activeQuery.data?.pagination?.total ?? (users.length);
+	const users = useMemo(() => {
+		if (Array.isArray(activeQuery.data?.data)) {
+			return activeQuery.data.data;
+		}
+		if (Array.isArray((activeQuery.data as any)?.results)) {
+			return (activeQuery.data as any).results;
+		}
+		return [];
+	}, [activeQuery.data]);
+
+	const totalResults = useMemo(() => {
+		return (
+			activeQuery.data?.pagination?.totalResults ??
+			activeQuery.data?.pagination?.length ??
+			activeQuery.data?.pagination?.total ??
+			users.length
+		);
+	}, [activeQuery.data, users.length]);
+
+	const totalPages = useMemo(() => {
+		return (
+			activeQuery.data?.pagination?.totalPages ||
+			activeQuery.data?.pagination?.lastPage ||
+			Math.ceil(totalResults / pagination.pageSize) ||
+			1
+		);
+	}, [activeQuery.data, totalResults, pagination.pageSize]);
+
+	const handleGlobalFilterChange = useCallback((updaterOrValue: any) => {
+		setGlobalFilter((prev) => {
+			const newVal = typeof updaterOrValue === 'function' ? updaterOrValue(prev) : updaterOrValue;
+			return newVal;
+		});
+		setPagination((prev) => ({
+			...prev,
+			pageIndex: 0
+		}));
+	}, []);
 
 	const resetCreateForm = () => {
 		setFormName('');
@@ -256,25 +306,54 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		}
 	};
 
-	const handleStatusToggle = useCallback(
-		async (user: User, currentStatus: number) => {
-			const userId = user._id ?? user.id;
-			if (!userId) return;
-			try {
+	const handleOpenStatusConfirm = (user: User, currentStatus: number) => {
+		setConfirmState({
+			open: true,
+			type: 'status',
+			user,
+			targetStatus: currentStatus === 1 ? 0 : 1
+		});
+	};
+
+	const handleOpenDeleteConfirm = (user: User) => {
+		setConfirmState({
+			open: true,
+			type: 'delete',
+			user
+		});
+	};
+
+	const handleConfirmAction = async () => {
+		if (!confirmState.user) return;
+		const userId = confirmState.user._id ?? confirmState.user.id;
+		if (!userId) return;
+
+		setIsActionLoading(true);
+		try {
+			if (confirmState.type === 'delete') {
+				await updateMutation.mutateAsync({ userId, payload: { status: 2 } });
+				enqueueSnackbar(`"${confirmState.user.name}" has been deleted.`, {
+					variant: 'success',
+					autoHideDuration: 2000
+				});
+			} else if (confirmState.type === 'status' && confirmState.targetStatus !== undefined) {
 				await updateMutation.mutateAsync({
 					userId,
-					payload: { status: currentStatus === 1 ? 0 : 1 }
+					payload: { status: confirmState.targetStatus }
 				});
-				enqueueSnackbar('User status updated.', { variant: 'success' });
-			} catch (err: unknown) {
-				const errMsg = err instanceof Error ? err.message : String(err);
-				enqueueSnackbar(errMsg || 'Failed to update status.', {
-					variant: 'error'
-				});
+				enqueueSnackbar(
+					`User status updated to ${confirmState.targetStatus === 1 ? 'Active' : 'Inactive'}.`,
+					{ variant: 'success', autoHideDuration: 2000 }
+				);
 			}
-		},
-		[updateMutation, enqueueSnackbar]
-	);
+			setConfirmState({ open: false, type: 'status', user: null });
+		} catch (err: unknown) {
+			const errMsg = err instanceof Error ? err.message : String(err);
+			enqueueSnackbar(errMsg || 'Action failed. Please try again.', { variant: 'error' });
+		} finally {
+			setIsActionLoading(false);
+		}
+	};
 
 	const handleOpenEdit = (user: User) => {
 		setSelectedUser(user);
@@ -305,9 +384,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					businessName: isSellersMode ? editBusinessName : undefined,
 					planLimits: isSellersMode
 						? {
-							maxMarketplaces,
-							maxReviewRequestsPerMonth
-						}
+								maxMarketplaces,
+								maxReviewRequestsPerMonth
+							}
 						: undefined
 				}
 			});
@@ -320,23 +399,6 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			});
 		}
 	};
-
-	const handleDeleteUser = useCallback(
-		async (user: User) => {
-			const userId = user._id ?? user.id;
-			if (!userId) return;
-			try {
-				await updateMutation.mutateAsync({ userId, payload: { status: 2 } });
-				enqueueSnackbar(`${user.name} deleted.`, { variant: 'success' });
-			} catch (err: unknown) {
-				const errMsg = err instanceof Error ? err.message : String(err);
-				enqueueSnackbar(errMsg || 'Failed to delete user.', {
-					variant: 'error'
-				});
-			}
-		},
-		[updateMutation, enqueueSnackbar]
-	);
 
 	const handleRefresh = useCallback(() => {
 		setGlobalFilter('');
@@ -398,10 +460,11 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					const isActive = status === 1;
 					return (
 						<span
-							className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${isActive
+							className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
+								isActive
 									? 'bg-emerald-100 text-emerald-700'
 									: 'bg-amber-100 text-amber-700'
-								}`}
+							}`}
 						>
 							{isActive ? 'Active' : 'Inactive'}
 						</span>
@@ -522,7 +585,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							sorting
 						}}
 						onPaginationChange={setPagination}
-						onGlobalFilterChange={setGlobalFilter}
+						onGlobalFilterChange={handleGlobalFilterChange}
 						onSortingChange={setSorting}
 						manualPagination
 						manualFiltering
@@ -676,7 +739,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										<Tooltip title={row.original.status === 1 ? 'Deactivate user' : 'Activate user'} arrow>
 											<IconButton
 												size="small"
-												onClick={() => handleStatusToggle(row.original, row.original.status)}
+												onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
 												className={
 													row.original.status === 1
 														? 'text-emerald-600 hover:text-emerald-800 p-1.5'
@@ -706,7 +769,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										<IconButton
 											size="small"
 											className="text-red-500 hover:text-red-700 p-1.5"
-											onClick={() => handleDeleteUser(row.original)}
+											onClick={() => handleOpenDeleteConfirm(row.original)}
 										>
 											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
 										</IconButton>
@@ -716,7 +779,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						)}
 					/>
 
-					{/* Create */}
+					{/* Create User Dialog */}
 					<Dialog
 						open={createOpen}
 						onClose={() => setCreateOpen(false)}
@@ -724,76 +787,206 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						fullWidth
 						PaperProps={{
 							sx: {
-								borderRadius: '16px',
-								overflow: 'hidden'
+								borderRadius: 3,
+								overflow: 'hidden',
+								p: 0,
+								boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+								m: { xs: 1.5, sm: 2 }
 							}
 						}}
 					>
-						<DialogTitle className="font-bold">Create User</DialogTitle>
-						<DialogContent className="flex flex-col gap-4 pt-2">
-							<TextField
-								label="Name"
-								value={formName}
-								onChange={(e) => setFormName(e.target.value)}
-								fullWidth
-								required
-							/>
-							<TextField
-								label="Email"
-								value={formEmail}
-								onChange={(e) => setFormEmail(e.target.value)}
-								fullWidth
-								required
-							/>
-							<TextField
-								label="Phone"
-								value={formPhone}
-								onChange={(e) => setFormPhone(e.target.value)}
-								fullWidth
-							/>
-							<FormControl fullWidth required>
-								<InputLabel id="create-role-label">Role</InputLabel>
-								<Select
-									labelId="create-role-label"
-									label="Role"
-									value={formRoleId}
-									onChange={(e) => setFormRoleId(String(e.target.value))}
+						<div className="flex flex-col h-full min-h-0 overflow-hidden">
+							{/* Top Banner Header */}
+							<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+								<div className="flex items-center gap-2.5">
+									<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
+										<FuseSvgIcon size={18} className="text-white">
+											{isTeamMode ? 'heroicons-outline:user-group' : 'heroicons-outline:user-plus'}
+										</FuseSvgIcon>
+									</div>
+									<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+										{isTeamMode ? 'Create Team Member' : 'Create Admin User'}
+									</h1>
+								</div>
+
+								<button
+									type="button"
+									onClick={() => setCreateOpen(false)}
+									className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
 								>
-									{roles.map((role) => {
-										const id = role.id || role._id || '';
-										return (
-											<MenuItem
-												key={id}
-												value={id}
-											>
-												{role.role_name}
-											</MenuItem>
-										);
-									})}
-								</Select>
-							</FormControl>
-							{!roles.length && (
-								<Typography
-									variant="body2"
-									color="warning.main"
-								>
-									Create a role first before adding users.
-								</Typography>
-							)}
-						</DialogContent>
-						<DialogActions className="p-4 bg-slate-50">
-							<Button onClick={() => setCreateOpen(false)}>Cancel</Button>
-							<Button
-								variant="contained"
-								onClick={handleCreate}
-								disabled={!roles.length}
+									<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>
+									<span>Close</span>
+								</button>
+							</div>
+
+							<DialogContent
+								className="p-4 sm:p-6 flex flex-col gap-4 bg-gray-50/60"
+								sx={{
+									flex: '1 1 auto',
+									overflowY: 'auto',
+									minHeight: 0
+								}}
 							>
-								Create
-							</Button>
-						</DialogActions>
+								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Full Name <span className="text-red-500">*</span>
+										</Typography>
+										<TextField
+											fullWidth
+											required
+											placeholder="e.g., Alex Wright"
+											value={formName}
+											onChange={(e) => setFormName(e.target.value)}
+											variant="outlined"
+											size="small"
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:user
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Email Address <span className="text-red-500">*</span>
+										</Typography>
+										<TextField
+											fullWidth
+											required
+											type="email"
+											placeholder="e.g., alex@gravurtastisch.de"
+											value={formEmail}
+											onChange={(e) => setFormEmail(e.target.value)}
+											variant="outlined"
+											size="small"
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:envelope
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Phone Number
+										</Typography>
+										<TextField
+											fullWidth
+											placeholder="e.g., +49 151 2345001"
+											value={formPhone}
+											onChange={(e) => setFormPhone(e.target.value)}
+											variant="outlined"
+											size="small"
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:phone
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Role <span className="text-red-500">*</span>
+										</Typography>
+										<FormControl fullWidth size="small" required>
+											<Select
+												value={formRoleId}
+												onChange={(e) => setFormRoleId(String(e.target.value))}
+												displayEmpty
+												renderValue={(selected) => {
+													if (!selected) {
+														return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+													}
+													const roleObj = roles.find((r) => (r.id || r._id) === selected);
+													return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
+												}}
+												startAdornment={
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:shield-check
+														</FuseSvgIcon>
+													</InputAdornment>
+												}
+											>
+												{roles.map((role) => {
+													const id = role.id || role._id || '';
+													return (
+														<MenuItem key={id} value={id}>
+															<span className="text-xs sm:text-sm">{role.role_name}</span>
+														</MenuItem>
+													);
+												})}
+											</Select>
+										</FormControl>
+										{!roles.length && (
+											<Typography variant="body2" className="text-amber-600 text-xs mt-1.5 flex items-center gap-1">
+												<FuseSvgIcon size={14}>heroicons-outline:exclamation-triangle</FuseSvgIcon>
+												Create a role first before adding users.
+											</Typography>
+										)}
+									</div>
+								</div>
+							</DialogContent>
+
+							{/* Bottom Action Footer */}
+							<DialogActions
+								className="px-4 sm:px-6 py-3 bg-slate-50/90 border-t border-slate-200 flex justify-end gap-3 shrink-0"
+								sx={{
+									flexShrink: 0,
+									borderTop: '1px solid #e2e8f0',
+									bgcolor: '#f8fafc',
+									px: { xs: 2, sm: 3 },
+									py: 1.5
+								}}
+							>
+								<Button
+									onClick={() => setCreateOpen(false)}
+									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
+									sx={{
+										borderRadius: '12px',
+										textTransform: 'capitalize'
+									}}
+								>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									onClick={handleCreate}
+									disabled={!roles.length}
+									className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+									sx={{
+										bgcolor: 'primary.main',
+										'&:hover': { bgcolor: 'primary.dark' },
+										borderRadius: '12px',
+										textTransform: 'capitalize',
+										px: { xs: 2.5, sm: 3.5 },
+										py: 1
+									}}
+								>
+									Create User
+								</Button>
+							</DialogActions>
+						</div>
 					</Dialog>
 
-					{/* Edit */}
+					{/* Edit User Dialog */}
 					<Dialog
 						open={editOpen}
 						onClose={() => setEditOpen(false)}
@@ -801,86 +994,332 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						fullWidth
 						PaperProps={{
 							sx: {
-								borderRadius: '16px',
-								overflow: 'hidden'
+								borderRadius: 3,
+								overflow: 'hidden',
+								p: 0,
+								boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+								m: { xs: 1.5, sm: 2 }
 							}
 						}}
 					>
-						<DialogTitle className="font-bold">Edit User</DialogTitle>
-						<DialogContent className="flex flex-col gap-4 pt-2">
-							<TextField
-								label="Name"
-								value={formName}
-								onChange={(e) => setFormName(e.target.value)}
-								fullWidth
-							/>
-							<TextField
-								label="Phone"
-								value={formPhone}
-								onChange={(e) => setFormPhone(e.target.value)}
-								fullWidth
-							/>
-							<FormControl fullWidth>
-								<InputLabel id="edit-role-label">Role</InputLabel>
-								<Select
-									labelId="edit-role-label"
-									label="Role"
-									value={formRoleId}
-									onChange={(e) => setFormRoleId(String(e.target.value))}
+						<div className="flex flex-col h-full min-h-0 overflow-hidden">
+							{/* Top Banner Header */}
+							<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+								<div className="flex items-center gap-2.5">
+									<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
+										<FuseSvgIcon size={18} className="text-white">
+											heroicons-outline:pencil-square
+										</FuseSvgIcon>
+									</div>
+									<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+										Edit User
+									</h1>
+								</div>
+
+								<button
+									type="button"
+									onClick={() => setEditOpen(false)}
+									className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
 								>
-									{roles.map((role) => {
-										const id = role.id || role._id || '';
-										return (
-											<MenuItem
-												key={id}
-												value={id}
-											>
-												{role.role_name}
-											</MenuItem>
-										);
-									})}
-								</Select>
-							</FormControl>
-							{isSellersMode && (
-								<>
-									<TextField
-										label="Brand Name"
-										value={editBusinessName}
-										onChange={(e) => setEditBusinessName(e.target.value)}
-										fullWidth
-									/>
-									{(isSuperAdmin || selectedUser?.userType === 'seller') && (
-										<>
-											<TextField
-												label="Maximum Active Marketplaces"
-												type="number"
-												fullWidth
-												value={maxMarketplaces}
-												onChange={(e) => setMaxMarketplaces(Math.max(1, Number(e.target.value)))}
-											/>
-											<TextField
-												label="Monthly Review Request Quota"
-												type="number"
-												fullWidth
-												value={maxReviewRequestsPerMonth}
-												onChange={(e) =>
-													setMaxReviewRequestsPerMonth(Math.max(0, Number(e.target.value)))
+									<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>
+									<span>Close</span>
+								</button>
+							</div>
+
+							<DialogContent
+								className="p-4 sm:p-6 flex flex-col gap-4 bg-gray-50/60"
+								sx={{
+									flex: '1 1 auto',
+									overflowY: 'auto',
+									minHeight: 0
+								}}
+							>
+								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Full Name
+										</Typography>
+										<TextField
+											fullWidth
+											placeholder="Full Name"
+											value={formName}
+											onChange={(e) => setFormName(e.target.value)}
+											variant="outlined"
+											size="small"
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:user
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Phone Number
+										</Typography>
+										<TextField
+											fullWidth
+											placeholder="Phone Number"
+											value={formPhone}
+											onChange={(e) => setFormPhone(e.target.value)}
+											variant="outlined"
+											size="small"
+											InputProps={{
+												startAdornment: (
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:phone
+														</FuseSvgIcon>
+													</InputAdornment>
+												)
+											}}
+										/>
+									</div>
+
+									<div>
+										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+											Role
+										</Typography>
+										<FormControl fullWidth size="small">
+											<Select
+												value={formRoleId}
+												onChange={(e) => setFormRoleId(String(e.target.value))}
+												displayEmpty
+												renderValue={(selected) => {
+													if (!selected) {
+														return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+													}
+													const roleObj = roles.find((r) => (r.id || r._id) === selected);
+													return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
+												}}
+												startAdornment={
+													<InputAdornment position="start">
+														<FuseSvgIcon size={16} className="text-gray-400">
+															heroicons-outline:shield-check
+														</FuseSvgIcon>
+													</InputAdornment>
 												}
-											/>
+											>
+												{roles.map((role) => {
+													const id = role.id || role._id || '';
+													return (
+														<MenuItem key={id} value={id}>
+															<span className="text-xs sm:text-sm">{role.role_name}</span>
+														</MenuItem>
+													);
+												})}
+											</Select>
+										</FormControl>
+									</div>
+
+									{isSellersMode && (
+										<>
+											<div>
+												<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+													Brand Name
+												</Typography>
+												<TextField
+													placeholder="Brand Name"
+													value={editBusinessName}
+													onChange={(e) => setEditBusinessName(e.target.value)}
+													fullWidth
+													variant="outlined"
+													size="small"
+													InputProps={{
+														startAdornment: (
+															<InputAdornment position="start">
+																<FuseSvgIcon size={16} className="text-gray-400">
+																	heroicons-outline:building-storefront
+																</FuseSvgIcon>
+															</InputAdornment>
+														)
+													}}
+												/>
+											</div>
+
+											{(isSuperAdmin || selectedUser?.userType === 'seller') && (
+												<>
+													<div>
+														<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+															Maximum Active Marketplaces
+														</Typography>
+														<TextField
+															type="number"
+															fullWidth
+															variant="outlined"
+															size="small"
+															value={maxMarketplaces}
+															onChange={(e) => setMaxMarketplaces(Math.max(1, Number(e.target.value)))}
+															InputProps={{
+																startAdornment: (
+																	<InputAdornment position="start">
+																		<FuseSvgIcon size={16} className="text-gray-400">
+																			heroicons-outline:cube
+																		</FuseSvgIcon>
+																	</InputAdornment>
+																)
+															}}
+														/>
+													</div>
+
+													<div>
+														<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+															Monthly Review Request Quota
+														</Typography>
+														<TextField
+															type="number"
+															fullWidth
+															variant="outlined"
+															size="small"
+															value={maxReviewRequestsPerMonth}
+															onChange={(e) =>
+																setMaxReviewRequestsPerMonth(Math.max(0, Number(e.target.value)))
+															}
+															InputProps={{
+																startAdornment: (
+																	<InputAdornment position="start">
+																		<FuseSvgIcon size={16} className="text-gray-400">
+																			heroicons-outline:envelope
+																		</FuseSvgIcon>
+																	</InputAdornment>
+																)
+															}}
+														/>
+													</div>
+												</>
+											)}
 										</>
 									)}
-								</>
-							)}
-						</DialogContent>
-						<DialogActions className="p-4 bg-slate-50">
-							<Button onClick={() => setEditOpen(false)}>Cancel</Button>
-							<Button
-								variant="contained"
-								onClick={handleSaveEdit}
+								</div>
+							</DialogContent>
+
+							{/* Bottom Action Footer */}
+							<DialogActions
+								className="px-4 sm:px-6 py-3 bg-slate-50/90 border-t border-slate-200 flex justify-end gap-3 shrink-0"
+								sx={{
+									flexShrink: 0,
+									borderTop: '1px solid #e2e8f0',
+									bgcolor: '#f8fafc',
+									px: { xs: 2, sm: 3 },
+									py: 1.5
+								}}
 							>
-								Save
-							</Button>
-						</DialogActions>
+								<Button
+									onClick={() => setEditOpen(false)}
+									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
+									sx={{
+										borderRadius: '12px',
+										textTransform: 'capitalize'
+									}}
+								>
+									Cancel
+								</Button>
+								<Button
+									variant="contained"
+									onClick={handleSaveEdit}
+									className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm"
+									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+									sx={{
+										bgcolor: 'primary.main',
+										'&:hover': { bgcolor: 'primary.dark' },
+										borderRadius: '12px',
+										textTransform: 'capitalize',
+										px: { xs: 2.5, sm: 3.5 },
+										py: 1
+									}}
+								>
+									Save Changes
+								</Button>
+							</DialogActions>
+						</div>
+					</Dialog>
+
+					{/* Custom Confirmation Dialog for User Status Change & Delete */}
+					<Dialog
+						open={confirmState.open}
+						onClose={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
+						maxWidth="xs"
+						fullWidth
+						PaperProps={{
+							sx: {
+								borderRadius: '16px',
+								overflow: 'hidden',
+								p: 0,
+								boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)'
+							}
+						}}
+					>
+						<div className="p-6 pb-5 bg-white flex items-start justify-between gap-4">
+							<div className="flex items-start gap-3.5">
+								<div
+									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
+										confirmState.type === 'delete' ? 'bg-red-100 text-red-500' : 'bg-amber-100 text-amber-500'
+									}`}
+								>
+									<FuseSvgIcon size={24} className={confirmState.type === 'delete' ? 'text-red-500' : 'text-amber-500'}>
+										{confirmState.type === 'delete' ? 'heroicons-outline:trash' : 'heroicons-outline:exclamation-triangle'}
+									</FuseSvgIcon>
+								</div>
+								<div className="flex flex-col">
+									<h3 className="text-base font-bold text-slate-800 m-0">
+										{confirmState.type === 'delete' ? 'Delete User' : 'Change User Status'}
+									</h3>
+									<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
+										{confirmState.type === 'delete' ? (
+											<>
+												Are you sure you want to delete{' '}
+												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong>? This action cannot be undone.
+											</>
+										) : (
+											<>
+												Are you sure you want to change status of{' '}
+												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong> to{' '}
+												<strong className="text-slate-800 font-semibold">
+													{confirmState.targetStatus === 1 ? 'Active' : 'Inactive'}
+												</strong>
+												?
+											</>
+										)}
+									</p>
+								</div>
+							</div>
+							<IconButton
+								size="small"
+								onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
+								className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
+							>
+								<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+							</IconButton>
+						</div>
+
+						<div className="bg-slate-50/70 px-6 py-3.5 flex items-center justify-end gap-3 border-t border-slate-100">
+							<button
+								type="button"
+								onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
+								disabled={isActionLoading}
+								className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								onClick={handleConfirmAction}
+								disabled={isActionLoading}
+								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${
+									confirmState.type === 'delete'
+										? 'bg-red-600 hover:bg-red-700'
+										: 'bg-primary-800 hover:bg-primary-900'
+								}`}
+							>
+								{isActionLoading && <CircularProgress size={14} color="inherit" />}
+								<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>
+							</button>
+						</div>
 					</Dialog>
 				</Paper>
 			}

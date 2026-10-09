@@ -46,27 +46,52 @@ app.use(mongoSanitize());
 // gzip compression
 app.use(compression());
 
+const corsOptions = {
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
+  allowedHeaders: [
+    'Origin',
+    'X-Requested-With',
+    'Content-Type',
+    'Accept',
+    'Authorization',
+    'usertimezone',
+    'Range',
+    'X-Custom-Header',
+  ],
+  exposedHeaders: ['Content-Range', 'X-Content-Range', 'Authorization'],
+  credentials: false,
+  maxAge: 86400,
+};
+
 // enable cors
-app.use(cors());
-app.options('*', cors());
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
-app.use(express.static(`${__dirname}/uploads`));
-app.use(express.static(`${__dirname}/../public`));
-
-// CORS configuration
-app.all('/*', function (req, res, next) {
+// Explicit CORS headers and preflight interceptor
+app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Methods',
-    'GET,PUT,PATCH,POST,DELETE,OPTIONS'
+    'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'
   );
   res.header(
     'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, Content-Length, X-Requested-With',
-    'usertimezone'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, usertimezone, Range, X-Custom-Header'
   );
+  res.header(
+    'Access-Control-Expose-Headers',
+    'Content-Range, X-Content-Range, Authorization'
+  );
+
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
   next();
 });
+
+app.use(express.static(`${__dirname}/uploads`));
+app.use(express.static(`${__dirname}/../public`));
 
 // jwt authentication
 app.use(passport.initialize());
