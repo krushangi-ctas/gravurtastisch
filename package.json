@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Gravurstastich monorepo (core API, admin panel, public web)",
-  "packageManager": "pnpm@12.4.2+sha512.CK3GYTGAJ1x8ntraOdzwjJxhrU5+rzMKTzRh8QKw+QdCNFTRF/mOctR/7wYWBwZE17/8lzpqV/UJCm18NosHyQ==",
+  "packageManager": "pnpm@12.4.2",
   "engines": {
     "node": ">=22.12.0",
     "pnpm": ">=12.4.2"
