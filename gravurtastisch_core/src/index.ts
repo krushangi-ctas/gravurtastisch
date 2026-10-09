@@ -7,16 +7,22 @@ const http = require('http');
 // const { runSolicitationProcess } = require('./solicitationServices');
 
 let server;
-mongoose.connect(config.mongoose.url, config.mongoose.options).then(() => {
-  logger.info('Connected to MongoDB');
-  // Create HTTP server with Express app
-  server = http.createServer(app);
+mongoose
+  .connect(config.mongoose.url, config.mongoose.options)
+  .then(() => {
+    logger.info('Connected to MongoDB');
+    // Create HTTP server with Express app
+    server = http.createServer(app);
 
-  // Start HTTP server
-  server.listen(config.port, () => {
-    logger.info(`Listening to port ${config.port}`);
+    // Start HTTP server
+    server.listen(config.port, () => {
+      logger.info(`Listening to port ${config.port}`);
+    });
+  })
+  .catch((err) => {
+    logger.error(`MongoDB connection error: ${err.message || err}`);
+    process.exit(1);
   });
-});
 
 const forceExit = (code = 0) => {
   // Keep-alive / Mongo sockets can keep the process alive after server.close()
