@@ -14,39 +14,45 @@ const createSupportRequest = catchAsync(async (req, res) => {
     status: 'pending',
   });
 
-  try {
-    const content = `
-      <h2 style="color: #0B1E39; margin: 0 0 16px;">New Support Request</h2>
-      <table style="width:100%; border-collapse:collapse;">
-        <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Name</td></tr>
-        <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px;">${name}</td></tr>
-        <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Email</td></tr>
-        <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px;"><a href="mailto:${email}" style="color:#2F6FED; text-decoration:none;">${email}</a></td></tr>
-        <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Message</td></tr>
-        <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px; line-height:1.6;">${message}</td></tr>
-      </table>
-      <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;" />
-      <p style="color:#888; font-size:13px;">This request was submitted via the contact form on the website.</p>
-    `;
-    const htmlBody = await emailService.getMailBody(
-      content,
-      'New support request received'
-    );
-    await emailService.sendEmail(
-      config.email.adminEmail,
-      `New Support Request — ${name}`,
-      '',
-      htmlBody
-    );
-  } catch (err) {
-    console.error('Failed to send support request notification email:', err);
-  }
-
+  // Return immediate response to the client
   res.status(httpStatus.CREATED).send({
     status: httpStatus.CREATED,
     message: 'Support request created successfully',
     data: supportRequest,
   });
+
+  // Asynchronous background notification email (does not block HTTP response)
+  if (config.email.adminEmail) {
+    (async () => {
+      try {
+        const content = `
+          <h2 style="color: #613EA3; margin: 0 0 16px;">New Support Request</h2>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Name</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${name}</td></tr>
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Email</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;"><a href="mailto:${email}" style="color:#613EA3; text-decoration:none;">${email}</a></td></tr>
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Message</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px; line-height:1.6;">${message}</td></tr>
+          </table>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;" />
+          <p style="color:#888; font-size:13px;">This request was submitted via the contact form on the website.</p>
+        `;
+        const htmlBody = await emailService.getMailBody(
+          content,
+          'New support request received'
+        );
+        await emailService.sendEmail(
+          config.email.adminEmail,
+          `New Support Request — ${name}`,
+          '',
+          htmlBody
+        );
+      } catch (err) {
+        console.error('Failed to send support request notification email:', err);
+      }
+    })();
+  }
 });
 
 const getAllSupportRequests = catchAsync(async (req, res) => {

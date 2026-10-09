@@ -1,5 +1,3 @@
-import AvatarGroup from '@mui/material/AvatarGroup';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -42,7 +40,7 @@ const FEATURES = [
 function AuthPagesMessageSection() {
 	return (
 		<Box
-			className="relative hidden min-h-screen w-full flex-col justify-between overflow-hidden p-8 md:flex md:w-1/2 lg:px-16 lg:py-12 select-none"
+			className="relative hidden min-h-screen w-full flex-col justify-center overflow-hidden p-8 md:flex md:w-1/2 lg:px-16 lg:py-12 select-none"
 			sx={{
 				background: 'linear-gradient(145deg, #2A1848 0%, #452B78 42%, #1A0F2E 100%)',
 				color: 'primary.contrastText'
@@ -169,38 +167,6 @@ function AuthPagesMessageSection() {
 						<span>Handcrafted</span>
 						<span className="text-slate-300 ml-1">with precision</span>
 					</div>
-				</div>
-			</div>
-
-			<div className="relative z-10 flex items-center justify-between gap-3 pt-4 border-t border-white/10 mt-4">
-				<div className="flex items-center gap-3.5">
-					<AvatarGroup
-						sx={{
-							'& .MuiAvatar-root': {
-								width: 36,
-								height: 36,
-								border: '2px solid #2A1848',
-								boxShadow: '0 2px 8px rgba(0,0,0,0.35)'
-							}
-						}}
-					>
-						<Avatar src="/assets/images/avatars/female-18.jpg" alt="Maker" />
-						<Avatar src="/assets/images/avatars/female-11.jpg" alt="Maker" />
-						<Avatar src="/assets/images/avatars/male-09.jpg" alt="Maker" />
-						<Avatar src="/assets/images/avatars/male-16.jpg" alt="Maker" />
-					</AvatarGroup>
-					<div>
-						<Typography sx={{ fontSize: 13, fontWeight: 700, color: '#f8fafc' }}>
-							Trusted for custom gifts
-						</Typography>
-						<Typography sx={{ fontSize: 11.5, color: 'rgba(203, 213, 225, 0.7)' }}>
-							Cups, kitchenware, apparel &amp; engraved keepsakes
-						</Typography>
-					</div>
-				</div>
-
-				<div className="hidden lg:inline-flex rounded-full bg-purple-400/15 border border-purple-300/25 px-3 py-1 text-xs font-semibold text-purple-100">
-					Place Custom Order
 				</div>
 			</div>
 		</Box>

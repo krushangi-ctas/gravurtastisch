@@ -216,44 +216,50 @@ const registerSeller = catchAsync(async (req, res) => {
   };
   const result = await userService.createUser(userBody);
 
-  if (result.status === httpStatus.OK || result.status === httpStatus.CREATED) {
-    try {
-      const content = `
-        <h2 style="color: #0B1E39; margin: 0 0 16px;">New Seller Registration</h2>
-        <table style="width:100%; border-collapse:collapse;">
-          <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Business Name</td></tr>
-          <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px;">${business}</td></tr>
-          <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Seller Name</td></tr>
-          <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px;">${seller}</td></tr>
-          <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Email</td></tr>
-          <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px;"><a href="mailto:${email}" style="color:#2F6FED; text-decoration:none;">${email}</a></td></tr>
-          <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Phone</td></tr>
-          <tr><td style="padding:0 0 12px; color:#0B1E39; font-size:15px;">${
-            phone || '—'
-          }</td></tr>
-        </table>
-        <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;" />
-        <p style="color:#888; font-size:13px;">This seller registered via the website and needs manual approval.</p>
-      `;
-      const htmlBody = await emailService.getMailBody(
-        content,
-        'New seller registration received'
-      );
-      await emailService.sendEmail(
-        config.email.adminEmail,
-        `New Seller Registration — ${seller}`,
-        '',
-        htmlBody
-      );
-    } catch (err) {
-      console.error(
-        'Failed to send seller registration notification email:',
-        err
-      );
-    }
-  }
-
+  // Return immediate response to the client
   res.status(result.status).send(result);
+
+  if (
+    (result.status === httpStatus.OK || result.status === httpStatus.CREATED) &&
+    config.email.adminEmail
+  ) {
+    (async () => {
+      try {
+        const content = `
+          <h2 style="color: #613EA3; margin: 0 0 16px;">New Seller Registration</h2>
+          <table style="width:100%; border-collapse:collapse;">
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Business Name</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${business}</td></tr>
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Seller Name</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${seller}</td></tr>
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Email</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;"><a href="mailto:${email}" style="color:#613EA3; text-decoration:none;">${email}</a></td></tr>
+            <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Phone</td></tr>
+            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${
+              phone || '—'
+            }</td></tr>
+          </table>
+          <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;" />
+          <p style="color:#888; font-size:13px;">This seller registered via the website and needs manual approval.</p>
+        `;
+        const htmlBody = await emailService.getMailBody(
+          content,
+          'New seller registration received'
+        );
+        await emailService.sendEmail(
+          config.email.adminEmail,
+          `New Seller Registration — ${seller}`,
+          '',
+          htmlBody
+        );
+      } catch (err) {
+        console.error(
+          'Failed to send seller registration notification email:',
+          err
+        );
+      }
+    })();
+  }
 });
 
 module.exports = {

@@ -19,11 +19,19 @@ export const blogsUrl = `${baseBackendApiUrl}/blogs`;
 export const websiteConfigurationUrl = `${baseBackendApiUrl}/website-configuration`;
 export const plansUrl = `${baseBackendApiUrl}/plans`;
 
+const sanitizeEnvUrl = (url?: string): string => {
+	if (!url) return '';
+	let clean = url.trim();
+	if (clean.includes('=')) {
+		clean = clean.split('=').slice(1).join('=').trim();
+	}
+	return clean.replace(/\/+$/, '');
+};
+
 export const uploadsBaseUrl = (
-	(import.meta?.env?.VITE_API_UPLOADS_URL as string) ||
-	(import.meta?.env?.VITE_API_BASE_URL as string) ||
-	baseBackendApiUrl.replace(/\/v1\/?$/, '') ||
-	'https://api.reviewsnapp.com'
+	sanitizeEnvUrl(import.meta?.env?.VITE_API_UPLOADS_URL as string) ||
+	sanitizeEnvUrl(import.meta?.env?.VITE_API_BASE_URL as string) ||
+	baseBackendApiUrl.replace(/\/v1\/?$/, '')
 ).replace(/\/+$/, '');
 
 /**
@@ -37,19 +45,6 @@ export const getImageUrl = (urlOrPath?: string): string => {
 	if (!trimmed) return '';
 
 	if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
-		if (
-			trimmed.includes('localhost') &&
-			typeof window !== 'undefined' &&
-			window.location.hostname !== 'localhost' &&
-			uploadsBaseUrl
-		) {
-			try {
-				const parsed = new URL(trimmed);
-				return `${uploadsBaseUrl}${parsed.pathname}`;
-			} catch {
-				return trimmed;
-			}
-		}
 		return trimmed;
 	}
 

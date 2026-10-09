@@ -13,12 +13,15 @@ const transport = nodemailer.createTransport({
   ...config.email.smtp,
   port: smtpPort,
   secure: smtpPort === 465,
+  connectionTimeout: 5000,
+  greetingTimeout: 5000,
+  socketTimeout: 5000,
   tls: {
     rejectUnauthorized: false, // Disable SSL certificate verification
   },
 });
 /* istanbul ignore next */
-if (config.env !== 'test') {
+if (config.env !== 'test' && config.email.smtp?.host) {
   transport
     .verify()
     .then(() => logger.info('Connected to email server'))
@@ -37,7 +40,11 @@ if (config.env !== 'test') {
  * @returns {Promise}
  */
 const sendEmail = async (to: string, subject: string, text?: string, html?: string) => {
-  const msg = { from: config.email.from, to, subject, text, html };
+  if (!config.email.smtp?.host || !config.email.smtp?.auth?.user) {
+    logger.warn(`SMTP credentials not configured. Skipping email to ${to}: "${subject}"`);
+    return;
+  }
+  const msg = { from: config.email.from || 'noreply@gravurtastisch.com', to, subject, text, html };
   await transport.sendMail(msg);
 };
 
