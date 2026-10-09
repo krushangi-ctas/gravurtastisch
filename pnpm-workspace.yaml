@@ -4,7 +4,7 @@ packages:
   - 'gravurtastisch_web'
 
 # Centralized install / resolution standards (pnpm 12+)
-engineStrict: true
+engineStrict: false
 autoInstallPeers: true
 strictPeerDependencies: false
 
