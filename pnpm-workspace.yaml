@@ -1,7 +1,7 @@
 packages:
-  - 'review_snapp_core'
-  - 'review_snapp_panel'
-  - 'review_snapp_web'
+  - 'gravurtastisch_core'
+  - 'gravurtastisch_panel'
+  - 'gravurtastisch_web'
 
 # Centralized install / resolution standards (pnpm 12+)
 engineStrict: true
