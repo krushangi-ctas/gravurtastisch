@@ -23,11 +23,6 @@
     "node_modules",
     "dist",
     "src/uploads",
-    "src/templates",
-    "src/autoFeedback.ts",
-    "src/script.ts",
-    "src/solicitationServices.ts",
-    "src/services/file-uploader/**",
-    "src/services/common.service.ts"
+    "src/templates"
   ]
 }
