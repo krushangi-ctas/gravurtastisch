@@ -3,6 +3,7 @@ const nodemailer = require('nodemailer');
 const config = require('../config/config');
 const logger = require('../config/logger');
 const fs = require('fs');
+const path = require('path');
 const mongoose = require('mongoose');
 let db = mongoose.connection;
 const RoleModel = require('../models/role.model');
@@ -153,8 +154,19 @@ const replaceContents = async (content, data) => {
 };
 
 const getMailBody = async (content, preheader = '') => {
-  const path1 = `${__dirname}/../templates/email-template.html`;
-  let html = await fs.readFileSync(path1, 'utf8');
+  const candidatePaths = [
+    path.join(__dirname, '../templates/email-template.html'),
+    path.join(__dirname, '../../src/templates/email-template.html'),
+    path.join(process.cwd(), 'src/templates/email-template.html'),
+    path.join(process.cwd(), 'gravurtastisch_core/src/templates/email-template.html'),
+    path.join(process.cwd(), 'dist/templates/email-template.html'),
+  ];
+  const templatePath = candidatePaths.find((p) => fs.existsSync(p));
+  if (!templatePath) {
+    logger.warn('Email template file not found, using raw content');
+    return content;
+  }
+  let html = fs.readFileSync(templatePath, 'utf8');
 
   html = html.replaceAll('{{CONTENT_PLACED_HERE}}', content);
   html = html.replaceAll('{{PREHEADER_TEXT}}', preheader);
