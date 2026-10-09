@@ -8,35 +8,26 @@ const mongoose = require('mongoose');
 let db = mongoose.connection;
 const RoleModel = require('../models/role.model');
 
-const smtpHost = config.email.smtp?.host || '';
+const smtpHost = config.email.smtp?.host || 'smtp.gmail.com';
 const smtpUser = config.email.smtp?.auth?.user || '';
-const isGmail = smtpHost.includes('gmail') || smtpUser.includes('@gmail.com');
-const smtpPort = Number(config.email.smtp?.port) || (isGmail ? 465 : 587);
+const smtpPass = config.email.smtp?.auth?.pass || '';
+const smtpPort = Number(config.email.smtp?.port) || 465;
 
-const transportOptions = isGmail
-  ? {
-      service: 'gmail',
-      auth: {
-        user: smtpUser,
-        pass: config.email.smtp?.auth?.pass,
-      },
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-    }
-  : {
-      ...config.email.smtp,
-      port: smtpPort,
-      secure: smtpPort === 465,
-      connectionTimeout: 10000,
-      greetingTimeout: 10000,
-      socketTimeout: 10000,
-      tls: {
-        rejectUnauthorized: false, // Disable SSL certificate verification
-      },
-    };
-
-const transport = nodemailer.createTransport(transportOptions);
+const transport = nodemailer.createTransport({
+  host: smtpHost,
+  port: smtpPort,
+  secure: smtpPort === 465,
+  auth: {
+    user: smtpUser,
+    pass: smtpPass,
+  },
+  tls: {
+    rejectUnauthorized: false, // Bypass strict SSL certificate security verification
+  },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000,
+});
 
 /* istanbul ignore next */
 if (config.env !== 'test' && (smtpHost || smtpUser)) {
@@ -161,14 +152,11 @@ const sendEmailToTeam = async (to, cc = [], subject, text, requestData) => {
     html: requestData,
   };
   try {
-    const transportMsg = await nodemailer.createTransport(config.email.smtp);
-    await transportMsg.sendMail(msg);
+    await transport.sendMail(msg);
     return true;
   } catch (error) {
-    if (error) {
-      return false;
-    }
-    console.error('Error sending email to', to, error);
+    logger.error('Error sending email to team:', error);
+    return false;
   }
 };
 
