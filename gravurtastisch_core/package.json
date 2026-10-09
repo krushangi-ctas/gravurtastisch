@@ -11,6 +11,7 @@
     "prettier-check": "prettier --list-different \"src/**/*.{ts,js}\"",
     "check-all": "concurrently \"pnpm lint\" \"pnpm prettier-check\" \"pnpm typecheck\"",
     "start": "tsx src/index.ts",
+    "start:run": "node dist/src/index.js",
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "build": "tsc -p tsconfig.json"
   },
