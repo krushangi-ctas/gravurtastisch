@@ -16,6 +16,7 @@
     "build:panel": "pnpm --filter @gravurstastich/panel build",
     "build:web": "pnpm --filter @gravurstastich/web build",
     "build:core": "pnpm --filter @gravurstastich/core build",
+    "start": "pnpm --filter @gravurstastich/core start:run",
     "start:core": "pnpm --filter @gravurstastich/core start:run",
     "lint": "pnpm -r --if-present lint",
     "format": "pnpm -r --if-present format"
