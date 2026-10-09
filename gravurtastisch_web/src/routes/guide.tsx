@@ -95,9 +95,8 @@ function Guide() {
         {/* 1. HERO SECTION (DARK NAVY GRADIENT) */}
         {/* ==================================================== */}
         <section className="relative overflow-hidden pt-24 pb-12 lg:pt-28 lg:pb-16 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
-          <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
           <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/25 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-sky-500/20 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
 
           <Container className="relative">
             <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
@@ -133,7 +132,7 @@ function Guide() {
               {/* Right Column: Hero Architecture Diagram Vector */}
               <Reveal className="lg:col-span-6 xl:col-span-6 relative" delay={120}>
                 <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  <div className="absolute -inset-2 bg-gradient-to-r from-brand/25 via-sky-400/20 to-blue-600/20 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
+                  <div className="absolute -inset-4 bg-gradient-to-r from-brand/30 via-brand-bright/20 to-amber-500/20 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
                   <div className="relative flex items-center justify-center select-none">
                     <GuideHeroOverviewSvg />
                   </div>
@@ -623,152 +622,266 @@ function GuideHeroOverviewSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Amazon Review Automation Guide Visual Pipeline"
+      aria-label="Gravurtastisch Custom Order & Laser Craft Workflow Visual Pipeline"
     >
       <defs>
-        <radialGradient id="guide-hero-glow" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.25" />
-          <stop offset="60%" stopColor="#2563EB" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        {/* Ambient Brand Glow */}
+        <radialGradient id="guide-hero-glow-brand" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#855FBF" stopOpacity="0.35" />
+          <stop offset="60%" stopColor="#613EA3" stopOpacity="0.10" />
+          <stop offset="100%" stopColor="#1E1035" stopOpacity="0" />
         </radialGradient>
-        <filter id="guide-hero-shadow" x="-15%" y="-15%" width="130%" height="130%">
-          <feDropShadow dx="0" dy="12" stdDeviation="14" floodColor="#020617" floodOpacity="0.32" />
+
+        <radialGradient id="guide-laser-spark" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
+          <stop offset="40%" stopColor="#F59E0B" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#E89B5C" stopOpacity="0" />
+        </radialGradient>
+
+        {/* Soft blur for clean card shadows without clipping boundaries */}
+        <filter id="softCardShadow" x="-10%" y="-10%" width="120%" height="130%">
+          <feGaussianBlur stdDeviation="8" />
         </filter>
-        <linearGradient id="guide-conduit" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#38BDF8" />
-          <stop offset="50%" stopColor="#2563EB" />
-          <stop offset="100%" stopColor="#0284C7" />
+
+        {/* Animated Connecting Conduit Gradients */}
+        <linearGradient id="guide-conduit-gradient" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#855FBF" />
+          <stop offset="50%" stopColor="#E89B5C" />
+          <stop offset="100%" stopColor="#855FBF" />
+        </linearGradient>
+
+        {/* Card Header Gradients */}
+        <linearGradient id="card1-accent" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#613EA3" />
+          <stop offset="100%" stopColor="#855FBF" />
+        </linearGradient>
+
+        <linearGradient id="card2-accent" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#E89B5C" />
+          <stop offset="100%" stopColor="#D97706" />
+        </linearGradient>
+
+        <linearGradient id="card3-accent" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#855FBF" />
+          <stop offset="100%" stopColor="#E89B5C" />
         </linearGradient>
       </defs>
 
-      {/* Ambient Halo */}
-      <circle cx="270" cy="180" r="170" fill="url(#guide-hero-glow)" />
+      {/* Ambient Background Glow */}
+      <circle cx="270" cy="180" r="175" fill="url(#guide-hero-glow-brand)" />
 
-      {/* Connection Conduit Line */}
+      {/* Pulsing Inter-card Laser Path */}
       <path
-        d="M 130 180 C 200 180, 210 180, 270 180 C 330 180, 340 180, 410 180"
-        stroke="url(#guide-conduit)"
+        d="M 120 180 C 180 180, 195 180, 270 180 C 345 180, 360 180, 420 180"
+        stroke="url(#guide-conduit-gradient)"
         strokeWidth="3"
-        strokeDasharray="4 4"
+        strokeDasharray="6 6"
+        strokeLinecap="round"
       >
-        <animate attributeName="stroke-dashoffset" values="0;-16" dur="1s" repeatCount="indefinite" />
+        <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.2s" repeatCount="indefinite" />
       </path>
 
+      {/* Flying Laser Photon Particle (1 -> 2 -> 3) */}
+      <circle r="4" fill="#F59E0B">
+        <animateMotion
+          path="M 120 180 C 180 180, 195 180, 270 180 C 345 180, 360 180, 420 180"
+          dur="2.4s"
+          repeatCount="indefinite"
+        />
+      </circle>
+
       {/* Top Floating Badge */}
-      <g transform="translate(170, 20)" filter="url(#guide-hero-shadow)">
-        <rect x="0" y="0" width="200" height="30" rx="15" fill="#FFFFFF" stroke="#BAE6FD" strokeWidth="1" />
-        <circle cx="16" cy="15" r="4" fill="#2563EB">
-          <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
+      <g transform="translate(140, 18)">
+        <rect x="2" y="4" width="256" height="32" rx="16" fill="#0F0728" opacity="0.3" filter="url(#softCardShadow)" />
+        <rect x="0" y="0" width="260" height="32" rx="16" fill="#FFFFFF" stroke="#EDE9FE" strokeWidth="1.2" />
+        <circle cx="18" cy="16" r="4.5" fill="#E89B5C">
+          <animate attributeName="opacity" values="1;0.35;1" dur="1.2s" repeatCount="indefinite" />
         </circle>
-        <text x="30" y="19" fill="#0369A1" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
-          studio API AUTOMATION ACTIVE
+        <text x="32" y="20.5" fill="#613EA3" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9.5" fontWeight="800" letterSpacing="0.04em">
+          STUDIO PIPELINE • UPLOAD TO DELIVERY
         </text>
       </g>
 
-      {/* Card 1 (Left): Connect & Authenticate */}
-      <g transform="translate(20, 80)" filter="url(#guide-hero-shadow)">
-        <rect x="0" y="0" width="145" height="195" rx="16" fill="#FFFFFF" stroke="#BFDBFE" strokeWidth="1.2" />
-        <rect x="10" y="10" width="125" height="22" rx="8" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-        <circle cx="20" cy="21" r="3" fill="#2563EB" />
-        <text x="28" y="24.5" fill="#1D4ED8" fontFamily="monospace" fontSize="8" fontWeight="800">
-          01. CREDENTIALS
+      {/* ===================================================================== */}
+      {/* Card 1 (Left): 01. Artwork & Intake                                    */}
+      {/* ===================================================================== */}
+      <g transform="translate(18, 74)">
+        {/* Soft shadow */}
+        <rect x="4" y="8" width="140" height="196" rx="18" fill="#0A041A" opacity="0.4" filter="url(#softCardShadow)" />
+        {/* Main Card Body */}
+        <rect x="0" y="0" width="148" height="204" rx="18" fill="#FFFFFF" stroke="#E9D5FF" strokeWidth="1.2" />
+        {/* Top Accent Band */}
+        <path d="M 0 18 Q 0 0 18 0 L 130 0 Q 148 0 148 18 L 148 20 L 0 20 Z" fill="url(#card1-accent)" />
+
+        {/* Header tag */}
+        <rect x="12" y="10" width="124" height="22" rx="7" fill="#F5F3FF" stroke="#DDD6FE" strokeWidth="0.8" />
+        <circle cx="22" cy="21" r="3" fill="#613EA3" />
+        <text x="30" y="24.5" fill="#613EA3" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800">
+          01. INTAKE & UPLOAD
         </text>
 
-        {/* Security Key Graphic */}
-        <g transform="translate(72.5, 75)">
-          <circle cx="0" cy="0" r="24" fill="#EFF6FF" stroke="#93C5FD" strokeWidth="1.5" />
-          <circle cx="-5" cy="-5" r="6" fill="none" stroke="#2563EB" strokeWidth="2" />
-          <path d="M 0 0 L 10 10 M 6 6 L 10 2 M 8 8 L 12 4" stroke="#2563EB" strokeWidth="2" strokeLinecap="round" />
+        {/* Artwork Graphic (Document with vector crosshair) */}
+        <g transform="translate(74, 82)">
+          <rect x="-24" y="-24" width="48" height="48" rx="14" fill="#FAF5FF" stroke="#DDD6FE" strokeWidth="1.2" />
+          {/* File Sheet */}
+          <rect x="-14" y="-15" width="28" height="32" rx="4" fill="#FFFFFF" stroke="#855FBF" strokeWidth="1.5" />
+          {/* Vector Pen / Node Lines */}
+          <path d="M -8 -4 L -2 4 L 8 -6" fill="none" stroke="#613EA3" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="-8" cy="-4" r="2" fill="#E89B5C" />
+          <circle cx="-2" cy="4" r="2" fill="#E89B5C" />
+          <circle cx="8" cy="-6" r="2" fill="#E89B5C" />
+          {/* Upload arrow with subtle bounce */}
+          <g transform="translate(6, 4)">
+            <circle cx="5" cy="5" r="7" fill="#613EA3" />
+            <path d="M 5 8 L 5 2 M 3 4 L 5 2 L 7 4" stroke="#FFFFFF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <animateTransform attributeName="transform" type="translate" values="0,1; 0,-1.5; 0,1" dur="1.8s" repeatCount="indefinite" />
+            </path>
+          </g>
         </g>
 
-        <text x="72.5" y="122" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
-          studio API OAuth 2.0
+        <text x="74" y="128" textAnchor="middle" fill="#1E1035" fontFamily="system-ui, sans-serif" fontSize="10" fontWeight="800">
+          Vector & Custom Info
         </text>
-        <text x="72.5" y="136" textAnchor="middle" fill="#64748B" fontFamily="system-ui" fontSize="8">
-          Encrypted Vault
+        <text x="74" y="142" textAnchor="middle" fill="#64748B" fontFamily="system-ui, sans-serif" fontSize="8">
+          Auto Size & Safe Margins
         </text>
 
-        <rect x="12" y="152" width="121" height="22" rx="6" fill="#EFF6FF" />
-        <text x="72.5" y="166" textAnchor="middle" fill="#2563EB" fontFamily="system-ui" fontSize="8" fontWeight="700">
-          ✓ Verified Active
+        <rect x="12" y="160" width="124" height="24" rx="7" fill="#F5F3FF" stroke="#EDE9FE" strokeWidth="0.8" />
+        <text x="74" y="175.5" textAnchor="middle" fill="#613EA3" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="700">
+          ✓ Artwork Verified
         </text>
       </g>
 
-      {/* Card 2 (Center): Order Fetch & Cron Engine */}
-      <g transform="translate(195, 65)" filter="url(#guide-hero-shadow)">
-        <rect x="0" y="0" width="150" height="225" rx="18" fill="#FFFFFF" stroke="#93C5FD" strokeWidth="1.6" />
-        <rect x="10" y="10" width="130" height="22" rx="8" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-        <circle cx="20" cy="21" r="3" fill="#2563EB" />
-        <text x="28" y="24.5" fill="#1D4ED8" fontFamily="monospace" fontSize="8" fontWeight="800">
-          02. CRON ENGINE
+      {/* ===================================================================== */}
+      {/* Card 2 (Center): 02. Digital Proofing & Laser Precision (Elevated)     */}
+      {/* ===================================================================== */}
+      <g transform="translate(192, 56)">
+        {/* Soft shadow */}
+        <rect x="4" y="10" width="148" height="226" rx="20" fill="#0A041A" opacity="0.45" filter="url(#softCardShadow)" />
+        {/* Main Card Body */}
+        <rect x="0" y="0" width="156" height="238" rx="20" fill="#FFFFFF" stroke="#FED7AA" strokeWidth="1.6" />
+        {/* Top Accent Band */}
+        <path d="M 0 20 Q 0 0 20 0 L 136 0 Q 156 0 156 20 L 156 22 L 0 22 Z" fill="url(#card2-accent)" />
+
+        {/* Header tag */}
+        <rect x="12" y="11" width="132" height="23" rx="8" fill="#FFFBEB" stroke="#FDE68A" strokeWidth="0.8" />
+        <circle cx="23" cy="22.5" r="3.5" fill="#D97706">
+          <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />
+        </circle>
+        <text x="32" y="26.5" fill="#B45309" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800">
+          02. DIGITAL PROOF
         </text>
 
-        {/* Pulsing Clock / Cron Dial */}
-        <g transform="translate(75, 78)">
-          <circle cx="0" cy="0" r="28" fill="#F8FAFC" stroke="#BFDBFE" strokeWidth="1.5" />
-          <line x1="0" y1="0" x2="0" y2="-16" stroke="#2563EB" strokeWidth="2.5" strokeLinecap="round" />
-          <line x1="0" y1="0" x2="10" y2="5" stroke="#1D4ED8" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="0" cy="0" r="4" fill="#2563EB" />
-          <circle cx="0" cy="0" r="34" fill="none" stroke="#E2E8F0" strokeWidth="1" strokeDasharray="3 3">
-            <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="10s" repeatCount="indefinite" />
+        {/* Interactive Laser Engraving Reticle Graphic */}
+        <g transform="translate(78, 86)">
+          <circle cx="0" cy="0" r="30" fill="#FFFBEB" stroke="#FDE68A" strokeWidth="1.2" />
+
+          {/* Rotating Laser Calibration Dial */}
+          <circle cx="0" cy="0" r="24" fill="none" stroke="#F59E0B" strokeWidth="1.2" strokeDasharray="4 3">
+            <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
+          </circle>
+
+          {/* Laser Crosshair Target */}
+          <line x1="-18" y1="0" x2="18" y2="0" stroke="#E89B5C" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+          <line x1="0" y1="-18" x2="0" y2="18" stroke="#E89B5C" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+
+          {/* Laser Scan Line sweeping vertically */}
+          <line x1="-15" y1="0" x2="15" y2="0" stroke="#EF4444" strokeWidth="1.8" strokeLinecap="round" opacity="0.9">
+            <animateTransform attributeName="transform" type="translate" values="0,-14; 0,14; 0,-14" dur="2s" repeatCount="indefinite" />
+          </line>
+
+          {/* Laser Core Spark */}
+          <circle cx="0" cy="0" r="6" fill="url(#guide-laser-spark)">
+            <animate attributeName="r" values="5;7.5;5" dur="0.8s" repeatCount="indefinite" />
           </circle>
         </g>
 
-        <text x="75" y="130" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="10" fontWeight="900">
-          Autonomous Fetch
+        <text x="78" y="136" textAnchor="middle" fill="#1E1035" fontFamily="system-ui, sans-serif" fontSize="10.5" fontWeight="900">
+          Laser & Craft Proof
         </text>
-        <text x="75" y="144" textAnchor="middle" fill="#2563EB" fontFamily="system-ui" fontSize="8" fontWeight="700">
-          Every 5 Minutes
+        <text x="78" y="150" textAnchor="middle" fill="#D97706" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="700">
+          0.05mm Exact Tolerance
         </text>
 
-        <g transform="translate(15, 160)">
-          <rect x="0" y="0" width="120" height="20" rx="6" fill="#F0F9FF" stroke="#BAE6FD" strokeWidth="0.8" />
-          <text x="60" y="13.5" textAnchor="middle" fill="#0369A1" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
-            ✓ Order Filter: Ready
+        {/* Dual Status Tags */}
+        <g transform="translate(14, 166)">
+          <rect x="0" y="0" width="128" height="22" rx="6" fill="#FFF7ED" stroke="#FFEDD5" strokeWidth="0.8" />
+          <text x="64" y="14.5" textAnchor="middle" fill="#C2410C" fontFamily="system-ui, sans-serif" fontSize="7.8" fontWeight="700">
+            ✓ Proof Approved 100%
           </text>
-          <rect x="0" y="26" width="120" height="20" rx="6" fill="#EFF6FF" stroke="#93C5FD" strokeWidth="0.8" />
-          <text x="60" y="39.5" textAnchor="middle" fill="#1D4ED8" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
-            ✓ Timing Window: Set
+          <rect x="0" y="27" width="128" height="22" rx="6" fill="#F5F3FF" stroke="#EDE9FE" strokeWidth="0.8" />
+          <text x="64" y="41.5" textAnchor="middle" fill="#613EA3" fontFamily="system-ui, sans-serif" fontSize="7.8" fontWeight="700">
+            ✓ Sent to Laser Bed
           </text>
         </g>
       </g>
 
-      {/* Card 3 (Right): Solicitations Dispatch */}
-      <g transform="translate(375, 80)" filter="url(#guide-hero-shadow)">
-        <rect x="0" y="0" width="145" height="195" rx="16" fill="#FFFFFF" stroke="#60A5FA" strokeWidth="1.2" />
-        <rect x="10" y="10" width="125" height="22" rx="8" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-        <circle cx="20" cy="21" r="3" fill="#2563EB" />
-        <text x="28" y="24.5" fill="#1D4ED8" fontFamily="monospace" fontSize="8" fontWeight="800">
-          03. SOLICITATION
+      {/* ===================================================================== */}
+      {/* Card 3 (Right): 03. Laser Craft & Fast Dispatch                        */}
+      {/* ===================================================================== */}
+      <g transform="translate(374, 74)">
+        {/* Soft shadow */}
+        <rect x="4" y="8" width="140" height="196" rx="18" fill="#0A041A" opacity="0.4" filter="url(#softCardShadow)" />
+        {/* Main Card Body */}
+        <rect x="0" y="0" width="148" height="204" rx="18" fill="#FFFFFF" stroke="#DDD6FE" strokeWidth="1.2" />
+        {/* Top Accent Band */}
+        <path d="M 0 18 Q 0 0 18 0 L 130 0 Q 148 0 148 18 L 148 20 L 0 20 Z" fill="url(#card3-accent)" />
+
+        {/* Header tag */}
+        <rect x="12" y="10" width="124" height="22" rx="7" fill="#FAF5FF" stroke="#E9D5FF" strokeWidth="0.8" />
+        <circle cx="22" cy="21" r="3" fill="#855FBF" />
+        <text x="30" y="24.5" fill="#613EA3" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800">
+          03. CRAFT & SHIP
         </text>
 
-        {/* 5-Star verified icon graphic */}
-        <g transform="translate(72.5, 75)">
-          <circle cx="0" cy="0" r="24" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="1.5" />
-          <text x="0" y="6" textAnchor="middle" fill="#2563EB" fontSize="15" fontWeight="bold">
-            ★★★★★
-          </text>
+        {/* Crafted Gift / Package Icon Graphic */}
+        <g transform="translate(74, 82)">
+          <rect x="-24" y="-24" width="48" height="48" rx="14" fill="#FAF5FF" stroke="#E9D5FF" strokeWidth="1.2" />
+          {/* Engraved Keepsake Silhouette */}
+          <path d="M -11 -12 L 11 -12 L 8 10 C 7 14 -7 14 -8 10 Z" fill="#FFFFFF" stroke="#613EA3" strokeWidth="1.6" strokeLinejoin="round" />
+          {/* Laser Engraved Star on Product */}
+          <path d="M 0 -7 L 1.5 -3 L 5.5 -3 L 2.5 -0.5 L 3.5 3.5 L 0 1.2 L -3.5 3.5 L -2.5 -0.5 L -5.5 -3 L -1.5 -3 Z" fill="#E89B5C" />
+          {/* Sparkles with twinkle animation */}
+          <g transform="translate(13, -12)">
+            <circle cx="0" cy="0" r="2.5" fill="#F59E0B">
+              <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" />
+            </circle>
+          </g>
+          <g transform="translate(-14, 10)">
+            <circle cx="0" cy="0" r="2" fill="#855FBF">
+              <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
+            </circle>
+          </g>
         </g>
 
-        <text x="72.5" y="122" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
-          Official In-Box
+        <text x="74" y="128" textAnchor="middle" fill="#1E1035" fontFamily="system-ui, sans-serif" fontSize="10" fontWeight="800">
+          Finished & Packed
         </text>
-        <text x="72.5" y="136" textAnchor="middle" fill="#64748B" fontFamily="system-ui" fontSize="8">
-          1-Click Feedback
+        <text x="74" y="142" textAnchor="middle" fill="#64748B" fontFamily="system-ui, sans-serif" fontSize="8">
+          Live Tracking Updates
         </text>
 
-        <rect x="12" y="152" width="121" height="22" rx="6" fill="#EFF6FF" />
-        <text x="72.5" y="166" textAnchor="middle" fill="#1D4ED8" fontFamily="system-ui" fontSize="8" fontWeight="700">
-          ✓ Review Lift +38%
+        <rect x="12" y="160" width="124" height="24" rx="7" fill="#F5F3FF" stroke="#EDE9FE" strokeWidth="0.8" />
+        <text x="74" y="175.5" textAnchor="middle" fill="#613EA3" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="700">
+          ✓ Studio Dispatched
         </text>
       </g>
 
-      {/* Bottom Telemetry Bar */}
-      <g transform="translate(70, 318)">
-        <rect x="0" y="0" width="400" height="28" rx="14" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" filter="url(#guide-hero-shadow)" />
-        <circle cx="18" cy="14" r="3.5" fill="#2563EB" />
-        <text x="32" y="18" fill="#475569" fontFamily="system-ui" fontSize="9" fontWeight="700">
-          End-to-End Studio production API Review Ingestion Active
+      {/* ===================================================================== */}
+      {/* Bottom Telemetry Bar                                                  */}
+      {/* ===================================================================== */}
+      <g transform="translate(60, 320)">
+        <rect x="2" y="4" width="416" height="28" rx="14" fill="#0F0728" opacity="0.3" filter="url(#softCardShadow)" />
+        <rect x="0" y="0" width="420" height="28" rx="14" fill="#FFFFFF" stroke="#EDE9FE" strokeWidth="1.2" />
+        <circle cx="18" cy="14" r="4" fill="#10B981">
+          <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
+        </circle>
+        <text x="32" y="18" fill="#334155" fontFamily="system-ui, -apple-system, sans-serif" fontSize="8.8" fontWeight="700">
+          Gravurtastisch Proof-First Pipeline Active • Precision Craft Flow
+        </text>
+        <rect x="334" y="5" width="74" height="18" rx="9" fill="#ECFDF5" stroke="#A7F3D0" strokeWidth="0.8" />
+        <text x="371" y="17" textAnchor="middle" fill="#059669" fontFamily="ui-monospace, monospace" fontSize="8" fontWeight="800">
+          ONLINE
         </text>
       </g>
     </svg>

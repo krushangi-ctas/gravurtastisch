@@ -76,9 +76,9 @@ const sendResetPasswordEmail = async (to, token, user) => {
       </tr>
     </table>
     <p>If you did not request a password reset, please ignore this email.</p>
-    <p style="color:#5B6B82;">Thank you,<br/>The ReviewSnapp Team</p>
+    <p style="color:#7E6F99;">Thank you,<br/>The Gravurtastisch Team</p>
   `;
-  const html = await getMailBody(content, 'Reset your ReviewSnapp password');
+  const html = await getMailBody(content, 'Reset your Gravurtastisch password');
   await sendEmail(to, subject, '', html);
 };
 
@@ -99,17 +99,17 @@ If you did not create an account, then ignore this email.`;
 };
 
 const sendOtpEmail = async (to, otp) => {
-  const subject = 'Your ReviewSnapp Login Code';
+  const subject = 'Your Gravurtastisch Login Code';
   const content = `
     <h1>Your login code</h1>
-    <p style="font-size:32px; font-weight:800; color:#0B1E39; letter-spacing:8px; text-align:center; margin:24px 0; padding:16px; background:#EEF2F8; border-radius:8px;">${otp}</p>
-    <p>Enter this code to sign in to your ReviewSnapp account. This code expires in ${config.otp.expiryMinutes} minutes.</p>
+    <p style="font-size:32px; font-weight:800; color:#613EA3; letter-spacing:8px; text-align:center; margin:24px 0; padding:16px; background:#FAF5FF; border:1px solid #EDE9FE; border-radius:10px;">${otp}</p>
+    <p>Enter this code to sign in to your Gravurtastisch account. This code expires in ${config.otp.expiryMinutes} minutes.</p>
     <p>If you did not request this code, please ignore this email.</p>
-    <p style="color:#5B6B82;">Thank you,<br/>The ReviewSnapp Team</p>
+    <p style="color:#7E6F99;">Thank you,<br/>The Gravurtastisch Team</p>
   `;
   const html = await getMailBody(
     content,
-    `Your ReviewSnapp verification code is ${otp}`
+    `Your Gravurtastisch verification code is ${otp}`
   );
   await sendEmail(to, subject, '', html);
 };

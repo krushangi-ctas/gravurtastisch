@@ -5,7 +5,30 @@
  * and never hardcoded in component files.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:7051";
+const getBaseUrl = (): string => {
+  const envUrl = (
+    import.meta.env.VITE_API_BASE_URL ||
+    import.meta.env.VITE_API_BACKEND_BASE_URL ||
+    ""
+  ).trim();
+
+  if (envUrl) {
+    const clean = envUrl.replace(/\/+$/, "");
+    return clean.endsWith("/v1") ? clean.slice(0, -3) : clean;
+  }
+
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+  ) {
+    return "https://gravurtastisch-api.onrender.com";
+  }
+
+  return "http://localhost:7051";
+};
+
+const BASE_URL = getBaseUrl();
 
 /** The v1 prefix used by every backend route */
 export const API_V1 = `${BASE_URL}/v1`;

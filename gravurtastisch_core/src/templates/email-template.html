@@ -7,8 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
     <meta name="supported-color-schemes" content="light" />
-    <title>ReviewSnapp</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <title>Gravurtastisch</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet" />
     <!--[if mso]>
     <noscript>
         <xml>
@@ -23,47 +23,48 @@
     <![endif]-->
     <style>
         /* ============================================================
-           REVIEWSNAPP EMAIL THEME
+           GRAVURTASTISCH EMAIL THEME
            Brand colors:
-             Navy (header/footer bg): #0B1E39
-             Navy panel/badge bg:     #132C50
-             Accent blue (CTA/links): #2F5FE3
-             Light blue badge bg:     #EAF1FF
-             Heading text:            #0B1E39
-             Body text:               #5B6B82
-             Muted/footer text:       #94A3B8
-             Page background:        #EEF2F8
-             Card border:            #E3E8F0
+             Royal Purple (header/footer bg): #1E1035
+             Header panel/badge bg:           #341B5C
+             Accent Purple (CTA/links):       #613EA3
+             Light Purple badge bg:           #FAF5FF
+             Accent Amber:                    #E89B5C
+             Heading text:                    #1E1035
+             Body text:                       #52436A
+             Muted/footer text:               #94A3B8
+             Page background:                 #FAF8FC
+             Card border:                     #EDE9FE
            ============================================================ */
         body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
         table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
         img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; display: block; }
-        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #EEF2F8; }
+        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; background-color: #FAF8FC; }
 
         /* Typography defaults for injected {{CONTENT_PLACED_HERE}} */
         .content h1 {
-            margin: 0 0 12px; font-family: 'Inter', Arial, sans-serif; font-size: 26px; line-height: 1.3;
-            font-weight: 800; color: #0B1E39;
+            margin: 0 0 12px; font-family: 'Montserrat', 'Inter', Arial, sans-serif; font-size: 26px; line-height: 1.3;
+            font-weight: 800; color: #1E1035;
         }
         .content h2 {
-            margin: 28px 0 10px; font-family: 'Inter', Arial, sans-serif; font-size: 19px; line-height: 1.35;
-            font-weight: 700; color: #0B1E39;
+            margin: 28px 0 10px; font-family: 'Montserrat', 'Inter', Arial, sans-serif; font-size: 19px; line-height: 1.35;
+            font-weight: 700; color: #1E1035;
         }
         .content p {
             margin: 0 0 16px; font-family: 'Inter', Arial, sans-serif; font-size: 15px; line-height: 1.65;
-            color: #5B6B82;
+            color: #52436A;
         }
-        .content a { color: #2F5FE3; text-decoration: underline; }
+        .content a { color: #613EA3; text-decoration: underline; font-weight: 600; }
         .content ul, .content ol { margin: 0 0 16px; padding-left: 20px; }
         .content li {
-            font-family: 'Inter', Arial, sans-serif; font-size: 15px; line-height: 1.65; color: #5B6B82;
+            font-family: 'Inter', Arial, sans-serif; font-size: 15px; line-height: 1.65; color: #52436A;
             margin-bottom: 6px;
         }
         .badge {
             display: inline-block; font-family: 'Inter', Arial, sans-serif; font-size: 12px; font-weight: 600;
-            color: #2F5FE3; background-color: #EAF1FF; padding: 6px 14px; border-radius: 999px; letter-spacing: .2px;
+            color: #E89B5C; background-color: #341B5C; padding: 6px 14px; border-radius: 999px; letter-spacing: .2px;
         }
-        .divider { border-top: 1px solid #E3E8F0; font-size: 0; line-height: 0; }
+        .divider { border-top: 1px solid #EDE9FE; font-size: 0; line-height: 0; }
 
         @media only screen and (max-width: 620px) {
             .email-wrapper { width: 100% !important; }
@@ -74,36 +75,51 @@
     </style>
 </head>
 
-<body style="margin:0; padding:0; background-color:#EEF2F8;">
+<body style="margin:0; padding:0; background-color:#FAF8FC;">
     <!-- Preheader (hidden preview text) -->
-    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#EEF2F8;">
+    <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#FAF8FC;">
         {{PREHEADER_TEXT}}
     </div>
 
-    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#EEF2F8;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#FAF8FC;">
         <tr>
             <td align="center" style="padding:32px 16px;">
 
                 <!-- ===================== MAIN CARD ===================== -->
-                <table role="presentation" class="email-wrapper" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background-color:#ffffff; border:1px solid #E3E8F0; border-radius:16px; overflow:hidden;">
+                <table role="presentation" class="email-wrapper" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px; background-color:#ffffff; border:1px solid #EDE9FE; border-radius:16px; overflow:hidden; box-shadow:0 4px 20px rgba(97,62,163,0.06);">
 
                     <!-- HEADER -->
                     <tr>
-                        <td style="background-color:#0B1E39; padding:24px 32px;">
+                        <td style="background-color:#1E1035; padding:24px 32px; border-bottom:3px solid #613EA3;">
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="stack-col" align="left" style="vertical-align:middle;">
-                                        <!--[if mso]>
-                                        <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="vertical-align:middle;">
-                                        <![endif]-->
-                                        <img src="http://200.97.165.227:7050/logo.svg" width="22" height="22" alt="ReviewSnapp" style="display:inline-block; vertical-align:middle; margin-right:8px;" />
-                                        <span style="font-family:'Inter',Arial,sans-serif; font-size:17px; font-weight:700; color:#ffffff; vertical-align:middle;">ReviewSnapp</span>
-                                        <!--[if mso]>
-                                        </td></tr></table>
-                                        <![endif]-->
+                                        <table role="presentation" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="vertical-align:middle; padding-right:12px;">
+                                                    <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate; width:34px; height:34px; background-color:#613EA3; border:1.5px solid #855FBF; border-radius:9px; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                                                        <tr>
+                                                            <td style="padding:3px 4px 0 0; text-align:right; font-size:0; line-height:0; height:8px;">
+                                                                <table role="presentation" align="right" cellpadding="0" cellspacing="0" style="width:7px; height:7px; background-color:#E89B5C; border-radius:50%; font-size:0; line-height:0;">
+                                                                    <tr><td style="font-size:0; line-height:0; width:7px; height:7px; background-color:#E89B5C; border-radius:50%;">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="font-family:'Montserrat', Arial, sans-serif; font-size:18px; font-weight:800; color:#FFFFFF; line-height:16px; padding-bottom:5px; padding-left:2px;">
+                                                                G
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td style="vertical-align:middle;">
+                                                    <span style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:22px; font-weight:800; letter-spacing:-0.5px; color:#FFFFFF;">Gravur<span style="color:#A855F7;">tastisch</span></span>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                     <td class="stack-col" align="right" style="vertical-align:middle;">
-                                        <span class="badge" style="background-color:#132C50; color:#8FB4FF;">Amazon FBA Review Automation</span>
+                                        <span class="badge" style="background-color:#341B5C; color:#E89B5C;">Custom Craft & Studio Hub</span>
                                     </td>
                                 </tr>
                             </table>
@@ -112,57 +128,59 @@
 
                     <!-- CONTENT -->
                     <tr>
-                        <td class="fluid-pad content" style="padding:40px 40px 8px 40px;">
+                        <td class="fluid-pad content" style="padding:40px 40px 12px 40px;">
                             {{CONTENT_PLACED_HERE}}
                         </td>
                     </tr>
-
-                    <!--
-                        EXAMPLE CTA BUTTON — bulletproof, Outlook-safe.
-                        Copy this block into {{CONTENT_PLACED_HERE}} wherever a button is needed;
-                        swap {{CTA_URL}} and {{CTA_LABEL}}.
-
-                        <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 28px;">
-                          <tr>
-                            <td style="border-radius:8px; background-color:#2F5FE3;">
-                              <a href="{{CTA_URL}}"
-                                 style="display:inline-block; padding:13px 28px; font-family:'Inter',Arial,sans-serif;
-                                        font-size:15px; font-weight:700; color:#ffffff; text-decoration:none; border-radius:8px;">
-                                {{CTA_LABEL}} &rarr;
-                              </a>
-                            </td>
-                          </tr>
-                        </table>
-                    -->
 
                     <tr>
                         <td class="fluid-pad" style="padding:0 40px 32px;">
                             <div class="divider">&nbsp;</div>
                         </td>
                     </tr>
-                   
 
                     <!-- FOOTER -->
                     <tr>
-                        <td style="background-color:#0B1E39; padding:32px 40px;">
+                        <td style="background-color:#1E1035; padding:32px 40px;">
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="footer-col" style="vertical-align:top;">
-                                        <img src="http://200.97.165.227:7050/logo.svg" width="20" height="20" alt="ReviewSnapp" style="display:inline-block; vertical-align:middle; margin-right:6px;" />
-                                        <span style="font-family:'Inter',Arial,sans-serif; font-size:15px; font-weight:700; color:#ffffff; vertical-align:middle;">ReviewSnapp</span>
-                                        <p style="margin:10px 0 0; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.7; color:#8493AB; max-width:260px;">
-                                            Automated Amazon buyer review requests built on the official Selling Partner API — more social proof for FBA sellers, without more work.
+                                        <table role="presentation" cellpadding="0" cellspacing="0">
+                                            <tr>
+                                                <td style="vertical-align:middle; padding-right:10px;">
+                                                    <table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:separate; width:26px; height:26px; background-color:#613EA3; border:1px solid #855FBF; border-radius:7px; mso-table-lspace:0pt; mso-table-rspace:0pt;">
+                                                        <tr>
+                                                            <td style="padding:2px 3px 0 0; text-align:right; font-size:0; line-height:0; height:6px;">
+                                                                <table role="presentation" align="right" cellpadding="0" cellspacing="0" style="width:5px; height:5px; background-color:#E89B5C; border-radius:50%; font-size:0; line-height:0;">
+                                                                    <tr><td style="font-size:0; line-height:0; width:5px; height:5px; background-color:#E89B5C; border-radius:50%;">&nbsp;</td></tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td align="center" style="font-family:'Montserrat', Arial, sans-serif; font-size:13px; font-weight:800; color:#FFFFFF; line-height:13px; padding-bottom:4px; padding-left:2px;">
+                                                                G
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                                <td style="vertical-align:middle;">
+                                                    <span style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:17px; font-weight:800; letter-spacing:-0.4px; color:#FFFFFF;">Gravur<span style="color:#A855F7;">tastisch</span></span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        <p style="margin:10px 0 0; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.7; color:#A79BBF; max-width:280px;">
+                                            Custom photo cups, cutting boards, laser-engraved keepsakes, and personalized studio orders crafted with care.
                                         </p>
                                     </td>
                                     <td class="footer-col" align="right" style="vertical-align:top;">
-                                        <p style="margin:0 0 6px; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.8; color:#8493AB;">
-                                            <a href="mailto:info@ctasis.com" style="color:#8FB4FF; text-decoration:none;">info@ctasis.com</a><br />
-                                            <a href="tel:+917348993409" style="color:#8FB4FF; text-decoration:none;">+91 73489 93409</a>
+                                        <p style="margin:0 0 6px; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.8; color:#A79BBF;">
+                                            <a href="mailto:info@ctasis.com" style="color:#E89B5C; text-decoration:none; font-weight:600;">info@ctasis.com</a><br />
+                                            <a href="tel:+917948789349" style="color:#E89B5C; text-decoration:none; font-weight:600;">+91 7948789349</a>
                                         </p>
                                         <p style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.8;">
-                                            <a href="{{SITE_URL}}/pricing" style="color:#8493AB; text-decoration:none;">Pricing</a>&nbsp;&nbsp;·&nbsp;&nbsp;
-                                            <a href="{{SITE_URL}}/privacy" style="color:#8493AB; text-decoration:none;">Privacy</a>&nbsp;&nbsp;·&nbsp;&nbsp;
-                                            <a href="{{SITE_URL}}/contact" style="color:#8493AB; text-decoration:none;">Contact</a>
+                                            <a href="{{SITE_URL}}/#pricing" style="color:#A79BBF; text-decoration:none;">Pricing</a>&nbsp;&nbsp;·&nbsp;&nbsp;
+                                            <a href="{{SITE_URL}}/guide" style="color:#A79BBF; text-decoration:none;">Guide</a>&nbsp;&nbsp;·&nbsp;&nbsp;
+                                            <a href="{{SITE_URL}}/#contact" style="color:#A79BBF; text-decoration:none;">Contact</a>
                                         </p>
                                     </td>
                                 </tr>
@@ -170,10 +188,9 @@
 
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-top:24px;">
                                 <tr>
-                                    <td style="border-top:1px solid #1C3459; padding-top:16px;">
-                                        <p style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.7; color:#5D6E8A;">
-                                            © 2026 ReviewSnapp. All rights reserved. Ahmedabad, Gujarat · India<br />
-                                            Not affiliated with or endorsed by Amazon.com, Inc.
+                                    <td style="border-top:1px solid #341B5C; padding-top:16px;">
+                                        <p style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.7; color:#7E6F99;">
+                                            © 2026 Gravurtastisch Studio. All rights reserved. Ahmedabad, Gujarat · India
                                         </p>
                                     </td>
                                 </tr>
@@ -183,13 +200,13 @@
                 </table>
                 <!-- ===================== /MAIN CARD ===================== -->
 
-                <!-- Sub-footer: unsubscribe / compliance, sits on page bg outside the card -->
+                <!-- Sub-footer -->
                 <table role="presentation" class="email-wrapper" width="600" cellpadding="0" cellspacing="0" style="width:600px; max-width:600px;">
                     <tr>
                         <td align="center" style="padding:20px 24px 0;">
-                            <p style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.7; color:#9AA5B8;">
-                                You're receiving this email because you have an account with ReviewSnapp.
-                                <a href="{{UNSUBSCRIBE_URL}}" style="color:#9AA5B8; text-decoration:underline;">Unsubscribe</a>
+                            <p style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.7; color:#8E7EAA;">
+                                You're receiving this email because you have an account with Gravurtastisch.
+                                <a href="{{UNSUBSCRIBE_URL}}" style="color:#613EA3; text-decoration:underline;">Unsubscribe</a>
                             </p>
                         </td>
                     </tr>
@@ -200,4 +217,5 @@
     </table>
 </body>
 
+</html>
 </html>
