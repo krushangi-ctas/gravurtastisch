@@ -13,10 +13,20 @@ const smtpUser = config.email.smtp?.auth?.user || '';
 const smtpPass = config.email.smtp?.auth?.pass || '';
 const smtpPort = Number(config.email.smtp?.port) || 465;
 
+const isSecure = smtpPort === 465;
+
+console.log('--- [SMTP CONFIG CHECK] ---');
+console.log('SMTP Host:', smtpHost);
+console.log('SMTP Port:', smtpPort);
+console.log('SMTP Secure:', isSecure);
+console.log('SMTP Username:', smtpUser ? smtpUser : '(EMPTY / NOT SET)');
+console.log('SMTP Password set:', smtpPass ? `YES (${smtpPass.length} chars)` : 'NO (EMPTY / NOT SET)');
+console.log('---------------------------');
+
 const transport = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
-  secure: false,
+  secure: isSecure,
   auth: {
     user: smtpUser,
     pass: smtpPass,
@@ -31,27 +41,31 @@ const transport = nodemailer.createTransport({
   maxConnections: 5,
   maxMessages: 100,
 });
+
 async function verifySMTP() {
   try {
-    await transporter.verify();
-    console.log("SMTP connection verified");
-  } catch (error) {
-    console.error("SMTP verification failed:", error.message);
+    console.log('[SMTP] Testing connection to', smtpHost, 'on port', smtpPort, '...');
+    await transport.verify();
+    console.log('[SMTP SUCCESS] Connected to email server successfully!');
+    logger.info('Connected to email server');
+  } catch (error: any) {
+    console.error('[SMTP VERIFY FAILED] Error details:', {
+      message: error?.message,
+      code: error?.code,
+      command: error?.command,
+      syscall: error?.syscall,
+      address: error?.address,
+      port: error?.port,
+    });
+    logger.warn(
+      `Unable to connect to email server: ${error?.message || error}. Make sure SMTP options are set in .env`
+    );
   }
 }
 
-verifySMTP();
-
 /* istanbul ignore next */
-if (config.env !== 'test' && (smtpHost || smtpUser)) {
-  transport
-    .verify()
-    .then(() => logger.info('Connected to email server'))
-    .catch((err) =>
-      logger.warn(
-        `Unable to connect to email server: ${err?.message || err}. Make sure SMTP options are set in .env`
-      )
-    );
+if (config.env !== 'test') {
+  verifySMTP();
 }
 
 /**
@@ -62,12 +76,28 @@ if (config.env !== 'test' && (smtpHost || smtpUser)) {
  * @returns {Promise}
  */
 const sendEmail = async (to: string, subject: string, text?: string, html?: string) => {
+  console.log(`[SMTP] Attempting to send email to "${to}" | Subject: "${subject}"`);
   if (!config.email.smtp?.host || !config.email.smtp?.auth?.user) {
+    console.warn(
+      `[SMTP WARN] SMTP credentials missing. Host: "${config.email.smtp?.host}", User: "${config.email.smtp?.auth?.user}"`
+    );
     logger.warn(`SMTP credentials not configured. Skipping email to ${to}: "${subject}"`);
     return;
   }
-  const msg = { from: config.email.from || 'noreply@gravurtastisch.com', to, subject, text, html };
-  await transport.sendMail(msg);
+  const msg = { from: config.email.from, to, subject, text, html };
+  try {
+    const info = await transport.sendMail(msg);
+    console.log(`[SMTP SUCCESS] Email delivered to ${to}. MessageId:`, info?.messageId);
+    return info;
+  } catch (error: any) {
+    console.error(`[SMTP SEND ERROR] Failed sending to ${to}:`, {
+      message: error?.message,
+      code: error?.code,
+      command: error?.command,
+      response: error?.response,
+    });
+    throw error;
+  }
 };
 
 /**
