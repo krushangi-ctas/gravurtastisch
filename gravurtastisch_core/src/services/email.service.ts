@@ -13,22 +13,24 @@ const smtpUser = config.email.smtp?.auth?.user || '';
 const smtpPass = config.email.smtp?.auth?.pass || '';
 const smtpPort = Number(config.email.smtp?.port) || 465;
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT || 587),
+const transport = nodemailer.createTransport({
+  host: smtpHost,
+  port: smtpPort,
   secure: false,
-
-
+  auth: {
+    user: smtpUser,
+    pass: smtpPass,
+  },
+  tls: {
+    rejectUnauthorized: false,
+  },
   connectionTimeout: 30000,
   greetingTimeout: 15000,
   socketTimeout: 60000,
-
   pool: true,
   maxConnections: 5,
   maxMessages: 100,
-
 });
-
 async function verifySMTP() {
   try {
     await transporter.verify();
@@ -37,6 +39,9 @@ async function verifySMTP() {
     console.error("SMTP verification failed:", error.message);
   }
 }
+
+verifySMTP();
+
 /* istanbul ignore next */
 if (config.env !== 'test' && (smtpHost || smtpUser)) {
   transport
