@@ -106,9 +106,9 @@ if (config.env === 'production') {
 // v1 api routes  PRIVATE APIs
 app.use('/v1', routes);
 
-// Serve the search interface at root
+// Health check / API status endpoint
 app.get('/', (req, res) => {
-  res.redirect('/v1/search');
+  res.status(200).json({ status: 'ok', message: 'Gravurtastisch API is running' });
 });
 
 // send back a 404 error for any unknown api request
