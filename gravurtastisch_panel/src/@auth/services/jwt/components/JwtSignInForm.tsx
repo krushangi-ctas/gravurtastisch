@@ -323,7 +323,7 @@ function JwtSignInForm() {
               },
               '&.Mui-disabled': {
                 color: 'rgba(255, 255, 255, 0.7) !important',
-                bgcolor: 'rgba(128, 90, 213, 0.45) !important',
+                bgcolor: 'rgba(40, 40, 40, 0.45) !important',
               },
             }}
           >
@@ -480,7 +480,7 @@ function JwtSignInForm() {
           },
           '&.Mui-disabled': {
             color: 'rgba(255, 255, 255, 0.7) !important',
-            bgcolor: 'rgba(128, 90, 213, 0.45) !important',
+            bgcolor: 'rgba(40, 40, 40, 0.45) !important',
           },
         }}
       >

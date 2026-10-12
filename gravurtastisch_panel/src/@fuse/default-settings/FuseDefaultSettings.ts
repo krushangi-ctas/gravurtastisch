@@ -11,28 +11,28 @@ const defaultTheme = {
 	palette: {
 		mode: 'light',
 		text: {
-			primary: 'rgb(17, 24, 39)',
-			secondary: 'rgb(107, 114, 128)',
-			disabled: 'rgb(149, 156, 169)'
+			primary: '#1F1F1F',
+			secondary: '#5A5A5A',
+			disabled: '#9E9E9E'
 		},
 		common: {
-			black: 'rgb(17, 24, 39)',
-			white: 'rgb(255, 255, 255)'
+			black: '#121212',
+			white: '#FFFFFF'
 		},
 		primary: {
-			light: '#bec1c5',
-			main: '#252f3e',
-			dark: '#0d121b',
+			light: '#4A4A4A',
+			main: '#282828',
+			dark: '#181818',
 			contrastDefaultColor: 'light'
 		},
 		secondary: {
-			light: '#bdf2fa',
-			main: '#22d3ee',
-			dark: '#0cb7e2'
+			light: '#757575',
+			main: '#555555',
+			dark: '#333333'
 		},
 		background: {
 			paper: '#FFFFFF',
-			default: '#f6f7f9'
+			default: '#F8F8F6'
 		},
 		error: {
 			light: '#ffcdd2',

@@ -270,7 +270,7 @@ function SupportContent({
 									sx={{
 										fontSize: 12,
 										fontWeight: 500,
-										color: (t) => (t.palette.mode === 'dark' ? '#855FBF' : '#613EA3')
+										color: (t) => (t.palette.mode === 'dark' ? '#E5E5E0' : '#282828')
 									}}
 								>
 									{val}

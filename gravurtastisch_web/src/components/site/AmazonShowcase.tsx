@@ -44,7 +44,7 @@ export function AmazonShowcase() {
       titleKey: "amazonShowcase.pillar1Title",
       descKey: "amazonShowcase.pillar1Desc",
       badge: t("amazonShowcase.badgeSpApi", "Secure intake"),
-      badgeColor: "bg-[#613EA3]/10 text-[#613EA3] border-[#613EA3]/25",
+      badgeColor: "bg-brand/10 text-brand border-brand/25",
     },
     {
       icon: BadgeCheck,
@@ -182,7 +182,7 @@ export function AmazonShowcase() {
 
                   <a
                     href="/#contact"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-[#613EA3] hover:bg-[#452B78] text-white shadow-sm shadow-[#613EA3]/30 hover:scale-[1.02] transition-all"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-brand hover:bg-brand-bright text-navy-deep shadow-sm shadow-brand/40 hover:scale-[1.02] transition-all"
                   >
                     <span>{t("amazonShowcase.btnTalk", "Talk to our team")}</span>
                     <ArrowRight className="w-4 h-4" />
@@ -227,14 +227,14 @@ export function AmazonShowcase() {
           {/* Header Subtitle & Title (Center Aligned) */}
           <Reveal>
             <div className="text-center max-w-3xl mx-auto">
-              <span className="block text-xs font-bold uppercase tracking-[0.2em] text-brand-bright">
+              <span className="block text-xs font-bold uppercase tracking-[0.2em] text-brand">
                 {t("amazonShowcase.badge", "GRAVURTASTISCH STUDIO HUB")}
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
                 {t("amazonShowcase.headingMain", "Run custom production")}{" "}
                 {t("amazonShowcase.headingHighlight", "without the chaos.")}
               </h2>
-              <p className="mt-4 text-white/60 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+              <p className="mt-4 text-white/80 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                 {t(
                   "amazonShowcase.description",
                   "From artwork intake to laser engraving and delivery - Gravurtastisch keeps proofs, craft cells, and shipping on one clear timeline."
@@ -249,13 +249,13 @@ export function AmazonShowcase() {
               const IconComponent = pillar.icon;
               return (
                 <Reveal key={pillar.titleKey} delay={i * 70}>
-                  <div className="group relative h-full rounded-2xl bg-white/[0.04] border border-white/10 hover:border-brand-bright/50 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden">
+                  <div className="group relative h-full rounded-2xl bg-white/[0.04] border border-white/10 hover:border-brand/60 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden">
                     {/* Hover ambient top highlight */}
                     <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-bright via-brand to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     <div>
                       <div className="flex items-center justify-between mb-5">
-                        <div className="h-12 w-12 rounded-2xl bg-white/[0.06] border border-white/10 grid place-items-center group-hover:scale-105 group-hover:border-brand-bright/40 transition-all duration-300">
+                        <div className="h-12 w-12 rounded-2xl bg-white/[0.06] border border-white/10 grid place-items-center group-hover:scale-105 group-hover:border-brand/50 transition-all duration-300">
                           <IconComponent className="w-8 h-8" />
                         </div>
                         <span className={`text-[11px] font-mono font-bold px-2.5 py-1 rounded-full border ${pillar.badgeColor}`}>
@@ -263,20 +263,20 @@ export function AmazonShowcase() {
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-white group-hover:text-brand-bright transition-colors leading-snug">
+                      <h3 className="text-lg font-bold text-white group-hover:text-brand transition-colors leading-snug">
                         {t(pillar.titleKey, pillar.badge)}
                       </h3>
 
-                      <p className="mt-3 text-sm text-white/65 leading-[1.7]">
+                      <p className="mt-3 text-sm text-white/80 leading-[1.7]">
                         {t(pillar.descKey, "")}
                       </p>
                     </div>
 
                     <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50 group-hover:text-white transition-colors">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-brand-bright font-semibold">
+                      <span className="font-mono text-[11px] uppercase tracking-wider text-brand font-bold">
                         {t("amazonShowcase.verifiedTag", "Craft verified")}
                       </span>
-                      <ArrowRight className="w-4 h-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                      <ArrowRight className="w-4 h-4 text-brand opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
                     </div>
                   </div>
                 </Reveal>
@@ -310,8 +310,8 @@ export function AmazonShowcase() {
                   onClick={() => setActiveTab("fba")}
                   className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all ${
                     activeTab === "fba"
-                      ? "bg-brand text-white shadow-md shadow-brand/30 scale-102"
-                      : "text-slate-600 hover:text-navy-deep"
+                      ? "bg-brand text-navy-deep font-bold shadow-md shadow-brand/40 scale-102"
+                      : "text-slate-600 hover:text-navy-deep font-medium"
                   }`}
                 >
                   {t("amazonShowcase.tabFba", "Marketplace orders")}
@@ -321,8 +321,8 @@ export function AmazonShowcase() {
                   onClick={() => setActiveTab("fbm")}
                   className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all ${
                     activeTab === "fbm"
-                      ? "bg-[#E89B5C] text-navy-deep font-extrabold shadow-md shadow-[#E89B5C]/35 scale-102"
-                      : "text-slate-600 hover:text-navy-deep"
+                      ? "bg-brand-bright text-navy-deep font-bold shadow-md shadow-brand/40 scale-102"
+                      : "text-slate-600 hover:text-navy-deep font-medium"
                   }`}
                 >
                   {t("amazonShowcase.tabFbm", "Direct & B2B")}
@@ -374,12 +374,12 @@ export function AmazonShowcase() {
             {/* Right: Gravurtastisch SP-API Autopilot */}
             <Reveal delay={160}>
               <div className="h-full rounded-3xl bg-white border-2 border-brand/30 p-7 sm:p-8 relative overflow-hidden group shadow-lg shadow-brand/5 hover:border-brand/60 transition-all">
-                <div className="absolute top-0 right-0 px-4 py-1.5 bg-gradient-to-r from-brand to-[#E89B5C] text-[11px] font-bold uppercase tracking-wider text-white rounded-bl-2xl shadow-sm">
+                <div className="absolute top-0 right-0 px-4 py-1.5 bg-gradient-to-r from-brand to-brand-bright text-[11px] font-bold uppercase tracking-wider text-white rounded-bl-2xl shadow-sm">
                   {t("amazonShowcase.autoBadge", "One studio flow")}
                 </div>
 
-                <div className="flex items-center gap-3.5 pb-6 border-b border-violet-100">
-                  <div className="h-11 w-11 rounded-2xl bg-[#F4F0FA] grid place-items-center text-brand shrink-0 shadow-2xs">
+                <div className="flex items-center gap-3.5 pb-6 border-b border-slate-200">
+                  <div className="h-11 w-11 rounded-2xl bg-[#F4F4F2] grid place-items-center text-brand shrink-0 shadow-2xs">
                     <CheckCircle2 className="w-6 h-6 text-emerald-600" />
                   </div>
                   <div>

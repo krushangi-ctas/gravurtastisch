@@ -51,9 +51,9 @@ export function Hero() {
       <Container className="relative grid lg:grid-cols-12 gap-8 items-center">
         <div className="lg:col-span-6 xl:col-span-7 rise">
           <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.75rem] xl:text-[4.5rem] leading-[1.08]">
-            {t('hero.headline')}{" "}
+            <span className="text-gradient-silver">{t('hero.headline')}</span>{" "}
             <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-brand-bright to-white bg-clip-text text-transparent">
+              <span className="text-gradient-gold">
                 {t('hero.headlineHighlight')}
               </span>
               <svg
@@ -64,28 +64,28 @@ export function Hero() {
               >
                 <path
                   d="M2 8 C 80 2, 160 12, 298 4"
-                  stroke="#E89B5C"
-                  strokeWidth="3"
+                  stroke="#D2B48C"
+                  strokeWidth="3.5"
                   strokeLinecap="round"
                   className="draw-line"
                 />
               </svg>
             </span>
           </h1>
-          <p className="mt-8 max-w-xl text-base sm:text-lg text-white/70 leading-[1.7]">
+          <p className="mt-8 max-w-xl text-base sm:text-lg text-white/80 leading-[1.7]">
             {t('hero.description')}
           </p>
 
           <div className="mt-10 flex flex-wrap gap-4">
             <a
               href="#register"
-              className="inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3.5 text-sm font-semibold text-white shadow-[0_18px_40px_-12px_rgba(97,62,163,0.65)] hover:bg-brand-bright hover:-translate-y-0.5 hover:shadow-[0_22px_48px_-12px_rgba(97,62,163,0.8)] transition-all duration-300"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3.5 text-sm font-bold text-navy-deep shadow-[0_16px_36px_-10px_rgba(210,180,140,0.55)] hover:bg-brand-bright hover:-translate-y-0.5 hover:shadow-[0_20px_44px_-10px_rgba(210,180,140,0.75)] transition-all duration-300"
             >
               {t('hero.ctaRegister')} →
             </a>
             <a
               href="#how"
-              className="inline-flex items-center gap-2 rounded-full border border-white/25 px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/10 hover:border-[#E89B5C]/50 transition-all duration-300"
+              className="inline-flex items-center gap-2 rounded-full border border-brand/50 px-8 py-3.5 text-sm font-semibold text-white hover:bg-brand/15 hover:border-brand transition-all duration-300"
             >
               {t('hero.ctaPricing')}
             </a>
@@ -99,25 +99,25 @@ export function Hero() {
             ].map((s) => (
               <div key={s.k} className="rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-3 backdrop-blur-sm">
                 <dt className="text-xl font-extrabold text-white tracking-tight">{s.k}</dt>
-                <dd className="text-[10px] text-white/55 mt-1 uppercase tracking-wider leading-snug">{s.v}</dd>
+                <dd className="text-[10px] text-white/65 mt-1 uppercase tracking-wider leading-snug">{s.v}</dd>
               </div>
             ))}
           </dl>
 
-          <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center gap-3 text-xs text-white/70">
+          <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center gap-3 text-xs text-white/80">
             <div className="flex items-center gap-1.5 font-semibold text-white">
-              <span className="h-2 w-2 rounded-full bg-[#E89B5C] animate-pulse" />
+              <span className="h-2 w-2 rounded-full bg-brand animate-pulse" />
               <span>{t('hero.spApiVerified')}</span>
             </div>
             <span className="text-white/30">•</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-white/60">{t('hero.stores')}</span>
+              <span className="text-[11px] text-white/70">{t('hero.stores')}</span>
               <FlagDE className="w-3.5 h-2.5" />
               <FlagFR className="w-3.5 h-2.5" />
               <FlagGB className="w-3.5 h-2.5" />
               <FlagIT className="w-3.5 h-2.5" />
               <FlagES className="w-3.5 h-2.5" />
-              <span className="text-[10px] font-mono text-[#E89B5C] font-bold">+EU</span>
+              <span className="text-[10px] font-mono text-brand font-bold">+EU</span>
             </div>
           </div>
         </div>
@@ -140,8 +140,8 @@ function HeroMock() {
       channel: "Studio • DE",
       key: "sent",
       Icon: Send,
-      tone: "bg-brand/10 text-brand",
-      av: "from-[#855FBF] to-[#613EA3]",
+      tone: "bg-brand/15 text-navy-deep font-bold border border-brand/30",
+      av: "from-[#282828] to-[#1A1A1A]",
     },
     {
       id: "GT-24017",
@@ -150,8 +150,8 @@ function HeroMock() {
       channel: "Laser • EU",
       key: "queued",
       Icon: Clock,
-      tone: "bg-amber-500/10 text-amber-700",
-      av: "from-[#E89B5C] to-[#C47432]",
+      tone: "bg-[#282828]/10 text-navy-deep font-bold border border-[#282828]/20",
+      av: "from-[#D2B48C] to-[#B8966C]",
     },
     {
       id: "GT-24016",
@@ -160,8 +160,8 @@ function HeroMock() {
       channel: "Proof OK",
       key: "reviewed",
       Icon: Sparkles,
-      tone: "bg-emerald-500/10 text-emerald-600",
-      av: "from-emerald-400 to-teal-600",
+      tone: "bg-brand/20 text-navy-deep font-bold border border-brand/40",
+      av: "from-[#4A4A4A] to-[#282828]",
     },
   ];
 
@@ -187,9 +187,9 @@ function HeroMock() {
       >
         <defs>
           <linearGradient id="orbGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#E89B5C" stopOpacity="0.9" />
-            <stop offset="50%" stopColor="#855FBF" stopOpacity="0.45" />
-            <stop offset="100%" stopColor="#613EA3" stopOpacity="0" />
+            <stop offset="0%" stopColor="#D2B48C" stopOpacity="0.9" />
+            <stop offset="50%" stopColor="#C8A87E" stopOpacity="0.45" />
+            <stop offset="100%" stopColor="#282828" stopOpacity="0" />
           </linearGradient>
           <filter id="orbGlow" x="-30%" y="-30%" width="160%" height="160%">
             <feGaussianBlur stdDeviation="3" result="blur" />
@@ -209,7 +209,7 @@ function HeroMock() {
           >
             <animate attributeName="stroke-dashoffset" values="0;-100" dur="8s" repeatCount="indefinite" />
           </circle>
-          <circle cx="100" cy="14" r="4" fill="#E89B5C" filter="url(#orbGlow)">
+          <circle cx="100" cy="14" r="4" fill="#D2B48C" filter="url(#orbGlow)">
             <animateTransform
               attributeName="transform"
               type="rotate"
@@ -227,14 +227,14 @@ function HeroMock() {
             cy="100"
             r="62"
             fill="none"
-            stroke="#855FBF"
+            stroke="#D2B48C"
             strokeWidth="1.2"
             strokeDasharray="5 5"
-            opacity="0.65"
+            opacity="0.45"
           >
             <animate attributeName="stroke-dashoffset" values="0;80" dur="6s" repeatCount="indefinite" />
           </circle>
-          <circle cx="100" cy="38" r="3" fill="#C4B5FD" filter="url(#orbGlow)">
+          <circle cx="100" cy="38" r="3" fill="#DECAA8" filter="url(#orbGlow)">
             <animateTransform
               attributeName="transform"
               type="rotate"
@@ -246,11 +246,11 @@ function HeroMock() {
           </circle>
         </g>
 
-        <circle cx="100" cy="100" r="38" fill="rgba(97,62,163,0.18)">
+        <circle cx="100" cy="100" r="38" fill="rgba(210,180,140,0.12)">
           <animate attributeName="r" values="32;42;32" dur="3s" repeatCount="indefinite" />
           <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite" />
         </circle>
-        <circle cx="100" cy="100" r="22" fill="#613EA3" opacity="0.25" filter="url(#orbGlow)">
+        <circle cx="100" cy="100" r="22" fill="#282828" opacity="0.35" filter="url(#orbGlow)">
           <animate attributeName="r" values="18;26;18" dur="2s" repeatCount="indefinite" />
         </circle>
       </svg>
@@ -292,7 +292,7 @@ function HeroMock() {
                 key={i}
                 className={`grid place-items-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer ${
                   active
-                    ? "bg-brand text-white shadow-md shadow-brand/30 scale-105"
+                    ? "bg-brand text-navy-deep shadow-md shadow-brand/30 scale-105"
                     : "text-slate-body/70 bg-transparent hover:bg-slate-100 hover:text-navy-deep"
                 }`}
               >
@@ -319,9 +319,9 @@ function HeroMock() {
             {/* KPI strip */}
             <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-2.5">
               {[
-                { key: "sent", value: "842", delta: "+12%", Icon: Send, tint: "from-brand/15 to-brand/5 text-brand" },
-                { key: "opened", value: "618", delta: "+8%", Icon: MailOpen, tint: "from-amber-500/15 to-amber-500/5 text-amber-600" },
-                { key: "reviews", value: "312", delta: "+18%", Icon: Star, tint: "from-emerald-500/15 to-emerald-500/5 text-emerald-600" },
+                { key: "sent", value: "842", delta: "+12%", Icon: Send, tint: "from-brand/25 to-brand/10 text-navy-deep" },
+                { key: "opened", value: "618", delta: "+8%", Icon: MailOpen, tint: "from-[#282828]/15 to-[#282828]/5 text-navy-deep" },
+                { key: "reviews", value: "312", delta: "+18%", Icon: Star, tint: "from-brand/35 to-brand/15 text-navy-deep" },
               ].map((k) => (
                 <div
                   key={k.key}
@@ -333,8 +333,8 @@ function HeroMock() {
                     >
                       <k.Icon className="h-3.5 w-3.5" strokeWidth={2} />
                     </span>
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-600">
-                      <TrendingUp className="h-3 w-3 animate-pulse" />
+                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-navy-deep bg-brand/20 px-1.5 py-0.5 rounded-full">
+                      <TrendingUp className="h-3 w-3" />
                       {k.delta}
                     </span>
                   </div>
@@ -392,7 +392,7 @@ function HeroMock() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-1.5 flex-wrap">
                         <p className="text-xs font-semibold text-navy-deep truncate">{o.product}</p>
-                        <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-[#613EA3]/12 text-[#613EA3] border border-[#613EA3]/25 font-mono">
+                        <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-brand/10 text-brand border border-brand/25 font-mono">
                           {o.channel}
                         </span>
                       </div>
@@ -434,14 +434,14 @@ function PipelineChart() {
     <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-[72px] overflow-visible" aria-hidden>
       <defs>
         <linearGradient id="heroArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#E89B5C" stopOpacity="0.5" />
-          <stop offset="60%" stopColor="#613EA3" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#613EA3" stopOpacity="0.01" />
+          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0.4" />
+          <stop offset="60%" stopColor="#D2B48C" stopOpacity="0.12" />
+          <stop offset="100%" stopColor="#D2B48C" stopOpacity="0.01" />
         </linearGradient>
         <linearGradient id="heroLine" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#E89B5C" />
-          <stop offset="50%" stopColor="#613EA3" />
-          <stop offset="100%" stopColor="#613EA3" />
+          <stop offset="0%" stopColor="#DECAA8" />
+          <stop offset="50%" stopColor="#D2B48C" />
+          <stop offset="100%" stopColor="#9E7A52" />
         </linearGradient>
         <filter id="heroChartGlow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="2.5" result="blur" />
@@ -472,11 +472,11 @@ function PipelineChart() {
       <path
         d={line}
         fill="none"
-        stroke="#E89B5C"
+        stroke="#D2B48C"
         strokeWidth="5"
         strokeLinecap="round"
         strokeLinejoin="round"
-        opacity="0.3"
+        opacity="0.35"
         filter="url(#heroChartGlow)"
       >
         <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite" />
@@ -508,7 +508,7 @@ function PipelineChart() {
 
       {/* Flowing Pulse Particle moving along the line */}
       <g>
-        <circle r="4" fill="#E89B5C" opacity="0.6" filter="url(#heroChartGlow)">
+        <circle r="4" fill="#D2B48C" opacity="0.6" filter="url(#heroChartGlow)">
           <animateMotion path={line} dur="3s" repeatCount="indefinite" />
           <animate attributeName="r" values="3;6;3" dur="1.5s" repeatCount="indefinite" />
         </circle>
@@ -523,7 +523,7 @@ function PipelineChart() {
           {i === coords.length - 1 ? (
             <>
               {/* Pulsing radar wave around the active latest node */}
-              <circle cx={x} cy={y} r="8" fill="#E89B5C" opacity="0.4">
+              <circle cx={x} cy={y} r="8" fill="#D2B48C" opacity="0.4">
                 <animate attributeName="r" values="4;12;4" dur="1.6s" repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.7;0;0.7" dur="1.6s" repeatCount="indefinite" />
               </circle>
@@ -531,8 +531,8 @@ function PipelineChart() {
                 cx={x}
                 cy={y}
                 r="4.5"
-                fill="#613EA3"
-                stroke="#FFFFFF"
+                fill="#D2B48C"
+                stroke="#282828"
                 strokeWidth="2"
               >
                 <animate attributeName="r" values="4;5.5;4" dur="1.6s" repeatCount="indefinite" />
@@ -544,7 +544,7 @@ function PipelineChart() {
               cy={y}
               r="2.5"
               fill="#FFFFFF"
-              stroke="#613EA3"
+              stroke="#D2B48C"
               strokeWidth="2"
             >
               <animate
@@ -572,9 +572,9 @@ function RatingRing() {
       <svg width="72" height="72" viewBox="0 0 72 72" aria-hidden className="overflow-visible">
         <defs>
           <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#613EA3" />
-            <stop offset="50%" stopColor="#E89B5C" />
-            <stop offset="100%" stopColor="#F59E0B" />
+            <stop offset="0%" stopColor="#DECAA8" />
+            <stop offset="50%" stopColor="#D2B48C" />
+            <stop offset="100%" stopColor="#9E7A52" />
           </linearGradient>
           <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
             <feGaussianBlur stdDeviation="2" result="blur" />
@@ -629,7 +629,7 @@ function RatingRing() {
             {Array.from({ length: 5 }).map((_, i) => (
               <Star
                 key={i}
-                className="h-2 w-2 text-amber-500 transition-transform"
+                className="h-2 w-2 text-brand transition-transform"
                 style={{
                   animation: `twinkle 2s ease-in-out infinite`,
                   animationDelay: `${i * 0.2}s`,

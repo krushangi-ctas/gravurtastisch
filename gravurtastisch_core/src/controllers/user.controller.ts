@@ -226,14 +226,14 @@ const registerSeller = catchAsync(async (req, res) => {
     (async () => {
       try {
         const content = `
-          <h2 style="color: #613EA3; margin: 0 0 16px;">New Seller Registration</h2>
+          <h2 style="color: #282828; margin: 0 0 16px;">New Seller Registration</h2>
           <table style="width:100%; border-collapse:collapse;">
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Business Name</td></tr>
-            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${business}</td></tr>
+            <tr><td style="padding:0 0 12px; color:#282828; font-size:15px;">${business}</td></tr>
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Seller Name</td></tr>
-            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${seller}</td></tr>
+            <tr><td style="padding:0 0 12px; color:#282828; font-size:15px;">${seller}</td></tr>
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Email</td></tr>
-            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;"><a href="mailto:${email}" style="color:#613EA3; text-decoration:none;">${email}</a></td></tr>
+            <tr><td style="padding:0 0 12px; color:#282828; font-size:15px;"><a href="mailto:${email}" style="color:#282828; text-decoration:none;">${email}</a></td></tr>
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Phone</td></tr>
             <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${
               phone || '—'

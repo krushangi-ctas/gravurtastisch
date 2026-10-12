@@ -121,9 +121,9 @@ export function Footer() {
                 } ${i !== trustStrip.length - 1 ? "lg:border-r border-white/10" : ""
                 }`}
             >
-              <Icon className="h-7 w-7 md:h-8 md:w-8 text-brand-bright" strokeWidth={1.75} />
+              <Icon className="h-7 w-7 md:h-8 md:w-8 text-brand" strokeWidth={1.75} />
               <p className="mt-4 text-sm font-semibold text-white font-display">{t(`footer.${titleKey}`)}</p>
-              <p className="mt-1.5 text-[13px] leading-relaxed text-white/55">{t(`footer.${copyKey}`)}</p>
+              <p className="mt-1.5 text-[13px] leading-relaxed text-white/70">{t(`footer.${copyKey}`)}</p>
             </div>
           ))}
         </div>
@@ -132,10 +132,7 @@ export function Footer() {
         <div className="grid lg:grid-cols-12 gap-10 lg:gap-8 py-14 lg:py-16">
           <div className="lg:col-span-4">
             <a href="#home" className="flex items-center gap-2.5">
-              <img src="/logo-white.svg?v=gt2" className="h-8 w-8" alt={t('footer.logoAlt')} />
-              <span className="font-extrabold tracking-tight text-white text-lg font-display">
-                Gravur<span className="text-brand-bright">tastisch</span>
-              </span>
+              <img src="/white-gravurtastisch.png" className="h-10 md:h-11 w-auto object-contain" alt={t('footer.logoAlt')} />
             </a>
 
             {companyTagline && (
@@ -144,26 +141,26 @@ export function Footer() {
               </p>
             )}
 
-            <p className="mt-2 max-w-sm text-xs sm:text-[13px] leading-relaxed text-white/60">
+            <p className="mt-2 max-w-sm text-xs sm:text-[13px] leading-relaxed text-white/70">
               {companyAbout}
             </p>
 
             <ul className="mt-7 space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <Mail className="h-4 w-4 mt-0.5 text-brand-bright shrink-0" strokeWidth={1.75} />
-                <a href={`mailto:${contactEmail}`} className="hover:text-white transition-colors">
+                <Mail className="h-4 w-4 mt-0.5 text-brand shrink-0" strokeWidth={1.75} />
+                <a href={`mailto:${contactEmail}`} className="hover:text-brand text-white/80 transition-colors">
                   {contactEmail}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Phone className="h-4 w-4 mt-0.5 text-brand-bright shrink-0" strokeWidth={1.75} />
-                <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="hover:text-white transition-colors">
+                <Phone className="h-4 w-4 mt-0.5 text-brand shrink-0" strokeWidth={1.75} />
+                <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="hover:text-brand text-white/80 transition-colors">
                   {contactPhone}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 mt-0.5 text-brand-bright shrink-0" strokeWidth={1.75} />
-                <span className="leading-relaxed text-white/60">
+                <MapPin className="h-4 w-4 mt-0.5 text-brand shrink-0" strokeWidth={1.75} />
+                <span className="leading-relaxed text-white/70">
                   {contactAddress}
                 </span>
               </li>

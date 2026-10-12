@@ -17,11 +17,11 @@ const StyledButton = styled(Button, {
 	boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
 
 	...(buttonVariant === 'send' && {
-		bgcolor: '#6366f1',
+		bgcolor: '#282828',
 		color: 'white',
 		'&:hover': {
-			bgcolor: '#4f46e5',
-			boxShadow: '0 10px 15px -3px rgba(99, 102, 241, 0.3), 0 4px 6px -2px rgba(99, 102, 241, 0.2)',
+			bgcolor: '#181818',
+			boxShadow: '0 10px 15px -3px rgba(40, 40, 40, 0.3), 0 4px 6px -2px rgba(40, 40, 40, 0.2)',
 			transform: 'translateY(-1px)'
 		},
 		'&:active': {

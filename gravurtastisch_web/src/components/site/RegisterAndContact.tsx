@@ -108,7 +108,7 @@ function RegisterSection() {
             <button
               type="submit"
               disabled={loading}
-              className="relative mt-9 inline-flex items-center gap-2 rounded-full bg-brand-bright px-7 py-3.5 text-sm font-semibold text-white shadow-[0_18px_40px_-12px_oklch(0.60_0.24_264/0.7)] hover:bg-brand hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
+              className="relative mt-9 inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold text-navy-deep shadow-[0_16px_36px_-10px_rgba(210,180,140,0.55)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? t('register.submitSending') : t('register.submitLabel')}
             </button>
@@ -235,7 +235,7 @@ function ContactSection() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 rounded-full bg-navy-deep px-7 py-3.5 text-sm font-semibold text-white hover:bg-brand hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold text-navy-deep shadow-sm hover:shadow-md hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
             >
               {loading ? t('contact.submitSending') : t('contact.submitLabel')}
             </button>

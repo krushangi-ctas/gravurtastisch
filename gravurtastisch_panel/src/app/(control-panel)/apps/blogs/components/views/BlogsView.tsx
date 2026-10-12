@@ -358,7 +358,7 @@ function BlogsContent({
 											? 'rgba(14, 165, 233, 0.15)'
 											: 'rgba(14, 165, 233, 0.08)',
 									color: (t) =>
-										t.palette.mode === 'dark' ? '#855FBF' : '#613EA3',
+										t.palette.mode === 'dark' ? '#E5E5E0' : '#282828',
 									border: '1px solid',
 									borderColor: (t) =>
 										t.palette.mode === 'dark'

@@ -11,8 +11,8 @@ function SignInPageTitle() {
 		<div className="w-full">
 			<Box className="flex items-center">
 				<img
-					className="w-56 sm:w-64 h-auto object-contain"
-					src="/assets/images/logo/gravurstastich-wordmark.svg"
+					className="h-10 sm:h-12 w-auto object-contain"
+					src="/gravurtastich.png"
 					alt="Gravurtastisch"
 				/>
 			</Box>

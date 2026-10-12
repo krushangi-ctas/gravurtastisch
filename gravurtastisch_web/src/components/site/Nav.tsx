@@ -76,7 +76,7 @@ export function Nav() {
   }, [pathname]);
 
   const solid = scrolled || !hasDarkHero || mobileMenuOpen;
-  const logoURl = !solid ? "/logo-white.svg?v=gt2" : "/logo.svg?v=gt2";
+  const logoURl = !solid ? "/white-gravurtastisch.png" : "/gravurtastich.png";
 
   const serviceItems = [
     {
@@ -168,22 +168,12 @@ export function Nav() {
       }`}
     >
       <Container className="h-16 lg:h-17 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-1.5 md:gap-2.5 group">
+        <Link to="/" className="flex items-center gap-2 group">
           <img
             src={logoURl}
-            className="h-8 w-8 transition-transform duration-300 group-hover:scale-105"
+            className="h-10 md:h-11 lg:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
             alt={t("nav.logoAlt")}
           />
-          <span
-            className={`font-extrabold tracking-tight text-lg md:text-xl xl:text-2xl transition-colors ${
-              solid ? "text-navy-deep" : "text-white"
-            }`}
-          >
-            Gravur
-            <span className={solid ? "text-brand" : "text-brand-bright"}>
-              tastisch
-            </span>
-          </span>
         </Link>
 
         {/* Desktop Navigation */}
@@ -220,8 +210,8 @@ export function Nav() {
                                 <div
                                   className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 transition-all duration-200 shadow-xs ${
                                     isSubActive
-                                      ? "bg-brand text-white shadow-brand/30"
-                                      : "bg-brand/10 text-brand group-hover/item:bg-brand group-hover/item:text-white group-hover/item:scale-105"
+                                      ? "bg-brand text-navy-deep shadow-brand/30"
+                                      : "bg-brand/10 text-brand group-hover/item:bg-brand group-hover/item:text-navy-deep group-hover/item:scale-105"
                                   }`}
                                 >
                                   <Icon className="w-4 h-4" />
@@ -345,7 +335,7 @@ export function Nav() {
 
           <a
             href="/#register"
-            className="h-9 md:h-10 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand px-4 md:px-5 text-xs md:text-sm font-semibold text-white shadow-[0_8px_24px_-8px_oklch(0.55_0.22_265/0.6)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
+            className="h-9 md:h-10 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand px-4 md:px-5 text-xs md:text-sm font-bold text-navy-deep shadow-[0_8px_20px_-6px_rgba(210,180,140,0.5)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
           >
             <span className="hidden sm:inline">{t("nav.registerAsSeller")}</span>
             <span className="sm:hidden">{t("nav.registerShort") || "Register"}</span>

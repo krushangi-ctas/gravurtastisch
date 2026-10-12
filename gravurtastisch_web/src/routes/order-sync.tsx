@@ -98,7 +98,7 @@ function OrderSyncPage() {
       channel: "FBA",
       delivery: "Delivered 2h ago",
       status: "Synced & Queued",
-      statusColor: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/30",
+      statusColor: "bg-brand/15 text-brand border-brand/30",
     },
     {
       id: "402-9918231-1029384",
@@ -116,7 +116,7 @@ function OrderSyncPage() {
       channel: "FBM",
       delivery: "Delivered 4d ago",
       status: "Ready to Dispatch",
-      statusColor: "bg-amber-500/15 text-amber-700 dark:text-amber-300 border-amber-500/30",
+      statusColor: "bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border-stone-200 dark:border-stone-700",
     },
     {
       id: "701-1928374-5561029",
@@ -125,7 +125,7 @@ function OrderSyncPage() {
       channel: "FBA",
       delivery: "Cancelled by Buyer",
       status: "Suppressed (Safety Rule)",
-      statusColor: "bg-rose-500/15 text-rose-700 dark:text-rose-300 border-rose-500/30",
+      statusColor: "bg-stone-100 dark:bg-stone-800 text-stone-500 dark:text-stone-400 border-stone-200 dark:border-stone-700",
     },
   ];
 
@@ -157,7 +157,7 @@ function OrderSyncPage() {
         <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
           <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
           <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-sky-500/15 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
 
           <Container className="relative">
             <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
@@ -168,7 +168,8 @@ function OrderSyncPage() {
                   {t('orderSync.heroBadge') || "Continuous Two-Way Order Ingestion"}
                 </div>
                 <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                  {t('orderSync.heroTitle') || "Real-Time"} <span className="text-brand-bright">{t('orderSync.heroTitleHighlight') || "Amazon Order Sync"}</span> Engine
+                  <span className="text-gradient-silver">{t('orderSync.heroTitle') || "Real-Time"}</span>{" "}
+                  <span className="text-gradient-gold">{t('orderSync.heroTitleHighlight') || "Amazon Order Sync"}</span>
                 </h1>
                 <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
                   {t('orderSync.heroDesc') || "Delivered orders flow automatically into Gravurtastisch across all 12+ Amazon marketplaces. Track every package from delivery to review dispatch without spreadsheets."}
@@ -176,7 +177,7 @@ function OrderSyncPage() {
                 <div className="mt-6 flex flex-wrap gap-4">
                   <a
                     href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
+                    className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
                   >
                     {t('orderSync.heroCtaRegister') || "Start Syncing Orders"}
                     <ArrowRight className="h-4 w-4" />
@@ -193,8 +194,8 @@ function OrderSyncPage() {
               {/* Right Column: Dynamic Real-Time Order Sync Engine Vector Illustration */}
               <Reveal className="lg:col-span-6 xl:col-span-6 relative" delay={120}>
                 <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  {/* Subtle Neon Aura Glow Backdrop */}
-                  <div className="absolute -inset-2 bg-gradient-to-r from-brand/20 via-sky-400/15 to-emerald-500/15 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
+                  {/* Subtle Brand Aura Glow Backdrop */}
+                  <div className="absolute -inset-2 bg-gradient-to-r from-brand/20 via-brand/10 to-brand/20 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
 
                   {/* Clean SVG Vector Illustration Container */}
                   <div className="relative flex items-center justify-center select-none">
@@ -211,16 +212,16 @@ function OrderSyncPage() {
                   {/* Pipeline Station 1: Latency */}
                   <div className="flex items-center gap-3.5 p-2.5 sm:p-2 lg:p-3">
                     <div className="relative shrink-0">
-                      <div className="h-10 w-10 rounded-xl bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 grid place-items-center">
+                      <div className="h-10 w-10 rounded-xl bg-brand/20 border border-brand/40 text-brand-bright grid place-items-center">
                         <Clock className="h-5 w-5" />
                       </div>
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 animate-ping opacity-75" />
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400" />
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-brand-bright animate-ping opacity-75" />
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-brand-bright" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">&lt; 5 mins</span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand/20 text-brand-bright border border-brand/40">
                           LIVE STREAM
                         </span>
                       </div>
@@ -255,13 +256,13 @@ function OrderSyncPage() {
 
                   {/* Pipeline Station 3: Order Accuracy & Guardrail */}
                   <div className="flex items-center gap-3.5 p-2.5 sm:p-2 lg:p-3 pt-3 md:pt-2">
-                    <div className="h-10 w-10 rounded-xl bg-sky-500/20 border border-sky-500/40 text-sky-300 grid place-items-center shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-brand/20 border border-brand/40 text-brand-bright grid place-items-center shrink-0">
                       <CheckCircle2 className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">99.99%</span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30">
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand/20 text-brand-bright border border-brand/40">
                           ZERO DUPES
                         </span>
                       </div>
@@ -272,13 +273,13 @@ function OrderSyncPage() {
 
                   {/* Pipeline Station 4: Fulfillment Modes */}
                   <div className="flex items-center gap-3.5 p-2.5 sm:p-2 lg:p-3 pt-3 md:pt-2">
-                    <div className="h-10 w-10 rounded-xl bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 grid place-items-center shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-brand/20 border border-brand/40 text-brand-bright grid place-items-center shrink-0">
                       <Package className="h-5 w-5" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">FBA &amp; FBM</span>
-                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                        <span className="px-1.5 py-0.5 rounded text-[9px] font-bold bg-brand/20 text-brand-bright border border-brand/40">
                           ALL CARRIERS
                         </span>
                       </div>
@@ -322,8 +323,8 @@ function OrderSyncPage() {
                       <div className="h-11 w-11 rounded-2xl bg-brand/20 border border-brand/40 text-brand-bright grid place-items-center shadow-inner">
                         <RefreshCw className="h-5 w-5 animate-[spin_6s_linear_infinite]" />
                       </div>
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                        <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-brand/20 text-brand-bright border border-brand/40">
+                        <span className="h-2 w-2 rounded-full bg-brand-bright animate-pulse" />
                         {t('orderSync.bentoCard1Badge') || "Continuous Ingestion"}
                       </span>
                     </div>
@@ -345,18 +346,18 @@ function OrderSyncPage() {
                       {/* Mini Live Stream Chips */}
                       <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/5 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-sky-400" />
+                          <span className="h-2 w-2 rounded-full bg-brand-bright" />
                           <span className="font-mono text-white/90">#114-8923019</span>
                         </div>
-                        <span className="text-[11px] font-semibold text-emerald-400">Ingested (FBA)</span>
+                        <span className="text-[11px] font-semibold text-brand-bright">Ingested (FBA)</span>
                       </div>
 
                       <div className="flex items-center justify-between p-2 rounded-xl bg-white/[0.04] border border-white/5 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-indigo-400" />
+                          <span className="h-2 w-2 rounded-full bg-[#B8966C]" />
                           <span className="font-mono text-white/90">#402-9918231</span>
                         </div>
-                        <span className="text-[11px] font-semibold text-sky-400">Verified (Delivered)</span>
+                        <span className="text-[11px] font-semibold text-white/80">Verified (Delivered)</span>
                       </div>
                     </div>
                   </div>
@@ -372,15 +373,15 @@ function OrderSyncPage() {
               <div className="lg:col-span-7 flex flex-col justify-between gap-3.5">
                 {/* Capability 1: Return & Refund Guardrails */}
                 <Reveal delay={100}>
-                  <div className="group rounded-2xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-rose-300 hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="group rounded-2xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/50 hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3.5">
-                      <div className="h-11 w-11 rounded-2xl bg-rose-50 text-rose-600 border border-rose-100 grid place-items-center shrink-0 group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                      <div className="h-11 w-11 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0 group-hover:bg-brand group-hover:text-white transition-colors">
                         <ShieldAlert className="h-5 w-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <h3 className="text-base font-bold text-navy-deep">{t('orderSync.bentoCap1Title') || "Return & Refund Guardrails"}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand/10 text-brand border border-brand/30">
                             {t('orderSync.bentoCap1Tag') || "Auto-Suppression"}
                           </span>
                         </div>
@@ -390,7 +391,7 @@ function OrderSyncPage() {
                       </div>
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                      <span className="text-[11px] font-bold text-rose-600 bg-rose-50 px-2.5 py-1 rounded-lg">
+                      <span className="text-[11px] font-bold text-stone-700 dark:text-stone-300 bg-stone-100 dark:bg-stone-800 px-2.5 py-1 rounded-lg border border-stone-200 dark:border-stone-700">
                         0 Bad Custom orders
                       </span>
                     </div>
@@ -399,15 +400,15 @@ function OrderSyncPage() {
 
                 {/* Capability 2: Granular SKU & ASIN Filtering */}
                 <Reveal delay={150}>
-                  <div className="group rounded-2xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-indigo-300 hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="group rounded-2xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/50 hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3.5">
-                      <div className="h-11 w-11 rounded-2xl bg-indigo-50 text-indigo-600 border border-indigo-100 grid place-items-center shrink-0 group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                      <div className="h-11 w-11 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0 group-hover:bg-brand group-hover:text-white transition-colors">
                         <Filter className="h-5 w-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <h3 className="text-base font-bold text-navy-deep">{t('orderSync.bentoCap2Title') || "Granular SKU & ASIN Filtering"}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand/10 text-brand border border-brand/30">
                             {t('orderSync.bentoCap2Tag') || "Catalog Control"}
                           </span>
                         </div>
@@ -417,7 +418,7 @@ function OrderSyncPage() {
                       </div>
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                      <span className="text-[11px] font-bold text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded-lg">
+                      <span className="text-[11px] font-bold text-brand bg-brand/10 border border-brand/20 px-2.5 py-1 rounded-lg">
                         Rule Toggles
                       </span>
                     </div>
@@ -426,15 +427,15 @@ function OrderSyncPage() {
 
                 {/* Capability 3: 12+ Global Marketplaces */}
                 <Reveal delay={200}>
-                  <div className="group rounded-2xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-emerald-300 hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="group rounded-2xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/50 hover:shadow-md transition-all flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3.5">
-                      <div className="h-11 w-11 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 grid place-items-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                      <div className="h-11 w-11 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center shrink-0 group-hover:bg-brand group-hover:text-white transition-colors">
                         <Globe2 className="h-5 w-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap mb-1">
                           <h3 className="text-base font-bold text-navy-deep">{t('orderSync.bentoCap3Title') || "12+ Global Marketplaces"}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand/10 text-brand border border-brand/30">
                             {t('orderSync.bentoCap3Tag') || "Multi-Market"}
                           </span>
                         </div>
@@ -516,15 +517,15 @@ function OrderSyncPage() {
                 </p>
                 <ul className="mt-4 space-y-2.5 text-xs sm:text-sm text-slate-body">
                   <li className="flex items-center gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
                     <span>{t('orderSync.tableBullet1') || "Automatic marketplace conversion & time-zone alignment"}</span>
                   </li>
                   <li className="flex items-center gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
                     <span>{t('orderSync.tableBullet2') || "Instant suppression of cancelled or returned orders"}</span>
                   </li>
                   <li className="flex items-center gap-2.5">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+                    <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
                     <span>{t('orderSync.tableBullet3') || "Manual single-click send override for VIP buyers"}</span>
                   </li>
                 </ul>
@@ -534,7 +535,7 @@ function OrderSyncPage() {
                 <div className="rounded-3xl bg-navy-deep text-white p-4 sm:p-6 lg:p-7 shadow-xl border border-white/10 overflow-hidden">
                   <div className="flex items-center justify-between border-b border-white/10 pb-3 mb-3 text-xs">
                     <div className="flex items-center gap-2">
-                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                      <span className="h-2.5 w-2.5 rounded-full bg-brand-bright animate-pulse" />
                       <span className="font-semibold text-white/90">LIVE ORDER SYNC FEED</span>
                     </div>
                     <span className="font-mono text-white/45">AUTO-REFRESH: 5m</span>
@@ -695,20 +696,15 @@ function OrderSyncHeroSvg() {
     >
       <defs>
         {/* Soft Ambient Radial Lights */}
-        <radialGradient id="sync-glow-blue" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0.25" />
-          <stop offset="60%" stopColor="#2563EB" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        <radialGradient id="sync-glow-tan" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0.22" />
+          <stop offset="60%" stopColor="#D2B48C" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#FAF9F6" stopOpacity="0" />
         </radialGradient>
-        <radialGradient id="sync-glow-green" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#34D399" stopOpacity="0.28" />
-          <stop offset="70%" stopColor="#10B981" stopOpacity="0.06" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-        </radialGradient>
-        <radialGradient id="sync-glow-amber" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#FBBF24" stopOpacity="0.22" />
-          <stop offset="70%" stopColor="#F59E0B" stopOpacity="0.05" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+        <radialGradient id="sync-glow-charcoal" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0.18" />
+          <stop offset="70%" stopColor="#282828" stopOpacity="0.04" />
+          <stop offset="100%" stopColor="#FAF9F6" stopOpacity="0" />
         </radialGradient>
 
         {/* Premium Drop Shadows */}
@@ -725,64 +721,64 @@ function OrderSyncHeroSvg() {
 
         {/* 3D Kraft Amazon Parcel Box Gradients */}
         <linearGradient id="kraft-top" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FDE68A" />
-          <stop offset="100%" stopColor="#F59E0B" />
+          <stop offset="0%" stopColor="#EAD7BC" />
+          <stop offset="100%" stopColor="#D2B48C" />
         </linearGradient>
         <linearGradient id="kraft-left" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#D97706" />
-          <stop offset="100%" stopColor="#92400E" />
+          <stop offset="0%" stopColor="#C4A47C" />
+          <stop offset="100%" stopColor="#A8855A" />
         </linearGradient>
         <linearGradient id="kraft-right" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#B45309" />
+          <stop offset="0%" stopColor="#D2B48C" />
+          <stop offset="100%" stopColor="#B8966C" />
         </linearGradient>
 
-        {/* Prime Blue Tape Texture */}
+        {/* Prime Dark Charcoal Tape Texture */}
         <linearGradient id="prime-tape" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#0073E6" />
-          <stop offset="100%" stopColor="#0052A3" />
+          <stop offset="0%" stopColor="#282828" />
+          <stop offset="100%" stopColor="#3E3E3E" />
         </linearGradient>
 
         {/* Data Conduit Laser Lines */}
         <linearGradient id="laser-pipe-1" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#0284C7" />
-          <stop offset="50%" stopColor="#38BDF8" />
-          <stop offset="100%" stopColor="#10B981" />
+          <stop offset="0%" stopColor="#D2B48C" />
+          <stop offset="50%" stopColor="#FAF9F6" />
+          <stop offset="100%" stopColor="#D2B48C" />
         </linearGradient>
         <linearGradient id="laser-pipe-2" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#10B981" />
-          <stop offset="50%" stopColor="#6366F1" />
-          <stop offset="100%" stopColor="#8B5CF6" />
+          <stop offset="0%" stopColor="#D2B48C" />
+          <stop offset="50%" stopColor="#FAF9F6" />
+          <stop offset="100%" stopColor="#D2B48C" />
         </linearGradient>
 
         {/* Radar Scanner Sweep */}
         <linearGradient id="radar-sweep-emerald" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#10B981" stopOpacity="0.85" />
-          <stop offset="70%" stopColor="#10B981" stopOpacity="0.15" />
-          <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
+          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0.85" />
+          <stop offset="70%" stopColor="#D2B48C" stopOpacity="0.15" />
+          <stop offset="100%" stopColor="#D2B48C" stopOpacity="0" />
         </linearGradient>
 
         {/* Barcode Scanner Light Line */}
         <linearGradient id="barcode-laser" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#38BDF8" stopOpacity="0" />
-          <stop offset="50%" stopColor="#0284C7" stopOpacity="1" />
-          <stop offset="100%" stopColor="#38BDF8" stopOpacity="0" />
+          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0" />
+          <stop offset="50%" stopColor="#D2B48C" stopOpacity="1" />
+          <stop offset="100%" stopColor="#D2B48C" stopOpacity="0" />
         </linearGradient>
       </defs>
 
       {/* ==================================================== */}
       {/* 0. AMBIENT BACKDROP LIGHT HALOS */}
       {/* ==================================================== */}
-      <circle cx="110" cy="200" r="160" fill="url(#sync-glow-blue)" />
-      <circle cx="300" cy="190" r="180" fill="url(#sync-glow-green)" />
-      <circle cx="490" cy="200" r="160" fill="url(#sync-glow-amber)" />
+      <circle cx="110" cy="200" r="160" fill="url(#sync-glow-tan)" />
+      <circle cx="300" cy="190" r="180" fill="url(#sync-glow-charcoal)" />
+      <circle cx="490" cy="200" r="160" fill="url(#sync-glow-tan)" />
 
       {/* Background Circuit Guideline Grid */}
       <g opacity="0.18">
-        <path d="M 40 380 L 560 380" stroke="#94A3B8" strokeWidth="1" strokeDasharray="4 6" />
-        <path d="M 110 330 L 110 380" stroke="#94A3B8" strokeWidth="1" strokeDasharray="3 4" />
-        <path d="M 300 355 L 300 380" stroke="#94A3B8" strokeWidth="1" strokeDasharray="3 4" />
-        <path d="M 490 330 L 490 380" stroke="#94A3B8" strokeWidth="1" strokeDasharray="3 4" />
+        <path d="M 40 380 L 560 380" stroke="#D2B48C" strokeWidth="1" strokeDasharray="4 6" />
+        <path d="M 110 330 L 110 380" stroke="#D2B48C" strokeWidth="1" strokeDasharray="3 4" />
+        <path d="M 300 355 L 300 380" stroke="#D2B48C" strokeWidth="1" strokeDasharray="3 4" />
+        <path d="M 490 330 L 490 380" stroke="#D2B48C" strokeWidth="1" strokeDasharray="3 4" />
       </g>
 
       {/* ==================================================== */}
@@ -790,23 +786,23 @@ function OrderSyncHeroSvg() {
       {/* ==================================================== */}
       {/* Top Left: Live Ingestion Webhook */}
       <g transform="translate(30, 16)" filter="url(#sync-pill-shadow)">
-        <rect x="0" y="0" width="180" height="28" rx="14" fill="#FFFFFF" stroke="#BAE6FD" strokeWidth="1" />
-        <circle cx="16" cy="14" r="4.5" fill="#10B981">
+        <rect x="0" y="0" width="180" height="28" rx="14" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
+        <circle cx="16" cy="14" r="4.5" fill="#D2B48C">
           <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
         </circle>
-        <text x="28" y="18" fill="#0369A1" fontFamily="system-ui" fontSize="9" fontWeight="800">
+        <text x="28" y="18" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
           studio API ORDER STREAM
         </text>
-        <rect x="132" y="4.5" width="40" height="19" rx="9.5" fill="#F0FDF4" stroke="#86EFAC" strokeWidth="0.8" />
-        <text x="152" y="17.5" textAnchor="middle" fill="#15803D" fontFamily="monospace" fontSize="8" fontWeight="800">
+        <rect x="132" y="4.5" width="40" height="19" rx="9.5" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
+        <text x="152" y="17.5" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="8" fontWeight="800">
           ⚡ 1.8s
         </text>
       </g>
 
       {/* Top Right: Global Marketplaces */}
       <g transform="translate(390, 16)" filter="url(#sync-pill-shadow)">
-        <rect x="0" y="0" width="180" height="28" rx="14" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
-        <text x="14" y="18" fill="#475569" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
+        <rect x="0" y="0" width="180" height="28" rx="14" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
+        <text x="14" y="18" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
           SYNCED:
         </text>
         <text x="60" y="19" fontSize="10">🇺🇸</text>
@@ -826,7 +822,7 @@ function OrderSyncHeroSvg() {
         strokeWidth="3.5"
         strokeLinecap="round"
       />
-      <line x1="192" y1="200" x2="218" y2="195" stroke="#38BDF8" strokeWidth="2" strokeDasharray="3 3">
+      <line x1="192" y1="200" x2="218" y2="195" stroke="#D2B48C" strokeWidth="2" strokeDasharray="3 3">
         <animate attributeName="stroke-dashoffset" values="0;-12" dur="0.8s" repeatCount="indefinite" />
       </line>
 
@@ -837,7 +833,7 @@ function OrderSyncHeroSvg() {
         strokeWidth="3.5"
         strokeLinecap="round"
       />
-      <line x1="382" y1="195" x2="408" y2="200" stroke="#8B5CF6" strokeWidth="2" strokeDasharray="3 3">
+      <line x1="382" y1="195" x2="408" y2="200" stroke="#D2B48C" strokeWidth="2" strokeDasharray="3 3">
         <animate attributeName="stroke-dashoffset" values="0;-12" dur="0.8s" repeatCount="indefinite" />
       </line>
 
@@ -852,15 +848,15 @@ function OrderSyncHeroSvg() {
           width="170"
           height="272"
           rx="18"
-          fill="#FFFFFF"
-          stroke="#BAE6FD"
+          fill="#FAF9F6"
+          stroke="#D2B48C"
           strokeWidth="1.2"
         />
 
         {/* Stage Header Pill */}
-        <rect x="10" y="10" width="150" height="24" rx="12" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-        <circle cx="22" cy="22" r="3" fill="#2563EB" />
-        <text x="30" y="25.5" fill="#1D4ED8" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+        <rect x="10" y="10" width="150" height="24" rx="12" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
+        <circle cx="22" cy="22" r="3" fill="#D2B48C" />
+        <text x="30" y="25.5" fill="#D2B48C" fontFamily="monospace" fontSize="8.5" fontWeight="800">
           01. ORDER INGESTION
         </text>
 
@@ -870,21 +866,21 @@ function OrderSyncHeroSvg() {
           <ellipse cx="28" cy="46" rx="34" ry="10" fill="#020617" opacity="0.12" />
 
           {/* Top Diamond Face */}
-          <polygon points="0,-18 28,-32 56,-18 28,-4" fill="url(#kraft-top)" stroke="#D97706" strokeWidth="0.8" />
+          <polygon points="0,-18 28,-32 56,-18 28,-4" fill="url(#kraft-top)" stroke="#D2B48C" strokeWidth="0.8" />
           {/* Prime Tape Top */}
           <polygon points="22,-29 28,-32 34,-29 28,-26" fill="url(#prime-tape)" />
 
           {/* Left Isometric Face */}
-          <polygon points="0,-18 28,-4 28,30 0,16" fill="url(#kraft-left)" stroke="#B45309" strokeWidth="0.8" />
+          <polygon points="0,-18 28,-4 28,30 0,16" fill="url(#kraft-left)" stroke="#B8966C" strokeWidth="0.8" />
           {/* Prime Tape Left */}
           <polygon points="22,-7 28,-4 28,30 22,27" fill="url(#prime-tape)" />
 
           {/* Right Isometric Face */}
-          <polygon points="28,-4 56,-18 56,16 28,30" fill="url(#kraft-right)" stroke="#B45309" strokeWidth="0.8" />
+          <polygon points="28,-4 56,-18 56,16 28,30" fill="url(#kraft-right)" stroke="#B8966C" strokeWidth="0.8" />
 
           {/* Amazon Orange Smile Arrow */}
-          <path d="M 33 13 Q 42 19 50 11" fill="none" stroke="#EA580C" strokeWidth="2.2" strokeLinecap="round" />
-          <polygon points="50,11 48,15 45,13" fill="#EA580C" />
+          <path d="M 33 13 Q 42 19 50 11" fill="none" stroke="#282828" strokeWidth="2.2" strokeLinecap="round" />
+          <polygon points="50,11 48,15 45,13" fill="#282828" />
 
           {/* Moving Laser Scanner Line */}
           <line x1="-4" y1="-10" x2="60" y2="-10" stroke="url(#barcode-laser)" strokeWidth="2.5">
@@ -895,41 +891,41 @@ function OrderSyncHeroSvg() {
 
         {/* Order Details */}
         <g transform="translate(12, 140)">
-          <text x="0" y="0" fill="#0F172A" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+          <text x="0" y="0" fill="#282828" fontFamily="monospace" fontSize="9.5" fontWeight="800">
             #114-8923019
           </text>
-          <text x="0" y="14" fill="#64748B" fontFamily="system-ui" fontSize="8">
-            SKU: <tspan fill="#0284C7" fontWeight="700">CT-HYDR-BTL-32</tspan>
+          <text x="0" y="14" fill="#666666" fontFamily="system-ui" fontSize="8">
+            SKU: <tspan fill="#282828" fontWeight="700">CT-HYDR-BTL-32</tspan>
           </text>
         </g>
 
         {/* FBA Prime & Carrier Pill */}
         <g transform="translate(12, 172)">
-          <rect x="0" y="0" width="70" height="20" rx="6" fill="#EFF6FF" stroke="#93C5FD" strokeWidth="0.8" />
-          <text x="35" y="13.5" textAnchor="middle" fill="#1D4ED8" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          <rect x="0" y="0" width="70" height="20" rx="6" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="35" y="13.5" textAnchor="middle" fill="#FAF9F6" fontFamily="system-ui" fontSize="8" fontWeight="800">
             FBA PRIME
           </text>
 
-          <rect x="76" y="0" width="70" height="20" rx="6" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.8" />
-          <text x="111" y="13.5" textAnchor="middle" fill="#475569" fontFamily="system-ui" fontSize="8" fontWeight="700">
+          <rect x="76" y="0" width="70" height="20" rx="6" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="111" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="700">
             🇺🇸 amazon.com
           </text>
         </g>
 
         {/* Delivery Event Status */}
         <g transform="translate(12, 202)">
-          <rect x="0" y="0" width="146" height="24" rx="8" fill="#F0FDF4" stroke="#86EFAC" strokeWidth="0.9" />
-          <circle cx="12" cy="12" r="3.5" fill="#10B981" />
-          <text x="21" y="15.5" fill="#15803D" fontFamily="system-ui" fontSize="8" fontWeight="700">
+          <rect x="0" y="0" width="146" height="24" rx="8" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.9" />
+          <circle cx="12" cy="12" r="3.5" fill="#D2B48C" />
+          <text x="21" y="15.5" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="700">
             Delivered • Amazon Logistics
           </text>
         </g>
 
         {/* Carrier Sync Confirmation */}
         <g transform="translate(12, 234)">
-          <rect x="0" y="0" width="146" height="24" rx="8" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.8" />
-          <text x="8" y="15" fill="#64748B" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
-            Carrier Timestamp: <tspan fill="#0F172A" fontWeight="800">2h ago (Verified)</tspan>
+          <rect x="0" y="0" width="146" height="24" rx="8" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
+          <text x="8" y="15" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
+            Carrier Timestamp: <tspan fill="#282828" fontWeight="800">2h ago (Verified)</tspan>
           </text>
         </g>
       </g>
@@ -945,24 +941,24 @@ function OrderSyncHeroSvg() {
           width="170"
           height="298"
           rx="20"
-          fill="#FFFFFF"
-          stroke="#86EFAC"
-          strokeWidth="1.6"
+          fill="#FAF9F6"
+          stroke="#D2B48C"
+          strokeWidth="1.8"
         />
 
         {/* Top Header Badge */}
-        <rect x="10" y="10" width="150" height="24" rx="12" fill="#ECFDF5" stroke="#A7F3D0" strokeWidth="0.8" />
-        <circle cx="22" cy="22" r="3" fill="#10B981" />
-        <text x="30" y="25.5" fill="#047857" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+        <rect x="10" y="10" width="150" height="24" rx="12" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
+        <circle cx="22" cy="22" r="3" fill="#D2B48C" />
+        <text x="30" y="25.5" fill="#D2B48C" fontFamily="monospace" fontSize="8.5" fontWeight="800">
           02. POLICY GUARDRAIL
         </text>
 
         {/* High-Tech Radar Audit Core */}
         <g transform="translate(85, 96)">
           {/* Concentric Gyro Rings */}
-          <circle cx="0" cy="0" r="48" fill="none" stroke="#E2E8F0" strokeWidth="1" strokeDasharray="4 4" />
-          <circle cx="0" cy="0" r="40" fill="#F8FAFC" stroke="#86EFAC" strokeWidth="1.5" />
-          <circle cx="0" cy="0" r="30" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="1" />
+          <circle cx="0" cy="0" r="48" fill="none" stroke="#D2B48C" strokeWidth="1" strokeDasharray="4 4" opacity="0.4" />
+          <circle cx="0" cy="0" r="40" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1.5" />
+          <circle cx="0" cy="0" r="30" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
 
           {/* Rotating Emerald Radar Sweep */}
           <g>
@@ -978,11 +974,11 @@ function OrderSyncHeroSvg() {
           </g>
 
           {/* Center Shield with Checkmark */}
-          <circle cx="0" cy="0" r="14" fill="#DCFCE7" stroke="#10B981" strokeWidth="1.5" />
+          <circle cx="0" cy="0" r="14" fill="#282828" stroke="#D2B48C" strokeWidth="1.5" />
           <path
             d="M -5 0 L -1 4 L 6 -3"
             fill="none"
-            stroke="#15803D"
+            stroke="#D2B48C"
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -991,10 +987,10 @@ function OrderSyncHeroSvg() {
 
         {/* Core Verification Heading */}
         <g transform="translate(85, 156)">
-          <text x="0" y="0" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="10" fontWeight="900">
+          <text x="0" y="0" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="10" fontWeight="900">
             AUDIT PASSED
           </text>
-          <text x="0" y="12" textAnchor="middle" fill="#15803D" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          <text x="0" y="12" textAnchor="middle" fill="#8C704B" fontFamily="system-ui" fontSize="8" fontWeight="800">
             ✓ 100% Policy Safe
           </text>
         </g>
@@ -1002,26 +998,26 @@ function OrderSyncHeroSvg() {
         {/* Detailed Guardrail Checklist Pills */}
         <g transform="translate(10, 180)">
           {/* Check 1: Return/Refund Check */}
-          <rect x="0" y="0" width="150" height="22" rx="7" fill="#F0FDF4" stroke="#86EFAC" strokeWidth="0.8" />
-          <text x="10" y="14.5" fill="#15803D" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+          <rect x="0" y="0" width="150" height="22" rx="7" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="10" y="14.5" fill="#282828" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
             ✓ 0 Returns / Refunds Found
           </text>
 
           {/* Check 2: Cancellation Check */}
-          <rect x="0" y="26" width="150" height="22" rx="7" fill="#F0FDF4" stroke="#86EFAC" strokeWidth="0.8" />
-          <text x="10" y="40.5" fill="#15803D" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+          <rect x="0" y="26" width="150" height="22" rx="7" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="10" y="40.5" fill="#282828" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
             ✓ Buyer Cancellation: Clear
           </text>
 
           {/* Check 3: Amazon 5-30 Day Window */}
-          <rect x="0" y="52" width="150" height="22" rx="7" fill="#EFF6FF" stroke="#93C5FD" strokeWidth="0.8" />
-          <text x="10" y="66.5" fill="#1D4ED8" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+          <rect x="0" y="52" width="150" height="22" rx="7" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="10" y="66.5" fill="#282828" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
             ✓ Amazon Window: Day 5 Match
           </text>
 
           {/* Check 4: Zero Duplicate Solicitations */}
-          <rect x="0" y="78" width="150" height="22" rx="7" fill="#FAF5FF" stroke="#D8B4FE" strokeWidth="0.8" />
-          <text x="10" y="92.5" fill="#7E22CE" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+          <rect x="0" y="78" width="150" height="22" rx="7" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="10" y="92.5" fill="#282828" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
             ✓ Duplicate Guard: 0 Prior Sent
           </text>
         </g>
@@ -1038,66 +1034,66 @@ function OrderSyncHeroSvg() {
           width="170"
           height="272"
           rx="18"
-          fill="#FFFFFF"
-          stroke="#DDD6FE"
+          fill="#FAF9F6"
+          stroke="#D2B48C"
           strokeWidth="1.2"
         />
 
         {/* Stage Header Pill */}
-        <rect x="10" y="10" width="150" height="24" rx="12" fill="#FAF5FF" stroke="#E9D5FF" strokeWidth="0.8" />
-        <circle cx="22" cy="22" r="3" fill="#7C3AED" />
-        <text x="30" y="25.5" fill="#6D28D9" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+        <rect x="10" y="10" width="150" height="24" rx="12" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
+        <circle cx="22" cy="22" r="3" fill="#D2B48C" />
+        <text x="30" y="25.5" fill="#D2B48C" fontFamily="monospace" fontSize="8.5" fontWeight="800">
           03. SOLICITATION V1
         </text>
 
         {/* 5-Star Verified Review Request Banner */}
         <g transform="translate(10, 46)">
-          <rect x="0" y="0" width="150" height="52" rx="10" fill="#FFFBEB" stroke="#FDE68A" strokeWidth="1" />
-          <text x="75" y="22" textAnchor="middle" fill="#D97706" fontSize="16" fontWeight="bold">
+          <rect x="0" y="0" width="150" height="52" rx="10" fill="#282828" stroke="#D2B48C" strokeWidth="1" />
+          <text x="75" y="22" textAnchor="middle" fill="#D2B48C" fontSize="16" fontWeight="bold">
             ★★★★★
           </text>
-          <text x="75" y="40" textAnchor="middle" fill="#92400E" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <text x="75" y="40" textAnchor="middle" fill="#FAF9F6" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
             Verified Review Request
           </text>
         </g>
 
         {/* API Endpoint Details */}
         <g transform="translate(12, 114)">
-          <text x="0" y="0" fill="#0F172A" fontFamily="system-ui" fontSize="9" fontWeight="800">
+          <text x="0" y="0" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
             Official Amazon In-Box
           </text>
-          <text x="0" y="14" fill="#64748B" fontFamily="monospace" fontSize="8">
+          <text x="0" y="14" fill="#666666" fontFamily="monospace" fontSize="8">
             POST /solicitations/v1/orders
           </text>
         </g>
 
         {/* Scheduled Status Pill */}
         <g transform="translate(12, 146)">
-          <rect x="0" y="0" width="146" height="22" rx="6" fill="#F5F3FF" stroke="#DDD6FE" strokeWidth="0.8" />
-          <text x="73" y="14.5" textAnchor="middle" fill="#6D28D9" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          <rect x="0" y="0" width="146" height="22" rx="6" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <text x="73" y="14.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
             AUTO-QUEUED FOR DISPATCH
           </text>
         </g>
 
         {/* Conversion Lift Metric */}
         <g transform="translate(12, 176)">
-          <rect x="0" y="0" width="146" height="26" rx="8" fill="#F0FDF4" stroke="#86EFAC" strokeWidth="1" />
-          <text x="73" y="17" textAnchor="middle" fill="#15803D" fontFamily="system-ui" fontSize="9" fontWeight="900">
+          <rect x="0" y="0" width="146" height="26" rx="8" fill="#282828" stroke="#D2B48C" strokeWidth="1" />
+          <text x="73" y="17" textAnchor="middle" fill="#D2B48C" fontFamily="system-ui" fontSize="9" fontWeight="900">
             🚀 +38% Review Volume Lift
           </text>
         </g>
 
         {/* Compliance Footer */}
         <g transform="translate(12, 210)">
-          <rect x="0" y="0" width="146" height="48" rx="8" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.8" />
-          <text x="8" y="16" fill="#64748B" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
-            Delivery: <tspan fill="#0F172A" fontWeight="800">Studio production API Official</tspan>
+          <rect x="0" y="0" width="146" height="48" rx="8" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
+          <text x="8" y="16" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
+            Delivery: <tspan fill="#282828" fontWeight="800">Studio production API Official</tspan>
           </text>
-          <text x="8" y="30" fill="#64748B" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
-            Buyer Opt-Outs: <tspan fill="#059669" fontWeight="800">Auto-Filtered</tspan>
+          <text x="8" y="30" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
+            Buyer Opt-Outs: <tspan fill="#8C704B" fontWeight="800">Auto-Filtered</tspan>
           </text>
-          <text x="8" y="42" fill="#64748B" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
-            Security: <tspan fill="#2563EB" fontWeight="800">100% Policy Compliant</tspan>
+          <text x="8" y="42" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
+            Security: <tspan fill="#282828" fontWeight="800">100% Policy Compliant</tspan>
           </text>
         </g>
       </g>
@@ -1106,33 +1102,33 @@ function OrderSyncHeroSvg() {
       {/* 6. BOTTOM CARRIER LOGISTICS & SYNC STRIP */}
       {/* ==================================================== */}
       <g transform="translate(60, 368)" filter="url(#sync-pill-shadow)">
-        <rect x="0" y="0" width="480" height="34" rx="17" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1" />
-        <circle cx="18" cy="17" r="3.5" fill="#0284C7" />
-        <text x="28" y="21" fill="#475569" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
+        <rect x="0" y="0" width="480" height="34" rx="17" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
+        <circle cx="18" cy="17" r="3.5" fill="#D2B48C" />
+        <text x="28" y="21" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
           CARRIER TRACKING:
         </text>
-        <rect x="135" y="6" width="94" height="22" rx="6" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-        <text x="182" y="20" textAnchor="middle" fill="#1D4ED8" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect x="135" y="6" width="94" height="22" rx="6" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
+        <text x="182" y="20" textAnchor="middle" fill="#D2B48C" fontFamily="system-ui" fontSize="8" fontWeight="800">
           Amazon Logistics
         </text>
 
-        <rect x="236" y="6" width="58" height="22" rx="6" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.8" />
-        <text x="265" y="20" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect x="236" y="6" width="58" height="22" rx="6" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
+        <text x="265" y="20" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
           UPS FBA
         </text>
 
-        <rect x="301" y="6" width="58" height="22" rx="6" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.8" />
-        <text x="330" y="20" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect x="301" y="6" width="58" height="22" rx="6" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
+        <text x="330" y="20" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
           FedEx
         </text>
 
-        <rect x="366" y="6" width="50" height="22" rx="6" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="0.8" />
-        <text x="391" y="20" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect x="366" y="6" width="50" height="22" rx="6" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
+        <text x="391" y="20" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
           DHL
         </text>
 
-        <rect x="423" y="6" width="46" height="22" rx="6" fill="#ECFDF5" stroke="#A7F3D0" strokeWidth="0.8" />
-        <text x="446" y="20" textAnchor="middle" fill="#047857" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect x="423" y="6" width="46" height="22" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+        <text x="446" y="20" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
           FBM
         </text>
       </g>
@@ -1153,71 +1149,67 @@ function OrderSyncFaqSvg() {
       <defs>
         {/* Soft Drop Shadows */}
         <filter id="hub-shadow-sm" x="-10%" y="-10%" width="120%" height="125%">
-          <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="#0F172A" floodOpacity="0.07" />
+          <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="#282828" floodOpacity="0.06" />
         </filter>
         <filter id="hub-shadow-md" x="-12%" y="-12%" width="124%" height="130%">
-          <feDropShadow dx="0" dy="10" stdDeviation="14" floodColor="#0F172A" floodOpacity="0.09" />
+          <feDropShadow dx="0" dy="10" stdDeviation="14" floodColor="#282828" floodOpacity="0.08" />
         </filter>
-        <filter id="hub-glow-cyan" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        <filter id="hub-glow-emerald" x="-30%" y="-30%" width="160%" height="160%">
+        <filter id="hub-glow-brand" x="-30%" y="-30%" width="160%" height="160%">
           <feGaussianBlur stdDeviation="4" result="blur" />
           <feComposite in="SourceGraphic" in2="blur" operator="over" />
         </filter>
 
-        {/* Clean Gradients */}
+        {/* Clean Brand Gradients */}
         <linearGradient id="hub-card-bg" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="100%" stopColor="#F8FAFC" />
+          <stop offset="100%" stopColor="#FAF9F6" />
         </linearGradient>
 
         <linearGradient id="hub-conveyor-track" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#E2E8F0" />
-          <stop offset="50%" stopColor="#CBD5E1" />
-          <stop offset="100%" stopColor="#E2E8F0" />
+          <stop offset="0%" stopColor="#E7E5E4" />
+          <stop offset="50%" stopColor="#D2B48C" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#E7E5E4" />
         </linearGradient>
 
         <linearGradient id="hub-beam-active" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0284C7" />
-          <stop offset="50%" stopColor="#10B981" />
-          <stop offset="100%" stopColor="#6366F1" />
+          <stop offset="0%" stopColor="#D2B48C" />
+          <stop offset="50%" stopColor="#B8966C" />
+          <stop offset="100%" stopColor="#8C7355" />
         </linearGradient>
 
-        {/* 3D Box Gradients (Orange / Craft Amazon Parcel) */}
+        {/* 3D Box Gradients (Craft Parcel 1: Tan) */}
         <linearGradient id="box-top-amber" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FDE68A" />
-          <stop offset="100%" stopColor="#F59E0B" />
+          <stop offset="0%" stopColor="#FAF9F6" />
+          <stop offset="100%" stopColor="#D2B48C" />
         </linearGradient>
         <linearGradient id="box-left-amber" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#D97706" />
-          <stop offset="100%" stopColor="#92400E" />
+          <stop offset="0%" stopColor="#B8966C" />
+          <stop offset="100%" stopColor="#8C7355" />
         </linearGradient>
         <linearGradient id="box-right-amber" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#F59E0B" />
-          <stop offset="100%" stopColor="#B45309" />
+          <stop offset="0%" stopColor="#D2B48C" />
+          <stop offset="100%" stopColor="#A07D54" />
         </linearGradient>
 
-        {/* 3D Box Gradients (Cyan / Prime Cyber Package) */}
+        {/* 3D Box Gradients (Craft Parcel 2: Charcoal) */}
         <linearGradient id="box-top-cyan" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#BAE6FD" />
-          <stop offset="100%" stopColor="#38BDF8" />
+          <stop offset="0%" stopColor="#484848" />
+          <stop offset="100%" stopColor="#282828" />
         </linearGradient>
         <linearGradient id="box-left-cyan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0284C7" />
-          <stop offset="100%" stopColor="#0369A1" />
+          <stop offset="0%" stopColor="#1E1E1E" />
+          <stop offset="100%" stopColor="#141414" />
         </linearGradient>
         <linearGradient id="box-right-cyan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#38BDF8" />
-          <stop offset="100%" stopColor="#0284C7" />
+          <stop offset="0%" stopColor="#2D2D2D" />
+          <stop offset="100%" stopColor="#202020" />
         </linearGradient>
 
         {/* Laser Scanner Light */}
         <linearGradient id="hub-laser-scan" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#0284C7" stopOpacity="0" />
-          <stop offset="50%" stopColor="#0284C7" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#0284C7" stopOpacity="0" />
+          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0" />
+          <stop offset="50%" stopColor="#D2B48C" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#D2B48C" stopOpacity="0" />
         </linearGradient>
       </defs>
 
@@ -1258,14 +1250,14 @@ function OrderSyncFaqSvg() {
       </path>
 
       {/* Flowing Energy Photons */}
-      <circle cx="0" cy="0" r="3.5" fill="#0284C7" filter="url(#hub-glow-cyan)">
+      <circle cx="0" cy="0" r="3.5" fill="#D2B48C" filter="url(#hub-glow-brand)">
         <animateMotion
           path="M 120 135 C 120 190, 270 180, 270 230"
           dur="1.8s"
           repeatCount="indefinite"
         />
       </circle>
-      <circle cx="0" cy="0" r="3.5" fill="#10B981" filter="url(#hub-glow-emerald)">
+      <circle cx="0" cy="0" r="3.5" fill="#D2B48C" filter="url(#hub-glow-brand)">
         <animateMotion
           path="M 420 135 C 420 190, 270 180, 270 230"
           dur="1.8s"
@@ -1293,17 +1285,18 @@ function OrderSyncFaqSvg() {
             height="125"
             rx="16"
             fill="url(#hub-card-bg)"
-            stroke="#E2E8F0"
-            strokeWidth="1.2"
+            stroke="#D2B48C"
+            strokeWidth="1"
+            strokeOpacity="0.4"
           />
 
           {/* Header Bar */}
           <g transform="translate(14, 14)">
-            <rect x="0" y="0" width="76" height="20" rx="6" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-            <text x="38" y="14" textAnchor="middle" fill="#1D4ED8" fontFamily="system-ui" fontSize="9" fontWeight="800">
+            <rect x="0" y="0" width="76" height="20" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+            <text x="38" y="14" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
               🇺🇸 FBA PRIME
             </text>
-            <text x="86" y="14" fill="#64748B" fontFamily="system-ui" fontSize="9" fontWeight="600">
+            <text x="86" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
               Carrier Sync
             </text>
           </g>
@@ -1311,28 +1304,28 @@ function OrderSyncFaqSvg() {
           {/* 3D Parcel Preview */}
           <g transform="translate(38, 76)">
             {/* Box Top */}
-            <polygon points="0,-16 18,-26 36,-16 18,-6" fill="url(#box-top-amber)" stroke="#F59E0B" strokeWidth="0.6" />
+            <polygon points="0,-16 18,-26 36,-16 18,-6" fill="url(#box-top-amber)" stroke="#D2B48C" strokeWidth="0.6" />
             {/* Box Left */}
-            <polygon points="0,-16 18,-6 18,18 0,8" fill="url(#box-left-amber)" stroke="#B45309" strokeWidth="0.6" />
+            <polygon points="0,-16 18,-6 18,18 0,8" fill="url(#box-left-amber)" stroke="#8C7355" strokeWidth="0.6" />
             {/* Box Right */}
-            <polygon points="18,-6 36,-16 36,8 18,18" fill="url(#box-right-amber)" stroke="#D97706" strokeWidth="0.6" />
+            <polygon points="18,-6 36,-16 36,8 18,18" fill="url(#box-right-amber)" stroke="#B8966C" strokeWidth="0.6" />
             {/* Amazon Smile Curve */}
-            <path d="M 22 4 Q 28 9 33 3" fill="none" stroke="#0F172A" strokeWidth="1.5" strokeLinecap="round" />
+            <path d="M 22 4 Q 28 9 33 3" fill="none" stroke="#282828" strokeWidth="1.5" strokeLinecap="round" />
           </g>
 
           {/* Order Info */}
           <g transform="translate(85, 48)">
-            <text x="0" y="0" fill="#0F172A" fontFamily="monospace" fontSize="10.5" fontWeight="800">
+            <text x="0" y="0" fill="#282828" fontFamily="monospace" fontSize="10.5" fontWeight="800">
               #114-8923019
             </text>
-            <text x="0" y="14" fill="#64748B" fontFamily="system-ui" fontSize="8.5">
-              SKU: <tspan fill="#0F172A" fontWeight="700">Hydration Pro</tspan>
+            <text x="0" y="14" fill="#78716C" fontFamily="system-ui" fontSize="8.5">
+              SKU: <tspan fill="#282828" fontWeight="700">Hydration Pro</tspan>
             </text>
             {/* Status Pill */}
             <g transform="translate(0, 22)">
-              <rect x="0" y="0" width="134" height="20" rx="6" fill="#ECFDF5" stroke="#A7F3D0" strokeWidth="0.8" />
-              <circle cx="9" cy="10" r="3" fill="#10B981" />
-              <text x="18" y="13.5" fill="#047857" fontFamily="system-ui" fontSize="8" fontWeight="700">
+              <rect x="0" y="0" width="134" height="20" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+              <circle cx="9" cy="10" r="3" fill="#D2B48C" />
+              <text x="18" y="13.5" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="700">
                 Delivered (Amazon Log.)
               </text>
             </g>
@@ -1360,17 +1353,18 @@ function OrderSyncFaqSvg() {
             height="125"
             rx="16"
             fill="url(#hub-card-bg)"
-            stroke="#E2E8F0"
-            strokeWidth="1.2"
+            stroke="#D2B48C"
+            strokeWidth="1"
+            strokeOpacity="0.4"
           />
 
           {/* Header Bar */}
           <g transform="translate(14, 14)">
-            <rect x="0" y="0" width="76" height="20" rx="6" fill="#FAF5FF" stroke="#E9D5FF" strokeWidth="0.8" />
-            <text x="38" y="14" textAnchor="middle" fill="#7E22CE" fontFamily="system-ui" fontSize="9" fontWeight="800">
+            <rect x="0" y="0" width="76" height="20" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+            <text x="38" y="14" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
               🇬🇧 FBM / MFN
             </text>
-            <text x="86" y="14" fill="#64748B" fontFamily="system-ui" fontSize="9" fontWeight="600">
+            <text x="86" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
               Multi-Carrier
             </text>
           </g>
@@ -1378,28 +1372,28 @@ function OrderSyncFaqSvg() {
           {/* 3D Cyan Cyber Parcel Preview */}
           <g transform="translate(38, 76)">
             {/* Box Top */}
-            <polygon points="0,-16 18,-26 36,-16 18,-6" fill="url(#box-top-cyan)" stroke="#38BDF8" strokeWidth="0.6" />
+            <polygon points="0,-16 18,-26 36,-16 18,-6" fill="url(#box-top-cyan)" stroke="#D2B48C" strokeWidth="0.6" />
             {/* Box Left */}
-            <polygon points="0,-16 18,-6 18,18 0,8" fill="url(#box-left-cyan)" stroke="#0369A1" strokeWidth="0.6" />
+            <polygon points="0,-16 18,-6 18,18 0,8" fill="url(#box-left-cyan)" stroke="#282828" strokeWidth="0.6" />
             {/* Box Right */}
-            <polygon points="18,-6 36,-16 36,8 18,18" fill="url(#box-right-cyan)" stroke="#0284C7" strokeWidth="0.6" />
-            {/* Laser tape */}
-            <line x1="16" y1="-17" x2="22" y2="-14" stroke="#FFFFFF" strokeWidth="2" opacity="0.9" />
+            <polygon points="18,-6 36,-16 36,8 18,18" fill="url(#box-right-cyan)" stroke="#383838" strokeWidth="0.6" />
+            {/* Tape */}
+            <line x1="16" y1="-17" x2="22" y2="-14" stroke="#D2B48C" strokeWidth="2" opacity="0.9" />
           </g>
 
           {/* Order Info */}
           <g transform="translate(85, 48)">
-            <text x="0" y="0" fill="#0F172A" fontFamily="monospace" fontSize="10.5" fontWeight="800">
+            <text x="0" y="0" fill="#282828" fontFamily="monospace" fontSize="10.5" fontWeight="800">
               #402-9918231
             </text>
-            <text x="0" y="14" fill="#64748B" fontFamily="system-ui" fontSize="8.5">
-              Carrier: <tspan fill="#0F172A" fontWeight="700">UPS / FedEx</tspan>
+            <text x="0" y="14" fill="#78716C" fontFamily="system-ui" fontSize="8.5">
+              Carrier: <tspan fill="#282828" fontWeight="700">UPS / FedEx</tspan>
             </text>
             {/* Status Pill */}
             <g transform="translate(0, 22)">
-              <rect x="0" y="0" width="134" height="20" rx="6" fill="#EFF6FF" stroke="#BFDBFE" strokeWidth="0.8" />
-              <circle cx="9" cy="10" r="3" fill="#0284C7" />
-              <text x="18" y="13.5" fill="#1D4ED8" fontFamily="system-ui" fontSize="8" fontWeight="700">
+              <rect x="0" y="0" width="134" height="20" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+              <circle cx="9" cy="10" r="3" fill="#D2B48C" />
+              <text x="18" y="13.5" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="700">
                 Tracking Auto-Matched
               </text>
             </g>
@@ -1412,11 +1406,11 @@ function OrderSyncFaqSvg() {
       {/* ==================================================== */}
       <g transform="translate(270, 235)" filter="url(#hub-shadow-md)">
         {/* Ambient Outer Halo */}
-        <circle cx="0" cy="0" r="50" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="1.5" />
-        <circle cx="0" cy="0" r="42" fill="#FFFFFF" stroke="#0284C7" strokeWidth="2" opacity="0.9" />
+        <circle cx="0" cy="0" r="50" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="1.5" />
+        <circle cx="0" cy="0" r="42" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="2" opacity="0.9" />
 
         {/* Rotating Tech Gyro */}
-        <circle cx="0" cy="0" r="46" fill="none" stroke="#38BDF8" strokeWidth="1.5" strokeDasharray="10 12">
+        <circle cx="0" cy="0" r="46" fill="none" stroke="#D2B48C" strokeWidth="1.5" strokeDasharray="10 12">
           <animateTransform
             attributeName="transform"
             type="rotate"
@@ -1427,30 +1421,30 @@ function OrderSyncFaqSvg() {
           />
         </circle>
 
-        {/* Central Core Shield & Check */}
-        <circle cx="0" cy="0" r="28" fill="#0284C7" />
+        {/* Central Core Shield */}
+        <circle cx="0" cy="0" r="28" fill="#282828" stroke="#D2B48C" strokeWidth="1.5" />
         <text x="0" y="7" textAnchor="middle" fontSize="17" fill="#FFFFFF">
           🛡️
         </text>
 
         {/* Left Floating Metric Tag */}
         <g transform="translate(-160, -14)">
-          <rect x="0" y="0" width="120" height="28" rx="8" fill="#0F172A" stroke="#38BDF8" strokeWidth="1" />
-          <circle cx="12" cy="14" r="3.5" fill="#10B981">
+          <rect x="0" y="0" width="120" height="28" rx="8" fill="#282828" stroke="#D2B48C" strokeWidth="1" />
+          <circle cx="12" cy="14" r="3.5" fill="#D2B48C">
             <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
           </circle>
-          <text x="22" y="17" fill="#FFFFFF" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <text x="22" y="17" fill="#FAF9F6" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
             0 Returns Detected
           </text>
         </g>
 
         {/* Right Floating Metric Tag */}
         <g transform="translate(42, -14)">
-          <rect x="0" y="0" width="120" height="28" rx="8" fill="#0F172A" stroke="#34D399" strokeWidth="1" />
-          <circle cx="12" cy="14" r="3.5" fill="#34D399">
+          <rect x="0" y="0" width="120" height="28" rx="8" fill="#282828" stroke="#D2B48C" strokeWidth="1" />
+          <circle cx="12" cy="14" r="3.5" fill="#D2B48C">
             <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
           </circle>
-          <text x="22" y="17" fill="#34D399" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <text x="22" y="17" fill="#D2B48C" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
             Safe to Solicit ✓
           </text>
         </g>
@@ -1476,21 +1470,22 @@ function OrderSyncFaqSvg() {
             height="135"
             rx="18"
             fill="url(#hub-card-bg)"
-            stroke="#CBD5E1"
-            strokeWidth="1.2"
+            stroke="#D2B48C"
+            strokeWidth="1"
+            strokeOpacity="0.5"
           />
 
           {/* Console Header */}
           <g transform="translate(20, 20)">
-            <rect x="0" y="0" width="145" height="22" rx="6" fill="#0F172A" />
-            <text x="72" y="15" textAnchor="middle" fill="#38BDF8" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+            <rect x="0" y="0" width="145" height="22" rx="6" fill="#282828" />
+            <text x="72" y="15" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="8.5" fontWeight="800">
               SOLICITATION PIPELINE
             </text>
-            <text x="160" y="15" fill="#059669" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
+            <text x="160" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
               ● Amazon 5-30 Day Window Active
             </text>
-            <rect x="360" y="1" width="105" height="20" rx="5" fill="#EFF6FF" stroke="#93C5FD" strokeWidth="0.8" />
-            <text x="412" y="14" textAnchor="middle" fill="#1D4ED8" fontFamily="monospace" fontSize="8.5" fontWeight="700">
+            <rect x="360" y="1" width="105" height="20" rx="5" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+            <text x="412" y="14" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="700">
               solicitations/v1
             </text>
           </g>
@@ -1498,43 +1493,43 @@ function OrderSyncFaqSvg() {
           {/* Visual Step Progress Bar */}
           <g transform="translate(30, 68)">
             {/* Rail track */}
-            <line x1="0" y1="0" x2="444" y2="0" stroke="#E2E8F0" strokeWidth="5" strokeLinecap="round" />
+            <line x1="0" y1="0" x2="444" y2="0" stroke="#E7E5E4" strokeWidth="5" strokeLinecap="round" />
             {/* Active Range from Day 0 to Day 5 */}
-            <line x1="0" y1="0" x2="190" y2="0" stroke="#0284C7" strokeWidth="5" strokeLinecap="round" />
+            <line x1="0" y1="0" x2="190" y2="0" stroke="#D2B48C" strokeWidth="5" strokeLinecap="round" />
 
             {/* Point 1: Day 0 (Delivered) */}
             <g transform="translate(0, 0)">
-              <circle cx="0" cy="0" r="9" fill="#10B981" />
-              <path d="M -3 0 L -1 2 L 3 -2" fill="none" stroke="#FFFFFF" strokeWidth="1.8" strokeLinecap="round" />
-              <text x="0" y="20" textAnchor="middle" fill="#0F172A" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+              <circle cx="0" cy="0" r="9" fill="#282828" stroke="#D2B48C" strokeWidth="1" />
+              <path d="M -3 0 L -1 2 L 3 -2" fill="none" stroke="#FAF9F6" strokeWidth="1.8" strokeLinecap="round" />
+              <text x="0" y="20" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
                 Day 0
               </text>
-              <text x="0" y="31" textAnchor="middle" fill="#64748B" fontFamily="system-ui" fontSize="7.5">
+              <text x="0" y="31" textAnchor="middle" fill="#78716C" fontFamily="system-ui" fontSize="7.5">
                 Delivered
               </text>
             </g>
 
             {/* Point 2: Day 5 (Optimal Review Solicitation) */}
             <g transform="translate(190, 0)">
-              <circle cx="0" cy="0" r="14" fill="#0284C7" filter="url(#hub-glow-cyan)">
+              <circle cx="0" cy="0" r="14" fill="#D2B48C" filter="url(#hub-glow-brand)">
                 <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite" />
               </circle>
-              <circle cx="0" cy="0" r="7" fill="#FFFFFF" />
-              <text x="0" y="22" textAnchor="middle" fill="#1D4ED8" fontFamily="system-ui" fontSize="9" fontWeight="900">
+              <circle cx="0" cy="0" r="7" fill="#282828" />
+              <text x="0" y="22" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="900">
                 ★ Day 5 (Optimal)
               </text>
-              <text x="0" y="33" textAnchor="middle" fill="#0284C7" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+              <text x="0" y="33" textAnchor="middle" fill="#B8966C" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
                 Auto-Review Sent
               </text>
             </g>
 
             {/* Point 3: Day 30 (Window Expiry) */}
             <g transform="translate(444, 0)">
-              <circle cx="0" cy="0" r="8" fill="#94A3B8" />
-              <text x="0" y="20" textAnchor="middle" fill="#64748B" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
+              <circle cx="0" cy="0" r="8" fill="#A8A29E" />
+              <text x="0" y="20" textAnchor="middle" fill="#78716C" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
                 Day 30
               </text>
-              <text x="0" y="31" textAnchor="middle" fill="#94A3B8" fontFamily="system-ui" fontSize="7.5">
+              <text x="0" y="31" textAnchor="middle" fill="#A8A29E" fontFamily="system-ui" fontSize="7.5">
                 Window Closes
               </text>
             </g>
@@ -1542,7 +1537,7 @@ function OrderSyncFaqSvg() {
 
           {/* Footer Security Badge */}
           <g transform="translate(20, 118)">
-            <text x="0" y="0" fill="#64748B" fontFamily="system-ui" fontSize="8">
+            <text x="0" y="0" fill="#78716C" fontFamily="system-ui" fontSize="8">
               Automatic 1-Request Deduplication Lock • Zero Spam &amp; Account Strike Safe
             </text>
           </g>

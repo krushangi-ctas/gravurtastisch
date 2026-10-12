@@ -7,9 +7,9 @@ const FEATURES = [
 		icon: 'heroicons-solid:photo',
 		label: 'Photo Cups & Mugs',
 		description: 'Full-wrap prints and heat-changing cups',
-		accentColor: '#E89B5C',
-		badgeBg: 'rgba(232, 155, 92, 0.14)',
-		borderColor: 'rgba(232, 155, 92, 0.35)'
+		accentColor: '#D2B48C',
+		badgeBg: 'rgba(210, 180, 140, 0.14)',
+		borderColor: 'rgba(210, 180, 140, 0.35)'
 	},
 	{
 		icon: 'heroicons-solid:sparkles',
@@ -42,12 +42,12 @@ function AuthPagesMessageSection() {
 		<Box
 			className="relative hidden min-h-screen w-full flex-col justify-center overflow-hidden p-8 md:flex md:w-1/2 lg:px-16 lg:py-12 select-none"
 			sx={{
-				background: 'linear-gradient(145deg, #2A1848 0%, #452B78 42%, #1A0F2E 100%)',
+				background: 'linear-gradient(145deg, #282828 0%, #1E1E1E 42%, #121212 100%)',
 				color: 'primary.contrastText'
 			}}
 		>
-			<div className="pointer-events-none absolute -top-24 -right-24 h-[420px] w-[420px] rounded-full bg-purple-500/20 blur-[120px]" />
-			<div className="pointer-events-none absolute bottom-10 right-1/4 h-[380px] w-[380px] rounded-full bg-amber-400/10 blur-[120px]" />
+			<div className="pointer-events-none absolute -top-24 -right-24 h-[420px] w-[420px] rounded-full bg-white/5 blur-[120px]" />
+			<div className="pointer-events-none absolute bottom-10 right-1/4 h-[380px] w-[380px] rounded-full bg-neutral-500/10 blur-[120px]" />
 
 			<Box
 				component="svg"
@@ -74,12 +74,12 @@ function AuthPagesMessageSection() {
 			</Box>
 
 			<div className="relative z-10 w-full max-w-2xl flex flex-col my-auto py-4">
-				<div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-300/30 bg-purple-400/10 px-3.5 py-1 backdrop-blur-md self-start">
+				<div className="mb-4 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/5 px-3.5 py-1 backdrop-blur-md self-start">
 					<span className="relative flex h-2 w-2">
 						<span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-300 opacity-75" />
 						<span className="relative inline-flex h-2 w-2 rounded-full bg-amber-300" />
 					</span>
-					<span className="text-[11px] font-bold tracking-widest text-purple-100 uppercase">
+					<span className="text-[11px] font-bold tracking-widest text-slate-200 uppercase">
 						Custom Engraving Studio
 					</span>
 				</div>

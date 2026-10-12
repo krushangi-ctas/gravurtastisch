@@ -20,13 +20,13 @@ export function HowItWorks() {
       <Container className="relative">
         <Reveal>
           <div className="max-w-3xl">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand-bright">
+            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
               {t('howItWorks.sectionLabel')}
             </span>
             <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight">
               {t('howItWorks.heading')}
             </h2>
-            <p className="mt-4 text-white/60 text-base sm:text-lg leading-relaxed max-w-2xl">
+            <p className="mt-4 text-white/80 text-base sm:text-lg leading-relaxed max-w-2xl">
               {t('howItWorks.description')}
             </p>
           </div>
@@ -42,11 +42,11 @@ export function HowItWorks() {
           {steps.map((s, i) => (
             <Reveal key={s.key} delay={i * 70}>
               <li>
-                <span className="font-mono text-xs text-brand-bright tracking-wider">
+                <span className="font-mono text-xs text-brand font-bold tracking-wider">
                   {t('howItWorks.stepLabel')} {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="mt-3 text-lg font-bold leading-snug">{t(`howItWorks.${s.key}Title`)}</h3>
-                <p className="mt-3 text-sm text-white/65 leading-[1.7]">{t(`howItWorks.${s.key}Desc`)}</p>
+                <p className="mt-3 text-sm text-white/80 leading-[1.7]">{t(`howItWorks.${s.key}Desc`)}</p>
               </li>
             </Reveal>
           ))}
@@ -61,9 +61,9 @@ function GanttChart() {
 
   const ganttRows = [
     { laneKey: "ganttLaneOrder", left: "8%", width: "42%", tone: "bg-white/25", labelKey: "ganttLabelFulfilled" },
-    { laneKey: "ganttLaneDelivery", left: "42%", width: "18%", tone: "bg-amazon", labelKey: "ganttLabelMarked" },
-    { laneKey: "ganttLaneGravurtastisch", left: "58%", width: "22%", tone: "bg-brand ring-1 ring-brand-bright/40", labelKey: "ganttLabelRequestSent", pulse: true },
-    { laneKey: "ganttLaneBuyer", left: "78%", width: "18%", tone: "bg-white/10 border border-dashed border-white/25", labelKey: "ganttLabelMayLeave", muted: true },
+    { laneKey: "ganttLaneDelivery", left: "42%", width: "18%", tone: "bg-brand/80 text-navy-deep font-semibold", labelKey: "ganttLabelMarked" },
+    { laneKey: "ganttLaneGravurtastisch", left: "58%", width: "22%", tone: "bg-brand text-navy-deep font-bold ring-2 ring-brand-bright/60", labelKey: "ganttLabelRequestSent", pulse: true },
+    { laneKey: "ganttLaneBuyer", left: "78%", width: "18%", tone: "bg-white/15 border border-dashed border-white/30", labelKey: "ganttLabelMayLeave", muted: true },
   ];
 
   const phases = [
@@ -77,14 +77,14 @@ function GanttChart() {
     <div>
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-8">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/45">
+          <p className="text-xs font-bold uppercase tracking-[0.18em] text-white/70">
             {t('howItWorks.ganttTitle')}
           </p>
-          <p className="mt-1 text-sm text-white/70">
+          <p className="mt-1 text-sm text-white/90">
             {t('howItWorks.ganttSubtitle')}
           </p>
         </div>
-        <div className="flex flex-wrap gap-4 text-[11px] text-white/55">
+        <div className="flex flex-wrap gap-4 text-[11px] text-white/75">
           <span className="inline-flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-sm bg-brand" /> {t('howItWorks.ganttLegendConfirmed')}
           </span>
@@ -101,7 +101,7 @@ function GanttChart() {
           {phases.map((p) => (
             <p
               key={p}
-              className="text-[10px] uppercase tracking-wider text-white/40 font-semibold text-center"
+              className="text-[10px] uppercase tracking-wider text-white/70 font-semibold text-center"
             >
               {p}
             </p>
@@ -117,7 +117,7 @@ function GanttChart() {
           >
             <p
               className={`text-xs font-semibold sm:text-right ${
-                row.muted ? "text-white/40" : "text-white/75"
+                row.muted ? "text-white/60" : "text-white/90"
               }`}
             >
               {t(`howItWorks.${row.laneKey}`)}
@@ -133,8 +133,12 @@ function GanttChart() {
                 style={{ left: row.left, width: row.width }}
               >
                 <span
-                  className={`text-[10px] sm:text-[11px] font-semibold truncate ${
-                    row.muted ? "text-white/45" : "text-white"
+                  className={`text-[10px] sm:text-[11px] truncate ${
+                    row.laneKey === "ganttLaneGravurtastisch" || row.laneKey === "ganttLaneDelivery"
+                      ? "text-navy-deep font-bold"
+                      : row.muted
+                        ? "text-white/60"
+                        : "text-white"
                   }`}
                 >
                   {t(`howItWorks.${row.labelKey}`)}
@@ -145,15 +149,15 @@ function GanttChart() {
         ))}
       </div>
 
-      <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 rounded-xl bg-brand/15 border border-brand/30 px-5 py-4">
-        <span className="inline-flex items-center gap-2 text-sm font-bold text-brand-bright shrink-0">
+      <div className="mt-6 flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-6 rounded-xl bg-brand/15 border border-brand/35 px-5 py-4">
+        <span className="inline-flex items-center gap-2 text-sm font-bold text-brand shrink-0">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-bright opacity-60" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand-bright" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand opacity-60" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-brand" />
           </span>
           {t('howItWorks.calloutTitle')}
         </span>
-        <p className="text-sm text-white/70 leading-relaxed">
+        <p className="text-sm text-white/85 leading-relaxed">
           {t('howItWorks.calloutBody')}
         </p>
       </div>

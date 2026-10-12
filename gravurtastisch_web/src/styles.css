@@ -48,37 +48,38 @@
 :root {
   --radius: 0.75rem;
 
-  /* Brand Primary #613EA3 & Royal Dark / Soft Light Combinations */
-  --navy-deep: oklch(0.16 0.045 292);         /* Deep Royal Midnight Violet #0D0819 */
-  --navy: oklch(0.22 0.06 292);              /* Dark Obsidian Purple #17102B */
-  --navy-soft: oklch(0.29 0.08 292);         /* Elevated Purple Navy #251B42 */
-  --brand: #613EA3;                          /* Primary Rebranding Color #613EA3 */
-  --brand-bright: #7A52C7;                   /* Vibrant Purple Accent #7A52C7 */
-  --secondary-blue: #E89B5C;                 /* Warm amber secondary */
-  --secondary-blue-bright: #F0B984;          /* Amber bright */
-  --amazon: oklch(0.75 0.17 55);             /* Amazon accent */
-  --slate-body: oklch(0.44 0.035 292);       /* Warm Violet-Slate Body Text #564D69 */
-  --surface: oklch(0.99 0.005 292);          /* Soft Lavender-Tinted White #FAFAFD */
-  --surface-alt: oklch(0.965 0.015 292);     /* Light Lavender Surface #F4F0FA */
+  /* Brand Tri-Color Architecture: #D2B48C (Craft Tan) + #282828 (Charcoal Dark) + Warm Off-White */
+  --navy-deep: #1A1A1A;                      /* Deep Charcoal Obsidian #1A1A1A */
+  --navy: #242424;                           /* Dark Graphite #242424 */
+  --navy-soft: #282828;                      /* Core Charcoal Brand Dark #282828 */
+  --brand: #D2B48C;                          /* Primary Tan Craft Sand #D2B48C */
+  --brand-bright: #DECAA8;                   /* Bright Tan Accent #DECAA8 */
+  --brand-dark: #B8966C;                     /* Dark Wood / Leather Tan #B8966C */
+  --secondary-blue: #3E3E3E;                 /* Secondary Deep Charcoal */
+  --secondary-blue-bright: #5A5A5A;          /* Secondary Medium Graphite */
+  --amazon: #D2B48C;                         /* Warm Craft Accent */
+  --slate-body: #4A4A48;                     /* Neutral Charcoal Body Text #4A4A48 */
+  --surface: #FAF9F6;                        /* Clean Warm Off-White Surface #FAF9F6 */
+  --surface-alt: #F4F1EA;                    /* Soft Warm Off-White Alt #F4F1EA */
 
-  --background: oklch(1 0 0);
-  --foreground: var(--navy-deep);
-  --card: oklch(1 0 0);
-  --card-foreground: var(--navy-deep);
-  --popover: oklch(1 0 0);
-  --popover-foreground: var(--navy-deep);
-  --primary: var(--brand);
-  --primary-foreground: oklch(1 0 0);
+  --background: #FAF9F6;                     /* Clean Off-White Background */
+  --foreground: #282828;                     /* Deep Charcoal Text */
+  --card: #FFFFFF;
+  --card-foreground: #282828;
+  --popover: #FFFFFF;
+  --popover-foreground: #282828;
+  --primary: var(--brand);                   /* Action / Button Color #D2B48C */
+  --primary-foreground: #282828;             /* Bold Charcoal Text on Tan Buttons */
   --secondary: var(--surface-alt);
-  --secondary-foreground: var(--navy-deep);
+  --secondary-foreground: #282828;
   --muted: var(--surface-alt);
   --muted-foreground: var(--slate-body);
-  --accent: oklch(0.95 0.025 292);
-  --accent-foreground: var(--navy-deep);
+  --accent: #EFECE4;
+  --accent-foreground: #282828;
   --destructive: oklch(0.60 0.22 27);
-  --destructive-foreground: oklch(1 0 0);
-  --border: oklch(0.91 0.02 292);            /* Subtle Lavender Border #E5DCF2 */
-  --input: oklch(0.91 0.02 292);
+  --destructive-foreground: #FFFFFF;
+  --border: #E5E0D5;                         /* Warm Neutral Off-White Border */
+  --input: #E5E0D5;
   --ring: var(--brand);
 }
 
@@ -181,7 +182,7 @@
   background: linear-gradient(
     90deg,
     transparent,
-    oklch(0.56 0.21 293 / 0.35),
+    rgba(72, 72, 72, 0.35),
     transparent
   );
   background-size: 200% 100%;
@@ -212,16 +213,16 @@
 
 .grid-bg {
   background-image:
-    linear-gradient(to right, oklch(1 0 0 / 0.06) 1px, transparent 1px),
-    linear-gradient(to bottom, oklch(1 0 0 / 0.06) 1px, transparent 1px);
+    linear-gradient(to right, rgba(255, 255, 255, 0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
   background-size: 48px 48px;
 }
 
 .noise-bg {
   background-image:
-    radial-gradient(circle at 18% 12%, oklch(0.46 0.175 293 / 0.22), transparent 45%),
-    radial-gradient(circle at 82% 28%, oklch(0.56 0.21 293 / 0.16), transparent 48%),
-    radial-gradient(circle at 50% 90%, oklch(0.55 0.22 265 / 0.12), transparent 52%);
+    radial-gradient(circle at 18% 12%, rgba(50, 50, 50, 0.25), transparent 45%),
+    radial-gradient(circle at 82% 28%, rgba(80, 80, 80, 0.18), transparent 48%),
+    radial-gradient(circle at 50% 90%, rgba(40, 40, 40, 0.15), transparent 52%);
 }
 
 /* Rendered Blog HTML Styles */
@@ -305,7 +306,7 @@
   padding-left: 1.25rem;
   margin: 1.5rem 0;
   font-style: italic;
-  background: oklch(0.55 0.22 265 / 0.05);
+  background: rgba(210, 180, 140, 0.08);
   padding-top: 0.75rem;
   padding-bottom: 0.75rem;
   border-radius: 0 0.75rem 0.75rem 0;
@@ -343,5 +344,41 @@
   animation: none !important;
 }
 
+/* ========================================================================== */
+/* Luxury Light-to-Dark Typography Gradients                                 */
+/* ========================================================================== */
+.text-gradient-gold {
+  background: linear-gradient(135deg, #FFF4E2 0%, #E8CCA1 28%, #D2B48C 50%, #B89260 75%, #7D5B2A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  display: inline-block;
+  filter: drop-shadow(0 2px 18px rgba(210, 180, 140, 0.25));
+}
 
- 
+.text-gradient-silver {
+  background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F0 35%, #D4D4CC 70%, #9E9E94 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  display: inline;
+  filter: drop-shadow(0 2px 14px rgba(255, 255, 255, 0.12));
+}
+
+.text-gradient-rich {
+  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 30%, #DECAA8 65%, #B8966C 85%, #8C6D46 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
+  display: inline-block;
+  filter: drop-shadow(0 2px 16px rgba(210, 180, 140, 0.20));
+}

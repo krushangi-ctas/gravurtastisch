@@ -154,9 +154,9 @@ function BlogsPage() {
                 <span>Gravurtastisch Journal & Studio Notes</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white font-display leading-[1.15]">
-                Actionable Insights for <br className="hidden sm:inline" />
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-brand-bright via-amber-300 to-purple-300">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-display leading-[1.15]">
+                <span className="text-gradient-silver">Actionable Insights for</span> <br className="hidden sm:inline" />
+                <span className="text-gradient-gold">
                   Premium Personalization Studio
                 </span>
               </h1>
@@ -201,7 +201,7 @@ function BlogsPage() {
                     }}
                     className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                       selectedTag === cat
-                        ? "bg-brand text-white shadow-md shadow-brand/25 scale-105"
+                        ? "bg-brand text-navy-deep font-bold shadow-md shadow-brand/25 scale-105"
                         : "bg-white/10 text-white/70 hover:bg-white/15 hover:text-white border border-white/10"
                     }`}
                   >
@@ -259,7 +259,7 @@ function BlogsPage() {
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
-                    className="mt-4 px-4 py-2 rounded-lg bg-brand text-white text-xs font-semibold hover:bg-brand-dark transition-colors"
+                    className="mt-4 px-4 py-2 rounded-lg bg-brand text-navy-deep text-xs font-bold hover:bg-brand-bright transition-colors"
                   >
                     View All Articles
                   </button>
@@ -350,7 +350,7 @@ function BlogsPage() {
                         onClick={() => setCurrentPage(page)}
                         className={`h-10 w-10 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           currentPage === page
-                            ? "bg-brand text-white shadow-md shadow-brand/30"
+                            ? "bg-brand text-navy-deep font-bold shadow-md shadow-brand/30"
                             : "border border-slate-200 dark:border-white/10 bg-white dark:bg-navy-deep text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-white/10"
                         }`}
                       >
@@ -393,7 +393,7 @@ function BlogsPage() {
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <a
                     href="#register"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand hover:bg-brand-dark text-white font-bold text-sm shadow-lg shadow-brand/30 transition-all hover:scale-105"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-brand hover:bg-brand-bright text-navy-deep font-bold text-sm shadow-lg shadow-brand/30 transition-all hover:scale-105"
                   >
                     <span>Start a custom order</span>
                     <ArrowRight className="h-4 w-4" />

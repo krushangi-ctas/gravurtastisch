@@ -339,7 +339,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 						{/* Metadata Bar */}
 						<div className="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center justify-between gap-4 text-xs sm:text-sm text-slate-400">
 							<div className="flex items-center gap-3">
-								<div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#613EA3] to-[#E89B5C] flex items-center justify-center text-white font-bold text-xs shadow-md ring-2 ring-white/10">
+								<div className="h-9 w-9 rounded-full bg-gradient-to-br from-[#282828] to-[#5A5A5A] flex items-center justify-center text-white font-bold text-xs shadow-md ring-2 ring-white/10">
 									G
 								</div>
 								<div>
@@ -500,7 +500,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 										<Button
 											variant="contained"
 											size="small"
-											className="bg-[#613EA3] hover:bg-[#452B78] text-white normal-case font-semibold text-xs px-4 py-2 rounded-lg"
+											className="bg-[#282828] hover:bg-[#3E3E3E] text-white normal-case font-semibold text-xs px-4 py-2 rounded-lg"
 										>
 											Place Custom Order
 										</Button>
@@ -512,7 +512,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 						{/* Sidebar Column */}
 						<div className="lg:col-span-4 space-y-6">
 							{/* Amazon TOS Compliant Card */}
-							<div className="rounded-2xl p-6 bg-gradient-to-b from-[#2A1848] to-[#452B78] text-white border border-white/10 shadow-lg">
+							<div className="rounded-2xl p-6 bg-gradient-to-b from-[#282828] to-[#181818] text-white border border-white/10 shadow-lg">
 								<div className="h-10 w-10 rounded-xl bg-amber-400/20 text-amber-300 flex items-center justify-center mb-4">
 									<FuseSvgIcon size={20}>heroicons-outline:sparkles</FuseSvgIcon>
 								</div>
