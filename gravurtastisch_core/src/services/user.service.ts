@@ -65,7 +65,10 @@ const createManagedUser = async (actor, body) => {
     const sellerOrgId = sellerOwner ? actor._id : actor.parentId;
 
     if (!isAdminScope && !sellerOrgId) {
-      return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to perform this action.'
+      );
     }
 
     if (!body.role_id) {
@@ -119,7 +122,10 @@ const createManagedUser = async (actor, body) => {
         isEmailVerified: true,
       };
     } else {
-      return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to perform this action.'
+      );
     }
 
     if (body.password) {
@@ -263,7 +269,10 @@ const listSellerTeamUsers = async (actor, query = {}) => {
     const { isSellerOwner } = require('./permission.service');
     const ownerId = isSellerOwner(actor) ? actor._id : actor.parentId;
     if (!ownerId) {
-      return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to view team members.'
+      );
     }
 
     const { filter, page, limit, sort } = buildUserListQuery(

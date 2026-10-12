@@ -142,7 +142,7 @@ const adminUpdateUser = catchAsync(async (req, res) => {
     ) {
       return res.status(httpStatus.FORBIDDEN).send({
         status: httpStatus.FORBIDDEN,
-        message: 'Forbidden',
+        message: 'You do not have permission to modify this user.',
       });
     }
   }

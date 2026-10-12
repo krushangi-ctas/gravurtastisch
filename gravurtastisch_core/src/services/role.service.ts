@@ -49,14 +49,17 @@ const createRole = async (actor, body) => {
   try {
     const scope = body.scope || (actor.isSellerAdmin ? 'seller' : 'admin');
     if (!assertScopeAccess(actor, scope)) {
-      return createResponse(httpStatus.FORBIDDEN, 'Cannot create roles for this scope');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to create roles for this scope'
+      );
     }
 
     const ownerId = resolveOwnerId(actor, scope);
     if (scope === 'seller' && !ownerId) {
       return createResponse(
         httpStatus.FORBIDDEN,
-        'Only seller admins can create seller roles'
+        'Only seller admins have permission to create seller roles'
       );
     }
 
@@ -95,7 +98,10 @@ const listRoles = async (actor, query = {}) => {
       (actor.isSuperAdmin || actor.userType === 'admin' ? 'admin' : 'seller');
 
     if (!assertScopeAccess(actor, scope)) {
-      return createResponse(httpStatus.FORBIDDEN, 'Cannot list roles for this scope');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to view roles for this scope'
+      );
     }
 
     const filter = {
@@ -138,13 +144,19 @@ const getRoleById = async (actor, roleId) => {
     }
 
     if (!assertScopeAccess(actor, role.scope)) {
-      return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to view this role'
+      );
     }
 
     if (role.scope === 'seller') {
       const ownerId = resolveOwnerId(actor, 'seller');
       if (String(role.ownerId) !== String(ownerId) && !actor.isSuperAdmin) {
-        return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+        return createResponse(
+          httpStatus.FORBIDDEN,
+          'You do not have permission to view roles belonging to another organization'
+        );
       }
     }
 
@@ -165,12 +177,18 @@ const updateRole = async (actor, roleId, body) => {
       return createResponse(httpStatus.FORBIDDEN, 'System roles cannot be modified');
     }
     if (!assertScopeAccess(actor, role.scope)) {
-      return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to modify this role'
+      );
     }
     if (role.scope === 'seller') {
       const ownerId = resolveOwnerId(actor, 'seller');
       if (String(role.ownerId) !== String(ownerId) && !actor.isSuperAdmin) {
-        return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+        return createResponse(
+          httpStatus.FORBIDDEN,
+          'You do not have permission to modify roles belonging to another organization'
+        );
       }
     }
 
@@ -200,12 +218,18 @@ const deleteRole = async (actor, roleId) => {
       return createResponse(httpStatus.FORBIDDEN, 'System roles cannot be deleted');
     }
     if (!assertScopeAccess(actor, role.scope)) {
-      return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+      return createResponse(
+        httpStatus.FORBIDDEN,
+        'You do not have permission to delete this role'
+      );
     }
     if (role.scope === 'seller') {
       const ownerId = resolveOwnerId(actor, 'seller');
       if (String(role.ownerId) !== String(ownerId) && !actor.isSuperAdmin) {
-        return createResponse(httpStatus.FORBIDDEN, 'Forbidden');
+        return createResponse(
+          httpStatus.FORBIDDEN,
+          'You do not have permission to delete roles belonging to another organization'
+        );
       }
     }
 

@@ -39,6 +39,7 @@ import {
 	useTeamUsers
 } from '../../api/hooks/useUsers';
 import { User } from '../../api/services/usersApiService';
+import { getErrorMessage } from '@/utils/errorMessage';
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -299,8 +300,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			setCreateOpen(false);
 			resetCreateForm();
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Failed to create user.', {
+			const errMsg = getErrorMessage(err, 'Failed to create user.');
+			enqueueSnackbar(errMsg, {
 				variant: 'error'
 			});
 		}
@@ -348,8 +349,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			}
 			setConfirmState({ open: false, type: 'status', user: null });
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Action failed. Please try again.', { variant: 'error' });
+			const errMsg = getErrorMessage(err, 'Action failed. Please try again.');
+			enqueueSnackbar(errMsg, { variant: 'error' });
 		} finally {
 			setIsActionLoading(false);
 		}
@@ -393,8 +394,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			enqueueSnackbar('User updated.', { variant: 'success' });
 			setEditOpen(false);
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Failed to update user.', {
+			const errMsg = getErrorMessage(err, 'Failed to update user.');
+			enqueueSnackbar(errMsg, {
 				variant: 'error'
 			});
 		}

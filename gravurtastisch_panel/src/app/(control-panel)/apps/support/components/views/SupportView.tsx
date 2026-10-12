@@ -23,6 +23,7 @@ import { Navigate } from 'react-router';
 import usePermissions from '@/hooks/usePermissions';
 import { useAllSupportRequests, useUpdateSupportStatus } from '../../api/hooks/useSupport';
 import { SupportRequest } from '../../api/services/supportApiService';
+import { getErrorMessage } from '@/utils/errorMessage';
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -225,8 +226,8 @@ function SupportContent({
 			});
 			setConfirmState({ open: false, request: null });
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Failed to update request status.', {
+			const errMsg = getErrorMessage(err, 'Failed to update request status.');
+			enqueueSnackbar(errMsg, {
 				variant: 'error'
 			});
 		} finally {

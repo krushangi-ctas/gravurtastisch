@@ -54,7 +54,7 @@ const requirePermission =
         return next(
           new ApiError(
             httpStatus.FORBIDDEN,
-            `Missing permission: ${section}.${action}`
+            `You do not have permission to perform this action (${section}.${action}).`
           )
         );
       }
@@ -97,7 +97,10 @@ const requireAnyPermission =
           .map(([section, action]) => `${section}.${action}`)
           .join(' | ');
         return next(
-          new ApiError(httpStatus.FORBIDDEN, `Missing permission: ${label}`)
+          new ApiError(
+            httpStatus.FORBIDDEN,
+            `You do not have permission to perform this action (${label}).`
+          )
         );
       }
 

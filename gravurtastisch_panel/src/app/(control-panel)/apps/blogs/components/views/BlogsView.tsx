@@ -27,6 +27,7 @@ import usePermissions from '@/hooks/usePermissions';
 import BlogFormDialog from '../forms/BlogFormDialog';
 import BlogPreviewDialog from '../dialogs/BlogPreviewDialog';
 import CustomStatusSwitch from '@/components/CustomSwitch';
+import { getErrorMessage } from '@/utils/errorMessage';
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -276,8 +277,8 @@ function BlogsContent({
 			}
 			setConfirmState({ open: false, type: 'delete', blog: null });
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Action failed. Please try again.', { variant: 'error' });
+			const errMsg = getErrorMessage(err, 'Action failed. Please try again.');
+			enqueueSnackbar(errMsg, { variant: 'error' });
 		} finally {
 			setIsActionLoading(false);
 		}
