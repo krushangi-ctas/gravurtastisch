@@ -13,22 +13,30 @@ const smtpUser = config.email.smtp?.auth?.user || '';
 const smtpPass = config.email.smtp?.auth?.pass || '';
 const smtpPort = Number(config.email.smtp?.port) || 465;
 
-const transport = nodemailer.createTransport({
-  host: smtpHost,
-  port: smtpPort,
-  secure: smtpPort === 465,
-  auth: {
-    user: smtpUser,
-    pass: smtpPass,
-  },
-  tls: {
-    rejectUnauthorized: false, // Bypass strict SSL certificate security verification
-  },
-  connectionTimeout: 10000,
-  greetingTimeout: 10000,
-  socketTimeout: 10000,
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST,
+  port: Number(process.env.SMTP_PORT || 587),
+  secure: false,
+
+
+  connectionTimeout: 30000,
+  greetingTimeout: 15000,
+  socketTimeout: 60000,
+
+  pool: true,
+  maxConnections: 5,
+  maxMessages: 100,
+
 });
 
+async function verifySMTP() {
+  try {
+    await transporter.verify();
+    console.log("SMTP connection verified");
+  } catch (error) {
+    console.error("SMTP verification failed:", error.message);
+  }
+}
 /* istanbul ignore next */
 if (config.env !== 'test' && (smtpHost || smtpUser)) {
   transport
@@ -138,9 +146,8 @@ async function getMailTemplateByKey(key) {
 const sendEmailToTeam = async (to, cc = [], subject, text, requestData) => {
   if (!cc || (Array.isArray(cc) && cc.length === 0)) {
     cc = [
-      'surbhi.ctasis.llp@gmail.com',
-      'shailesh.naik@colorpapers.in',
-      'swapnil.parab@colorpapers.in',
+      'krushangi.ctasis.llp@gmail.com',
+      'arshilp@ctasis.com',
     ];
   }
   const msg = {
