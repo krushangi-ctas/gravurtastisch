@@ -13,12 +13,11 @@ const smtpUser = config.email.smtp?.auth?.user || '';
 const smtpPass = config.email.smtp?.auth?.pass || '';
 const smtpPort = Number(config.email.smtp?.port) || 465;
 
-const isSecure = smtpPort === 465;
+
 
 console.log('--- [SMTP CONFIG CHECK] ---');
 console.log('SMTP Host:', smtpHost);
 console.log('SMTP Port:', smtpPort);
-console.log('SMTP Secure:', isSecure);
 console.log('SMTP Username:', smtpUser ? smtpUser : '(EMPTY / NOT SET)');
 console.log('SMTP Password set:', smtpPass ? `YES (${smtpPass.length} chars)` : 'NO (EMPTY / NOT SET)');
 console.log('---------------------------');
@@ -26,7 +25,7 @@ console.log('---------------------------');
 const transport = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
-  secure: isSecure,
+  secure: false,
   auth: {
     user: smtpUser,
     pass: smtpPass,
