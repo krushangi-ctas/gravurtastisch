@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate } from 'react-router';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import { styled } from '@mui/material/styles';
 import {
 	Box,
@@ -343,7 +343,7 @@ function RolesView() {
 	);
 
 	if (!canAccessRoles) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Roles" />;
 	}
 
 	if (sectionsLoading) {

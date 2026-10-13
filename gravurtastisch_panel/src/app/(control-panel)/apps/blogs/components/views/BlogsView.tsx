@@ -22,7 +22,7 @@ import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
 import moment from 'moment';
 import { useAllBlogs, useUpdateBlogStatus } from '../../api/hooks/useBlogs';
 import { Blog } from '../../api/services/blogsApiService';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import BlogFormDialog from '../forms/BlogFormDialog';
 import BlogPreviewDialog from '../dialogs/BlogPreviewDialog';
@@ -811,7 +811,7 @@ export default function BlogsView() {
 	}, [refetch]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Blog Management" />;
 	}
 
 	return (

@@ -3,7 +3,7 @@ import OrdersHeader from '../../ui/orders/OrdersHeader';
 import OrdersTable from '../../ui/orders/OrdersTable';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import { styled } from '@mui/material/styles';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import { useMarketplace } from '../../../api/hooks/orders/useOrders';
 
@@ -71,7 +71,7 @@ function Orders() {
   }, [marketplaces, selectedMarketplace.length]);
 
   if (!canView('orders')) {
-    return <Navigate to="/" replace />;
+    return <AccessDeniedView sectionTitle="Orders" />;
   }
 
   return (

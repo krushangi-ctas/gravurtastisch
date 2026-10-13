@@ -14,7 +14,7 @@ import {
 	Tooltip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import SiteConfigurationSkeleton from '@/components/skeletons/SiteConfigurationSkeleton';
 import {
@@ -96,7 +96,7 @@ function SiteConfigurationView() {
 		isLoading: isConfigLoading,
 		refetch,
 		isRefetching
-	} = useWebsiteConfiguration();
+	} = useWebsiteConfiguration(hasAccess);
 	const updateMutation = useUpdateWebsiteConfiguration();
 
 	const {
@@ -144,7 +144,7 @@ function SiteConfigurationView() {
 	}, [configResponse, reset]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Site Configuration" />;
 	}
 
 	const onSubmit = async (data: SiteConfigFormType) => {

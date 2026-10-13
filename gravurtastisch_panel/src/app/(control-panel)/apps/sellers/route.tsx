@@ -1,12 +1,12 @@
 import { lazy } from 'react';
-import { Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
+import PermissionGuard from '@/components/PermissionGuard';
 
 const UsersView = lazy(() => import('../users/components/views/UsersView'));
 
 const Route: FuseRouteItemType = {
 	path: '/sellers',
-	element: <Outlet />,
+	element: <PermissionGuard section="sellers" title="Sellers" />,
 	children: [
 		{
 			path: '',

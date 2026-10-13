@@ -22,7 +22,7 @@ import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
 import moment from 'moment';
 import { useAllPlans, useUpdatePlanStatus } from '../../api/hooks/usePlans';
 import { Plan } from '../../api/services/plansApiService';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import PlanFormDialog from '../forms/PlanFormDialog';
 import CustomStatusSwitch from '@/components/CustomSwitch';
@@ -857,7 +857,7 @@ export default function PlansView() {
 	}, [refetch]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Plans" />;
 	}
 
 	return (

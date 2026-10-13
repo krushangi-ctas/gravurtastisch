@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import { type MRT_ColumnDef, type MRT_SortingState } from 'material-react-table';
 import DataTable from 'src/components/data-table/DataTable';
 import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import { useAllSupportRequests, useUpdateSupportStatus } from '../../api/hooks/useSupport';
 import { SupportRequest } from '../../api/services/supportApiService';
@@ -757,7 +757,7 @@ function SupportView() {
 	}, [refetch]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Customer Support" />;
 	}
 
 	return (

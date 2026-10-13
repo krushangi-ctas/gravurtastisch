@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import usePathname from '@fuse/hooks/usePathname';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import SettingsAppSidebarContent from '../ui/SettingsAppSidebarContent';
 import SettingsAppHeader from '../ui/SettingsAppHeader';
@@ -76,7 +76,7 @@ function SettingsAppView(props: SettingsAppProps) {
   }, [pathname, isMobile]);
 
   if (!canView('settings')) {
-    return <Navigate to="/" replace />;
+    return <AccessDeniedView sectionTitle="Settings" />;
   }
 
   return (

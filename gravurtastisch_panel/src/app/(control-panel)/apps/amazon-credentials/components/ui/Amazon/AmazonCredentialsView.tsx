@@ -1,7 +1,7 @@
 'use client';
 import FusePageSimple from '@fuse/core/FusePageSimple';
 import { styled } from '@mui/material/styles';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import useUser from 'src/@auth/useUser';
 import {
@@ -1152,7 +1152,7 @@ function AmazonCredentialsView() {
   };
 
   if (!canView('amazon-credentials')) {
-    return <Navigate to="/" replace />;
+    return <AccessDeniedView sectionTitle="Amazon Authorisation" />;
   }
 
   if (isCredentialsLoading || isMarketplacesLoading) {

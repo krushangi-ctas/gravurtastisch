@@ -9,11 +9,11 @@ const orderQueryKey = (orderId: string) => [
   orderId,
 ];
 
-export const useOrder = (orderId: string) => {
+export const useOrder = (orderId: string, enabled = true) => {
   return useQuery<Order>({
     queryKey: orderQueryKey(orderId),
     queryFn: () => getOrder(orderId),
-    enabled: !!orderId,
+    enabled: !!orderId && enabled,
   });
 };
 
