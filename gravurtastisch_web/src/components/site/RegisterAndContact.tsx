@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { registerSeller, submitSupportMessage } from "@/lib/api";
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
@@ -24,6 +24,15 @@ function RegisterSection() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (sent) {
+      const timer = setTimeout(() => {
+        setSent(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [sent]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -164,6 +173,15 @@ function ContactSection() {
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (sent) {
+      const timer = setTimeout(() => {
+        setSent(false);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [sent]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
