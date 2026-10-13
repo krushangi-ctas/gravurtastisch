@@ -58,6 +58,8 @@ const corsOptions = {
     'usertimezone',
     'Range',
     'X-Custom-Header',
+    'x-keep-alive-client',
+    'X-Keep-Alive-Client',
   ],
   exposedHeaders: ['Content-Range', 'X-Content-Range', 'Authorization'],
   credentials: false,
@@ -77,7 +79,7 @@ app.use((req, res, next) => {
   );
   res.header(
     'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization, usertimezone, Range, X-Custom-Header'
+    'Origin, X-Requested-With, Content-Type, Accept, Authorization, usertimezone, Range, X-Custom-Header, x-keep-alive-client, X-Keep-Alive-Client, *'
   );
   res.header(
     'Access-Control-Expose-Headers',
@@ -106,10 +108,20 @@ if (config.env === 'production') {
 // v1 api routes  PRIVATE APIs
 app.use('/v1', routes);
 
-// Health check / API status endpoint
-app.get('/', (req, res) => {
-  res.status(200).json({ status: 'ok', message: 'Gravurtastisch API is running' });
-});
+// Health check / API status endpoints (keeps service awake & responds to uptime monitors)
+const healthHandler = (req, res) => {
+  res.status(200).json({
+    status: 'ok',
+    uptime: Math.floor(process.uptime()),
+    timestamp: new Date().toISOString(),
+    message: 'Gravurtastisch API is running and healthy',
+    env: config.env || 'development',
+  });
+};
+
+app.get(['/', '/health', '/v1/health'], healthHandler);
+app.head(['/', '/health', '/v1/health'], (req, res) => res.status(200).end());
+
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

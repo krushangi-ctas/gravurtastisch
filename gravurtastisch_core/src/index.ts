@@ -3,6 +3,7 @@ const app = require('./app');
 const config = require('./config/config');
 const logger = require('./config/logger');
 const http = require('http');
+const { startKeepAlive, stopKeepAlive } = require('./services/keepAlive.service');
 // const cron = require('node-cron');
 // const { runSolicitationProcess } = require('./solicitationServices');
 
@@ -17,6 +18,8 @@ mongoose
     // Start HTTP server
     server.listen(config.port, () => {
       logger.info(`Listening to port ${config.port}`);
+      // Start 5-minute health check keep-alive service
+      startKeepAlive();
     });
   })
   .catch((err) => {
@@ -51,6 +54,7 @@ process.on('unhandledRejection', unexpectedErrorHandler);
 
 const shutdown = (signal) => {
   logger.info(`${signal} received`);
+  stopKeepAlive();
   const finish = () => {
     mongoose.connection.close(() => process.exit(0));
   };

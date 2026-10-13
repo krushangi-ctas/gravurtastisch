@@ -17,6 +17,7 @@ import { QuickPanelProvider } from '@/components/theme-layouts/components/quickP
 import RootThemeProvider from '@/contexts/RootThemeProvider';
 import { NavigationContextProvider } from '@/components/theme-layouts/components/navigation/contexts/NavigationContextProvider';
 import ShadcnToast from '@/components/ui/ShadcnToast';
+import useHealthKeepAlive from '@/hooks/useHealthKeepAlive';
 
 const queryClient = new QueryClient({
 	defaultOptions: {
@@ -31,6 +32,8 @@ const queryClient = new QueryClient({
  * The main App component.
  */
 function App() {
+	useHealthKeepAlive();
+
 	const AppContextValue = {
 		routes
 	};
