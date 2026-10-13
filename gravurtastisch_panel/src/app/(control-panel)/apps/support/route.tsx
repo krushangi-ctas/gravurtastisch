@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
+import PermissionGuard from '@/components/PermissionGuard';
 import SupportView from './components/views/SupportView';
 
 /**
@@ -7,7 +7,7 @@ import SupportView from './components/views/SupportView';
  */
 const Route: FuseRouteItemType = {
 	path: '/support',
-	element: <Outlet />,
+	element: <PermissionGuard section="support" title="Customer Support" />,
 	children: [
 		{
 			path: '',

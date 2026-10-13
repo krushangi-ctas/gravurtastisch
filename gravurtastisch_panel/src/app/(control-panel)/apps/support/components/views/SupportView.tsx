@@ -19,7 +19,7 @@ import { useSnackbar } from 'notistack';
 import { type MRT_ColumnDef, type MRT_SortingState } from 'material-react-table';
 import DataTable from 'src/components/data-table/DataTable';
 import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import { useAllSupportRequests, useUpdateSupportStatus } from '../../api/hooks/useSupport';
 import { SupportRequest } from '../../api/services/supportApiService';
@@ -66,15 +66,15 @@ function SupportHeader({
 	onRefresh: () => void;
 }) {
 	return (
-		<div className="w-full bg-primary-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
+		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
 			{/* Left Title & Icon */}
 			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 text-white">
-					<FuseSvgIcon size={18} className="text-white">
+				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
+					<FuseSvgIcon size={18} className="text-slate-900">
 						heroicons-outline:chat-bubble-left-right
 					</FuseSvgIcon>
 				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-white m-0">
+				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
 					Support
 				</h1>
 			</div>
@@ -330,36 +330,17 @@ function SupportContent({
 					const isResolved = row.original.status === 'resolved';
 					return (
 						<Tooltip title={isResolved ? 'Status: Resolved' : 'Status: Pending'} arrow>
-							<Box
-								sx={{
-									display: 'inline-flex',
-									alignItems: 'center',
-									gap: 0.5,
-									px: 1.25,
-									py: 0.3,
-									borderRadius: '6px',
-									fontSize: 11.5,
-									fontWeight: 600,
-									height: 24,
-									boxSizing: 'border-box',
-									lineHeight: 1,
-									bgcolor: isResolved
-										? (t) => (t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)')
-										: (t) => (t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)'),
-									color: isResolved
-										? (t) => (t.palette.mode === 'dark' ? '#4ADE80' : '#16A34A')
-										: (t) => (t.palette.mode === 'dark' ? '#FBBF24' : '#D97706'),
-									border: '1px solid',
-									borderColor: isResolved
-										? (t) => (t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.25)')
-										: (t) => (t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.25)')
-								}}
+							<span
+								className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isResolved
+									? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+									: 'bg-secondary-50 text-secondary-900 border-secondary-300'
+									}`}
 							>
-								<FuseSvgIcon size={13}>
+								<FuseSvgIcon size={14} className={isResolved ? 'text-emerald-600' : 'text-secondary-700'}>
 									{isResolved ? 'heroicons-outline:check-circle' : 'lucide:clock'}
 								</FuseSvgIcon>
-								{isResolved ? 'Resolved' : 'Pending'}
-							</Box>
+								<span>{isResolved ? 'Resolved' : 'Pending'}</span>
+							</span>
 						</Tooltip>
 					);
 				}
@@ -564,11 +545,13 @@ function SupportContent({
 							'& .MuiTableCell-root': {
 								borderBottom: '1px solid',
 								borderColor: 'divider',
-								padding: '4px 8px',
+								padding: '2px 8px',
 								overflow: 'hidden',
 								textOverflow: 'ellipsis',
 								whiteSpace: 'nowrap',
-								maxWidth: '100%'
+								maxWidth: '100%',
+								height: '37px',
+								boxSizing: 'border-box'
 							},
 							'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
 								fontWeight: 700,
@@ -774,7 +757,7 @@ function SupportView() {
 	}, [refetch]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Customer Support" />;
 	}
 
 	return (

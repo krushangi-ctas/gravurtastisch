@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
+import PermissionGuard from '@/components/PermissionGuard';
 import SiteConfigurationView from './components/views/SiteConfigurationView';
 
 /**
@@ -7,7 +7,7 @@ import SiteConfigurationView from './components/views/SiteConfigurationView';
  */
 const Route: FuseRouteItemType = {
 	path: '/site-configuration',
-	element: <Outlet />,
+	element: <PermissionGuard section="site-configuration" title="Site Configuration" />,
 	children: [
 		{
 			path: '',

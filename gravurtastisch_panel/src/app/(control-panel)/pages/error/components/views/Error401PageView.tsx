@@ -1,13 +1,27 @@
 'use client';
 import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
 import { motion } from 'motion/react';
-import Link from '@fuse/core/Link';
 import Box from '@mui/material/Box';
+import { useNavigate } from 'react-router';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import usePermissions from '@/hooks/usePermissions';
 
 /**
  * Error 401 page.
  */
 function Error401PageView() {
+	const navigate = useNavigate();
+	const { defaultLandingRoute } = usePermissions();
+
+	const handleBack = () => {
+		if (window.history.length > 1) {
+			navigate(-1);
+		} else {
+			navigate(defaultLandingRoute || '/');
+		}
+	};
+
 	return (
 		<div className="flex flex-1 flex-col items-center justify-center p-4">
 			<div className="w-full max-w-xl text-center">
@@ -210,10 +224,17 @@ function Error401PageView() {
 						You do not have permission to view this page.
 					</Typography>
 				</motion.div>
-				<Link
-					className="mt-12 block font-normal"
-					to="/"
-				/>
+				<div className="mt-8 flex items-center justify-center">
+					<Button
+						variant="contained"
+						color="primary"
+						onClick={handleBack}
+						startIcon={<FuseSvgIcon size={18}>lucide:arrow-left</FuseSvgIcon>}
+						className="px-8 py-2.5 rounded-xl font-medium shadow-sm hover:shadow transition-all"
+					>
+						Back
+					</Button>
+				</div>
 			</div>
 		</div>
 	);

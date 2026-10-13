@@ -15,6 +15,7 @@ import i18n from "../i18n/config";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/toast";
+import { API_V1 } from "../lib/api";
 
 function NotFoundComponent() {
   const { t } = useTranslation();
@@ -141,6 +142,20 @@ function RootComponent() {
       }
     }
   }, [location.pathname, location.hash]);
+
+  // Keep-alive: Pings backend /health every 5 minutes to prevent sleep
+  useEffect(() => {
+    const healthUrl = `${API_V1.replace(/\/v1$/, "")}/health`;
+    const ping = () => {
+      fetch(healthUrl, { method: "GET", cache: "no-store" }).catch(() => {});
+    };
+    const t = setTimeout(ping, 3000);
+    const id = setInterval(ping, 5 * 60 * 1000);
+    return () => {
+      clearTimeout(t);
+      clearInterval(id);
+    };
+  }, []);
 
   return (
     <I18nextProvider i18n={i18n}>

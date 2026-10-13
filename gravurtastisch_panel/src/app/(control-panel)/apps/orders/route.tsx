@@ -1,6 +1,6 @@
 import { lazy } from 'react';
-import { Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
+import PermissionGuard from '@/components/PermissionGuard';
 import OrdersView from './components/views/orders/OrdersView';
 
 const OrderView = lazy(
@@ -12,7 +12,7 @@ const OrderView = lazy(
  */
 const Route: FuseRouteItemType = {
   path: 'orders',
-  element: <Outlet />,
+  element: <PermissionGuard section="orders" title="Orders" />,
   children: [
     {
       path: '',

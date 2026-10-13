@@ -234,27 +234,27 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				className="flex flex-col h-full min-h-0 overflow-hidden"
 				style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' }}
 			>
-				{/* Top Deep Navy Banner Header */}
-				<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+				{/* Top Tan Banner Header */}
+				<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
 					<div className="flex items-center gap-2.5">
-						<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
-							<FuseSvgIcon size={18} className="text-white">
+						<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
+							<FuseSvgIcon size={18} className="text-slate-900">
 								heroicons-outline:newspaper
 							</FuseSvgIcon>
 						</div>
-						<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+						<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
 							{isEdit ? 'Edit Blog' : 'Create Blog'}
 						</h1>
 					</div>
 
-					<button
-						type="button"
+					<IconButton
+						size="small"
 						onClick={onClose}
-						className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
+						className="text-slate-900 hover:bg-black/10 transition-colors"
+						aria-label="Close"
 					>
-						<FuseSvgIcon size={14}>heroicons-outline:arrow-left</FuseSvgIcon>
-						<span>Back to Blogs</span>
-					</button>
+						<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+					</IconButton>
 				</div>
 
 				<DialogContent
@@ -522,19 +522,19 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 					}
 				}}
 			>
-				<Box className="flex items-center justify-between px-5 py-3.5 bg-primary-700 text-white">
+				<Box className="flex items-center justify-between px-5 py-3.5 bg-secondary-500 text-slate-900">
 					<div className="flex items-center gap-2.5 max-w-[80%]">
-						<FuseSvgIcon size={18} className="text-white">
+						<FuseSvgIcon size={18} className="text-slate-900">
 							heroicons-outline:photo
 						</FuseSvgIcon>
-						<Typography className="text-sm font-bold text-white truncate">
+						<Typography className="text-sm font-bold text-slate-900 truncate">
 							{previewModalTitle || 'Image Preview'}
 						</Typography>
 					</div>
 					<IconButton
 						size="small"
 						onClick={() => setPreviewModalUrl(null)}
-						className="text-white/80 hover:text-white"
+						className="text-slate-900 hover:bg-black/10"
 					>
 						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>

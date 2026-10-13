@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
+import PermissionGuard from '@/components/PermissionGuard';
 import PlansView from './components/views/PlansView';
 
 /**
@@ -7,7 +7,7 @@ import PlansView from './components/views/PlansView';
  */
 const Route: FuseRouteItemType = {
 	path: '/plans',
-	element: <Outlet />,
+	element: <PermissionGuard section="plans" title="Plans" />,
 	children: [
 		{
 			path: '',

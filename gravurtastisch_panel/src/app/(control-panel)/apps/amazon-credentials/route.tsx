@@ -1,5 +1,5 @@
-import { Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
+import PermissionGuard from '@/components/PermissionGuard';
 import AmazonCredentialsView from './components/views/amazonCredentials/AmazonCredentialView';
 
 /**
@@ -7,7 +7,7 @@ import AmazonCredentialsView from './components/views/amazonCredentials/AmazonCr
  */
 const Route: FuseRouteItemType = {
   path: '/amazon-credentials',
-  element: <Outlet />,
+  element: <PermissionGuard section="amazon-credentials" title="Amazon Authorisation" />,
   children: [
     {
       path: '',

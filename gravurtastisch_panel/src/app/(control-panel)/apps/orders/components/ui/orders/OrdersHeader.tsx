@@ -401,15 +401,15 @@ function OrdersHeader({
   };
 
   return (
-    <div className="w-full bg-primary-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2.5 shadow-md">
+    <div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2.5 shadow-md">
       {/* Left Title & Icon */}
       <div className="flex items-center gap-2.5 w-full lg:w-auto shrink-0">
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 text-white">
-          <FuseSvgIcon size={18} className="text-white">
+        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
+          <FuseSvgIcon size={18} className="text-slate-900">
             heroicons-outline:shopping-bag
           </FuseSvgIcon>
         </div>
-        <h1 className="text-base sm:text-lg font-bold tracking-tight text-white m-0 whitespace-nowrap">
+        <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0 whitespace-nowrap">
           Orders
         </h1>
       </div>

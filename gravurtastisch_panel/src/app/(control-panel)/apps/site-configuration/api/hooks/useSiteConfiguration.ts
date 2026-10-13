@@ -12,12 +12,13 @@ export const siteConfigQueryKey = ['website-configuration'];
 /**
  * Hook to retrieve site configuration
  */
-export const useWebsiteConfiguration = () => {
+export const useWebsiteConfiguration = (enabled = true) => {
 	return useQuery<WebsiteConfigResponse>({
 		queryKey: siteConfigQueryKey,
 		queryFn: getWebsiteConfiguration,
 		refetchOnWindowFocus: true,
-		staleTime: 5000
+		staleTime: 5000,
+		enabled
 	});
 };
 

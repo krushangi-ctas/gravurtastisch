@@ -2,6 +2,7 @@ import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { memo } from 'react';
+import Logo from 'src/components/theme-layouts/components/Logo';
 import Navigation from 'src/components/theme-layouts/components/navigation/Navigation';
 import UserMenu from 'src/components/theme-layouts/components/UserMenu';
 
@@ -49,9 +50,9 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         className
       )}
     >
-      {/* <div className="flex h-12 shrink-0 flex-row items-center px-5 md:h-16">
-				<Logo />
-			</div> */}
+      <div className="flex h-20 shrink-0 items-center justify-center px-4 border-b border-black/5">
+        <Logo />
+      </div>
 
       <StyledContent
         className="flex min-h-0 flex-1 flex-col"

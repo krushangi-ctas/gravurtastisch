@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Navigate } from 'react-router';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import { styled } from '@mui/material/styles';
 import {
 	Box,
@@ -28,6 +28,7 @@ import { useSnackbar } from 'notistack';
 import { type MRT_ColumnDef, type MRT_Row, type MRT_SortingState } from 'material-react-table';
 import DataTable from 'src/components/data-table/DataTable';
 import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
+import CustomStatusSwitch from '@/components/CustomSwitch';
 import usePermissions from '@/hooks/usePermissions';
 import { useRoles } from '../../../roles/api/hooks/useRoles';
 import {
@@ -102,15 +103,15 @@ function UsersHeader({
 			: 'lucide:user-cog';
 
 	return (
-		<div className="w-full bg-primary-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
+		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
 			{/* Left Title & Icon */}
 			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 text-white">
-					<FuseSvgIcon size={18} className="text-white">
+				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
+					<FuseSvgIcon size={18} className="text-slate-900">
 						{icon}
 					</FuseSvgIcon>
 				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-white m-0">
+				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
 					{title}
 				</h1>
 			</div>
@@ -385,9 +386,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					businessName: isSellersMode ? editBusinessName : undefined,
 					planLimits: isSellersMode
 						? {
-								maxMarketplaces,
-								maxReviewRequestsPerMonth
-							}
+							maxMarketplaces,
+							maxReviewRequestsPerMonth
+						}
 						: undefined
 				}
 			});
@@ -461,11 +462,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					const isActive = status === 1;
 					return (
 						<span
-							className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
-								isActive
-									? 'bg-emerald-100 text-emerald-700'
-									: 'bg-amber-100 text-amber-700'
-							}`}
+							className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isActive
+								? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+								: 'bg-amber-50 text-amber-700 border-amber-200'
+								}`}
 						>
 							{isActive ? 'Active' : 'Inactive'}
 						</span>
@@ -489,9 +489,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					}
 				},
 				{
-					accessorKey: 'planLimits.maxMarketplaces',
+					id: 'planLimits.maxMarketplaces',
 					header: 'MAX MARKETPLACES',
 					size: 140,
+					accessorFn: (row) => row.planLimits?.maxMarketplaces,
 					Cell: ({ cell }) => (
 						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
 							{cell.getValue<number>() ?? '—'}
@@ -499,9 +500,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					)
 				},
 				{
-					accessorKey: 'planLimits.maxReviewRequestsPerMonth',
+					id: 'planLimits.maxReviewRequestsPerMonth',
 					header: 'MONTHLY QUOTA',
 					size: 140,
+					accessorFn: (row) => row.planLimits?.maxReviewRequestsPerMonth,
 					Cell: ({ cell }) => (
 						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
 							{cell.getValue<number>()?.toLocaleString() ?? '—'}
@@ -528,7 +530,11 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	}, [isSellersMode]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return (
+			<AccessDeniedView
+				sectionTitle={isSellersMode ? 'Sellers' : isTeamMode ? 'Team' : 'Admin Users'}
+			/>
+		);
 	}
 
 	return (
@@ -568,14 +574,14 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					<DataTable
 						columns={columns}
 						data={users}
-						tableId="users-management-table"
+						tableId={isSellersMode ? 'sellers-table' : isTeamMode ? 'team-table' : 'admin-users-table'}
 						enableRowActions
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
 							'mrt-row-actions': {
-								size: 90,
-								minSize: 80,
-								maxSize: 100
+								size: 105,
+								minSize: 95,
+								maxSize: 115
 							}
 						}}
 						enableRowSelection={false}
@@ -712,11 +718,13 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								'& .MuiTableCell-root': {
 									borderBottom: '1px solid',
 									borderColor: 'divider',
-									padding: '4px 8px',
+									padding: '2px 8px',
 									overflow: 'hidden',
 									textOverflow: 'ellipsis',
 									whiteSpace: 'nowrap',
-									maxWidth: '100%'
+									maxWidth: '100%',
+									height: '37px',
+									boxSizing: 'border-box'
 								},
 								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
 									fontWeight: 700,
@@ -737,28 +745,24 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							<Box className="flex items-center gap-1">
 								{canUpdate(sectionKey) && (
 									<>
-										<Tooltip title={row.original.status === 1 ? 'Deactivate user' : 'Activate user'} arrow>
-											<IconButton
-												size="small"
+										<Tooltip title={row.original.status === 1 ? 'Click to deactivate user' : 'Click to activate user'} arrow>
+											<Box
 												onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
-												className={
-													row.original.status === 1
-														? 'text-emerald-600 hover:text-emerald-800 p-1.5'
-														: 'text-amber-600 hover:text-amber-800 p-1.5'
-												}
+												className="cursor-pointer inline-flex items-center p-0.5"
+												sx={{ lineHeight: 0 }}
 											>
-												<FuseSvgIcon size={18}>
-													{row.original.status === 1
-														? 'heroicons-outline:check-circle'
-														: 'heroicons-outline:x-circle'}
-												</FuseSvgIcon>
-											</IconButton>
+												<CustomStatusSwitch
+													size="small"
+													checked={row.original.status === 1}
+													sx={{ pointerEvents: 'none' }}
+												/>
+											</Box>
 										</Tooltip>
 										<Tooltip title="Edit user" arrow>
 											<IconButton
 												size="small"
 												onClick={() => handleOpenEdit(row.original)}
-												className="text-slate-600 hover:text-slate-900 p-1.5"
+												className="text-slate-600 hover:text-slate-900 p-1"
 											>
 												<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
 											</IconButton>
@@ -769,7 +773,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									<Tooltip title="Delete user" arrow>
 										<IconButton
 											size="small"
-											className="text-red-500 hover:text-red-700 p-1.5"
+											className="text-red-500 hover:text-red-700 p-1"
 											onClick={() => handleOpenDeleteConfirm(row.original)}
 										>
 											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
@@ -798,26 +802,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
-										<FuseSvgIcon size={18} className="text-white">
+									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
+										<FuseSvgIcon size={18} className="text-slate-900">
 											{isTeamMode ? 'heroicons-outline:user-group' : 'heroicons-outline:user-plus'}
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
 										{isTeamMode ? 'Create Team Member' : 'Create Admin User'}
 									</h1>
 								</div>
 
-								<button
-									type="button"
+								<IconButton
+									size="small"
 									onClick={() => setCreateOpen(false)}
-									className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
+									className="text-slate-900 hover:bg-black/10 transition-colors"
+									aria-label="Close"
 								>
-									<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>
-									<span>Close</span>
-								</button>
+									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+								</IconButton>
 							</div>
 
 							<DialogContent
@@ -1005,26 +1009,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
-										<FuseSvgIcon size={18} className="text-white">
+									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
+										<FuseSvgIcon size={18} className="text-slate-900">
 											heroicons-outline:pencil-square
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
 										Edit User
 									</h1>
 								</div>
 
-								<button
-									type="button"
+								<IconButton
+									size="small"
 									onClick={() => setEditOpen(false)}
-									className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
+									className="text-slate-900 hover:bg-black/10 transition-colors"
+									aria-label="Close"
 								>
-									<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>
-									<span>Close</span>
-								</button>
+									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+								</IconButton>
 							</div>
 
 							<DialogContent
@@ -1258,9 +1262,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						<div className="p-6 pb-5 bg-white flex items-start justify-between gap-4">
 							<div className="flex items-start gap-3.5">
 								<div
-									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-										confirmState.type === 'delete' ? 'bg-red-100 text-red-500' : 'bg-amber-100 text-amber-500'
-									}`}
+									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete' ? 'bg-red-100 text-red-500' : 'bg-amber-100 text-amber-500'
+										}`}
 								>
 									<FuseSvgIcon size={24} className={confirmState.type === 'delete' ? 'text-red-500' : 'text-amber-500'}>
 										{confirmState.type === 'delete' ? 'heroicons-outline:trash' : 'heroicons-outline:exclamation-triangle'}
@@ -1311,11 +1314,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								type="button"
 								onClick={handleConfirmAction}
 								disabled={isActionLoading}
-								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${
-									confirmState.type === 'delete'
-										? 'bg-red-600 hover:bg-red-700'
-										: 'bg-primary-800 hover:bg-primary-900'
-								}`}
+								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${confirmState.type === 'delete'
+									? 'bg-red-600 hover:bg-red-700'
+									: 'bg-primary-800 hover:bg-primary-900'
+									}`}
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}
 								<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>

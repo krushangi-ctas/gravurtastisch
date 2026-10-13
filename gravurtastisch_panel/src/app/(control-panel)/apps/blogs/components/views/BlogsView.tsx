@@ -22,7 +22,7 @@ import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
 import moment from 'moment';
 import { useAllBlogs, useUpdateBlogStatus } from '../../api/hooks/useBlogs';
 import { Blog } from '../../api/services/blogsApiService';
-import { Navigate } from 'react-router';
+import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
 import BlogFormDialog from '../forms/BlogFormDialog';
 import BlogPreviewDialog from '../dialogs/BlogPreviewDialog';
@@ -74,15 +74,15 @@ function BlogsHeader({
 	canCreate: boolean;
 }) {
 	return (
-		<div className="w-full bg-primary-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md">
+		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md">
 			{/* Left Title & Icon */}
 			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 text-white">
-					<FuseSvgIcon size={18} className="text-white">
+				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
+					<FuseSvgIcon size={18} className="text-slate-900">
 						heroicons-outline:newspaper
 					</FuseSvgIcon>
 				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-white m-0">
+				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
 					Blogs
 				</h1>
 			</div>
@@ -314,12 +314,11 @@ function BlogsContent({
 									fontSize: 12,
 									fontStyle: 'italic',
 									color: 'text.secondary',
-									display: '-webkit-box',
-									WebkitLineClamp: 2,
-									WebkitBoxOrient: 'vertical',
+									whiteSpace: 'nowrap',
 									overflow: 'hidden',
+									textOverflow: 'ellipsis',
 									maxWidth: 420,
-									lineHeight: 1.3
+									lineHeight: 1.2
 								}}
 							>
 								{val || <span style={{ opacity: 0.6 }}>No excerpt provided</span>}
@@ -344,43 +343,12 @@ function BlogsContent({
 					}
 					return (
 						<Tooltip title={`${count} ${count === 1 ? 'image' : 'images'}`} arrow>
-							<Box
-								sx={{
-									display: 'inline-flex',
-									alignItems: 'center',
-									gap: 0.6,
-									px: 1.1,
-									py: 0.25,
-									height: 24,
-									borderRadius: '6px',
-									bgcolor: (t) =>
-										t.palette.mode === 'dark'
-											? 'rgba(14, 165, 233, 0.15)'
-											: 'rgba(14, 165, 233, 0.08)',
-									color: (t) =>
-										t.palette.mode === 'dark' ? '#E5E5E0' : '#282828',
-									border: '1px solid',
-									borderColor: (t) =>
-										t.palette.mode === 'dark'
-											? 'rgba(14, 165, 233, 0.32)'
-											: 'rgba(14, 165, 233, 0.22)',
-									boxSizing: 'border-box'
-								}}
-							>
-								<FuseSvgIcon size={13} sx={{ color: 'inherit' }}>
+							<span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-secondary-50 text-secondary-900 border border-secondary-300">
+								<FuseSvgIcon size={14} className="text-secondary-700">
 									heroicons-outline:photo
 								</FuseSvgIcon>
-								<Typography
-									sx={{
-										fontSize: 11.5,
-										fontWeight: 600,
-										color: 'inherit',
-										lineHeight: 1
-									}}
-								>
-									{count} {count === 1 ? 'image' : 'images'}
-								</Typography>
-							</Box>
+								<span>{count} {count === 1 ? 'image' : 'images'}</span>
+							</span>
 						</Tooltip>
 					);
 				}
@@ -441,6 +409,13 @@ function BlogsContent({
 					tableId="blogs-management-table"
 					enableRowActions
 					positionActionsColumn="last"
+					displayColumnDefOptions={{
+						'mrt-row-actions': {
+							size: 135,
+							minSize: 125,
+							maxSize: 145
+						}
+					}}
 					enableRowSelection={false}
 					state={{
 						isLoading,
@@ -575,11 +550,13 @@ function BlogsContent({
 							'& .MuiTableCell-root': {
 								borderBottom: '1px solid',
 								borderColor: 'divider',
-								padding: '4px 8px',
+								padding: '2px 8px',
 								overflow: 'hidden',
 								textOverflow: 'ellipsis',
 								whiteSpace: 'nowrap',
-								maxWidth: '100%'
+								maxWidth: '100%',
+								height: '37px',
+								boxSizing: 'border-box'
 							},
 							'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
 								fontWeight: 700,
@@ -597,12 +574,13 @@ function BlogsContent({
 						}
 					}}
 					renderRowActions={({ row }: { row: MRT_Row<Blog> }) => (
-						<Box className="flex items-center gap-1.5">
+						<Box className="flex items-center gap-1">
 							{canUpdate && (
 								<Tooltip title={row.original.status === 1 ? 'Click to deactivate blog' : 'Click to activate blog'} arrow>
 									<Box
 										onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
-										className="cursor-pointer inline-flex items-center p-1"
+										className="cursor-pointer inline-flex items-center p-0.5"
+										sx={{ lineHeight: 0 }}
 									>
 										<CustomStatusSwitch
 											size="small"
@@ -617,7 +595,7 @@ function BlogsContent({
 								<IconButton
 									size="small"
 									onClick={() => onPreviewBlog(row.original)}
-									className="text-blue-600 hover:text-blue-800 p-1.5"
+									className="text-blue-600 hover:text-blue-800 p-1"
 								>
 									<FuseSvgIcon size={18}>heroicons-outline:eye</FuseSvgIcon>
 								</IconButton>
@@ -628,9 +606,9 @@ function BlogsContent({
 									<IconButton
 										size="small"
 										onClick={() => onEditBlog(row.original)}
-										className="text-gray-500 hover:text-primary-700 p-1.5"
+										className="text-slate-600 hover:text-slate-900 p-1"
 									>
-										<FuseSvgIcon size={18}>heroicons-outline:pencil</FuseSvgIcon>
+										<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
 									</IconButton>
 								</Tooltip>
 							)}
@@ -640,7 +618,7 @@ function BlogsContent({
 									<IconButton
 										size="small"
 										onClick={() => handleOpenDeleteConfirm(row.original)}
-										className="text-red-500 hover:text-red-700 p-1.5"
+										className="text-red-500 hover:text-red-700 p-1"
 									>
 										<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
 									</IconButton>
@@ -833,7 +811,7 @@ export default function BlogsView() {
 	}, [refetch]);
 
 	if (!hasAccess) {
-		return <Navigate to="/" replace />;
+		return <AccessDeniedView sectionTitle="Blog Management" />;
 	}
 
 	return (

@@ -677,13 +677,13 @@ export const defaultThemeOptions: DefaultThemeOptions = {
 		},
 		MuiSwitch: {
 			defaultProps: {
-				color: 'secondary',
+				color: 'primary',
 				size: 'small'
 			},
 			styleOverrides: {
 				root: {
 					padding: 0,
-					margin: 8
+					margin: 0
 				},
 				sizeSmall: {
 					width: spacing(28),

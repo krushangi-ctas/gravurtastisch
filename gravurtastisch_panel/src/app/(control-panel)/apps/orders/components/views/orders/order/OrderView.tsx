@@ -9,21 +9,27 @@ import Link from '@fuse/core/Link';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import FuseLoading from '@fuse/core/FuseLoading';
 import PageBreadcrumb from 'src/components/PageBreadcrumb';
+import AccessDeniedView from '@/components/AccessDeniedView';
+import usePermissions from '@/hooks/usePermissions';
 import { useOrder } from '../../../../api/hooks/orders/useOrder';
 
 /**
  * The order.
  */
 function Order() {
+  const { canView } = usePermissions();
+  const hasAccess = canView('orders');
   const routeParams = useParams();
   const { orderId } = routeParams as { orderId: string };
-  const { data: order, isLoading, isError } = useOrder(orderId);
+  const { data: order, isLoading, isError } = useOrder(orderId, hasAccess);
 
   const isMobile = useThemeMediaQuery((_theme) =>
     _theme.breakpoints.down('lg')
   );
 
-
+  if (!hasAccess) {
+    return <AccessDeniedView sectionTitle="Orders" />;
+  }
 
   if (isLoading) {
     return <FuseLoading />;
