@@ -12,20 +12,22 @@ function FuseNavVerticalGroup(props: FuseNavItemComponentProps) {
 	const memoizedContent = useMemo(
 		() => (
 			<>
-				<FuseNavVerticalItemBase
-					className={`fuse-list-subheader mt-4 ${!item.url ? 'cursor-default' : ''}`}
-					item={item}
-					nestedLevel={nestedLevel}
-					onItemClick={onItemClick}
-					showIcon={false}
-					primaryTitleProps={{
-						className: 'fuse-list-subheader-text font-medium',
-						color: 'secondary'
-					}}
-					subtitleProps={{
-						className: 'fuse-list-subheader-text-secondary font-medium'
-					}}
-				/>
+				{Boolean(item.title) && (
+					<FuseNavVerticalItemBase
+						className={`fuse-list-subheader mt-4 ${!item.url ? 'cursor-default' : ''}`}
+						item={item}
+						nestedLevel={nestedLevel}
+						onItemClick={onItemClick}
+						showIcon={false}
+						primaryTitleProps={{
+							className: 'fuse-list-subheader-text font-medium',
+							color: 'secondary'
+						}}
+						subtitleProps={{
+							className: 'fuse-list-subheader-text-secondary font-medium'
+						}}
+					/>
+				)}
 
 				{item?.children?.map((_item) => (
 					<FuseNavItem

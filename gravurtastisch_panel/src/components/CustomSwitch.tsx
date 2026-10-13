@@ -13,6 +13,9 @@ const StyledSwitch = styled((props: SwitchProps) => (
 	width: 38,
 	height: 20,
 	padding: 0,
+	margin: '0 !important',
+	lineHeight: 1,
+	verticalAlign: 'middle',
 	display: 'inline-flex',
 	alignItems: 'center',
 	justifyContent: 'center',
@@ -50,12 +53,12 @@ const StyledSwitch = styled((props: SwitchProps) => (
 			transform: 'translate(19px, -50%)',
 			color: '#fff',
 			'& .MuiSwitch-thumb': {
-				backgroundColor: '#0f2b5c', // Navy primary thumb when active
+				backgroundColor: '#282828', // Primary brand thumb when active
 				backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2 6.8-7.5'></path></svg>")`,
 				backgroundRepeat: 'no-repeat',
 				backgroundPosition: 'center center',
 				backgroundSize: '12px 12px',
-				boxShadow: '0 2px 4px 0 rgba(15, 43, 92, 0.3)'
+				boxShadow: '0 2px 4px 0 rgba(40, 40, 40, 0.3)'
 			},
 			'& + .MuiSwitch-track': {
 				backgroundColor: '#e2e8f0', // Slim soft slate track when active
@@ -82,6 +85,8 @@ const StyledSwitch = styled((props: SwitchProps) => (
 	'&.MuiSwitch-sizeSmall': {
 		width: 32,
 		height: 18,
+		margin: '0 !important',
+		padding: 0,
 		'& .MuiSwitch-switchBase': {
 			padding: 0,
 			top: '50%',
@@ -90,6 +95,7 @@ const StyledSwitch = styled((props: SwitchProps) => (
 			'& .MuiSwitch-thumb': {
 				width: 16,
 				height: 16,
+				backgroundColor: '#ef4444',
 				backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'><line x1='3' y1='8' x2='13' y2='8'></line></svg>")`,
 				backgroundRepeat: 'no-repeat',
 				backgroundPosition: 'center center',
@@ -98,10 +104,12 @@ const StyledSwitch = styled((props: SwitchProps) => (
 			'&.Mui-checked': {
 				transform: 'translate(15px, -50%)',
 				'& .MuiSwitch-thumb': {
+					backgroundColor: '#282828',
 					backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2 6.8-7.5'></path></svg>")`,
 					backgroundRepeat: 'no-repeat',
 					backgroundPosition: 'center center',
-					backgroundSize: '11px 11px'
+					backgroundSize: '11px 11px',
+					boxShadow: '0 2px 4px 0 rgba(40, 40, 40, 0.3)'
 				},
 				'& + .MuiSwitch-track': {
 					backgroundColor: '#e2e8f0'

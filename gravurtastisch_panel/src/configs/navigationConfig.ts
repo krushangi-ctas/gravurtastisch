@@ -8,8 +8,8 @@ import SettingsAppNavigation from '../app/(control-panel)/apps/settings/lib/cons
 const navigationConfig: FuseNavItemType[] = [
 	{
 		id: 'apps',
-		title: 'Gravurtastisch',
-		subtitle: 'Engraving, Custom Cups & Personalized Orders',
+		title: '',
+		subtitle: '',
 		type: 'group',
 		icon: 'lucide:box',
 		translate: 'APPLICATIONS',

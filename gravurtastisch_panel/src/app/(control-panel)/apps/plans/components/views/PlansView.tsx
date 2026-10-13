@@ -73,15 +73,15 @@ function PlansHeader({
 	canCreate: boolean;
 }) {
 	return (
-		<div className="w-full bg-primary-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md">
+		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md">
 			{/* Left Title & Icon */}
 			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 text-white">
-					<FuseSvgIcon size={18} className="text-white">
+				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
+					<FuseSvgIcon size={18} className="text-slate-900">
 						heroicons-outline:cube
 					</FuseSvgIcon>
 				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-white m-0">
+				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
 					Plans
 				</h1>
 			</div>
@@ -305,7 +305,7 @@ function PlansContent({
 					const formattedPrice = val !== undefined && val !== null ? `$${Number(val).toLocaleString()}` : '$0';
 					return (
 						<div className="flex items-baseline gap-1">
-							<span className="font-bold text-[13px] text-[#059669]">
+							<span className="font-bold text-[13px] text-slate-900">
 								{formattedPrice}
 							</span>
 							<span className="text-[11px] text-slate-500 font-normal">
@@ -323,7 +323,7 @@ function PlansContent({
 					const val = cell.getValue<number>() ?? 0;
 					return (
 						<div className="flex items-center gap-1.5">
-							<FuseSvgIcon size={16} className="text-sky-600 shrink-0">
+							<FuseSvgIcon size={16} className="text-secondary-700 shrink-0">
 								heroicons-outline:building-storefront
 							</FuseSvgIcon>
 							<span className="font-bold text-[13px] text-slate-800">
@@ -367,7 +367,7 @@ function PlansContent({
 
 					if (!isValid) {
 						return (
-							<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">
+							<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">
 								<FuseSvgIcon size={14} className="text-slate-400">
 									heroicons-outline:minus-circle
 								</FuseSvgIcon>
@@ -381,18 +381,18 @@ function PlansContent({
 					const daysLeft = mDate.diff(moment(), 'days');
 					const isExpiringSoon = !isPast && daysLeft <= 45;
 
-					let badgeClasses = 'bg-indigo-50 text-indigo-700 border-indigo-200/90';
-					let iconColor = 'text-indigo-600';
+					let badgeClasses = 'bg-secondary-50 text-secondary-900 border-secondary-300';
+					let iconColor = 'text-secondary-700';
 					let icon = 'heroicons-outline:calendar-days';
 					let tooltipSuffix = `${daysLeft} days remaining`;
 
 					if (isPast) {
-						badgeClasses = 'bg-rose-50 text-rose-700 border-rose-200 font-semibold';
+						badgeClasses = 'bg-rose-50 text-rose-800 border-rose-200 font-semibold';
 						iconColor = 'text-rose-600';
 						icon = 'heroicons-outline:exclamation-circle';
 						tooltipSuffix = 'Expired';
 					} else if (isExpiringSoon) {
-						badgeClasses = 'bg-amber-50 text-amber-800 border-amber-300 font-bold';
+						badgeClasses = 'bg-amber-50 text-amber-800 border-amber-300 font-semibold';
 						iconColor = 'text-amber-600';
 						icon = 'heroicons-outline:clock';
 						tooltipSuffix = `Expiring soon (${daysLeft} days left)`;
@@ -403,7 +403,7 @@ function PlansContent({
 					return (
 						<Tooltip title={`${formatted} • ${tooltipSuffix}`} arrow>
 							<div
-								className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold border shadow-2xs ${badgeClasses}`}
+								className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold border ${badgeClasses}`}
 							>
 								<FuseSvgIcon size={14} className={`${iconColor} shrink-0`}>
 									{icon}
@@ -470,6 +470,13 @@ function PlansContent({
 					tableId="plans-management-table"
 					enableRowActions
 					positionActionsColumn="last"
+					displayColumnDefOptions={{
+						'mrt-row-actions': {
+							size: 105,
+							minSize: 95,
+							maxSize: 115
+						}
+					}}
 					enableRowSelection={false}
 					state={{
 						isLoading,
@@ -604,11 +611,13 @@ function PlansContent({
 							'& .MuiTableCell-root': {
 								borderBottom: '1px solid',
 								borderColor: 'divider',
-								padding: '4px 8px',
+								padding: '2px 8px',
 								overflow: 'hidden',
 								textOverflow: 'ellipsis',
 								whiteSpace: 'nowrap',
-								maxWidth: '100%'
+								maxWidth: '100%',
+								height: '37px',
+								boxSizing: 'border-box'
 							},
 							'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
 								fontWeight: 700,
@@ -626,12 +635,13 @@ function PlansContent({
 						}
 					}}
 					renderRowActions={({ row }: { row: MRT_Row<Plan> }) => (
-						<Box className="flex items-center gap-1.5">
+						<Box className="flex items-center gap-1">
 							{canUpdate && (
 								<Tooltip title={row.original.status === 1 ? 'Click to deactivate plan' : 'Click to activate plan'} arrow>
 									<Box
 										onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
-										className="cursor-pointer inline-flex items-center p-1"
+										className="cursor-pointer inline-flex items-center p-0.5"
+										sx={{ lineHeight: 0 }}
 									>
 										<CustomStatusSwitch
 											size="small"
@@ -647,9 +657,9 @@ function PlansContent({
 									<IconButton
 										size="small"
 										onClick={() => onEditPlan(row.original)}
-										className="text-gray-500 hover:text-primary-700 p-1.5"
+										className="text-slate-600 hover:text-slate-900 p-1"
 									>
-										<FuseSvgIcon size={18}>heroicons-outline:pencil</FuseSvgIcon>
+										<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
 									</IconButton>
 								</Tooltip>
 							)}
@@ -659,7 +669,7 @@ function PlansContent({
 									<IconButton
 										size="small"
 										onClick={() => handleOpenDeleteConfirm(row.original)}
-										className="text-red-500 hover:text-red-700 p-1.5"
+										className="text-red-500 hover:text-red-700 p-1"
 									>
 										<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
 									</IconButton>
@@ -688,10 +698,10 @@ function PlansContent({
 				<div className="p-6 pb-5 bg-white flex items-start justify-between gap-4">
 					<div className="flex items-start gap-3.5">
 						<div
-							className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete' ? 'bg-red-100 text-red-500' : 'bg-primary-100 text-primary-700'
+							className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete' ? 'bg-red-100 text-red-500' : 'bg-amber-100 text-amber-600'
 								}`}
 						>
-							<FuseSvgIcon size={24} className={confirmState.type === 'delete' ? 'text-red-500' : 'text-primary-700'}>
+							<FuseSvgIcon size={24} className={confirmState.type === 'delete' ? 'text-red-500' : 'text-amber-600'}>
 								{confirmState.type === 'delete'
 									? 'heroicons-outline:trash'
 									: 'heroicons-outline:arrow-path-rounded-square'}

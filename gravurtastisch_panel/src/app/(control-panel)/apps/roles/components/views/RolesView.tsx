@@ -90,15 +90,15 @@ function RolesHeader({
 	onRefresh: () => void;
 }) {
 	return (
-		<div className="w-full bg-primary-700 text-white px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
+		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
 			{/* Left Title & Icon */}
 			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/15 text-white">
-					<FuseSvgIcon size={18} className="text-white">
+				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
+					<FuseSvgIcon size={18} className="text-slate-900">
 						heroicons-outline:shield-check
 					</FuseSvgIcon>
 				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-white m-0">
+				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
 					Roles
 				</h1>
 			</div>
@@ -519,11 +519,13 @@ function RolesView() {
 								'& .MuiTableCell-root': {
 									borderBottom: '1px solid',
 									borderColor: 'divider',
-									padding: '4px 8px',
+									padding: '2px 8px',
 									overflow: 'hidden',
 									textOverflow: 'ellipsis',
 									whiteSpace: 'nowrap',
-									maxWidth: '100%'
+									maxWidth: '100%',
+									height: '37px',
+									boxSizing: 'border-box'
 								},
 								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
 									fontWeight: 700,
@@ -586,26 +588,26 @@ function RolesView() {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-primary-700 text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-white/20 shrink-0">
-										<FuseSvgIcon size={18} className="text-white">
+									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
+										<FuseSvgIcon size={18} className="text-slate-900">
 											heroicons-outline:shield-check
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-white m-0 truncate">
+									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
 										{editing ? 'Edit Role' : 'Create Role'}
 									</h1>
 								</div>
 
-								<button
-									type="button"
+								<IconButton
+									size="small"
 									onClick={() => setDialogOpen(false)}
-									className="flex items-center gap-1.5 px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-xs font-semibold rounded-md border border-white/20 transition-colors cursor-pointer shrink-0"
+									className="text-slate-900 hover:bg-black/10 transition-colors"
+									aria-label="Close"
 								>
-									<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>
-									<span>Close</span>
-								</button>
+									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+								</IconButton>
 							</div>
 
 							<DialogContent

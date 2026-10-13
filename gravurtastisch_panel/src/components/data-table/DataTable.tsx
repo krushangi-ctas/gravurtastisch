@@ -103,10 +103,14 @@ function DataTable<TData>({
 
   const getDensityFromLocalStorage = (id: string) => {
     const storedDensity = localStorage.getItem(`density_${id}`);
+    if (storedDensity === 'comfortable' || storedDensity === 'spacious') {
+      localStorage.setItem(`density_${id}`, 'compact');
+      return 'compact';
+    }
     return storedDensity &&
       ['compact', 'comfortable', 'spacious'].includes(storedDensity)
       ? storedDensity
-      : 'comfortable';
+      : 'compact';
   };
 
   const setDensityToLocalStorage = (id: string, density: string) => {
@@ -114,12 +118,17 @@ function DataTable<TData>({
   };
 
   const [columnOrder, setColumnOrder] = useState<string[]>(
-    initialState.columnOrder ?? getColumnOrderFromLocalStorage(tableId)
+    initialState?.columnOrder ?? getColumnOrderFromLocalStorage(tableId)
   );
 
   const [density, setDensity] = useState<string>(
-    getDensityFromLocalStorage(tableId)
+    initialState?.density || getDensityFromLocalStorage(tableId)
   );
+
+  useEffect(() => {
+    const targetDensity = initialState?.density || getDensityFromLocalStorage(tableId);
+    setDensity(targetDensity);
+  }, [tableId, initialState?.density]);
 
   useEffect(() => {
     if (!Array.isArray(columnOrder)) {
@@ -131,7 +140,7 @@ function DataTable<TData>({
     () =>
       _.defaults(rest, {
         initialState: {
-          density: density ? density : 'spacious',
+          density: 'compact',
           showColumnFilters: false,
           showGlobalFilter: true,
           columnPinning: {
@@ -298,7 +307,7 @@ function DataTable<TData>({
                 backgroundColor: 'initial',
                 opacity: 1,
                 boxShadow: 'none',
-                height: row.getIsPinned() ? `${37}px` : undefined,
+                height: `${37}px`,
               },
             };
           }
@@ -355,7 +364,9 @@ function DataTable<TData>({
         muiTableBodyCellProps: {
           sx: {
             px: 1,
-            py: 0.5,
+            py: 0,
+            height: '37px',
+            boxSizing: 'border-box',
           },
         },
         muiSkeletonProps: {
