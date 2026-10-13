@@ -22,10 +22,12 @@ console.log('SMTP Username:', smtpUser ? smtpUser : '(EMPTY / NOT SET)');
 console.log('SMTP Password set:', smtpPass ? `YES (${smtpPass.length} chars)` : 'NO (EMPTY / NOT SET)');
 console.log('---------------------------');
 
+const isSecure = Number(smtpPort) === 465;
+
 const transport = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
-  secure: false,
+  secure: isSecure,
   auth: {
     user: smtpUser,
     pass: smtpPass,
@@ -33,9 +35,9 @@ const transport = nodemailer.createTransport({
   tls: {
     rejectUnauthorized: false,
   },
-  connectionTimeout: 30000,
-  greetingTimeout: 15000,
-  socketTimeout: 60000,
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 15000,
   pool: true,
   maxConnections: 5,
   maxMessages: 100,
@@ -67,14 +69,38 @@ if (config.env !== 'test') {
   verifySMTP();
 }
 
+const getLogoAttachment = () => {
+  const logoCandidatePaths = [
+    path.join(__dirname, '../../public/white-gravurtastisch.png'),
+    path.join(__dirname, '../public/white-gravurtastisch.png'),
+    path.join(process.cwd(), 'public/white-gravurtastisch.png'),
+    path.join(process.cwd(), 'gravurtastisch_core/public/white-gravurtastisch.png'),
+  ];
+  const logoPath = logoCandidatePaths.find((p) => fs.existsSync(p));
+  if (!logoPath) return null;
+  return {
+    filename: 'white-gravurtastisch.png',
+    path: logoPath,
+    cid: 'white_gravurtastisch_logo',
+  };
+};
+
 /**
  * Send an email
  * @param {string} to
  * @param {string} subject
  * @param {string} text
+ * @param {string} html
+ * @param {Array} attachments
  * @returns {Promise}
  */
-const sendEmail = async (to: string, subject: string, text?: string, html?: string) => {
+const sendEmail = async (
+  to: string,
+  subject: string,
+  text?: string,
+  html?: string,
+  attachments: any[] = []
+) => {
   console.log(`[SMTP] Attempting to send email to "${to}" | Subject: "${subject}"`);
   if (!config.email.smtp?.host || !config.email.smtp?.auth?.user) {
     console.warn(
@@ -83,7 +109,19 @@ const sendEmail = async (to: string, subject: string, text?: string, html?: stri
     logger.warn(`SMTP credentials not configured. Skipping email to ${to}: "${subject}"`);
     return;
   }
-  const msg = { from: config.email.from, to, subject, text, html };
+
+  const finalAttachments = Array.isArray(attachments) ? [...attachments] : [];
+  if (html && html.includes('cid:white_gravurtastisch_logo')) {
+    const logoAttachment = getLogoAttachment();
+    if (logoAttachment) {
+      finalAttachments.push(logoAttachment);
+    }
+  }
+
+  const msg: any = { from: config.email.from, to, subject, text, html };
+  if (finalAttachments.length > 0) {
+    msg.attachments = finalAttachments;
+  }
   try {
     const info = await transport.sendMail(msg);
     console.log(`[SMTP SUCCESS] Email delivered to ${to}. MessageId:`, info?.messageId);
@@ -124,7 +162,7 @@ const sendResetPasswordEmail = async (to, token, user) => {
     <p>You have requested to reset your password. Click the button below to set a new password. This link expires in 10 minutes.</p>
     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:8px 0 28px;">
       <tr>
-        <td style="border-radius:8px; background-color:#2F5FE3;">
+        <td style="border-radius:8px; background-color:#282828;">
           <a href="${resetPasswordUrl}"
              style="display:inline-block; padding:13px 28px; font-family:'Inter',Arial,sans-serif;
                     font-size:15px; font-weight:700; color:#ffffff; text-decoration:none; border-radius:8px;">
@@ -134,7 +172,7 @@ const sendResetPasswordEmail = async (to, token, user) => {
       </tr>
     </table>
     <p>If you did not request a password reset, please ignore this email.</p>
-    <p style="color:#7E6F99;">Thank you,<br/>The Gravurtastisch Team</p>
+    <p style="color:#525252;">Thank you,<br/>The Gravurtastisch Team</p>
   `;
   const html = await getMailBody(content, 'Reset your Gravurtastisch password');
   await sendEmail(to, subject, '', html);
@@ -159,11 +197,49 @@ If you did not create an account, then ignore this email.`;
 const sendOtpEmail = async (to, otp) => {
   const subject = 'Your Gravurtastisch Login Code';
   const content = `
-    <h1>Your login code</h1>
-    <p style="font-size:32px; font-weight:800; color:#613EA3; letter-spacing:8px; text-align:center; margin:24px 0; padding:16px; background:#FAF5FF; border:1px solid #EDE9FE; border-radius:10px;">${otp}</p>
-    <p>Enter this code to sign in to your Gravurtastisch account. This code expires in ${config.otp.expiryMinutes} minutes.</p>
-    <p>If you did not request this code, please ignore this email.</p>
-    <p style="color:#7E6F99;">Thank you,<br/>The Gravurtastisch Team</p>
+    <div style="text-align:center;">
+      <h1 style="margin:0 0 5px; font-family:'Montserrat', Arial, sans-serif; font-size:21px; font-weight:800; color:#1E1E1E; text-align:center;">Your login code</h1>
+      <p style="margin:0 0 15px; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.45; color:#78716C; text-align:center;">Enter this one-time code to sign in to your Gravurtastisch account.</p>
+
+      <!-- Code Box (No copy button, pure clean code display) -->
+      <div style="background-color:#FAF9F6; border:1.5px dashed #D2B48C; border-radius:10px; padding:12px 22px; text-align:center; margin:0 auto 15px; max-width:275px;">
+        <span style="font-family:'Courier New', Courier, monospace; font-size:30px; font-weight:800; letter-spacing:7px; color:#1E1E1E; white-space:nowrap; display:inline-block; user-select:all; -webkit-user-select:all;">
+          ${otp}
+        </span>
+      </div>
+
+      <!-- Point-wise Details -->
+      <div style="background-color:#FAF9F6; border:1px solid #E5E0D5; border-radius:9px; padding:11px 15px; margin:0 0 15px; text-align:left;">
+        <p style="margin:0 0 6px; font-family:'Inter', Arial, sans-serif; font-size:11px; font-weight:700; color:#282828; text-transform:uppercase; letter-spacing:0.4px;">
+          Security &amp; Instructions:
+        </p>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td style="vertical-align:top; width:13px; font-size:13px; color:#D2B48C; line-height:1.5;">&#x2022;</td>
+            <td style="font-family:'Inter', Arial, sans-serif; font-size:12px; line-height:1.5; color:#4A4A48; padding-bottom:4px;">
+              <strong>Validity:</strong> This code expires in <strong>${config.otp.expiryMinutes || 10} minutes</strong>.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align:top; width:13px; font-size:13px; color:#D2B48C; line-height:1.5;">&#x2022;</td>
+            <td style="font-family:'Inter', Arial, sans-serif; font-size:12px; line-height:1.5; color:#4A4A48; padding-bottom:4px;">
+              <strong>Confidential:</strong> Never share this code with anyone. Our team will never ask for it.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align:top; width:13px; font-size:13px; color:#D2B48C; line-height:1.5;">&#x2022;</td>
+            <td style="font-family:'Inter', Arial, sans-serif; font-size:12px; line-height:1.5; color:#4A4A48;">
+              <strong>Didn't request?</strong> If you did not request this login code, please ignore this email.
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:12.5px; line-height:1.45; color:#78716C; text-align:center;">
+        Thank you,<br/>
+        <strong style="color:#282828;">The Gravurtastisch Team</strong>
+      </p>
+    </div>
   `;
   const html = await getMailBody(
     content,
@@ -184,7 +260,14 @@ const sendEmailToTeam = async (to, cc = [], subject, text, requestData) => {
       'arshilp@ctasis.com',
     ];
   }
-  const msg = {
+  const finalAttachments = [];
+  if (requestData && requestData.includes('cid:white_gravurtastisch_logo')) {
+    const logoAttachment = getLogoAttachment();
+    if (logoAttachment) {
+      finalAttachments.push(logoAttachment);
+    }
+  }
+  const msg: any = {
     from: config.email.from,
     to,
     cc,
@@ -192,6 +275,9 @@ const sendEmailToTeam = async (to, cc = [], subject, text, requestData) => {
     text: text,
     html: requestData,
   };
+  if (finalAttachments.length > 0) {
+    msg.attachments = finalAttachments;
+  }
   try {
     await transport.sendMail(msg);
     return true;
@@ -225,12 +311,14 @@ const getMailBody = async (content, preheader = '') => {
   }
   let html = fs.readFileSync(templatePath, 'utf8');
 
+  const baseUrl = (config.site_url || '').replace(/\/+$/, '');
   html = html.replaceAll('{{CONTENT_PLACED_HERE}}', content);
   html = html.replaceAll('{{PREHEADER_TEXT}}', preheader);
-  html = html.replaceAll('{{SITE_URL}}', config.site_url || '');
+  html = html.replaceAll('{{SITE_URL}}', baseUrl);
+  html = html.replaceAll('{{LOGO_URL}}', 'cid:white_gravurtastisch_logo');
   html = html.replaceAll(
     '{{UNSUBSCRIBE_URL}}',
-    `${config.site_url || ''}/unsubscribe`
+    `${baseUrl}/unsubscribe`
   );
 
   return html;

@@ -19,7 +19,7 @@ export function ValueProp() {
       titleKey: "feature1Title",
       bodyKey: "feature1Body",
       tag: t("valueProp.feature1Tag", "Drinkware"),
-      accent: "from-[#613EA3] to-[#855FBF]",
+      accent: "from-[#282828] to-[#4A4A4A]",
     },
     {
       id: "02",
@@ -27,7 +27,7 @@ export function ValueProp() {
       titleKey: "feature2Title",
       bodyKey: "feature2Body",
       tag: t("valueProp.feature2Tag", "Laser engraving"),
-      accent: "from-[#E89B5C] to-[#C47432]",
+      accent: "from-[#4A4A4A] to-[#6E6E6E]",
     },
     {
       id: "03",
@@ -35,7 +35,7 @@ export function ValueProp() {
       titleKey: "feature3Title",
       bodyKey: "feature3Body",
       tag: t("valueProp.feature3Tag", "Lifestyle"),
-      accent: "from-[#452B78] to-[#613EA3]",
+      accent: "from-[#181818] to-[#282828]",
     },
     {
       id: "04",
@@ -43,17 +43,17 @@ export function ValueProp() {
       titleKey: "feature4Title",
       bodyKey: "feature4Body",
       tag: t("valueProp.feature4Tag", "Apparel"),
-      accent: "from-[#855FBF] to-[#E89B5C]",
+      accent: "from-[#3A3A3A] to-[#5A5A5A]",
     },
   ];
 
   return (
-    <section className="relative py-20 lg:py-28 bg-[#FAF8FC] overflow-hidden">
+    <section className="relative py-20 lg:py-28 bg-[#F8F8F6] overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.45]"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 12% 20%, rgba(97,62,163,0.08), transparent 42%), radial-gradient(circle at 88% 70%, rgba(232,155,92,0.10), transparent 40%)",
+            "radial-gradient(circle at 12% 20%, rgba(40,40,40,0.06), transparent 42%), radial-gradient(circle at 88% 70%, rgba(80,80,80,0.06), transparent 40%)",
         }}
         aria-hidden
       />
@@ -82,7 +82,7 @@ export function ValueProp() {
             return (
               <Reveal key={f.id} delay={i * 60}>
                 <article
-                  className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.75rem] border border-[#E8E4EF] bg-white p-6 sm:p-7 shadow-[0_1px_0_rgba(42,24,72,0.04)] hover:shadow-[0_24px_60px_-28px_rgba(97,62,163,0.35)] hover:-translate-y-1 transition-all duration-300"
+                  className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.75rem] border border-[#E5E5DF] bg-white p-6 sm:p-7 shadow-[0_1px_0_rgba(40,40,40,0.04)] hover:shadow-[0_24px_60px_-28px_rgba(40,40,40,0.25)] hover:-translate-y-1 transition-all duration-300"
                 >
                   <div>
                     <div
@@ -107,7 +107,7 @@ export function ValueProp() {
                     </p>
                   </div>
                   <div className="mt-6 flex items-center justify-between pt-2">
-                    <span className="rounded-full border border-[#E8E4EF] bg-[#F7F5FA] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand">
+                    <span className="rounded-full border border-[#E5E5DF] bg-[#F2F2EF] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand">
                       {f.tag}
                     </span>
                     <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:text-brand group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />

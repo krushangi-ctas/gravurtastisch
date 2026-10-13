@@ -11,7 +11,7 @@ function FuseSplashScreen() {
 					<div className="splash-logo-glow" />
 					<img
 						className="splash-logo"
-						src="/assets/images/logo/gravurstastich-wordmark.svg"
+						src="/gravurtastich.png"
 						alt="Gravurtastisch"
 					/>
 				</div>

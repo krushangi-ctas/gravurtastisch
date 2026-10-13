@@ -212,14 +212,14 @@ export function Pricing() {
                   }`}
                 >
                   {isHighlight && (
-                    <span className="absolute top-5 right-5 rounded-full bg-brand-bright px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white">
+                    <span className="absolute top-5 right-5 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-navy-deep shadow-xs">
                       {t("pricing.popular") || "Popular"}
                     </span>
                   )}
 
                   <p
-                    className={`text-xs font-semibold uppercase tracking-widest ${
-                      isHighlight ? "text-brand-bright" : "text-brand"
+                    className={`text-xs font-bold uppercase tracking-widest ${
+                      isHighlight ? "text-brand" : "text-[#9E7A52]"
                     }`}
                   >
                     {tag}
@@ -244,7 +244,7 @@ export function Pricing() {
                       </span>
                       <span
                         className={`${
-                          isHighlight ? "text-white/55" : "text-slate-body"
+                          isHighlight ? "text-white/65" : "text-slate-body"
                         } text-sm`}
                       >
                         {t("pricing.perMonth") || "/mo"}
@@ -254,7 +254,7 @@ export function Pricing() {
 
                   <p
                     className={`mt-3 text-sm ${
-                      isHighlight ? "text-white/65" : "text-slate-body"
+                      isHighlight ? "text-white/75" : "text-slate-body"
                     }`}
                   >
                     {plan.request_quota
@@ -270,11 +270,11 @@ export function Pricing() {
                       <li key={p} className="flex items-start gap-2.5 text-sm">
                         <Check
                           className={`h-4 w-4 mt-0.5 shrink-0 ${
-                            isHighlight ? "text-brand-bright" : "text-brand"
+                            isHighlight ? "text-brand" : "text-[#B8966C]"
                           }`}
                           strokeWidth={2.5}
                         />
-                        <span className={isHighlight ? "text-white/85" : "text-navy-deep"}>
+                        <span className={isHighlight ? "text-white/90" : "text-navy-deep"}>
                           {p}
                         </span>
                       </li>
@@ -285,11 +285,7 @@ export function Pricing() {
                     type="button"
                     disabled={isLoading}
                     onClick={() => openCheckout(plan)}
-                    className={`mt-10 inline-flex w-full items-center justify-center rounded-full px-5 py-3.5 text-sm font-semibold transition-all duration-300 ${
-                      isHighlight
-                        ? "bg-brand-bright text-white hover:bg-brand"
-                        : "border border-navy-deep text-navy-deep hover:bg-navy-deep hover:text-white"
-                    }`}
+                    className="mt-10 inline-flex w-full items-center justify-center rounded-full bg-brand px-5 py-3.5 text-sm font-bold text-navy-deep shadow-sm hover:shadow-md hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300"
                   >
                     {t("pricing.tiers.starter.cta") || "Get started"}
                   </button>
@@ -402,7 +398,7 @@ export function Pricing() {
               <button
                 type="submit"
                 disabled={checkoutLoading || !(selectedPlan._id || selectedPlan.id)}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand px-5 py-3.5 text-sm font-semibold text-white hover:bg-brand-bright disabled:opacity-60 transition"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand px-5 py-3.5 text-sm font-bold text-navy-deep hover:bg-brand-bright disabled:opacity-60 transition"
               >
                 {checkoutLoading ? (
                   <>

@@ -164,7 +164,8 @@ function ReviewAnalyticsPage() {
                     {t('reviewAnalytics.heroBadge') || "Conversion Intelligence & Rating Deltas"}
                   </div>
                   <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                    {t('reviewAnalytics.heroTitle') || "Amazon"} <span className="text-brand-bright">{t('reviewAnalytics.heroTitleHighlight') || "Review Analytics"}</span> &amp; Performance Insights
+                    <span className="text-gradient-silver">{t('reviewAnalytics.heroTitle') || "Custom order"}</span>{" "}
+                    <span className="text-gradient-gold">{t('reviewAnalytics.heroTitleHighlight') || "insights & analytics"}</span>
                   </h1>
                   <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
                     {t('reviewAnalytics.heroDesc') || "Turn review solicitations into quantifiable business growth. Track SKU rating deltas, monitor review generation velocity, and discover actionable store insights."}
@@ -172,7 +173,7 @@ function ReviewAnalyticsPage() {
                   <div className="mt-6 flex flex-wrap gap-4">
                     <a
                       href="/#register"
-                      className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
+                      className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
                     >
                       {t('reviewAnalytics.heroCtaRegister') || "Get Store Analytics"}
                       <ArrowRight className="h-4 w-4" />
@@ -303,10 +304,10 @@ function ReviewAnalyticsPage() {
 
               {/* Scorecard 4: Policy Warnings + Safety Flatline */}
               <Reveal delay={200}>
-                <div className="rounded-2xl bg-white/[0.05] border border-white/12 p-4 backdrop-blur-md hover:border-purple-400/40 hover:bg-white/[0.08] transition-all flex flex-col justify-between shadow-lg">
+                <div className="rounded-2xl bg-white/[0.05] border border-white/12 p-4 backdrop-blur-md hover:border-brand-bright/40 hover:bg-white/[0.08] transition-all flex flex-col justify-between shadow-lg">
                   <div className="flex items-center justify-between gap-2">
                     <span className="text-xs font-semibold text-white/70">{t('reviewAnalytics.kpi4Label') || "Policy Safety"}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-1">
+                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-white/10 text-slate-200 border border-white/20 flex items-center gap-1">
                       <ShieldCheck className="h-2.5 w-2.5" />
                       100% Amazon ToS
                     </span>
@@ -318,12 +319,12 @@ function ReviewAnalyticsPage() {
                     </div>
                     {/* Embedded SVG Flatline Shield Meter */}
                     <svg className="w-20 h-9" viewBox="0 0 80 36" fill="none">
-                      <line x1="0" y1="18" x2="80" y2="18" stroke="#C084FC" strokeWidth="2.5" strokeDasharray="4 4" />
-                      <circle cx="40" cy="18" r="7" fill="#581C87" stroke="#C084FC" strokeWidth="1.5" />
-                      <path d="M 37 18 L 39 20 L 43 16" stroke="#FAF5FF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <line x1="0" y1="18" x2="80" y2="18" stroke="#9E9E9E" strokeWidth="2.5" strokeDasharray="4 4" />
+                      <circle cx="40" cy="18" r="7" fill="#282828" stroke="#9E9E9E" strokeWidth="1.5" />
+                      <path d="M 37 18 L 39 20 L 43 16" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <p className="text-[10.5px] text-purple-300 font-medium pt-2 border-t border-white/10 flex items-center gap-1">
+                  <p className="text-[10.5px] text-slate-300 font-medium pt-2 border-t border-white/10 flex items-center gap-1">
                     <span>{t('reviewAnalytics.kpi4Footer') || "✓ 0 buyer communication flags"}</span>
                   </p>
                 </div>

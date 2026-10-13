@@ -25,7 +25,7 @@ function PaymentCancelPage() {
               <Link
                 to="/"
                 hash="pricing"
-                className="inline-flex rounded-full bg-brand px-6 py-3 text-sm font-semibold text-white hover:bg-brand-bright transition"
+                className="inline-flex rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition"
               >
                 Choose a plan
               </Link>

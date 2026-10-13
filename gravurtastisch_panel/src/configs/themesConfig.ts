@@ -81,19 +81,19 @@ const themesConfig: FuseThemesType = {
 	default: {
 		palette: {
 			mode: 'light',
-			primary: { main: '#613EA3', light: '#855FBF', dark: '#452B78', contrastText: '#FFFFFF' },
-			secondary: { main: '#E89B5C', light: '#F0B984', dark: '#C47432', contrastText: '#1F232B' },
+			primary: { main: '#282828', light: '#4A4A4A', dark: '#181818', contrastText: '#FFFFFF' },
+			secondary: { main: '#D2B48C', light: '#DECAA8', dark: '#B8966C', contrastText: '#282828' },
 			...neutralsLightTheme,
-			text: { primary: '#1F232B', secondary: '#4B5563', disabled: '#9CA3AF' },
-			background: { default: '#F7F5FA', paper: '#FFFFFF' },
-			divider: '#E8E4EF',
+			text: { primary: '#1F1F1F', secondary: '#5A5A5A', disabled: '#9E9E9E' },
+			background: { default: '#F8F8F6', paper: '#FFFFFF' },
+			divider: '#E5E5E0',
 			action: {
 				active: '#4B5563',
-				hover: '#EFEAF7',
-				selected: '#E4DCF2',
+				hover: '#F0F0EE',
+				selected: '#E5E5E0',
 				disabled: '#BFC4CC',
-				disabledBackground: '#F7F5FA',
-				focus: '#E4DCF2'
+				disabledBackground: '#F8F8F6',
+				focus: '#E5E5E0'
 			}
 		}
 	},
@@ -101,28 +101,28 @@ const themesConfig: FuseThemesType = {
 		palette: {
 			mode: 'dark',
 			primary: {
-				main: '#855FBF',
-				light: '#A98AD4',
-				dark: '#613EA3',
-				contrastText: '#FFFFFF'
+				main: '#F5F5F3',
+				light: '#FFFFFF',
+				dark: '#282828',
+				contrastText: '#181818'
 			},
 			secondary: {
-				main: '#E89B5C',
-				light: '#F0B984',
-				dark: '#C47432',
-				contrastText: '#1F232B'
+				main: '#D2B48C',
+				light: '#DECAA8',
+				dark: '#B8966C',
+				contrastText: '#282828'
 			},
 			...neutralsDarkTheme,
 			text: {
-				primary: '#E5E7EB',
-				secondary: '#A5ABB5',
+				primary: '#F5F5F3',
+				secondary: '#A3A3A0',
 				disabled: '#6B7280'
 			},
 			background: {
-				default: '#0F1115',
-				paper: '#1A1D22'
+				default: '#121212',
+				paper: '#1E1E1E'
 			},
-			divider: '#2D3139',
+			divider: '#2E2E2E',
 			action: {
 				active: '#CDD1D9',
 				hover: 'rgba(255,255,255,0.08)',
@@ -137,18 +137,18 @@ const themesConfig: FuseThemesType = {
 		palette: {
 			mode: 'light',
 			...neutralsLightTheme,
-			primary: { main: '#613EA3', light: '#855FBF', dark: '#452B78', contrastText: '#FFFFFF' },
-			secondary: { main: '#E89B5C', light: '#F0B984', dark: '#C47432', contrastText: '#1F232B' },
-			text: { primary: '#1F232B', secondary: '#4B5563', disabled: '#9CA3AF' },
-			background: { default: '#F0ECF6', paper: '#FFFFFF' },
-			divider: '#E8E4EF',
+			primary: { main: '#282828', light: '#4A4A4A', dark: '#181818', contrastText: '#FFFFFF' },
+			secondary: { main: '#D2B48C', light: '#DECAA8', dark: '#B8966C', contrastText: '#282828' },
+			text: { primary: '#1F1F1F', secondary: '#5A5A5A', disabled: '#9E9E9E' },
+			background: { default: '#F2F2EE', paper: '#FFFFFF' },
+			divider: '#E5E5E0',
 			action: {
 				active: '#4B5563',
-				hover: '#EFEAF7',
-				selected: '#E4DCF2',
+				hover: '#EAEAE6',
+				selected: '#DFDFDA',
 				disabled: '#BFC4CC',
-				disabledBackground: '#F7F5FA',
-				focus: '#E4DCF2'
+				disabledBackground: '#F8F8F6',
+				focus: '#DFDFDA'
 			}
 		}
 	},

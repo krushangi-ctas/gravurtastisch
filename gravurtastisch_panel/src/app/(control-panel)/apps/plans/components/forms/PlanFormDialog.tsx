@@ -15,6 +15,7 @@ import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useCreatePlan, useUpdatePlan } from '../../api/hooks/usePlans';
 import { Plan } from '../../api/services/plansApiService';
+import { getErrorMessage } from '@/utils/errorMessage';
 
 interface PlanFormDialogProps {
 	open: boolean;
@@ -106,7 +107,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 			}
 			onClose();
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err) || (isEdit ? 'Failed to update plan' : 'Failed to create plan');
+			const errMsg = getErrorMessage(err, isEdit ? 'Failed to update plan' : 'Failed to create plan');
 			enqueueSnackbar(errMsg, { variant: 'error' });
 		} finally {
 			setIsSubmitting(false);

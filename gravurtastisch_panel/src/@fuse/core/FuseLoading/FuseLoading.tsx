@@ -31,7 +31,7 @@ function FuseLoading(props: FuseLoadingProps) {
 					<div className="splash-logo-glow" />
 					<img
 						className="splash-logo w-48 sm:w-56 h-auto object-contain"
-						src="/assets/images/logo/gravurstastich-wordmark.svg"
+						src="/gravurtastich.png"
 						alt="Gravurtastisch"
 					/>
 				</div>

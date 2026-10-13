@@ -18,7 +18,12 @@ const verifyCallback =
         userRights.includes(requiredRight)
       );
       if (!hasRequiredRights && req.params.userId !== user.id) {
-        return reject(new ApiError(httpStatus.FORBIDDEN, 'Forbidden'));
+        return reject(
+          new ApiError(
+            httpStatus.FORBIDDEN,
+            'You do not have permission to access this resource.'
+          )
+        );
       }
     }
 

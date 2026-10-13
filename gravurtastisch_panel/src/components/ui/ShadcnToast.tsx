@@ -19,13 +19,21 @@ const ShadcnToast = forwardRef<HTMLDivElement, CustomContentProps>((props, ref) 
   let description: React.ReactNode = message;
 
   if (typeof message === 'string') {
-    if (message.includes('\n')) {
-      const parts = message.split('\n');
+    let cleanMessage = message;
+    if (cleanMessage.match(/^missing permission:\s*(.+)$/i)) {
+      const perm = cleanMessage.replace(/^missing permission:\s*/i, '').trim();
+      cleanMessage = `You do not have permission to perform this action (${perm}).`;
+    } else if (cleanMessage.toLowerCase() === 'forbidden') {
+      cleanMessage = 'You do not have permission to perform this action.';
+    }
+
+    if (cleanMessage.includes('\n')) {
+      const parts = cleanMessage.split('\n');
       title = parts[0];
       description = parts.slice(1).join('\n');
     } else {
       title = isSuccess ? 'Success' : isError ? 'Error' : isWarning ? 'Warning' : isInfo ? 'Information' : null;
-      description = message;
+      description = cleanMessage;
     }
   }
 

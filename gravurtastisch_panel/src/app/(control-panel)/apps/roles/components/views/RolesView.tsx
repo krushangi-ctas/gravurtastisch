@@ -39,6 +39,7 @@ import {
 	useSections,
 	useUpdateRole
 } from '../../api/hooks/useRoles';
+import { getErrorMessage } from '@/utils/errorMessage';
 import { Role, RolePermission } from '../../api/services/rolesApiService';
 
 const Root = styled(FusePageCarded)(() => ({
@@ -256,8 +257,8 @@ function RolesView() {
 			}
 			setDialogOpen(false);
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Failed to save role.', {
+			const errMsg = getErrorMessage(err, 'Failed to save role.');
+			enqueueSnackbar(errMsg, {
 				variant: 'error'
 			});
 		}
@@ -284,8 +285,8 @@ function RolesView() {
 			});
 			setConfirmDeleteState({ open: false, role: null });
 		} catch (err: unknown) {
-			const errMsg = err instanceof Error ? err.message : String(err);
-			enqueueSnackbar(errMsg || 'Failed to delete role. Please try again.', {
+			const errMsg = getErrorMessage(err, 'Failed to delete role. Please try again.');
+			enqueueSnackbar(errMsg, {
 				variant: 'error'
 			});
 		} finally {

@@ -26,14 +26,14 @@ const createSupportRequest = catchAsync(async (req, res) => {
     (async () => {
       try {
         const content = `
-          <h2 style="color: #613EA3; margin: 0 0 16px;">New Support Request</h2>
+          <h2 style="color: #282828; margin: 0 0 16px;">New Support Request</h2>
           <table style="width:100%; border-collapse:collapse;">
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Name</td></tr>
-            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;">${name}</td></tr>
+            <tr><td style="padding:0 0 12px; color:#282828; font-size:15px;">${name}</td></tr>
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Email</td></tr>
-            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px;"><a href="mailto:${email}" style="color:#613EA3; text-decoration:none;">${email}</a></td></tr>
+            <tr><td style="padding:0 0 12px; color:#282828; font-size:15px;"><a href="mailto:${email}" style="color:#282828; text-decoration:none;">${email}</a></td></tr>
             <tr><td style="padding:8px 0; color:#555; font-size:14px; font-weight:600;">Message</td></tr>
-            <tr><td style="padding:0 0 12px; color:#1E1035; font-size:15px; line-height:1.6;">${message}</td></tr>
+            <tr><td style="padding:0 0 12px; color:#282828; font-size:15px; line-height:1.6;">${message}</td></tr>
           </table>
           <hr style="border:none; border-top:1px solid #e0e0e0; margin:20px 0;" />
           <p style="color:#888; font-size:13px;">This request was submitted via the contact form on the website.</p>
