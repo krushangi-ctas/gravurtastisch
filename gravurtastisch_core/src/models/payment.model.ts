@@ -46,6 +46,11 @@ const paymentSchema = new mongoose.Schema(
       enum: ['subscription', 'payment'],
       default: 'subscription',
     },
+    billingCycle: {
+      type: Number,
+      enum: [1, 2, 3],
+      default: 1,
+    },
     status: {
       // pending → awaiting Stripe; paid → webhook confirmed; failed / canceled / refunded
       type: String,

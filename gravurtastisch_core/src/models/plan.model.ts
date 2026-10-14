@@ -32,6 +32,11 @@ const planSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    billingCycle: {
+      type: Number,
+      enum: [1, 2, 3], // 1 = Monthly, 2 = Quarterly, 3 = Yearly
+      default: 1,
+    },
     status: {
       type: Number,
       enum: [0, 1, 2], // 0 = Inactive, 1 = Active, 2 = Deleted (soft)

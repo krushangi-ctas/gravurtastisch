@@ -10,6 +10,7 @@ export interface Plan {
 	marketplace: number;
 	request_quota: number;
 	expireAt?: string | null;
+	billingCycle?: number;
 	status: number;
 	createdBy?: any;
 	updatedBy?: any;
@@ -23,6 +24,7 @@ export interface PlanFormPayload {
 	marketplace: number;
 	request_quota: number;
 	expireAt?: string | null;
+	billingCycle?: number;
 	status?: number;
 }
 

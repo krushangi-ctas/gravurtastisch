@@ -85,6 +85,19 @@ const getLogoAttachment = () => {
   };
 };
 
+const getLogoDataUri = () => {
+  const logoCandidatePaths = [
+    path.join(__dirname, '../../public/white-gravurtastisch.png'),
+    path.join(__dirname, '../public/white-gravurtastisch.png'),
+    path.join(process.cwd(), 'public/white-gravurtastisch.png'),
+    path.join(process.cwd(), 'gravurtastisch_core/public/white-gravurtastisch.png'),
+  ];
+  const logoPath = logoCandidatePaths.find((p) => fs.existsSync(p));
+  if (!logoPath) return null;
+  const b64 = fs.readFileSync(logoPath).toString('base64');
+  return `data:image/png;base64,${b64}`;
+};
+
 /**
  * Send an email
  * @param {string} to
@@ -312,10 +325,13 @@ const getMailBody = async (content, preheader = '') => {
   let html = fs.readFileSync(templatePath, 'utf8');
 
   const baseUrl = (config.site_url || '').replace(/\/+$/, '');
+  const logoDataUri = getLogoDataUri();
+  const logoUrl = logoDataUri || 'cid:white_gravurtastisch_logo';
+
   html = html.replaceAll('{{CONTENT_PLACED_HERE}}', content);
   html = html.replaceAll('{{PREHEADER_TEXT}}', preheader);
   html = html.replaceAll('{{SITE_URL}}', baseUrl);
-  html = html.replaceAll('{{LOGO_URL}}', 'cid:white_gravurtastisch_logo');
+  html = html.replaceAll('{{LOGO_URL}}', logoUrl);
   html = html.replaceAll(
     '{{UNSUBSCRIBE_URL}}',
     `${baseUrl}/unsubscribe`

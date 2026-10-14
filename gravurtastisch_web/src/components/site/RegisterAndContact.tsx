@@ -1,14 +1,21 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { registerSeller, submitSupportMessage } from "@/lib/api";
+import { registerSeller, submitSupportMessage, getPublicPlans, PlanItem } from "@/lib/api";
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
-import { Mail, MapPin, Phone } from "lucide-react";
+import { Mail, MapPin, Phone, ChevronDown, Sparkles } from "lucide-react";
 import { Container } from "./Container";
 import { Reveal } from "./Reveal";
 import { FlagIcon } from "@/components/ui/FlagIcon";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export function RegisterAndContact() {
   return (
@@ -19,12 +26,57 @@ export function RegisterAndContact() {
   );
 }
 
+const AVAILABLE_MARKETPLACES = [
+  { code: "US", name: "United States" },
+  { code: "CA", name: "Canada" },
+  { code: "MX", name: "Mexico" },
+  { code: "UK", name: "United Kingdom" },
+  { code: "DE", name: "Germany" },
+  { code: "FR", name: "France" },
+  { code: "IT", name: "Italy" },
+  { code: "ES", name: "Spain" },
+  { code: "JP", name: "Japan" },
+  { code: "AE", name: "UAE" },
+  { code: "IN", name: "India" },
+];
+
 function RegisterSection() {
   const { t } = useTranslation();
+  const [plans, setPlans] = useState<PlanItem[]>([]);
+  const [plansLoading, setPlansLoading] = useState(true);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  useEffect(() => {
+    let isMounted = true;
+    getPublicPlans({ status: 1 })
+      .then((res) => {
+        if (!isMounted) return;
+        const activePlans = res?.data || [];
+        setPlans(activePlans);
+        if (activePlans.length > 0) {
+          const defaultPlan = activePlans[0];
+          const planId = (defaultPlan._id || defaultPlan.id || "") as string;
+          setSelectedPlanId(planId);
+        }
+      })
+      .catch((err) => {
+        console.warn("Failed to fetch public plans:", err);
+      })
+      .finally(() => {
+        if (isMounted) setPlansLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const currentPlan = plans.find(
+    (p) => (p._id && p._id === selectedPlanId) || (p.id && p.id === selectedPlanId)
+  );
   useEffect(() => {
     if (sent) {
       const timer = setTimeout(() => {
@@ -47,8 +99,28 @@ function RegisterSection() {
     const email = formData.get("email") as string;
     const phone = (formData.get("phone") as string) || "";
 
+    if (!selectedPlanId && plans.length > 0) {
+      setError("Please select a subscription plan.");
+      setLoading(false);
+      return;
+    }
+
     try {
-      await registerSeller({ business, seller, email, phone, marketplaces: [] });
+      const res = await registerSeller({
+        business,
+        seller,
+        email,
+        phone,
+        planId: selectedPlanId || undefined,
+      });
+
+      if (res?.data?.checkoutUrl) {
+        setSent(true);
+        // Redirect seller to Stripe Checkout
+        window.location.href = res.data.checkoutUrl;
+        return;
+      }
+
       setSent(true);
       form.reset();
     } catch (err: any) {
@@ -96,18 +168,136 @@ function RegisterSection() {
               <Field label={t('register.fieldEmail')} name="email" type="email" placeholder={t('register.fieldEmailPlaceholder')} />
               <Field label={t('register.fieldPhone')} name="phone" placeholder={t('register.fieldPhonePlaceholder')} />
 
-              <div className="sm:col-span-2">
-                <p className="text-xs font-semibold uppercase tracking-widest text-white/50 mb-2.5">
-                  {t('register.marketplacesLabel')} <span className="normal-case font-normal">({t('register.configuredAfter')})</span>
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {["US", "CA", "MX", "UK", "DE", "FR", "IT", "ES", "JP", "AE", "IN"].map((m) => (
-                    <span
-                      key={m}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-mono font-medium text-white/90 select-none cursor-default shadow-xs"
+              {/* Dynamic Subscription Plan Selector */}
+              <div className="sm:col-span-2 space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="plan" className="block text-xs font-semibold uppercase tracking-widest text-white/70">
+                    Subscription Plan
+                  </Label>
+                  {currentPlan && (
+                    <span className="text-xs font-semibold text-brand">
+                      ${currentPlan.price}
+                      {currentPlan.billingCycle === 3
+                        ? "/yr"
+                        : currentPlan.billingCycle === 2
+                        ? "/qtr"
+                        : "/mo"}{" "}
+                      · {currentPlan.request_quota.toLocaleString()} requests/mo
+                    </span>
+                  )}
+                </div>
+                {plansLoading ? (
+                  <div className="h-12 rounded-xl bg-white/5 border border-white/10 animate-pulse flex items-center px-4 text-xs text-white/50">
+                    Loading available plans...
+                  </div>
+                ) : plans.length > 0 ? (
+                  <Select
+                    value={selectedPlanId}
+                    onValueChange={(val) => {
+                      setSelectedPlanId(val);
+                      setError("");
+                    }}
+                  >
+                    <SelectTrigger
+                      id="plan"
+                      className="h-12 w-full rounded-xl bg-white/5 border border-white/15 px-4 py-3 text-sm text-white shadow-none hover:bg-white/[0.08] hover:border-white/25 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition [&>svg]:text-brand [&>svg]:opacity-90 cursor-pointer"
                     >
-                      <FlagIcon code={m} className="w-3.5 h-2.5 rounded-[2px]" />
-                      <span>{m}</span>
+                      <SelectValue placeholder="Select a subscription plan">
+                        {currentPlan && (
+                          <div className="flex items-center justify-between w-full pr-2 text-left truncate">
+                            <span className="font-semibold text-white truncate">
+                              {currentPlan.name}{" "}
+                              <span className="text-brand font-medium">
+                                — ${currentPlan.price}
+                                {currentPlan.billingCycle === 3
+                                  ? "/yr"
+                                  : currentPlan.billingCycle === 2
+                                  ? "/qtr"
+                                  : "/mo"}
+                              </span>
+                            </span>
+                            <span className="hidden sm:inline-block text-xs text-white/55 font-mono ml-3 shrink-0">
+                              {currentPlan.marketplace}{" "}
+                              {currentPlan.marketplace === 1
+                                ? "marketplace"
+                                : "marketplaces"}
+                              , {currentPlan.request_quota.toLocaleString()} requests/mo
+                            </span>
+                          </div>
+                        )}
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent
+                      className="bg-white border border-[#E8E3DA] text-[#282828] shadow-[0_20px_50px_rgba(0,0,0,0.25)] rounded-2xl p-1.5 z-50 min-w-[var(--radix-select-trigger-width)]"
+                    >
+                      {plans.map((p) => {
+                        const planId = (p._id || p.id) as string;
+                        const cycleShort =
+                          p.billingCycle === 3
+                            ? "/yr"
+                            : p.billingCycle === 2
+                            ? "/qtr"
+                            : "/mo";
+                        return (
+                          <SelectItem
+                            key={planId}
+                            value={planId}
+                            className="rounded-xl px-3.5 py-3 text-sm text-[#282828] hover:bg-[#FAF6F0] hover:text-[#282828] focus:bg-[#FAF6F0] focus:text-[#282828] cursor-pointer transition-colors data-[state=checked]:bg-[#F4ECE1] data-[state=checked]:text-[#282828] [&_svg]:text-[#B8966C] [&_svg]:stroke-[2.5] my-0.5"
+                          >
+                            <div className="flex items-center justify-between w-full gap-4 pr-3">
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-[#282828]">
+                                  {p.name}
+                                </span>
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FAF4EB] text-[#B8966C] border border-[#EBDCC8]">
+                                  ${p.price}{cycleShort}
+                                </span>
+                              </div>
+                              <span className="text-xs text-[#73736E] font-mono">
+                                {p.marketplace}{" "}
+                                {p.marketplace === 1
+                                  ? "marketplace"
+                                  : "marketplaces"}
+                                , {p.request_quota.toLocaleString()} req/mo
+                              </span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="text-xs text-white/50">Standard plan (5 marketplaces, 1000 requests/mo)</div>
+                )}
+              </div>
+
+              {/* Supported Marketplaces (View Purpose Only) */}
+              <div className="sm:col-span-2">
+                <div className="flex items-center justify-between mb-2.5">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-white/70">
+                    {t('register.marketplacesLabel')}{' '}
+                    <span className="normal-case font-normal text-white/50">
+                      ({t('register.configuredAfter')})
+                    </span>
+                  </p>
+                  {currentPlan && (
+                    <span className="text-xs font-mono text-white/60">
+                      Plan allowance:{' '}
+                      <strong className="text-brand">
+                        {currentPlan.marketplace} {currentPlan.marketplace === 1 ? 'marketplace' : 'marketplaces'}
+                      </strong>
+                    </span>
+                  )}
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {AVAILABLE_MARKETPLACES.map(({ code }) => (
+                    <span
+                      key={code}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-mono font-medium text-white/90 select-none cursor-default shadow-xs"
+                      title={code}
+                    >
+                      <FlagIcon code={code} className="w-3.5 h-2.5 rounded-[2px]" />
+                      <span>{code}</span>
                     </span>
                   ))}
                 </div>
@@ -117,9 +307,18 @@ function RegisterSection() {
             <button
               type="submit"
               disabled={loading}
-              className="relative mt-9 inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold text-navy-deep shadow-[0_16px_36px_-10px_rgba(210,180,140,0.55)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
+              className="relative mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3.5 text-sm font-bold text-navy-deep shadow-[0_16px_36px_-10px_rgba(210,180,140,0.55)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
             >
-              {loading ? t('register.submitSending') : t('register.submitLabel')}
+              {loading ? (
+                currentPlan && currentPlan.price > 0 ? "Redirecting to checkout..." : t('register.submitSending')
+              ) : currentPlan && currentPlan.price > 0 ? (
+                <>
+                  <span>Continue to Payment (${currentPlan.price}/mo)</span>
+                  <Sparkles className="w-4 h-4" />
+                </>
+              ) : (
+                t('register.submitLabel')
+              )}
             </button>
             {sent && (
               <p className="relative mt-4 text-sm text-emerald-300">

@@ -9,7 +9,8 @@ import {
 	Typography,
 	CircularProgress,
 	InputAdornment,
-	IconButton
+	IconButton,
+	MenuItem
 } from '@mui/material';
 import CustomStatusSwitch from '@/components/CustomSwitch';
 import { useSnackbar } from 'notistack';
@@ -35,6 +36,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 	const [price, setPrice] = useState<string | number>('');
 	const [marketplace, setMarketplace] = useState<string | number>('');
 	const [requestQuota, setRequestQuota] = useState<string | number>('');
+	const [billingCycle, setBillingCycle] = useState<number>(1);
 	const [expireAt, setExpireAt] = useState('');
 	const [status, setStatus] = useState<number>(1);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -47,6 +49,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 				setPrice(plan.price !== undefined ? plan.price : '');
 				setMarketplace(plan.marketplace !== undefined ? plan.marketplace : '');
 				setRequestQuota(plan.request_quota !== undefined ? plan.request_quota : '');
+				setBillingCycle(plan.billingCycle !== undefined ? Number(plan.billingCycle) : 1);
 				setExpireAt(plan.expireAt && moment(plan.expireAt).isValid() ? moment(plan.expireAt).format('YYYY-MM-DD') : '');
 				setStatus(plan.status !== undefined ? plan.status : 1);
 			} else {
@@ -54,6 +57,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 				setPrice('');
 				setMarketplace('');
 				setRequestQuota('');
+				setBillingCycle(1);
 				setExpireAt('');
 				setStatus(1);
 			}
@@ -90,6 +94,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 			price: Number(price),
 			marketplace: Number(marketplace),
 			request_quota: Number(requestQuota),
+			billingCycle: Number(billingCycle) || 1,
 			expireAt: expireAt ? new Date(expireAt).toISOString() : null,
 			status: Number(status)
 		};
@@ -211,8 +216,78 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText="Billing amount in US Dollars ($)"
+								helperText={
+									billingCycle === 3
+										? 'Total billed annually in USD ($) — set full yearly price'
+										: billingCycle === 2
+										? 'Total billed quarterly in USD ($) — set full 3-month price'
+										: 'Billed monthly in USD ($)'
+								}
 							/>
+						</div>
+
+						{/* Billing Cycle */}
+						<div>
+							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+								Billing Cycle <span className="text-red-500">*</span>
+							</Typography>
+							<TextField
+								select
+								fullWidth
+								required
+								size="small"
+								value={billingCycle}
+								onChange={(e) => setBillingCycle(Number(e.target.value))}
+								variant="outlined"
+								helperText="Select recurring billing cycle frequency"
+								InputProps={{
+									startAdornment: (
+										<InputAdornment position="start">
+											<FuseSvgIcon size={16} className="text-[#B38B5B]">
+												{billingCycle === 3
+													? 'heroicons-outline:sparkles'
+													: billingCycle === 2
+													? 'heroicons-outline:clock'
+													: 'heroicons-outline:calendar'}
+											</FuseSvgIcon>
+										</InputAdornment>
+									)
+								}}
+							>
+								<MenuItem value={1}>
+									<div className="flex items-center gap-2 py-0.5">
+										<FuseSvgIcon size={16} className="text-[#B38B5B]">
+											heroicons-outline:calendar
+										</FuseSvgIcon>
+										<span className="font-semibold text-slate-800">Monthly</span>
+										<span className="text-xs text-slate-400 font-normal">
+											(Every 1 Month)
+										</span>
+									</div>
+								</MenuItem>
+								<MenuItem value={2}>
+									<div className="flex items-center gap-2 py-0.5">
+										<FuseSvgIcon size={16} className="text-[#B38B5B]">
+											heroicons-outline:clock
+										</FuseSvgIcon>
+										<span className="font-semibold text-slate-800">Quarterly</span>
+										<span className="text-xs text-slate-400 font-normal">
+											(Every 3 Months)
+										</span>
+									</div>
+								</MenuItem>
+								<MenuItem value={3}>
+									<div className="flex items-center gap-2 py-0.5">
+										<FuseSvgIcon size={16} className="text-[#B38B5B]">
+											heroicons-outline:sparkles
+										</FuseSvgIcon>
+										<span className="font-semibold text-slate-800">Yearly / Annual</span>
+										<span className="text-xs text-slate-400 font-normal">
+											(Every 12 Months)
+										</span>
+									</div>
+								</MenuItem>
+							</TextField>
 						</div>
 
 						{/* Marketplaces Allowed */}

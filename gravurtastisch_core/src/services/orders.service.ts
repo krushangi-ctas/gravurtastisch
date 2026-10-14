@@ -5,6 +5,7 @@ const ordermodel = require('../models/order.model');
 const User = require('../models/user.model');
 const GeneralSettingModel = require('../models/generalSetting.model');
 const moment = require('moment');
+const { getEffectivePlanLimits } = require('./plan.service');
 
 const getOrderList = async (filter = {}, options = {}, userId) => {
   try {
@@ -185,6 +186,15 @@ const updateFeedback = async (refIds, userId) => {
       };
     }
 
+    // Plan limit & expiration check
+    const planLimits = await getEffectivePlanLimits(user);
+    if (planLimits?.isExpired) {
+      return {
+        status: httpStatus.FORBIDDEN,
+        message: 'Your subscription plan has expired. Please renew your subscription plan to send review requests.',
+      };
+    }
+
     // Retrieve active marketplaces
     const setting = await GeneralSettingModel.findOne({
       userId,
@@ -229,9 +239,8 @@ const updateFeedback = async (refIds, userId) => {
       };
     }
 
-    // Plan limit check: Monthly Review Requests Limit
     const maxReviewRequestsPerMonth =
-      user.planLimits?.maxReviewRequestsPerMonth ?? 1000;
+      planLimits?.maxReviewRequestsPerMonth ?? 1000;
     const startOfMonth = moment().startOf('month').toDate();
     const sentCount = await ordermodel.countDocuments({
       userId,

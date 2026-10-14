@@ -3,6 +3,7 @@ const AmazonCredentialsModel = require('../models/amazon-credentials.model');
 const User = require('../models/user.model');
 const logger = require('../config/logger');
 const mongoose = require('mongoose');
+const { getEffectivePlanLimits } = require('./plan.service');
 
 const handleWithCredentialResponse = (credentials, id) => {
   if (!credentials) {
@@ -69,8 +70,17 @@ const getAmazonCredentialsByUserId = async (id) => {
  */
 const upsertAmazonCredentials = async (credentialsData, userId) => {
   try {
-    const user = await User.findById(userId);
-    const maxMarketplaces = user?.planLimits?.maxMarketplaces ?? 5;
+    const planLimits = await getEffectivePlanLimits(userId);
+    console.log('--- [upsertAmazonCredentials] userId:', userId, 'planLimits:', planLimits);
+
+    if (planLimits?.isExpired) {
+      return {
+        status: 403,
+        message: 'Your subscription plan has expired. Please renew or upgrade your plan to manage Amazon credentials and marketplaces.',
+      };
+    }
+
+    const maxMarketplaces = planLimits?.maxMarketplaces ?? 5;
 
     if (
       Array.isArray(credentialsData.marketplace_ids) &&

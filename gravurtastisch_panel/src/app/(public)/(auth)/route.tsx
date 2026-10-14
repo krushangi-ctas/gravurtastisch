@@ -1,7 +1,9 @@
+import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import authRoles from '@auth/authRoles';
-import SignInPageView from './components/views/SignInPageView';
-import SignOutPageView from './components/views/SignOutPageView';
+
+const SignInPageView = lazy(() => import('./components/views/SignInPageView'));
+const SignOutPageView = lazy(() => import('./components/views/SignOutPageView'));
 
 const route: FuseRouteItemType = {
 	children: [

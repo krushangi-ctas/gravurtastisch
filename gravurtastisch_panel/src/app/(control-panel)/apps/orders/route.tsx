@@ -1,8 +1,9 @@
 import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
-import OrdersView from './components/views/orders/OrdersView';
-
+const OrdersView = lazy(
+  () => import('./components/views/orders/OrdersView')
+);
 const OrderView = lazy(
   () => import('./components/views/orders/order/OrderView')
 );

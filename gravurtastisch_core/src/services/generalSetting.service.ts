@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const GeneralSettingModel = require('../models/generalSetting.model');
 const UserModel = require('../models/user.model');
 const AmazonCredentialsModel = require('../models/amazon-credentials.model');
+const { getEffectivePlanLimits } = require('./plan.service');
 
 const generalSettingsByUpdate = async (userId, updateData = {}) => {
   try {
@@ -15,7 +16,16 @@ const generalSettingsByUpdate = async (userId, updateData = {}) => {
       };
     }
 
-    const maxMarketplaces = user.planLimits?.maxMarketplaces ?? 5;
+    const planLimits = await getEffectivePlanLimits(user);
+
+    if (planLimits?.isExpired) {
+      return {
+        status: httpStatus.FORBIDDEN,
+        message: 'Your subscription plan has expired. Please renew or upgrade your plan to activate marketplaces.',
+      };
+    }
+
+    const maxMarketplaces = planLimits?.maxMarketplaces ?? 5;
     const activeMarketplacesCount = Array.isArray(updateData.activeMarketplaces)
       ? updateData.activeMarketplaces.length
       : 0;

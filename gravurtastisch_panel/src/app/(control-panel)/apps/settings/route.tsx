@@ -1,9 +1,11 @@
+import { lazy } from 'react';
 import { Navigate, Outlet } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
-import SettingsAppView from './components/views/SettingsAppView';
-import AccountTabView from './components/views/AccountTabView';
-import GeneralSetAppView from './components/views/GeneralSetAppView';
+
+const SettingsAppView = lazy(() => import('./components/views/SettingsAppView'));
+const AccountTabView = lazy(() => import('./components/views/AccountTabView'));
+const GeneralSetAppView = lazy(() => import('./components/views/GeneralSetAppView'));
 
 /**
  * The Settings App Route.

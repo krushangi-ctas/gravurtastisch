@@ -98,10 +98,6 @@ const userSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    marketplaces: {
-      type: [String],
-      default: [],
-    },
     isSuperAdmin: {
       type: Boolean,
       default: false,
@@ -121,6 +117,61 @@ const userSchema = mongoose.Schema(
       ref: 'tbl_plans',
       default: null,
     },
+    plans: [
+      {
+        planId: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'tbl_plans',
+        },
+        name: {
+          type: String,
+          trim: true,
+        },
+        price: {
+          type: Number,
+          default: 0,
+        },
+        marketplace: {
+          type: Number,
+          default: 1,
+        },
+        request_quota: {
+          type: Number,
+          default: 1000,
+        },
+        expireAt: {
+          type: Date,
+          default: null,
+        },
+        billingCycle: {
+          type: Number,
+          enum: [1, 2, 3], // 1 = Monthly, 2 = Quarterly, 3 = Yearly
+          default: 1,
+        },
+        status: {
+          type: Number,
+          enum: [0, 1, 2, 3], // 0: pending_payment, 1: active, 2: expired, 3: upgraded
+          default: 0,
+        },
+        paymentStatus: {
+          type: Number,
+          enum: [0, 1, 2], // 0: pending, 1: paid, 2: failed
+          default: 0,
+        },
+        stripeSessionId: {
+          type: String,
+          default: null,
+        },
+        stripePaymentIntentId: {
+          type: String,
+          default: null,
+        },
+        selectedAt: {
+          type: Date,
+          default: Date.now,
+        },
+      },
+    ],
     stripeCustomerId: {
       type: String,
       trim: true,
@@ -136,9 +187,9 @@ const userSchema = mongoose.Schema(
       sparse: true,
     },
     subscriptionStatus: {
-      type: String,
-      enum: ['none', 'active', 'past_due', 'canceled', 'incomplete'],
-      default: 'none',
+      type: Number,
+      enum: [0, 1, 2, 3, 4], // 0: pending_payment, 1: active, 2: expired/past_due, 3: canceled, 4: none/incomplete
+      default: 0,
     },
     status: {
       type: Number,
