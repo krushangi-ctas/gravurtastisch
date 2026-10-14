@@ -300,8 +300,10 @@ function PlansContent({
 				accessorKey: 'price',
 				header: 'PRICE ($)',
 				size: 140,
-				Cell: ({ cell }) => {
-					const val = cell.getValue<number>();
+				Cell: ({ cell, row }: { cell: any; row: MRT_Row<Plan> }) => {
+					const val = cell.getValue() as number;
+					const cycle = row.original?.billingCycle;
+					const cycleText = cycle === 3 ? '/ yr' : cycle === 2 ? '/ qtr' : '/ mo';
 					const formattedPrice = val !== undefined && val !== null ? `$${Number(val).toLocaleString()}` : '$0';
 					return (
 						<div className="flex items-baseline gap-1">
@@ -309,8 +311,48 @@ function PlansContent({
 								{formattedPrice}
 							</span>
 							<span className="text-[11px] text-slate-500 font-normal">
-								/ mo
+								{cycleText}
 							</span>
+						</div>
+					);
+				}
+			},
+			{
+				accessorKey: 'billingCycle',
+				header: 'BILLING CYCLE',
+				size: 155,
+				Cell: ({ cell }: { cell: any }) => {
+					const val = (cell.getValue() as number) ?? 1;
+					const config =
+						val === 3
+							? {
+									label: 'Yearly',
+									icon: 'heroicons-outline:sparkles',
+									badge: 'bg-[#FDF7EE] text-[#8E6B40] border-[#DFCBB0] shadow-2xs font-semibold',
+									iconColor: 'text-[#B38B5B]'
+							  }
+							: val === 2
+							? {
+									label: 'Quarterly',
+									icon: 'heroicons-outline:clock',
+									badge: 'bg-[#F9F5EF] text-[#7A5B32] border-[#EADDCB] font-semibold',
+									iconColor: 'text-[#B38B5B]'
+							  }
+							: {
+									label: 'Monthly',
+									icon: 'heroicons-outline:calendar',
+									badge: 'bg-[#FAF8F5] text-[#5C5346] border-[#EADDCB] font-semibold',
+									iconColor: 'text-[#B38B5B]'
+							  };
+
+					return (
+						<div
+							className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs border transition-all ${config.badge}`}
+						>
+							<FuseSvgIcon size={14} className={`${config.iconColor} shrink-0`}>
+								{config.icon}
+							</FuseSvgIcon>
+							<span className="tracking-tight">{config.label}</span>
 						</div>
 					);
 				}

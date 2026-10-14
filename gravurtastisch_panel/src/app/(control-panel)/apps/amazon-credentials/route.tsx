@@ -1,6 +1,8 @@
+import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
-import AmazonCredentialsView from './components/views/amazonCredentials/AmazonCredentialView';
+
+const AmazonCredentialsView = lazy(() => import('./components/views/amazonCredentials/AmazonCredentialView'));
 
 /**
  * The Emails app Routes.

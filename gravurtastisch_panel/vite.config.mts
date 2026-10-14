@@ -3,6 +3,10 @@ import react from "@vitejs/plugin-react";
 import svgrPlugin from "vite-plugin-svgr";
 import tsconfigPaths from "vite-tsconfig-paths";
 import tailwindcss from "@tailwindcss/vite";
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,13 +15,14 @@ export default defineConfig({
       jsxImportSource: "@emotion/react",
     }),
     tsconfigPaths({
-      parseNative: false,
+      parseNative: true,
     }),
     svgrPlugin(),
     {
       name: "custom-hmr-control",
+      apply: "serve",
       handleHotUpdate({ file, server }) {
-        if (file.includes("src/app/configs/")) {
+        if (file.includes("src/configs/") || file.includes("src/app/configs/")) {
           server.ws.send({
             type: "full-reload",
           });
@@ -29,6 +34,13 @@ export default defineConfig({
   ],
   build: {
     outDir: "dist",
+    target: "esnext",
+    minify: "esbuild",
+    cssCodeSplit: true,
+    chunkSizeWarningLimit: 2500,
+    rollupOptions: {
+      treeshake: false,
+    },
   },
   server: {
     host: "0.0.0.0",
@@ -43,17 +55,20 @@ export default defineConfig({
   },
   resolve: {
     alias: {
-      "@": "/src",
-      "@fuse": "/src/@fuse",
-      "@history": "/src/@history",
-      "@lodash": "/src/@lodash",
-      "@mock-api": "/src/@mock-api",
-      "@schema": "/src/@schema",
-      "app/store": "/src/app/store",
-      "app/shared-components": "/src/app/shared-components",
-      "app/configs": "/src/app/configs",
-      "app/theme-layouts": "/src/app/theme-layouts",
-      "app/AppContext": "/src/app/AppContext",
+      "src": path.resolve(__dirname, "./src"),
+      "@": path.resolve(__dirname, "./src"),
+      "@fuse": path.resolve(__dirname, "./src/@fuse"),
+      "@auth": path.resolve(__dirname, "./src/@auth"),
+      "@history": path.resolve(__dirname, "./src/@history"),
+      "@lodash": path.resolve(__dirname, "./src/@lodash"),
+      "@mock-api": path.resolve(__dirname, "./src/@mock-api"),
+      "@mock-utils": path.resolve(__dirname, "./src/@mock-utils"),
+      "@schema": path.resolve(__dirname, "./src/@schema"),
+      "app/store": path.resolve(__dirname, "./src/app/store"),
+      "app/shared-components": path.resolve(__dirname, "./src/app/shared-components"),
+      "app/configs": path.resolve(__dirname, "./src/configs"),
+      "app/theme-layouts": path.resolve(__dirname, "./src/components/theme-layouts"),
+      "app/AppContext": path.resolve(__dirname, "./src/contexts/AppContext"),
     },
   },
   optimizeDeps: {

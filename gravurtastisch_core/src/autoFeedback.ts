@@ -3,6 +3,7 @@ const moment = require('moment');
 const GeneralSettingModel = require('./models/generalSetting.model');
 const ordermodel = require('./models/order.model');
 const UserModel = require('./models/user.model');
+const { getEffectivePlanLimits } = require('./services/plan.service');
 
 // Main function to run the solicitation process
 async function autoFeedbackRequest() {
@@ -33,8 +34,15 @@ async function autoFeedbackRequest() {
       }
 
       // Check remaining quota limits
+      const planLimits = await getEffectivePlanLimits(user);
+      if (planLimits?.isExpired) {
+        console.log(
+          `User ${setting.userId} subscription plan has expired. Skipping auto-feedback scheduling.`
+        );
+        continue;
+      }
       const maxReviewRequestsPerMonth =
-        user.planLimits?.maxReviewRequestsPerMonth ?? 1000;
+        planLimits?.maxReviewRequestsPerMonth ?? 1000;
       const startOfMonth = moment().startOf('month').toDate();
       const sentCount = await ordermodel.countDocuments({
         userId: setting.userId,
@@ -104,10 +112,8 @@ async function autoFeedbackRequest() {
           { $set: { isNeedToSend: true } }
         );
         console.log(
-          `Auto feedback scheduled ${
-            res.nModified || res.modifiedCount || 0
-          } orders for user ${
-            setting.userId
+          `Auto feedback scheduled ${res.nModified || res.modifiedCount || 0
+          } orders for user ${setting.userId
           } (${setting.activeMarketplaces.join(', ')})`
         );
       } else {

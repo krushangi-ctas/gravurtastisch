@@ -15,6 +15,7 @@ const createPlan = {
     marketplce: Joi.number().integer().min(0),
     request_quota: Joi.number().integer().min(0).required(),
     expireAt: Joi.date().iso().allow(null, ''),
+    billingCycle: Joi.number().valid(1, 2, 3).default(1),
     status: Joi.number().valid(0, 1, 2).default(1),
   }).or('marketplace', 'marketplce'),
 };
@@ -47,6 +48,7 @@ const updatePlan = {
       marketplce: Joi.number().integer().min(0),
       request_quota: Joi.number().integer().min(0),
       expireAt: Joi.date().iso().allow(null, ''),
+      billingCycle: Joi.number().valid(1, 2, 3),
       status: Joi.number().valid(0, 1, 2),
     })
     .min(1),

@@ -38,6 +38,31 @@ export function Pricing() {
   const [name, setName] = useState("");
   const [checkoutLoading, setCheckoutLoading] = useState(false);
   const [checkoutError, setCheckoutError] = useState("");
+  const [cycleFilter, setCycleFilter] = useState<number | "all">(1);
+
+  const getCycleSuffix = (cycle?: number) => {
+    if (cycle === 3) return "/yr";
+    if (cycle === 2) return "/qtr";
+    return "/mo";
+  };
+
+  const getCycleBadge = (cycle?: number) => {
+    if (cycle === 3) return "Annual";
+    if (cycle === 2) return "Quarterly";
+    return "Monthly";
+  };
+
+  const getCycleBillingText = (cycle?: number) => {
+    if (cycle === 3) return "Billed annually";
+    if (cycle === 2) return "Billed quarterly";
+    return "Billed monthly";
+  };
+
+  const availableCycles = Array.from(new Set(plans.map((p) => p.billingCycle || 1)));
+  const filteredPlans =
+    cycleFilter === "all"
+      ? plans
+      : plans.filter((p) => (p.billingCycle || 1) === cycleFilter);
 
   useEffect(() => {
     let isMounted = true;
@@ -77,9 +102,9 @@ export function Pricing() {
       plan.marketplace <= 1
         ? t("pricing.marketplaceSingle", "1 marketplace")
         : t("pricing.marketplacePlural", {
-            count: plan.marketplace,
-            defaultValue: `${plan.marketplace} marketplaces`,
-          });
+          count: plan.marketplace,
+          defaultValue: `${plan.marketplace} marketplaces`,
+        });
 
     const starterPerks =
       (t("pricing.tiers.starter.perks", { returnObjects: true }) as string[]) || [];
@@ -113,7 +138,11 @@ export function Pricing() {
   };
 
   const highlightIndex =
-    plans.length <= 1 ? 0 : plans.length === 2 ? 1 : Math.floor(plans.length / 2);
+    filteredPlans.length <= 1
+      ? 0
+      : filteredPlans.length === 2
+        ? 1
+        : Math.floor(filteredPlans.length / 2);
 
   const openCheckout = (plan: PlanItem) => {
     const planId = plan._id || plan.id;
@@ -182,53 +211,113 @@ export function Pricing() {
             <p className="mt-4 text-base sm:text-lg text-slate-body leading-relaxed max-w-2xl">
               {t("pricing.description")}
             </p>
+
+            {availableCycles.length > 1 && (
+              <div className="mt-8 flex items-center justify-start">
+                <div className="inline-flex items-center p-1.5 rounded-full bg-white border border-border shadow-xs gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setCycleFilter("all")}
+                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === "all"
+                      ? "bg-navy-deep text-white shadow-xs"
+                      : "text-slate-body hover:text-navy-deep"
+                      }`}
+                  >
+                    All Plans ({plans.length})
+                  </button>
+                  {availableCycles.includes(1) && (
+                    <button
+                      type="button"
+                      onClick={() => setCycleFilter(1)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 1
+                        ? "bg-navy-deep text-white shadow-xs"
+                        : "text-slate-body hover:text-navy-deep"
+                        }`}
+                    >
+                      Monthly
+                    </button>
+                  )}
+                  {availableCycles.includes(2) && (
+                    <button
+                      type="button"
+                      onClick={() => setCycleFilter(2)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 2
+                        ? "bg-navy-deep text-white shadow-xs"
+                        : "text-slate-body hover:text-navy-deep"
+                        }`}
+                    >
+                      Quarterly
+                    </button>
+                  )}
+                  {availableCycles.includes(3) && (
+                    <button
+                      type="button"
+                      onClick={() => setCycleFilter(3)}
+                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 3
+                        ? "bg-navy-deep text-white shadow-xs"
+                        : "text-slate-body hover:text-navy-deep"
+                        }`}
+                    >
+                      Yearly
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         </Reveal>
 
         <Reveal delay={100}>
           <div
-            className={`mt-8 grid gap-5 lg:gap-6 items-stretch ${
-              plans.length === 1
-                ? "grid-cols-1 max-w-md mx-auto"
-                : plans.length === 2
-                  ? "grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto"
-                  : plans.length === 3
-                    ? "grid-cols-1 md:grid-cols-3"
-                    : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
-            }`}
+            className={`mt-8 grid gap-5 lg:gap-6 items-stretch ${filteredPlans.length === 1
+              ? "grid-cols-1 max-w-md mx-auto"
+              : filteredPlans.length === 2
+                ? "grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto"
+                : filteredPlans.length === 3
+                  ? "grid-cols-1 md:grid-cols-3"
+                  : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+              }`}
           >
-            {plans.map((plan, index) => {
+            {filteredPlans.map((plan, index) => {
               const isHighlight = index === highlightIndex;
-              const tag = getTierTag(index, plans.length);
+              const tag = getTierTag(index, filteredPlans.length);
               const perks = getPerks(plan, index, isHighlight);
 
               return (
                 <div
                   key={plan._id || plan.id || `${plan.name}-${index}`}
-                  className={`relative flex flex-col rounded-3xl p-8 lg:p-10 transition-all duration-300 hover:-translate-y-1 ${
-                    isHighlight
-                      ? "bg-gradient-to-br from-navy-deep to-navy text-white shadow-xl shadow-navy-deep/25"
-                      : "bg-white border border-border shadow-sm hover:shadow-md"
-                  }`}
-                >
-                  {isHighlight && (
-                    <span className="absolute top-5 right-5 rounded-full bg-brand px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-navy-deep shadow-xs">
-                      {t("pricing.popular") || "Popular"}
-                    </span>
-                  )}
-
-                  <p
-                    className={`text-xs font-bold uppercase tracking-widest ${
-                      isHighlight ? "text-brand" : "text-[#9E7A52]"
+                  className={`relative flex flex-col rounded-3xl p-8 lg:p-10 transition-all duration-300 hover:-translate-y-1 ${isHighlight
+                    ? "bg-gradient-to-br from-navy-deep to-navy text-white shadow-xl shadow-navy-deep/25"
+                    : "bg-white border border-border shadow-sm hover:shadow-md"
                     }`}
-                  >
-                    {tag}
-                  </p>
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <p
+                      className={`text-xs font-bold uppercase tracking-widest truncate ${isHighlight ? "text-brand" : "text-[#9E7A52]"
+                        }`}
+                    >
+                      {tag}
+                    </p>
+                    <div className="flex items-center gap-1.5 shrink-0">
+                      {isHighlight && (
+                        <span className="rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy-deep shadow-xs">
+                          {t("pricing.popular") || "Popular"}
+                        </span>
+                      )}
+                      <span
+                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${isHighlight
+                          ? "bg-white/15 text-brand border border-white/20"
+                          : "bg-[#FAF5EE] text-[#9A6F33] border border-[#EBDCC8]"
+                          }`}
+                      >
+                        {getCycleBadge(plan.billingCycle)}
+                      </span>
+                    </div>
+                  </div>
 
                   <h3
-                    className={`mt-2 text-3xl font-extrabold ${
-                      isHighlight ? "text-white" : "text-navy-deep"
-                    }`}
+                    className={`mt-2 text-3xl font-extrabold ${isHighlight ? "text-white" : "text-navy-deep"
+                      }`}
                   >
                     {plan.name}
                   </h3>
@@ -236,42 +325,35 @@ export function Pricing() {
                   <div className="mt-8 min-h-[3.5rem] flex items-end">
                     <div className="flex items-baseline gap-1">
                       <span
-                        className={`text-5xl font-extrabold tracking-tight ${
-                          isHighlight ? "text-white" : "text-navy-deep"
-                        }`}
+                        className={`text-5xl font-extrabold tracking-tight ${isHighlight ? "text-white" : "text-navy-deep"
+                          }`}
                       >
                         ${plan.price}
                       </span>
                       <span
-                        className={`${
-                          isHighlight ? "text-white/65" : "text-slate-body"
-                        } text-sm`}
+                        className={`${isHighlight ? "text-white/65" : "text-slate-body"
+                          } text-sm font-semibold`}
                       >
-                        {t("pricing.perMonth") || "/mo"}
+                        {getCycleSuffix(plan.billingCycle)}
                       </span>
                     </div>
                   </div>
 
                   <p
-                    className={`mt-3 text-sm ${
-                      isHighlight ? "text-white/75" : "text-slate-body"
-                    }`}
+                    className={`mt-3 text-sm ${isHighlight ? "text-white/75" : "text-slate-body"
+                      }`}
                   >
                     {plan.request_quota
-                      ? t("pricing.requestsPerMonth", {
-                          count: Number(plan.request_quota).toLocaleString(),
-                          defaultValue: `${Number(plan.request_quota).toLocaleString()} custom pieces / month`,
-                        })
-                      : t("pricing.unlimitedRequests", "Unlimited custom pieces / month")}
+                      ? `${Number(plan.request_quota).toLocaleString()} custom units / month included`
+                      : "Unlimited custom units / month"}
                   </p>
 
                   <ul className="mt-8 space-y-3.5 flex-1">
                     {perks.map((p: string) => (
                       <li key={p} className="flex items-start gap-2.5 text-sm">
                         <Check
-                          className={`h-4 w-4 mt-0.5 shrink-0 ${
-                            isHighlight ? "text-brand" : "text-[#B8966C]"
-                          }`}
+                          className={`h-4 w-4 mt-0.5 shrink-0 ${isHighlight ? "text-brand" : "text-[#B8966C]"
+                            }`}
                           strokeWidth={2.5}
                         />
                         <span className={isHighlight ? "text-white/90" : "text-navy-deep"}>
@@ -342,8 +424,11 @@ export function Pricing() {
                   Stripe Checkout
                 </p>
                 <h3 id="checkout-title" className="mt-1 text-xl font-extrabold text-navy-deep">
-                  {selectedPlan.name} - ${selectedPlan.price}/mo
+                  {selectedPlan.name} — ${selectedPlan.price}{getCycleSuffix(selectedPlan.billingCycle)}
                 </h3>
+                <span className="inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FAF5EE] text-[#9A6F33] border border-[#EBDCC8]">
+                  {getCycleBillingText(selectedPlan.billingCycle)}
+                </span>
                 <p className="mt-1.5 text-sm text-slate-body">
                   Enter your email, then continue to Stripe to pay securely. Closing the Stripe
                   window is fine - our webhook still records a successful payment.

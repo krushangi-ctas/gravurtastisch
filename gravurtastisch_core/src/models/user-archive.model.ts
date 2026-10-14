@@ -35,10 +35,6 @@ const userArchiveSchema = mongoose.Schema(
       type: String,
       trim: true,
     },
-    marketplaces: {
-      type: [String],
-      default: [],
-    },
     isSuperAdmin: {
       type: Boolean,
       default: false,

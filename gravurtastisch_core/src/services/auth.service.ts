@@ -40,13 +40,27 @@ const sendOtp = async (bodyData) => {
     );
   }
 
-  const lastOtp = await Otp.findOne({ email: normalizedEmail, used: false }).sort({
-    createdAt: -1,
+  // Allow multiple attempts (up to 5 in 5 minutes) before rate limiting
+  const recentOtpsCount = await Otp.countDocuments({
+    email: normalizedEmail,
+    createdAt: { $gt: new Date(Date.now() - 5 * 60 * 1000) },
   });
-  if (lastOtp && new Date() - lastOtp.createdAt < 60000) {
+
+  if (recentOtpsCount >= 5) {
     return createResponse(
       httpStatus.TOO_MANY_REQUESTS,
-      'Please wait at least 60 seconds before requesting a new OTP.'
+      'Too many OTP requests. Please wait a few minutes before trying again.'
+    );
+  }
+
+  // Prevent rapid double-clicks (less than 3 seconds)
+  const lastOtp = await Otp.findOne({ email: normalizedEmail }).sort({
+    createdAt: -1,
+  });
+  if (lastOtp && new Date().getTime() - new Date(lastOtp.createdAt).getTime() < 3000) {
+    return createResponse(
+      httpStatus.TOO_MANY_REQUESTS,
+      'Please wait a few seconds before requesting a new OTP.'
     );
   }
 

@@ -69,8 +69,17 @@ export async function registerSeller(data: {
   seller: string;
   email: string;
   phone?: string;
-  marketplaces: string[];
-}) {
+  marketplaces?: string[];
+  planId?: string;
+}): Promise<{
+  status: number;
+  message: string;
+  data?: {
+    checkoutUrl?: string;
+    sessionId?: string;
+    [key: string]: any;
+  };
+}> {
   return apiFetch("/v1/users/register-seller", {
     method: "POST",
     body: JSON.stringify(data),
@@ -192,6 +201,7 @@ export interface PlanItem {
   marketplace: number;
   request_quota: number;
   expireAt?: string | null;
+  billingCycle?: number;
   status: number;
   createdAt?: string;
   updatedAt?: string;
@@ -258,6 +268,7 @@ export interface PaymentSessionStatus {
     status?: "pending" | "paid" | "failed" | "canceled" | "refunded";
     paidAt?: string | null;
     stripeSessionId?: string;
+    siteUrl?: string;
   };
 }
 

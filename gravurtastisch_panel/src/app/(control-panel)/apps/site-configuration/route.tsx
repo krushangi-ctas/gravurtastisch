@@ -1,6 +1,8 @@
+import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
-import SiteConfigurationView from './components/views/SiteConfigurationView';
+
+const SiteConfigurationView = lazy(() => import('./components/views/SiteConfigurationView'));
 
 /**
  * The Site Configuration app Routes.

@@ -10,6 +10,7 @@ const createPlan = async (bodyData, userId) => {
     marketplace: Number(bodyData.marketplace ?? bodyData.marketplce ?? 0),
     request_quota: Number(bodyData.request_quota ?? 0),
     expireAt: bodyData.expireAt ? new Date(bodyData.expireAt) : null,
+    billingCycle: bodyData.billingCycle !== undefined ? Number(bodyData.billingCycle) : 1,
     status: bodyData.status !== undefined ? Number(bodyData.status) : 1,
     createdBy: userId || null,
   };
@@ -51,6 +52,9 @@ const updatePlan = async (planId, updateData, userId) => {
   }
   if (updateData.expireAt !== undefined) {
     payload.expireAt = updateData.expireAt ? new Date(updateData.expireAt) : null;
+  }
+  if (updateData.billingCycle !== undefined) {
+    payload.billingCycle = Number(updateData.billingCycle);
   }
 
   const updatedPlan = await PlanModel.findByIdAndUpdate(
@@ -187,10 +191,127 @@ const updatePlanStatus = async (planId, status, userId) => {
   };
 };
 
+/**
+ * Resolves effective plan limits for a user (or their parent organization).
+ * Priority:
+ * 1. Active plan in user.plans array (status === 1 || 'active' && paymentStatus === 1 || 'paid')
+ * 2. user.planLimits
+ * 3. Default fallback (5 marketplaces, 1000 review requests)
+ */
+const getEffectivePlanLimits = async (userOrId) => {
+  let user = userOrId;
+  const User = require('../models/user.model');
+  if (typeof userOrId === 'string' || (userOrId && mongoose.isValidObjectId(userOrId) && !userOrId.email)) {
+    user = await User.findById(userOrId);
+  }
+  if (!user) {
+    return {
+      maxMarketplaces: 5,
+      maxReviewRequestsPerMonth: 1000,
+      isExpired: false,
+      hasActivePlan: false,
+      planName: '',
+      planId: null,
+    };
+  }
+
+  // If user is a sub-account/team member, use parent seller's limits
+  if (user.parentId) {
+    const parent = await User.findById(user.parentId);
+    if (parent) user = parent;
+  }
+
+  // Check plans in user.plans array
+  if (Array.isArray(user.plans) && user.plans.length > 0) {
+    const now = Date.now();
+    let hasPlanUpdated = false;
+
+    // Check expiration on any plan with expireAt in the past
+    user.plans.forEach((p: any) => {
+      if (
+        (p.status === 1 || p.status === 'active') &&
+        p.expireAt &&
+        new Date(p.expireAt).getTime() < now
+      ) {
+        p.status = 2; // Mark as 2: expired
+        hasPlanUpdated = true;
+      }
+    });
+
+    if (hasPlanUpdated) {
+      if (user.subscriptionStatus === 1 || user.subscriptionStatus === 'active') {
+        user.subscriptionStatus = 2; // 2: expired / past_due
+      }
+      user.save().catch((err: any) => {
+        console.error('Failed to auto-update expired plan in user:', err);
+      });
+    }
+
+    // Active & non-expired plans
+    const validActivePlans = user.plans.filter(
+      (p: any) =>
+        (p.status === 1 || p.status === 'active') &&
+        (p.paymentStatus === 1 || p.paymentStatus === 'paid' || p.price === 0) &&
+        (!p.expireAt || new Date(p.expireAt).getTime() >= now)
+    );
+
+    if (validActivePlans.length > 0) {
+      const latestPlan = validActivePlans[validActivePlans.length - 1];
+      return {
+        maxMarketplaces: Number(latestPlan.marketplace) || 5,
+        maxReviewRequestsPerMonth: Number(latestPlan.request_quota) || 1000,
+        planName: latestPlan.name || '',
+        planId: latestPlan.planId || null,
+        billingCycle: latestPlan.billingCycle || 1,
+        isExpired: false,
+        hasActivePlan: true,
+        status: latestPlan.status,
+        paymentStatus: latestPlan.paymentStatus,
+        expireAt: latestPlan.expireAt,
+      };
+    }
+
+    // If user has a plan that is expired (status === 2 or past expireAt)
+    const latestPlan = user.plans[user.plans.length - 1];
+    const isLatestExpired =
+      latestPlan.status === 2 ||
+      latestPlan.status === 'expired' ||
+      (latestPlan.expireAt && new Date(latestPlan.expireAt).getTime() < now) ||
+      user.subscriptionStatus === 2 ||
+      user.subscriptionStatus === 'past_due';
+
+    if (isLatestExpired) {
+      return {
+        maxMarketplaces: Number(latestPlan.marketplace) || 5,
+        maxReviewRequestsPerMonth: Number(latestPlan.request_quota) || 1000,
+        planName: latestPlan.name || '',
+        planId: latestPlan.planId || null,
+        billingCycle: latestPlan.billingCycle || 1,
+        isExpired: true,
+        hasActivePlan: false,
+        status: 2,
+        paymentStatus: latestPlan.paymentStatus,
+        expireAt: latestPlan.expireAt,
+      };
+    }
+  }
+
+  // Fallback to legacy planLimits (e.g. for superadmin or un-planned users)
+  return {
+    maxMarketplaces: user.planLimits?.maxMarketplaces ?? 5,
+    maxReviewRequestsPerMonth: user.planLimits?.maxReviewRequestsPerMonth ?? 1000,
+    planName: '',
+    planId: user.currentPlanId || null,
+    isExpired: false,
+    hasActivePlan: false,
+  };
+};
+
 module.exports = {
   createPlan,
   updatePlan,
   getPlans,
   getPlanById,
   updatePlanStatus,
+  getEffectivePlanLimits,
 };

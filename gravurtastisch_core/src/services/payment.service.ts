@@ -18,10 +18,26 @@ const getStripe = () => {
   return new Stripe(config.stripe.secretKey);
 };
 
+const getSellerPanelBaseUrl = () => {
+  return (
+    process.env.SELLER_PANEL_URL ||
+    process.env.PANEL_URL ||
+    config.seller_panel_url ||
+    ''
+  )
+    .trim()
+    .replace(/\/+$/, '');
+};
+
+const getSellerPanelSignInUrl = () => {
+  const base = getSellerPanelBaseUrl();
+  return base.endsWith('/sign-in') ? base : `${base}/sign-in`;
+};
+
 /**
  * Create a Stripe Checkout Session for a plan and persist a pending payment row.
  */
-const createCheckoutSession = async ({ planId, email, name }) => {
+const createCheckoutSession = async ({ planId, email, name, userId }: any) => {
   const plan = await PlanModel.findById(planId);
   if (!plan || plan.status !== 1) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Plan not found or inactive.');
@@ -37,7 +53,9 @@ const createCheckoutSession = async ({ planId, email, name }) => {
     );
   }
 
-  const existingUser = await User.findOne({ email: normalizedEmail, status: { $ne: 2 } });
+  const existingUser = userId
+    ? await User.findById(userId)
+    : await User.findOne({ email: normalizedEmail, status: { $ne: 2 } });
 
   const payment = await PaymentModel.create({
     email: normalizedEmail,
@@ -47,11 +65,12 @@ const createCheckoutSession = async ({ planId, email, name }) => {
     amount: Number(plan.price),
     currency: 'usd',
     mode: 'subscription',
+    billingCycle: Number(plan.billingCycle) || 1,
     status: 'pending',
     userId: existingUser ? existingUser._id : null,
   });
 
-  const frontend = (config.stripe.frontendUrl || config.site_url || 'http://localhost:8080').replace(
+  const frontend = (config.stripe.frontendUrl || '').replace(
     /\/$/,
     ''
   );
@@ -88,12 +107,23 @@ const createCheckoutSession = async ({ planId, email, name }) => {
         price_data: {
           currency: 'usd',
           unit_amount: amountCents,
-          recurring: { interval: 'month' },
+          recurring:
+            Number(plan.billingCycle) === 3
+              ? { interval: 'year', interval_count: 1 }
+              : Number(plan.billingCycle) === 2
+                ? { interval: 'month', interval_count: 3 }
+                : { interval: 'month', interval_count: 1 },
           product_data: {
-            name: `Gravurtastisch — ${plan.name}`,
-            description: `${plan.request_quota || 0} units/mo · ${plan.marketplace || 0} channels`,
+            name: `Gravurtastisch - ${plan.name}`,
+            description: `${plan.request_quota || 0} units/${Number(plan.billingCycle) === 3
+              ? 'yr'
+              : Number(plan.billingCycle) === 2
+                ? 'quarter'
+                : 'mo'
+              } · ${plan.marketplace || 0} channels`,
             metadata: {
               planId: String(plan._id),
+              billingCycle: String(plan.billingCycle || 1),
             },
           },
         },
@@ -107,6 +137,18 @@ const createCheckoutSession = async ({ planId, email, name }) => {
     checkoutUrl: session.url,
   };
   await payment.save();
+
+  if (existingUser && Array.isArray(existingUser.plans)) {
+    const pendingPlan = existingUser.plans.find(
+      (p: any) =>
+        String(p.planId) === String(plan._id) &&
+        (p.status === 0 || p.status === 'pending_payment')
+    );
+    if (pendingPlan) {
+      pendingPlan.stripeSessionId = session.id;
+      await existingUser.save();
+    }
+  }
 
   return {
     status: httpStatus.OK,
@@ -129,7 +171,11 @@ const getSessionStatus = async (sessionId) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Payment not found for this session.');
   }
 
-  // Optionally refresh from Stripe if still pending
+  const planObj = payment.planId ? await PlanModel.findById(payment.planId).lean() : null;
+  const envPanelUrl = getSellerPanelBaseUrl();
+  const sellerPanelSignInUrl = getSellerPanelSignInUrl();
+
+  // Auto-complete mock payments or poll Stripe for real payments
   if (payment.status === 'pending' && config.stripe.secretKey) {
     try {
       const stripe = getStripe();
@@ -142,10 +188,16 @@ const getSessionStatus = async (sessionId) => {
           eventId: `session-poll:${sessionId}`,
         });
         const refreshed = await PaymentModel.findById(payment._id).lean();
+
         return {
           status: httpStatus.OK,
           message: 'Payment status retrieved.',
-          data: refreshed,
+          data: {
+            ...refreshed,
+            billingCycle: refreshed.billingCycle || (planObj && planObj.billingCycle) || 1,
+            siteUrl: envPanelUrl,
+            sellerPanelUrl: sellerPanelSignInUrl,
+          },
         };
       }
     } catch (err) {
@@ -156,7 +208,12 @@ const getSessionStatus = async (sessionId) => {
   return {
     status: httpStatus.OK,
     message: 'Payment status retrieved.',
-    data: payment,
+    data: {
+      ...payment,
+      billingCycle: payment.billingCycle || (planObj && planObj.billingCycle) || 1,
+      siteUrl: envPanelUrl,
+      sellerPanelUrl: sellerPanelSignInUrl,
+    },
   };
 };
 
@@ -200,7 +257,75 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
       user.stripeSubscriptionId = extras.stripeSubscriptionId;
     }
     user.currentPlanId = plan._id;
-    user.subscriptionStatus = 'active';
+    user.subscriptionStatus = 1; // 1: active
+    user.status = 1; // Activate user account so seller can access dashboard
+
+    if (!Array.isArray(user.plans)) {
+      user.plans = [];
+    }
+
+    // Mark previous active plans as 3 (upgraded)
+    user.plans.forEach((p: any) => {
+      if (p.status === 1 || p.status === 'active') {
+        p.status = 3; // upgraded
+      }
+    });
+
+    const now = new Date();
+    const cycle = Number(plan.billingCycle) || 1;
+    let expireDate = plan.expireAt;
+    if (!expireDate) {
+      const calcExpire = new Date(now);
+      if (cycle === 2) {
+        calcExpire.setMonth(calcExpire.getMonth() + 3);
+      } else if (cycle === 3) {
+        calcExpire.setFullYear(calcExpire.getFullYear() + 1);
+      } else {
+        calcExpire.setMonth(calcExpire.getMonth() + 1);
+      }
+      expireDate = calcExpire;
+    }
+
+    const existingPlanIndex = user.plans.findIndex(
+      (p: any) =>
+        (p.planId &&
+          String(p.planId) === String(plan._id) &&
+          (p.paymentStatus === 0 || p.paymentStatus === 'pending' || p.paymentStatus !== 1)) ||
+        (payment.stripeSessionId && p.stripeSessionId === payment.stripeSessionId)
+    );
+
+    if (existingPlanIndex !== -1) {
+      user.plans[existingPlanIndex].status = 1; // active
+      user.plans[existingPlanIndex].paymentStatus = 1; // paid
+      user.plans[existingPlanIndex].price = Number(plan.price) || 0;
+      user.plans[existingPlanIndex].marketplace = Number(plan.marketplace) || 1;
+      user.plans[existingPlanIndex].request_quota = Number(plan.request_quota) || 1000;
+      user.plans[existingPlanIndex].billingCycle = cycle;
+      user.plans[existingPlanIndex].name = plan.name;
+      user.plans[existingPlanIndex].expireAt = expireDate;
+      user.plans[existingPlanIndex].stripeSessionId =
+        payment.stripeSessionId || user.plans[existingPlanIndex].stripeSessionId;
+      user.plans[existingPlanIndex].stripePaymentIntentId =
+        extras.stripePaymentIntentId || payment.stripePaymentIntentId || null;
+      user.plans[existingPlanIndex].selectedAt = now;
+    } else {
+      user.plans.push({
+        planId: plan._id,
+        name: plan.name,
+        price: Number(plan.price) || 0,
+        marketplace: Number(plan.marketplace) || 1,
+        request_quota: Number(plan.request_quota) || 1000,
+        billingCycle: cycle,
+        expireAt: expireDate,
+        status: 1, // active
+        paymentStatus: 1, // paid
+        stripeSessionId: payment.stripeSessionId || null,
+        stripePaymentIntentId:
+          extras.stripePaymentIntentId || payment.stripePaymentIntentId || null,
+        selectedAt: now,
+      });
+    }
+
     await user.save();
     payment.userId = user._id;
     await payment.save();
@@ -215,31 +340,175 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
   return payment;
 };
 
-const notifyPaymentPaid = async (payment, plan) => {
-  const adminTo = config.email.adminEmail || config.email.from;
-  if (!adminTo) return;
+const notifyPaymentPaid = async (payment: any, plan: any) => {
+  const planName = payment.planName || plan?.name || 'Subscription Plan';
+  const cycle = Number(payment.billingCycle || plan?.billingCycle) || 1;
+  const cycleName = cycle === 3 ? 'Annual' : cycle === 2 ? 'Quarterly' : 'Monthly';
+  const cycleSuffix = cycle === 3 ? '/yr' : cycle === 2 ? '/qtr' : '/mo';
+  const amountFormatted = Number(payment.amount || plan?.price || 0).toFixed(2);
+  const currencyUpper = String(payment.currency || 'usd').toUpperCase();
+  const quotaText = plan?.request_quota
+    ? `${Number(plan.request_quota).toLocaleString()} custom units / month`
+    : 'Unlimited custom units / month';
+  const marketplaceText = plan?.marketplace
+    ? `${plan.marketplace} ${Number(plan.marketplace) === 1 ? 'sales channel' : 'sales channels'}`
+    : 'Multi-channel access';
 
-  const subject = `Payment received — ${payment.planName || plan?.name || 'Plan'}`;
-  const html = `
-    <h2>Stripe payment confirmed</h2>
-    <p><strong>Email:</strong> ${payment.email}</p>
-    <p><strong>Name:</strong> ${payment.name || '—'}</p>
-    <p><strong>Plan:</strong> ${payment.planName || plan?.name || payment.planId}</p>
-    <p><strong>Amount:</strong> $${Number(payment.amount).toFixed(2)} ${String(
-      payment.currency || 'usd'
-    ).toUpperCase()}/mo</p>
-    <p><strong>Session:</strong> ${payment.stripeSessionId || '—'}</p>
-    <p><strong>Subscription:</strong> ${payment.stripeSubscriptionId || '—'}</p>
-    <p>Recorded via webhook — browser close does not affect this acknowledgement.</p>
-  `;
-  await emailService.sendEmail(adminTo, subject, subject, html);
+  const sellerPanelSignInUrl = getSellerPanelSignInUrl();
+
+  // 1. Send confirmation email to the seller / customer
+  if (payment.email) {
+    try {
+      const customerSubject = `Payment Confirmed — Welcome to Gravurtastisch (${planName})`;
+      const customerContent = `
+        <div style="text-align:center; padding:0 0 16px;">
+          <div style="display:inline-block; width:44px; height:44px; line-height:44px; border-radius:50%; background-color:#ECFDF5; border:2px solid #10B981; text-align:center; margin-bottom:8px;">
+            <span style="font-size:22px; color:#10B981; line-height:44px; font-weight:bold;">&#10003;</span>
+          </div>
+          <h1 style="margin:0 0 6px; font-size:21px; font-weight:800; color:#1E1E1E; font-family:'Montserrat','Inter',Arial,sans-serif;">Payment Successful!</h1>
+          <p style="margin:0 auto; max-width:540px; font-size:13.5px; line-height:1.5; color:#4A4A48; font-family:'Inter',Arial,sans-serif;">
+            Hi <strong>${payment.name || payment.email}</strong>, thank you for subscribing to <strong>Gravurtastisch</strong>. Your payment has been received and your seller account is now fully active.
+          </p>
+        </div>
+
+        <!-- 2-Column Left & Right Split: Details + Action -->
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:14px; border-collapse:collapse;">
+          <tr>
+            <!-- LEFT PART: Plan Details -->
+            <td class="stack-col" width="53%" style="vertical-align:top; padding-right:8px; padding-bottom:10px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#FAF9F6; border:1px solid #E5E0D5; border-radius:10px; border-collapse:separate; height:100%;">
+                <tr>
+                  <td style="padding:14px 16px;">
+                    <div style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:12px; font-weight:800; color:#1E1E1E; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #EBDCC8; padding-bottom:5px;">
+                      Subscription Details
+                    </div>
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Subscribed Plan</td>
+                        <td style="padding:4px 0; color:#1E1E1E; font-size:12.5px; font-weight:700; text-align:right; font-family:'Inter',Arial,sans-serif;">${planName}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Billing Frequency</td>
+                        <td style="padding:4px 0; text-align:right;">
+                          <span style="display:inline-block; background-color:#FAF5EE; color:#9A6F33; border:1px solid #EBDCC8; font-size:11px; font-weight:700; padding:1px 8px; border-radius:9999px;">${cycleName}</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Amount Paid</td>
+                        <td style="padding:4px 0; color:#282828; font-size:13.5px; font-weight:800; text-align:right; font-family:'Inter',Arial,sans-serif;">$${amountFormatted} ${currencyUpper} <span style="font-size:11px; color:#78716C; font-weight:normal;">(${cycleSuffix})</span></td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Monthly Quota</td>
+                        <td style="padding:4px 0; color:#1E1E1E; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif;">${quotaText}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Channels</td>
+                        <td style="padding:4px 0; color:#1E1E1E; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif;">${marketplaceText}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Registered Email</td>
+                        <td style="padding:4px 0; color:#1E1E1E; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif; word-break:break-all;">${payment.email}</td>
+                      </tr>
+                      <tr>
+                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Status</td>
+                        <td style="padding:4px 0; text-align:right;">
+                          <span style="display:inline-block; background-color:#D1FAE5; color:#065F46; font-size:11px; font-weight:700; padding:1px 8px; border-radius:9999px;">Active</span>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+
+            <!-- RIGHT PART: Direct Access & Action -->
+            <td class="stack-col" width="47%" style="vertical-align:top; padding-left:8px; padding-bottom:10px;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#FAF9F6; border:1px solid #E5E0D5; border-radius:10px; border-collapse:separate; height:100%;">
+                <tr>
+                  <td style="padding:14px 16px; text-align:center;">
+                    <div style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:12px; font-weight:800; color:#1E1E1E; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; border-bottom:1px solid #EBDCC8; padding-bottom:5px; text-align:left;">
+                      Seller Panel Access
+                    </div>
+
+                    <!-- Direct CTA Button -->
+                    <table role="presentation" cellpadding="0" cellspacing="0" style="margin:12px auto 10px;">
+                      <tr>
+                        <td style="border-radius:50px; background-color:#B8966C; text-align:center; box-shadow:0 3px 10px rgba(184,150,108,0.3);">
+                          <a href="${sellerPanelSignInUrl}"
+                             style="display:inline-block; padding:11px 24px; font-family:'Inter',Arial,sans-serif;
+                                    font-size:13.5px; font-weight:800; color:#1E1E1E; text-decoration:none; border-radius:50px; letter-spacing:0.3px; white-space:nowrap;">
+                            Go to Seller Panel &rarr;
+                          </a>
+                        </td>
+                      </tr>
+                    </table>
+
+                    <p style="margin:0 0 10px; font-size:11px; color:#78716C; font-family:'Inter',Arial,sans-serif; line-height:1.4;">
+                      Access anytime at:<br/>
+                      <a href="${sellerPanelSignInUrl}" style="color:#282828; font-weight:600; text-decoration:underline; word-break:break-all;">${sellerPanelSignInUrl}</a>
+                    </p>
+
+                    <!-- Guidance Note -->
+                    <div style="background-color:#ffffff; border-left:3px solid #B8966C; border-radius:0 6px 6px 0; padding:8px 10px; text-align:left; border-top:1px solid #EAE7E0; border-right:1px solid #EAE7E0; border-bottom:1px solid #EAE7E0;">
+                      <p style="margin:0; font-size:11px; line-height:1.45; color:#57534E; font-family:'Inter',Arial,sans-serif;">
+                        <strong>Sign-in:</strong> Use <strong>${payment.email}</strong> to sign in and connect your store.
+                      </p>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+
+        <p style="margin:4px 0 0; font-size:11.5px; line-height:1.4; color:#78716C; text-align:center; font-family:'Inter',Arial,sans-serif;">
+          Questions? Reply to this email or contact support at <a href="mailto:info@ctasis.com" style="color:#282828; font-weight:600;">info@ctasis.com</a>.
+        </p>
+      `;
+
+      const customerHtml = await emailService.getMailBody(
+        customerContent,
+        `Payment confirmed for your Gravurtastisch ${planName} plan.`
+      );
+
+      await emailService.sendEmail(payment.email, customerSubject, '', customerHtml);
+      logger.info(`Payment confirmation email sent to seller: ${payment.email}`);
+    } catch (err: any) {
+      logger.error(`Failed to send customer payment confirmation email to ${payment.email}: ${err.message}`);
+    }
+  }
+
+  // 2. Send notification email to admin
+  const adminTo = config.email.adminEmail || config.email.from;
+  if (adminTo) {
+    try {
+      const adminSubject = `Payment received — ${planName} ($${amountFormatted}${cycleSuffix}) [${payment.email}]`;
+      const adminHtml = `
+        <h2>Stripe payment confirmed</h2>
+        <p><strong>Email:</strong> ${payment.email}</p>
+        <p><strong>Name:</strong> ${payment.name || '—'}</p>
+        <p><strong>Plan:</strong> ${planName}</p>
+        <p><strong>Billing Cycle:</strong> ${cycleName} (${cycle})</p>
+        <p><strong>Amount:</strong> $${amountFormatted} ${currencyUpper}${cycleSuffix}</p>
+        <p><strong>Session ID:</strong> ${payment.stripeSessionId || '—'}</p>
+        <p><strong>Subscription ID:</strong> ${payment.stripeSubscriptionId || '—'}</p>
+        <p><strong>Seller Panel URL:</strong> <a href="${sellerPanelSignInUrl}">${sellerPanelSignInUrl}</a></p>
+        <p>Recorded via Stripe checkout / webhook acknowledgement.</p>
+      `;
+      await emailService.sendEmail(adminTo, adminSubject, adminSubject, adminHtml);
+      logger.info(`Payment notification email sent to admin: ${adminTo}`);
+    } catch (err: any) {
+      logger.warn(`Admin payment notification email failed: ${err.message}`);
+    }
+  }
 };
 
 /**
  * Verify Stripe signature and process payment lifecycle events.
  */
 const handleWebhook = async (rawBody, signature) => {
-  if (!config.stripe.webhookSecret) {
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  if (!webhookSecret) {
     throw new ApiError(
       httpStatus.SERVICE_UNAVAILABLE,
       'Stripe webhook secret is not configured (STRIPE_WEBHOOK_SECRET).'
@@ -255,7 +524,7 @@ const handleWebhook = async (rawBody, signature) => {
     event = stripe.webhooks.constructEvent(
       rawBody,
       signature,
-      config.stripe.webhookSecret
+      webhookSecret
     );
   } catch (err) {
     logger.error(`Stripe webhook signature failed: ${err.message}`);
@@ -310,7 +579,7 @@ const handleWebhook = async (rawBody, signature) => {
         await payment.save();
         if (payment.userId) {
           await User.findByIdAndUpdate(payment.userId, {
-            subscriptionStatus: 'canceled',
+            subscriptionStatus: 3, // 3: canceled
           });
         }
       }

@@ -92,7 +92,8 @@ const registerSeller = {
     seller: Joi.string().required(),
     business: Joi.string().required(),
     phone: Joi.string().allow('', null).trim(),
-    marketplaces: Joi.array().items(Joi.string()).default([]),
+    planId: Joi.string().allow('', null).optional(),
+    marketplaces: Joi.any().optional(),
   }),
 };
 

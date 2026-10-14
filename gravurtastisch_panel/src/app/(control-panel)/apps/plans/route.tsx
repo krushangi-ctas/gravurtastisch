@@ -1,6 +1,8 @@
+import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
-import PlansView from './components/views/PlansView';
+
+const PlansView = lazy(() => import('./components/views/PlansView'));
 
 /**
  * The Plans app Routes.

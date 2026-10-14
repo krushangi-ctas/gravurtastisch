@@ -20,7 +20,11 @@ function PaymentSuccessPage() {
   );
   const [planName, setPlanName] = useState("");
   const [amount, setAmount] = useState<number | null>(null);
+  const [billingCycle, setBillingCycle] = useState<number>(1);
+  const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
+  const [siteUrl, setSiteUrl] = useState("");
+  const [sellerPanelUrl, setSellerPanelUrl] = useState("");
 
   useEffect(() => {
     if (!sessionId) {
@@ -39,6 +43,18 @@ function PaymentSuccessPage() {
         const status = res.data?.status;
         setPlanName(res.data?.planName || "");
         setAmount(typeof res.data?.amount === "number" ? res.data.amount : null);
+        if (res.data?.billingCycle) {
+          setBillingCycle(Number(res.data.billingCycle) || 1);
+        }
+        if (res.data?.email) {
+          setEmail(res.data.email);
+        }
+        if (res.data?.sellerPanelUrl) {
+          setSellerPanelUrl(res.data.sellerPanelUrl);
+        }
+        if (res.data?.siteUrl) {
+          setSiteUrl(res.data.siteUrl);
+        }
 
         if (status === "paid") {
           setState("paid");
@@ -94,8 +110,15 @@ function PaymentSuccessPage() {
                 <h1 className="mt-6 text-2xl font-extrabold">Payment received</h1>
                 <p className="mt-2 text-slate-body text-sm leading-relaxed">
                   Thanks{planName ? ` - your ${planName} plan` : ""} is confirmed
-                  {amount != null ? ` ($${amount}/mo)` : ""}. Our backend recorded this via
-                  Stripe webhook, so it stays acknowledged even if the browser closed mid-checkout.
+                  {amount != null
+                    ? ` ($${amount}${billingCycle === 3
+                      ? "/yr"
+                      : billingCycle === 2
+                        ? "/qtr"
+                        : "/mo"
+                    })`
+                    : ""}. A confirmation email with your payment details and seller panel access
+                  has been sent to {email ? <strong className="text-navy-deep">{email}</strong> : "your registered email"}.
                 </p>
               </>
             )}
@@ -120,20 +143,56 @@ function PaymentSuccessPage() {
             )}
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link
-                to="/"
-                hash="pricing"
-                className="inline-flex rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition"
-              >
-                Back to pricing
-              </Link>
-              <Link
-                to="/"
-                hash="contact"
-                className="inline-flex rounded-full border border-border px-6 py-3 text-sm font-semibold text-navy-deep hover:bg-surface-alt transition"
-              >
-                Contact support
-              </Link>
+              {state === "paid" ? (
+                <>
+                  {(() => {
+                    const panelTarget = (
+                      sellerPanelUrl ||
+                      (import.meta as any).env?.VITE_PANEL_URL ||
+                      (import.meta as any).env?.VITE_SELLER_PANEL_URL ||
+                      (import.meta as any).env?.VITE_SITE_URL ||
+                      siteUrl ||
+                      ""
+                    ).trim().replace(/\/+$/, "");
+                    const resolvedSignInUrl = panelTarget.endsWith("/sign-in")
+                      ? panelTarget
+                      : `${panelTarget}/sign-in`;
+
+                    return (
+                      <a
+                        href={resolvedSignInUrl}
+                        className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition shadow-md"
+                      >
+                        <span>Go to Seller Panel</span>
+                        <span>→</span>
+                      </a>
+                    );
+                  })()}
+                  <Link
+                    to="/"
+                    className="inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-semibold text-navy-deep hover:bg-surface-alt transition"
+                  >
+                    Back to Home
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/"
+                    hash="pricing"
+                    className="inline-flex rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition"
+                  >
+                    Back to pricing
+                  </Link>
+                  <Link
+                    to="/"
+                    hash="contact"
+                    className="inline-flex rounded-full border border-border px-6 py-3 text-sm font-semibold text-navy-deep hover:bg-surface-alt transition"
+                  >
+                    Contact support
+                  </Link>
+                </>
+              )}
             </div>
           </div>
         </Container>

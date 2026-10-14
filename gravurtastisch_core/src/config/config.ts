@@ -35,7 +35,10 @@ const envVarsSchema = Joi.object()
     OTP_EXPIRY_MINUTES: Joi.number()
       .default(10)
       .description('minutes after which OTP expires'),
-    SITE_URL: Joi.string(),
+    SITE_URL: Joi.string().description('Backend API URL used for keep-alive and assets'),
+    SELLER_PANEL_URL: Joi.string()
+      .allow('')
+      .description('Seller panel web URL, e.g. https://gravurtastisch-panel.vercel.app'),
     UNIVERSAL_OTP_API_KEY: Joi.string()
       .default('')
       .description('API key for universal OTP hub access'),
@@ -50,12 +53,8 @@ const envVarsSchema = Joi.object()
       .description('Bypass OTP code for instant login'),
     STRIPE_SECRET_KEY: Joi.string()
       .allow('')
-      .default('')
+      .default('sk_test_mock_secret_key_gravurtastisch')
       .description('Stripe secret key (sk_test_… / sk_live_…)'),
-    STRIPE_WEBHOOK_SECRET: Joi.string()
-      .allow('')
-      .default('')
-      .description('Stripe webhook signing secret (whsec_…)'),
     FRONTEND_URL: Joi.string()
       .allow('')
       .default('http://localhost:8080')
@@ -120,7 +119,7 @@ module.exports = {
     system: envVars.UNIVERSAL_OTP_SYSTEM || 'review_snapp',
   },
   bypass: {
-    email: (envVars.BYPASS_EMAIL || 'vijayraiyani@gmail.com').trim().toLowerCase(),
+    email: (envVars.BYPASS_EMAIL || 'vijayraiyani56@gmail.com').trim().toLowerCase(),
     otp: (envVars.BYPASS_OTP || '555555').trim(),
   },
   amz: {
@@ -138,9 +137,11 @@ module.exports = {
     baseUrl: envVars.SHIPROCKET_BASE_URL,
   },
   site_url: envVars.SITE_URL,
+  seller_panel_url:
+    envVars.SELLER_PANEL_URL ||
+    envVars.PANEL_URL,
   stripe: {
-    secretKey: envVars.STRIPE_SECRET_KEY || '',
-    webhookSecret: envVars.STRIPE_WEBHOOK_SECRET || '',
+    secretKey: envVars.STRIPE_SECRET_KEY,
     frontendUrl: envVars.FRONTEND_URL || envVars.SITE_URL || 'http://localhost:8080',
     successUrl: envVars.STRIPE_SUCCESS_URL || '',
     cancelUrl: envVars.STRIPE_CANCEL_URL || '',

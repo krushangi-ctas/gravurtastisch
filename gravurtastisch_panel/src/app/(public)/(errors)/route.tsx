@@ -1,7 +1,9 @@
+import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import { layoutConfigOnlyMain } from '@/configs/layoutConfigTemplates';
-import Error401PageView from './components/views/Error401PageView';
-import Error404PageView from './components/views/Error404PageView';
+
+const Error401PageView = lazy(() => import('./components/views/Error401PageView'));
+const Error404PageView = lazy(() => import('./components/views/Error404PageView'));
 
 /**
  * The Error page routes.

@@ -1,6 +1,8 @@
+import { lazy } from 'react';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
-import SupportView from './components/views/SupportView';
+
+const SupportView = lazy(() => import('./components/views/SupportView'));
 
 /**
  * The Customer Support app Routes.

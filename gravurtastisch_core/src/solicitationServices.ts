@@ -5,6 +5,7 @@ const ordermodel = require('./models/order.model');
 const AmazonCredentialsModel = require('./models/amazon-credentials.model');
 const UserModel = require('./models/user.model');
 const GeneralSettingModel = require('./models/generalSetting.model');
+const { getEffectivePlanLimits } = require('./services/plan.service');
 
 const CronErrorModel = require('./models/cron-error.model');
 
@@ -158,8 +159,15 @@ async function runSolicitationProcess() {
         continue;
       }
 
+      const planLimits = await getEffectivePlanLimits(user);
+      if (planLimits?.isExpired) {
+        console.log(
+          `User ${userId} subscription plan has expired. Skipping automated solicitation.`
+        );
+        continue;
+      }
       const maxReviewRequestsPerMonth =
-        user.planLimits?.maxReviewRequestsPerMonth ?? 1000;
+        planLimits?.maxReviewRequestsPerMonth ?? 1000;
       const startOfMonth = moment().startOf('month').toDate();
       const sentCount = await ordermodel.countDocuments({
         userId,

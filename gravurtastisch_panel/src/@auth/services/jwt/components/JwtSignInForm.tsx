@@ -173,8 +173,8 @@ function JwtSignInForm() {
           autoHideDuration: 4000,
         });
       }
-    } catch {
-      enqueueSnackbar('Failed to send OTP. Please try again.', {
+    } catch (error: any) {
+      enqueueSnackbar(error?.message || 'Failed to send OTP. Please try again.', {
         variant: 'error',
         autoHideDuration: 4000,
       });
@@ -203,8 +203,8 @@ function JwtSignInForm() {
           autoHideDuration: 4000,
         });
       }
-    } catch {
-      enqueueSnackbar('Failed to resend OTP. Please try again.', {
+    } catch (error: any) {
+      enqueueSnackbar(error?.message || 'Failed to resend OTP. Please try again.', {
         variant: 'error',
         autoHideDuration: 4000,
       });
