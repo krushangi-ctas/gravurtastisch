@@ -10,12 +10,13 @@
     "prettier": "prettier --write \"src/**/*.{ts,js}\"",
     "prettier-check": "prettier --list-different \"src/**/*.{ts,js}\"",
     "check-all": "concurrently \"pnpm lint\" \"pnpm prettier-check\" \"pnpm typecheck\"",
+    "prestart": "pnpm run build",
     "start": "node dist/index.js",
-    "start:core": "node dist/index.js",
-    "start:run": "node dist/index.js",
+    "start:core": "pnpm run build && node dist/index.js",
+    "start:run": "pnpm run build && node dist/index.js",
     "dev": "tsx watch --clear-screen=false src/index.ts",
-    "build": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}\"",
-    "build:core": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}\""
+    "build": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}if(fs.existsSync('public')){fs.cpSync('public','dist/public',{recursive:true});}\"",
+    "build:core": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}if(fs.existsSync('public')){fs.cpSync('public','dist/public',{recursive:true});}\""
   },
   "dependencies": {
     "axios": "^1.8.4",
