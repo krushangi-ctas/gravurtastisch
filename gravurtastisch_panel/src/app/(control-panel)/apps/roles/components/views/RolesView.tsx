@@ -574,6 +574,7 @@ function RolesView() {
 					<Dialog
 						open={dialogOpen}
 						onClose={() => setDialogOpen(false)}
+						disableRestoreFocus
 						maxWidth="md"
 						fullWidth
 						PaperProps={{
@@ -659,7 +660,7 @@ function RolesView() {
 											minRows={2}
 											InputProps={{
 												startAdornment: (
-													<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: 1 }}>
+													<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: '3px' }}>
 														<FuseSvgIcon size={16} className="text-gray-400">
 															heroicons-outline:document-text
 														</FuseSvgIcon>
@@ -716,6 +717,10 @@ function RolesView() {
 																		onChange={() => toggleFlag(section.key, flag)}
 																		size="small"
 																		color="primary"
+																		sx={{
+																			p: 0.5,
+																			'& .MuiSvgIcon-root': { fontSize: 18 }
+																		}}
 																	/>
 																</TableCell>
 															)

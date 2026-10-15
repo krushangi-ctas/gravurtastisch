@@ -124,6 +124,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 		<Dialog
 			open={open}
 			onClose={onClose}
+			disableRestoreFocus
 			maxWidth="sm"
 			fullWidth
 			PaperProps={{

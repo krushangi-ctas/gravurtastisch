@@ -214,6 +214,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 		<Dialog
 			open={open}
 			onClose={onClose}
+			disableRestoreFocus
 			maxWidth="lg"
 			fullWidth
 			PaperProps={{

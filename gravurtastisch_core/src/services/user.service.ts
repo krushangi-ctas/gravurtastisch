@@ -1,13 +1,19 @@
 // @ts-nocheck
 const httpStatus = require('http-status');
+const moment = require('moment');
+const mongoose = require('mongoose');
 const User = require('../models/user.model');
 const ChatModel = require('../models/chat.model');
 const Role = require('../models/role.model');
+const ordermodel = require('../models/order.model');
+const PlanModel = require('../models/plan.model');
+const PaymentModel = require('../models/payment.model');
 const errorHandler = require('../utils/error.handler');
+const logger = require('../config/logger');
 const { systemLog } = require('../utils/system-log');
 const { uploadFile, deleteFile } = require('../utils/file-uploader');
-const mongoose = require('mongoose');
 const { createResponse } = require('../services/common.service');
+const { syncUserSubscriptionPlans } = require('./plan.service');
 
 /**
  * Create a user
@@ -196,11 +202,44 @@ const paginateUserList = async (baseFilter, query, okMessage) => {
     User.countDocuments(filter),
     User.find(filter)
       .populate('role_id', 'role_name scope permissions status')
+      .populate('currentPlanId', 'name price marketplace request_quota billingCycle status')
       .sort(sort)
       .skip((page - 1) * limit)
       .limit(limit)
       .lean(),
   ]);
+
+  if (Array.isArray(results) && results.length > 0) {
+    const startOfMonth = moment().startOf('month').toDate();
+
+    await Promise.all(
+      results.map(async (u) => {
+        if (Array.isArray(u.plans) && u.plans.length > 0) {
+          await syncUserSubscriptionPlans(u);
+        }
+
+        try {
+          const usedCount = await ordermodel.countDocuments({
+            userId: u._id,
+            isSent: true,
+            updatedAt: { $gte: startOfMonth },
+          });
+
+          if (!u.planLimits) {
+            u.planLimits = {};
+          }
+          u.planLimits.usedReviewRequests = usedCount;
+          u.usedReviewRequests = usedCount;
+        } catch (_) {
+          if (!u.planLimits) {
+            u.planLimits = {};
+          }
+          u.planLimits.usedReviewRequests = 0;
+          u.usedReviewRequests = 0;
+        }
+      })
+    );
+  }
 
   const totalPages = Math.ceil(totalResults / limit) || 1;
   return createResponse(httpStatus.OK, okMessage, results, {
@@ -936,6 +975,186 @@ const getChatUserList = async (id) => {
   }
 };
 
+/**
+ * Manually assign a plan to a seller / user from the admin panel.
+ * Updates user limits, currentPlanId, user.plans array, subscription status,
+ * creates an audit payment record, and optionally sends notification email.
+ */
+const assignPlanManuallyToUser = async (actor, userId, data = {}) => {
+  try {
+    const {
+      planId,
+      billingCycle,
+      activationMode = 'immediate', // 'immediate' | 'extend'
+      sendNotification = true,
+      customExpireAt,
+    } = data;
+
+    if (!planId) {
+      return createResponse(httpStatus.BAD_REQUEST, 'Plan ID is required.');
+    }
+
+    const user = await User.findById(userId);
+    if (!user || user.status === 2) {
+      return createResponse(httpStatus.NOT_FOUND, 'Seller / User not found.');
+    }
+
+    const plan = await PlanModel.findById(planId);
+    if (!plan || plan.status === 2) {
+      return createResponse(httpStatus.NOT_FOUND, 'Selected plan not found or inactive.');
+    }
+
+    const cycle = Number(billingCycle ?? plan.billingCycle) || 1;
+    const now = new Date();
+
+    if (!Array.isArray(user.plans)) {
+      user.plans = [];
+    }
+
+    // Auto-mark any active plan whose expireAt is in the past as expired (2)
+    user.plans.forEach((p) => {
+      if (
+        (p.status === 1 || p.status === 'active') &&
+        p.expireAt &&
+        new Date(p.expireAt).getTime() < now.getTime()
+      ) {
+        p.status = 2; // Expired
+      }
+    });
+
+    // Check if user currently has an ongoing active (1) or queued (4) plan
+    let latestExpireDate = null;
+    let currentActivePlan = null;
+
+    user.plans.forEach((p) => {
+      const isOngoing =
+        (p.status === 1 || p.status === 4 || p.status === 'active' || p.status === 'queued') &&
+        p.expireAt &&
+        new Date(p.expireAt).getTime() > now.getTime();
+
+      if (isOngoing) {
+        const pExp = new Date(p.expireAt);
+        if (!latestExpireDate || pExp.getTime() > latestExpireDate.getTime()) {
+          latestExpireDate = pExp;
+        }
+        if (p.status === 1 || p.status === 'active') {
+          currentActivePlan = p;
+        }
+      }
+    });
+
+    const hasOngoingPlan = Boolean(latestExpireDate && latestExpireDate.getTime() > now.getTime());
+    const baseStartDate = hasOngoingPlan ? new Date(latestExpireDate) : new Date(now);
+
+    let expireDate = customExpireAt ? new Date(customExpireAt) : null;
+    if (!expireDate) {
+      const calcExpire = new Date(baseStartDate);
+      if (cycle === 2) {
+        calcExpire.setMonth(calcExpire.getMonth() + 3);
+      } else if (cycle === 3) {
+        calcExpire.setFullYear(calcExpire.getFullYear() + 1);
+      } else {
+        calcExpire.setMonth(calcExpire.getMonth() + 1);
+      }
+      expireDate = calcExpire;
+    }
+
+    let newPlanStatus = 1;
+    if (hasOngoingPlan) {
+      // The current working plan continues uninterrupted!
+      // The new plan is queued to start automatically after the current plan finishes.
+      newPlanStatus = 4; // 4 = queued / scheduled
+      user.subscriptionStatus = 1; // 1: active
+      user.status = 1; // 1: active seller account
+    } else {
+      // No active plan: activate new plan immediately today
+      newPlanStatus = 1; // 1 = active
+      user.currentPlanId = plan._id;
+      user.planLimits = {
+        maxMarketplaces: Number(plan.marketplace) || 1,
+        maxReviewRequestsPerMonth: Number(plan.request_quota) || 1000,
+      };
+      user.subscriptionStatus = 1; // 1: active
+      user.status = 1; // 1: active seller account
+    }
+
+    const newPlanEntry = {
+      planId: plan._id,
+      name: plan.name,
+      price: Number(plan.price) || 0,
+      marketplace: Number(plan.marketplace) || 1,
+      request_quota: Number(plan.request_quota) || 1000,
+      billingCycle: cycle,
+      startsAt: baseStartDate,
+      expireAt: expireDate,
+      status: newPlanStatus,
+      paymentStatus: 1, // paid
+      stripeSessionId: null,
+      stripePaymentIntentId: null,
+      selectedAt: now,
+    };
+
+    user.plans.push(newPlanEntry);
+    await user.save();
+
+    // Create an audit payment record
+    const payment = await PaymentModel.create({
+      userId: user._id,
+      planId: plan._id,
+      planName: plan.name,
+      amount: Number(plan.price) || 0,
+      currency: 'usd',
+      status: 'paid',
+      paidAt: now,
+      email: user.email,
+      name: `${user.first_name || ''} ${user.last_name || ''}`.trim() || user.name || user.businessName,
+      billingCycle: cycle,
+      metadata: {
+        assignedManuallyByAdmin: true,
+        isQueued: hasOngoingPlan,
+        startsAt: baseStartDate.toISOString(),
+        expireAt: expireDate.toISOString(),
+        assignedByAdminId: actor?._id || null,
+        assignedByAdminEmail: actor?.email || null,
+      },
+    });
+
+    // Optionally notify customer using existing email template
+    if (sendNotification) {
+      try {
+        const paymentService = require('./payment.service');
+        if (paymentService.notifyPaymentPaid) {
+          paymentService.notifyPaymentPaid(payment, plan).catch((err) => {
+            logger.warn(`Admin assign plan notification email failed: ${err.message}`);
+          });
+        }
+      } catch (emailErr) {
+        logger.warn(`Could not trigger confirmation email: ${emailErr.message}`);
+      }
+    }
+
+    const modeText = hasOngoingPlan
+      ? `queued to activate after current plan finishes on ${baseStartDate.toLocaleDateString()} (valid until ${expireDate.toLocaleDateString()})`
+      : `activated immediately (expires ${expireDate.toLocaleDateString()})`;
+
+    return createResponse(
+      httpStatus.OK,
+      `Plan "${plan.name}" successfully assigned to ${user.name || user.email} (${modeText}).`,
+      {
+        user,
+        plan: newPlanEntry,
+        payment,
+        isQueued: hasOngoingPlan,
+        startsAt: baseStartDate,
+        expireAt: expireDate,
+      }
+    );
+  } catch (error) {
+    errorHandler.errorM({ action_type: 'assign-plan-manually', error_data: error });
+    return createResponse(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
 module.exports = {
   createUser,
   createManagedUser,
@@ -952,4 +1171,5 @@ module.exports = {
   updatePasswordById,
   getUserDetailById,
   getChatUserList,
+  assignPlanManuallyToUser,
 };

@@ -65,6 +65,12 @@ const startKeepAlive = () => {
     pingHealth().catch((err) => {
       logger.warn(`[Keep-Alive] Initial ping error: ${err.message}`);
     });
+    try {
+      const { autoPromoteAllExpiredUserPlans } = require('./plan.service');
+      autoPromoteAllExpiredUserPlans().catch((err) => {
+        logger.warn(`[Plan-Sync] Initial plan sync error: ${err.message}`);
+      });
+    } catch (_) {}
   }, 10000);
 
   // Schedule every 5 minutes: '*/5 * * * *'
@@ -72,6 +78,12 @@ const startKeepAlive = () => {
     pingHealth().catch((err) => {
       logger.warn(`[Keep-Alive] Scheduled ping error: ${err.message}`);
     });
+    try {
+      const { autoPromoteAllExpiredUserPlans } = require('./plan.service');
+      autoPromoteAllExpiredUserPlans().catch((err) => {
+        logger.warn(`[Plan-Sync] Scheduled plan sync error: ${err.message}`);
+      });
+    } catch (_) {}
   });
 };
 

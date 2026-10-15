@@ -197,6 +197,138 @@ const updatePlanStatus = async (planId, status, userId) => {
  * 1. Active plan in user.plans array (status === 1 || 'active' && paymentStatus === 1 || 'paid')
  * 2. user.planLimits
  * 3. Default fallback (5 marketplaces, 1000 review requests)
+/**
+ * Automatically evaluates a user's plans array:
+ * 1. Any active plan (status: 1) with expireAt in the past is marked expired (status: 2).
+ * 2. If no active plan exists, the next queued plan (status: 4) ready to activate is promoted to active (status: 1).
+ * 3. user.currentPlanId and user.planLimits are updated to match the newly active plan!
+ * 4. Changes are persisted to the database.
+ */
+const syncUserSubscriptionPlans = async (userDocOrLean: any) => {
+  if (!userDocOrLean || !Array.isArray(userDocOrLean.plans) || userDocOrLean.plans.length === 0) {
+    return { user: userDocOrLean, activePlan: null };
+  }
+
+  const now = Date.now();
+  let hasPlanUpdated = false;
+
+  // 1. Mark expired active plans as 2
+  userDocOrLean.plans.forEach((p: any) => {
+    if (
+      (p.status === 1 || p.status === 'active') &&
+      p.expireAt &&
+      new Date(p.expireAt).getTime() < now
+    ) {
+      p.status = 2; // Mark as 2: expired
+      hasPlanUpdated = true;
+    }
+  });
+
+  // 2. Check if an active non-expired plan currently exists
+  let activePlan = userDocOrLean.plans.find(
+    (p: any) =>
+      (p.status === 1 || p.status === 'active') &&
+      (p.paymentStatus === 1 || p.paymentStatus === 'paid' || p.price === 0) &&
+      (!p.expireAt || new Date(p.expireAt).getTime() >= now)
+  );
+
+  // 3. If no active plan, check for any queued plan (status === 4) that is ready to activate
+  if (!activePlan) {
+    const nextQueuedPlan = userDocOrLean.plans.find(
+      (p: any) =>
+        (p.status === 4 || p.status === 'queued') &&
+        (p.paymentStatus === 1 || p.paymentStatus === 'paid' || p.price === 0) &&
+        (!p.expireAt || new Date(p.expireAt).getTime() >= now)
+    );
+
+    if (nextQueuedPlan) {
+      nextQueuedPlan.status = 1; // Automatically promote queued plan to active!
+      userDocOrLean.currentPlanId = nextQueuedPlan.planId;
+      userDocOrLean.planLimits = {
+        maxMarketplaces: Number(nextQueuedPlan.marketplace) || 5,
+        maxReviewRequestsPerMonth: Number(nextQueuedPlan.request_quota) || 1000,
+      };
+      userDocOrLean.subscriptionStatus = 1; // active
+      hasPlanUpdated = true;
+      activePlan = nextQueuedPlan;
+    }
+  }
+
+  if (hasPlanUpdated) {
+    if (!activePlan && (userDocOrLean.subscriptionStatus === 1 || userDocOrLean.subscriptionStatus === 'active')) {
+      userDocOrLean.subscriptionStatus = 2; // 2: expired / past_due
+    }
+
+    if (typeof userDocOrLean.save === 'function') {
+      await userDocOrLean.save().catch((err: any) => {
+        console.error('Failed to auto-update plans in user document:', err);
+      });
+    } else if (userDocOrLean._id) {
+      const User = require('../models/user.model');
+      await User.updateOne(
+        { _id: userDocOrLean._id },
+        {
+          $set: {
+            plans: userDocOrLean.plans,
+            currentPlanId: userDocOrLean.currentPlanId,
+            planLimits: userDocOrLean.planLimits,
+            subscriptionStatus: userDocOrLean.subscriptionStatus,
+          },
+        }
+      ).catch((err: any) => {
+        console.error('Failed to update plans in user db:', err);
+      });
+    }
+  }
+
+  return { user: userDocOrLean, activePlan };
+};
+
+/**
+ * Scans all users with active plans that have passed their expireAt, or queued plans ready for promotion.
+ * Called automatically every 5 minutes by keepAlive cron or on-demand.
+ */
+const autoPromoteAllExpiredUserPlans = async () => {
+  try {
+    const User = require('../models/user.model');
+    const now = new Date();
+
+    const candidates = await User.find({
+      $or: [
+        {
+          plans: {
+            $elemMatch: {
+              status: 1,
+              expireAt: { $lt: now, $ne: null },
+            },
+          },
+        },
+        {
+          'plans.status': 4,
+        },
+      ],
+    });
+
+    if (!candidates || candidates.length === 0) return 0;
+
+    let updatedCount = 0;
+    for (const user of candidates) {
+      await syncUserSubscriptionPlans(user);
+      updatedCount++;
+    }
+    return updatedCount;
+  } catch (err: any) {
+    console.error('Error auto-syncing expired user plans:', err?.message || err);
+    return 0;
+  }
+};
+
+/**
+ * Resolves effective plan limits for a user (or their parent organization).
+ * Priority:
+ * 1. Active plan in user.plans array (status === 1 || 'active' && paymentStatus === 1 || 'paid')
+ * 2. user.planLimits
+ * 3. Default fallback (5 marketplaces, 1000 review requests)
  */
 const getEffectivePlanLimits = async (userOrId) => {
   let user = userOrId;
@@ -223,55 +355,25 @@ const getEffectivePlanLimits = async (userOrId) => {
 
   // Check plans in user.plans array
   if (Array.isArray(user.plans) && user.plans.length > 0) {
-    const now = Date.now();
-    let hasPlanUpdated = false;
+    const { activePlan } = await syncUserSubscriptionPlans(user);
 
-    // Check expiration on any plan with expireAt in the past
-    user.plans.forEach((p: any) => {
-      if (
-        (p.status === 1 || p.status === 'active') &&
-        p.expireAt &&
-        new Date(p.expireAt).getTime() < now
-      ) {
-        p.status = 2; // Mark as 2: expired
-        hasPlanUpdated = true;
-      }
-    });
-
-    if (hasPlanUpdated) {
-      if (user.subscriptionStatus === 1 || user.subscriptionStatus === 'active') {
-        user.subscriptionStatus = 2; // 2: expired / past_due
-      }
-      user.save().catch((err: any) => {
-        console.error('Failed to auto-update expired plan in user:', err);
-      });
-    }
-
-    // Active & non-expired plans
-    const validActivePlans = user.plans.filter(
-      (p: any) =>
-        (p.status === 1 || p.status === 'active') &&
-        (p.paymentStatus === 1 || p.paymentStatus === 'paid' || p.price === 0) &&
-        (!p.expireAt || new Date(p.expireAt).getTime() >= now)
-    );
-
-    if (validActivePlans.length > 0) {
-      const latestPlan = validActivePlans[validActivePlans.length - 1];
+    if (activePlan) {
       return {
-        maxMarketplaces: Number(latestPlan.marketplace) || 5,
-        maxReviewRequestsPerMonth: Number(latestPlan.request_quota) || 1000,
-        planName: latestPlan.name || '',
-        planId: latestPlan.planId || null,
-        billingCycle: latestPlan.billingCycle || 1,
+        maxMarketplaces: Number(activePlan.marketplace) || user.planLimits?.maxMarketplaces || 5,
+        maxReviewRequestsPerMonth: Number(activePlan.request_quota) || user.planLimits?.maxReviewRequestsPerMonth || 1000,
+        planName: activePlan.name || '',
+        planId: activePlan.planId || null,
+        billingCycle: activePlan.billingCycle || 1,
         isExpired: false,
         hasActivePlan: true,
-        status: latestPlan.status,
-        paymentStatus: latestPlan.paymentStatus,
-        expireAt: latestPlan.expireAt,
+        status: activePlan.status,
+        paymentStatus: activePlan.paymentStatus,
+        expireAt: activePlan.expireAt,
       };
     }
 
     // If user has a plan that is expired (status === 2 or past expireAt)
+    const now = Date.now();
     const latestPlan = user.plans[user.plans.length - 1];
     const isLatestExpired =
       latestPlan.status === 2 ||
@@ -314,4 +416,6 @@ module.exports = {
   getPlanById,
   updatePlanStatus,
   getEffectivePlanLimits,
+  syncUserSubscriptionPlans,
+  autoPromoteAllExpiredUserPlans,
 };

@@ -327,6 +327,18 @@ async function runSolicitationProcess() {
               { amazonOrderId: order.amazonOrderId, userId },
               { $set: { isNeedToSend: false, isSent: true } }
             );
+
+            // Increment seller's usedReviewRequests count
+            await User.updateOne(
+              { _id: userId },
+              {
+                $inc: {
+                  'planLimits.usedReviewRequests': 1,
+                  usedReviewRequests: 1,
+                },
+              }
+            ).catch(() => {});
+
             success = true;
           } catch (err) {
             await CronErrorModel.create({

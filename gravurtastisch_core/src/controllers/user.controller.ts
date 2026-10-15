@@ -440,6 +440,15 @@ const registerSeller = catchAsync(async (req, res) => {
   }
 });
 
+const assignPlanToUser = catchAsync(async (req, res) => {
+  const result = await userService.assignPlanManuallyToUser(
+    req.user,
+    req.params.userId,
+    req.body
+  );
+  res.status(result.status).send(result);
+});
+
 module.exports = {
   createUser,
   createManagedUser,
@@ -456,4 +465,5 @@ module.exports = {
   updateUserPassword,
   adminUpdateUser,
   registerSeller,
+  assignPlanToUser,
 };

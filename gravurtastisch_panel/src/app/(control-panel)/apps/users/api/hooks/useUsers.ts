@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
 	adminUpdateUser,
+	assignPlanToUser,
 	createAdminUser,
 	createTeamUser,
 	getAdminSellers,
@@ -82,6 +83,18 @@ export const useCreateTeamUser = () => {
 		mutationFn: createTeamUser,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: teamQueryKey });
+		}
+	});
+};
+
+export const useAssignPlanToUser = () => {
+	const queryClient = useQueryClient();
+
+	return useMutation({
+		mutationFn: assignPlanToUser,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: sellersQueryKey });
+			queryClient.invalidateQueries({ queryKey: adminStaffQueryKey });
 		}
 	});
 };
