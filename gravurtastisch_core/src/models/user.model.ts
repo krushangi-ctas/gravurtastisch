@@ -111,6 +111,14 @@ const userSchema = mongoose.Schema(
         type: Number,
         default: 1000,
       },
+      usedReviewRequests: {
+        type: Number,
+        default: 0,
+      },
+    },
+    usedReviewRequests: {
+      type: Number,
+      default: 0,
     },
     currentPlanId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -139,6 +147,10 @@ const userSchema = mongoose.Schema(
           type: Number,
           default: 1000,
         },
+        startsAt: {
+          type: Date,
+          default: Date.now,
+        },
         expireAt: {
           type: Date,
           default: null,
@@ -150,7 +162,7 @@ const userSchema = mongoose.Schema(
         },
         status: {
           type: Number,
-          enum: [0, 1, 2, 3], // 0: pending_payment, 1: active, 2: expired, 3: upgraded
+          enum: [0, 1, 2, 3, 4], // 0: pending_payment, 1: active, 2: expired, 3: upgraded, 4: queued
           default: 0,
         },
         paymentStatus: {

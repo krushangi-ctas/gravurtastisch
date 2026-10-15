@@ -247,35 +247,56 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
     (await User.findOne({ email: payment.email, status: { $ne: 2 } }));
 
   if (user && plan) {
-    user.planLimits = {
-      maxMarketplaces: Number(plan.marketplace) || user.planLimits?.maxMarketplaces || 5,
-      maxReviewRequestsPerMonth:
-        Number(plan.request_quota) || user.planLimits?.maxReviewRequestsPerMonth || 1000,
-    };
     if (extras.stripeCustomerId) user.stripeCustomerId = extras.stripeCustomerId;
     if (extras.stripeSubscriptionId) {
       user.stripeSubscriptionId = extras.stripeSubscriptionId;
     }
-    user.currentPlanId = plan._id;
-    user.subscriptionStatus = 1; // 1: active
-    user.status = 1; // Activate user account so seller can access dashboard
 
     if (!Array.isArray(user.plans)) {
       user.plans = [];
     }
 
-    // Mark previous active plans as 3 (upgraded)
+    const now = new Date();
+    const cycle = Number(plan.billingCycle) || 1;
+
+    // Check expiration on any plan with expireAt in the past
     user.plans.forEach((p: any) => {
-      if (p.status === 1 || p.status === 'active') {
-        p.status = 3; // upgraded
+      if (
+        (p.status === 1 || p.status === 'active') &&
+        p.expireAt &&
+        new Date(p.expireAt).getTime() < now.getTime()
+      ) {
+        p.status = 2; // Expired
       }
     });
 
-    const now = new Date();
-    const cycle = Number(plan.billingCycle) || 1;
+    // Check if user currently has an ongoing active (1) or queued (4) plan
+    let latestExpireDate: Date | null = null;
+    let currentActivePlan: any = null;
+
+    user.plans.forEach((p: any) => {
+      const isOngoing =
+        (p.status === 1 || p.status === 4 || p.status === 'active' || p.status === 'queued') &&
+        p.expireAt &&
+        new Date(p.expireAt).getTime() > now.getTime();
+
+      if (isOngoing) {
+        const pExp = new Date(p.expireAt);
+        if (!latestExpireDate || pExp.getTime() > latestExpireDate.getTime()) {
+          latestExpireDate = pExp;
+        }
+        if (p.status === 1 || p.status === 'active') {
+          currentActivePlan = p;
+        }
+      }
+    });
+
+    const hasOngoingPlan = Boolean(latestExpireDate && latestExpireDate.getTime() > now.getTime());
+    const baseStartDate = hasOngoingPlan ? new Date(latestExpireDate!) : new Date(now);
+
     let expireDate = plan.expireAt;
     if (!expireDate) {
-      const calcExpire = new Date(now);
+      const calcExpire = new Date(baseStartDate);
       if (cycle === 2) {
         calcExpire.setMonth(calcExpire.getMonth() + 3);
       } else if (cycle === 3) {
@@ -286,6 +307,22 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
       expireDate = calcExpire;
     }
 
+    const planStatus = hasOngoingPlan ? 4 : 1; // 4: queued if seller already has active plan, 1: active immediately
+
+    if (!hasOngoingPlan) {
+      // Immediately activate new plan
+      user.currentPlanId = plan._id;
+      user.planLimits = {
+        maxMarketplaces: Number(plan.marketplace) || user.planLimits?.maxMarketplaces || 5,
+        maxReviewRequestsPerMonth:
+          Number(plan.request_quota) || user.planLimits?.maxReviewRequestsPerMonth || 1000,
+      };
+    }
+    // If hasOngoingPlan: current active plan remains active with its limits, new plan queues!
+
+    user.subscriptionStatus = 1; // 1: active
+    user.status = 1; // Activate user account so seller can access dashboard
+
     const existingPlanIndex = user.plans.findIndex(
       (p: any) =>
         (p.planId &&
@@ -295,13 +332,14 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
     );
 
     if (existingPlanIndex !== -1) {
-      user.plans[existingPlanIndex].status = 1; // active
+      user.plans[existingPlanIndex].status = planStatus;
       user.plans[existingPlanIndex].paymentStatus = 1; // paid
       user.plans[existingPlanIndex].price = Number(plan.price) || 0;
       user.plans[existingPlanIndex].marketplace = Number(plan.marketplace) || 1;
       user.plans[existingPlanIndex].request_quota = Number(plan.request_quota) || 1000;
       user.plans[existingPlanIndex].billingCycle = cycle;
       user.plans[existingPlanIndex].name = plan.name;
+      user.plans[existingPlanIndex].startsAt = baseStartDate;
       user.plans[existingPlanIndex].expireAt = expireDate;
       user.plans[existingPlanIndex].stripeSessionId =
         payment.stripeSessionId || user.plans[existingPlanIndex].stripeSessionId;
@@ -316,8 +354,9 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
         marketplace: Number(plan.marketplace) || 1,
         request_quota: Number(plan.request_quota) || 1000,
         billingCycle: cycle,
+        startsAt: baseStartDate,
         expireAt: expireDate,
-        status: 1, // active
+        status: planStatus,
         paymentStatus: 1, // paid
         stripeSessionId: payment.stripeSessionId || null,
         stripePaymentIntentId:

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import moment from 'moment';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import AccessDeniedView from '@/components/AccessDeniedView';
@@ -41,6 +42,7 @@ import {
 } from '../../api/hooks/useUsers';
 import { User } from '../../api/services/usersApiService';
 import { getErrorMessage } from '@/utils/errorMessage';
+import AssignPlanDialog from '../dialogs/AssignPlanDialog';
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -209,6 +211,16 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const [editOpen, setEditOpen] = useState(false);
 	const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
+	// Assign Plan Dialog state
+	const [assignPlanOpen, setAssignPlanOpen] = useState(false);
+	const [sellerForPlan, setSellerForPlan] = useState<User | null>(null);
+
+	const handleOpenAssignPlan = useCallback((user: User) => {
+		(document.activeElement as HTMLElement)?.blur();
+		setSellerForPlan(user);
+		setAssignPlanOpen(true);
+	}, []);
+
 	// Confirmation Dialog state
 	const [confirmState, setConfirmState] = useState<{
 		open: boolean;
@@ -318,6 +330,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	};
 
 	const handleOpenDeleteConfirm = (user: User) => {
+		(document.activeElement as HTMLElement)?.blur();
 		setConfirmState({
 			open: true,
 			type: 'delete',
@@ -358,6 +371,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	};
 
 	const handleOpenEdit = (user: User) => {
+		(document.activeElement as HTMLElement)?.blur();
 		setSelectedUser(user);
 		setFormName(user.name || '');
 		setFormPhone(user.contact_no || '');
@@ -489,10 +503,71 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					}
 				},
 				{
+					id: 'currentPlan',
+					header: 'PLAN',
+					size: 210,
+					Cell: ({ row }) => {
+						const user = row.original;
+						const activePlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 1) : null;
+						const queuedPlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 4) : null;
+						const planName =
+							activePlan?.name ||
+							(typeof user.currentPlanId === 'object' ? user.currentPlanId?.name : null);
+						const isExpired =
+							user.subscriptionStatus === 2 ||
+							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now());
+
+						if (!planName && !queuedPlan) {
+							return (
+								<span className="text-xs text-slate-400 font-medium">
+									—
+								</span>
+							);
+						}
+
+						const hasExpiry = Boolean(activePlan?.expireAt);
+
+						return (
+							<div className="flex flex-col">
+								<div className="flex items-center gap-1.5">
+									<span className="font-semibold text-slate-900 text-xs">
+										{planName || queuedPlan?.name}
+									</span>
+									{isExpired && (
+										<span className="text-[11px] font-semibold text-rose-600">
+											(Expired)
+										</span>
+									)}
+								</div>
+								{(hasExpiry || queuedPlan) && (
+									<div className="flex items-center gap-1.5 text-[11px] leading-tight mt-0.5">
+										{hasExpiry && (
+											<span className="text-slate-500 font-normal whitespace-nowrap">
+												Exp: {moment(activePlan.expireAt).format('DD MMM YYYY')}
+											</span>
+										)}
+										{queuedPlan && (
+											<>
+												{hasExpiry && <span className="text-slate-300">•</span>}
+												<span className="text-blue-600 font-medium whitespace-nowrap">
+													Next: {queuedPlan.name}
+												</span>
+											</>
+										)}
+									</div>
+								)}
+							</div>
+						);
+					}
+				},
+				{
 					id: 'planLimits.maxMarketplaces',
 					header: 'MAX MARKETPLACES',
 					size: 140,
-					accessorFn: (row) => row.planLimits?.maxMarketplaces,
+					accessorFn: (row) => {
+						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
+						return activePlan?.marketplace ?? row.planLimits?.maxMarketplaces ?? null;
+					},
 					Cell: ({ cell }) => (
 						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
 							{cell.getValue<number>() ?? '—'}
@@ -503,12 +578,38 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					id: 'planLimits.maxReviewRequestsPerMonth',
 					header: 'MONTHLY QUOTA',
 					size: 140,
-					accessorFn: (row) => row.planLimits?.maxReviewRequestsPerMonth,
+					accessorFn: (row) => {
+						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
+						return activePlan?.request_quota ?? row.planLimits?.maxReviewRequestsPerMonth ?? null;
+					},
 					Cell: ({ cell }) => (
 						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
 							{cell.getValue<number>()?.toLocaleString() ?? '—'}
 						</Typography>
 					)
+				},
+				{
+					id: 'planLimits.usedReviewRequests',
+					header: 'REQUESTS USED',
+					size: 140,
+					accessorFn: (row) => row.planLimits?.usedReviewRequests ?? (row as any).usedReviewRequests ?? 0,
+					Cell: ({ cell, row }) => {
+						const used = cell.getValue<number>() ?? 0;
+						const activePlan = Array.isArray(row.original.plans) ? row.original.plans.find((p) => p.status === 1) : null;
+						const quota = activePlan?.request_quota ?? row.original.planLimits?.maxReviewRequestsPerMonth ?? 0;
+						return (
+							<div className="flex items-center gap-1">
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: used > 0 ? '#0F172A' : '#64748B' }}>
+									{used.toLocaleString()}
+								</Typography>
+								{quota > 0 && (
+									<Typography sx={{ fontSize: 11, color: '#94A3B8' }}>
+										/ {quota.toLocaleString()}
+									</Typography>
+								)}
+							</div>
+						);
+					}
 				}
 			);
 		} else {
@@ -761,12 +862,29 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										<Tooltip title="Edit user" arrow>
 											<IconButton
 												size="small"
-												onClick={() => handleOpenEdit(row.original)}
+												onClick={(e) => {
+													(e.currentTarget as HTMLElement)?.blur();
+													handleOpenEdit(row.original);
+												}}
 												className="text-slate-600 hover:text-slate-900 p-1"
 											>
 												<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
 											</IconButton>
 										</Tooltip>
+										{isSellersMode && (
+											<Tooltip title="Assign Plan" arrow>
+												<IconButton
+													size="small"
+													onClick={(e) => {
+														(e.currentTarget as HTMLElement)?.blur();
+														handleOpenAssignPlan(row.original);
+													}}
+													className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 transition-colors"
+												>
+													<FuseSvgIcon size={18}>lucide:sparkles</FuseSvgIcon>
+												</IconButton>
+											</Tooltip>
+										)}
 									</>
 								)}
 								{canDelete(sectionKey) && (
@@ -774,7 +892,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										<IconButton
 											size="small"
 											className="text-red-500 hover:text-red-700 p-1"
-											onClick={() => handleOpenDeleteConfirm(row.original)}
+											onClick={(e) => {
+												(e.currentTarget as HTMLElement)?.blur();
+												handleOpenDeleteConfirm(row.original);
+											}}
 										>
 											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
 										</IconButton>
@@ -788,6 +909,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					<Dialog
 						open={createOpen}
 						onClose={() => setCreateOpen(false)}
+						disableRestoreFocus
 						maxWidth="sm"
 						fullWidth
 						PaperProps={{
@@ -995,6 +1117,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					<Dialog
 						open={editOpen}
 						onClose={() => setEditOpen(false)}
+						disableRestoreFocus
 						maxWidth="sm"
 						fullWidth
 						PaperProps={{
@@ -1248,6 +1371,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					<Dialog
 						open={confirmState.open}
 						onClose={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
+						disableRestoreFocus
 						maxWidth="xs"
 						fullWidth
 						PaperProps={{
@@ -1324,6 +1448,16 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							</button>
 						</div>
 					</Dialog>
+
+					{/* Assign Plan Dialog */}
+					<AssignPlanDialog
+						open={assignPlanOpen}
+						onClose={() => {
+							setAssignPlanOpen(false);
+							setSellerForPlan(null);
+						}}
+						user={sellerForPlan}
+					/>
 				</Paper>
 			}
 			scroll="content"

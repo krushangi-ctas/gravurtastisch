@@ -5,6 +5,7 @@ import { PaginationResponse } from '../../../orders/api/types';
 export interface UserPlanLimits {
 	maxMarketplaces?: number;
 	maxReviewRequestsPerMonth?: number;
+	usedReviewRequests?: number;
 }
 
 export type UserRoleRef = {
@@ -12,6 +13,20 @@ export type UserRoleRef = {
 	id?: string;
 	role_name?: string;
 };
+
+export interface UserPlanItem {
+	_id?: string;
+	planId?: string;
+	name?: string;
+	price?: number;
+	marketplace?: number;
+	request_quota?: number;
+	expireAt?: string | null;
+	billingCycle?: number;
+	status?: number; // 0: pending_payment, 1: active, 2: expired, 3: upgraded, 4: queued
+	paymentStatus?: number; // 0: pending, 1: paid, 2: failed
+	selectedAt?: string;
+}
 
 export interface User {
 	_id?: string;
@@ -22,8 +37,20 @@ export interface User {
 	businessName?: string;
 	contact_no?: string;
 	planLimits?: UserPlanLimits;
+	usedReviewRequests?: number;
 	role_id?: string | UserRoleRef | null;
 	userType?: string;
+	currentPlanId?: string | any;
+	plans?: UserPlanItem[];
+	subscriptionStatus?: number;
+}
+
+export interface AssignPlanPayload {
+	planId: string;
+	billingCycle?: number;
+	activationMode?: 'immediate' | 'extend';
+	sendNotification?: boolean;
+	customExpireAt?: string | null;
 }
 
 type ListParams = {
@@ -113,6 +140,20 @@ export const adminUpdateUser = async ({
 }): Promise<{ status: number; message: string; data: User }> => {
 	return fetchWithAuth(`${usersUrl}/admin-update/${userId}`, {
 		method: 'PUT',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify(payload)
+	});
+};
+
+export const assignPlanToUser = async ({
+	userId,
+	payload
+}: {
+	userId: string;
+	payload: AssignPlanPayload;
+}): Promise<{ status: number; message: string; data: any }> => {
+	return fetchWithAuth(`${usersUrl}/${userId}/assign-plan`, {
+		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
 		body: JSON.stringify(payload)
 	});
