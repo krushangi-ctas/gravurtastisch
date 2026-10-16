@@ -149,61 +149,51 @@ function ReviewAnalyticsPage() {
 
       <main className="pb-8 w-full max-w-full overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
-          <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/20 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-indigo-500/15 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 w-full max-w-full">
+          <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-32 -left-32 w-80 h-80 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
 
-          <Container className="relative">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-              {/* Left Column: Content & CTAs */}
-              <Reveal className="lg:col-span-6 xl:col-span-6">
-                <div>
-                  <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 border border-brand/40 px-3.5 py-1 text-xs font-semibold text-brand-bright mb-4">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    {t('reviewAnalytics.heroBadge') || "Conversion Intelligence & Rating Deltas"}
-                  </div>
-                  <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                    <span className="text-gradient-silver">{t('reviewAnalytics.heroTitle') || "Custom order"}</span>{" "}
-                    <span className="text-gradient-gold">{t('reviewAnalytics.heroTitleHighlight') || "insights & analytics"}</span>
-                  </h1>
-                  <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
-                    {t('reviewAnalytics.heroDesc') || "Turn review solicitations into quantifiable business growth. Track SKU rating deltas, monitor review generation velocity, and discover actionable store insights."}
-                  </p>
-                  <div className="mt-6 flex flex-wrap gap-4">
-                    <a
-                      href="/#register"
-                      className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
-                    >
-                      {t('reviewAnalytics.heroCtaRegister') || "Get Store Analytics"}
-                      <ArrowRight className="h-4 w-4" />
-                    </a>
-                    <a
-                      href="#dashboard-preview"
-                      className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-all"
-                    >
-                      {t('reviewAnalytics.heroCtaMetrics') || "View SKU Performance Table"}
-                    </a>
-                  </div>
-                </div>
-              </Reveal>
+          <Container className="relative max-w-5xl mx-auto text-center">
+            <Reveal className="max-w-4xl mx-auto flex flex-col items-center">
+              <div className="section-badge mb-4">
+                <BarChart3 className="h-3.5 w-3.5 text-brand shrink-0" />
+                <span>{t('reviewAnalytics.heroBadge') || "Conversion Intelligence & Rating Deltas"}</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-navy-deep text-center">
+                <span>{t('reviewAnalytics.heroTitle') || "Custom order"}</span>{" "}
+                <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
+                  {t('reviewAnalytics.heroTitleHighlight') || "insights & analytics"}
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
+                {t('reviewAnalytics.heroDesc') || "Turn review solicitations into quantifiable business growth. Track SKU rating deltas, monitor review generation velocity, and discover actionable store insights."}
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
+                <a
+                  href="/#register"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
+                >
+                  {t('reviewAnalytics.heroCtaRegister') || "Get Store Analytics"}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#dashboard-preview"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-7 py-3 text-sm font-semibold text-navy-deep hover:bg-slate-50 transition-all shadow-xs"
+                >
+                  {t('reviewAnalytics.heroCtaMetrics') || "View SKU Performance Table"}
+                </a>
+              </div>
+            </Reveal>
 
-              {/* Right Column: Holographic 3D Rating Lift & Velocity SVG */}
-              <Reveal delay={100} className="lg:col-span-6 xl:col-span-6">
-                <div className="relative flex items-center justify-center">
-                  <ReviewAnalyticsHeroSvg />
-                </div>
-              </Reveal>
-            </div>
-
-            {/* Executive Analytics KPI Scorecards with Embedded Micro-Sparklines */}
-            <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-white/10 pt-6">
+            {/* Executive Analytics KPI Scorecards with Liquid Glass */}
+            <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 border-t border-[#0032ab]/15 pt-8 text-left">
               {/* Scorecard 1: Rating Lift + Ascending Curve Sparkline */}
               <Reveal delay={50}>
-                <div className="rounded-2xl bg-white/[0.05] border border-white/12 p-4 backdrop-blur-md hover:border-emerald-400/40 hover:bg-white/[0.08] transition-all flex flex-col justify-between shadow-lg">
+                <div className="rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-white/70">{t('reviewAnalytics.kpi1Label') || "Avg Rating Lift"}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+                    <span className="text-xs font-semibold text-slate-600">{t('reviewAnalytics.kpi1Label') || "Avg Rating Lift"}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
                       <TrendingUp className="h-2.5 w-2.5" />
                       +0.35 Stars
                     </span>
@@ -211,26 +201,26 @@ function ReviewAnalyticsPage() {
                   <div className="my-3 flex items-end justify-between">
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <p className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">4.92</p>
+                        <p className="text-2xl sm:text-3xl font-black text-navy-deep font-mono tracking-tight">4.92</p>
                         <Star className="h-5 w-5 fill-amber-400 text-amber-400 mb-1" />
                       </div>
-                      <p className="text-[10px] text-white/50">{t('reviewAnalytics.kpi1Sub') || "Baseline: 4.57 Avg"}</p>
+                      <p className="text-[10px] text-slate-500">{t('reviewAnalytics.kpi1Sub') || "Baseline: 4.57 Avg"}</p>
                     </div>
                     {/* Embedded SVG Sparkline */}
                     <svg className="w-20 h-9" viewBox="0 0 80 36" fill="none">
                       <defs>
                         <linearGradient id="spark-lift" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="#10B981" stopOpacity="0.4" />
+                          <stop offset="0%" stopColor="#10B981" stopOpacity="0.3" />
                           <stop offset="100%" stopColor="#10B981" stopOpacity="0" />
                         </linearGradient>
                       </defs>
                       <path d="M 0 30 Q 20 28 40 18 T 80 4 L 80 36 L 0 36 Z" fill="url(#spark-lift)" />
-                      <path d="M 0 30 Q 20 28 40 18 T 80 4" stroke="#34D399" strokeWidth="2.2" strokeLinecap="round" />
+                      <path d="M 0 30 Q 20 28 40 18 T 80 4" stroke="#10B981" strokeWidth="2.2" strokeLinecap="round" />
                       <circle cx="80" cy="4" r="3" fill="#10B981" />
                     </svg>
                   </div>
-                  <p className="text-[10.5px] text-emerald-300 font-medium pt-2 border-t border-white/10 flex items-center gap-1.5">
-                    <TrendingUp className="h-3 w-3 text-emerald-300 shrink-0" />
+                  <p className="text-[10.5px] text-emerald-700 font-medium pt-2 border-t border-[#0032ab]/10 flex items-center gap-1.5">
+                    <TrendingUp className="h-3 w-3 text-emerald-600 shrink-0" />
                     <span>{t('reviewAnalytics.kpi1Footer') || "+7.8% rating delta per ASIN"}</span>
                   </p>
                 </div>
@@ -238,18 +228,18 @@ function ReviewAnalyticsPage() {
 
               {/* Scorecard 2: Velocity + Bar Histogram Sparkline */}
               <Reveal delay={100}>
-                <div className="rounded-2xl bg-white/[0.05] border border-white/12 p-4 backdrop-blur-md hover:border-brand/40 hover:bg-white/[0.08] transition-all flex flex-col justify-between shadow-lg">
+                <div className="rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-white/70">{t('reviewAnalytics.kpi2Label') || "Review Velocity"}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-brand/20 text-brand-bright border border-brand/40 flex items-center gap-1">
+                    <span className="text-xs font-semibold text-slate-600">{t('reviewAnalytics.kpi2Label') || "Review Velocity"}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20 flex items-center gap-1">
                       <Zap className="h-2.5 w-2.5" />
                       +2.4x
                     </span>
                   </div>
                   <div className="my-3 flex items-end justify-between">
                     <div>
-                      <p className="text-2xl sm:text-3xl font-black text-brand-bright font-mono tracking-tight">+2.4x</p>
-                      <p className="text-[10px] text-white/50">{t('reviewAnalytics.kpi2Sub') || "Weekly Growth Rate"}</p>
+                      <p className="text-2xl sm:text-3xl font-black text-brand font-mono tracking-tight">+2.4x</p>
+                      <p className="text-[10px] text-slate-500">{t('reviewAnalytics.kpi2Sub') || "Weekly Growth Rate"}</p>
                     </div>
                     {/* Embedded SVG Histogram Sparkline */}
                     <svg className="w-20 h-9 flex items-end" viewBox="0 0 80 36" fill="none">
@@ -258,11 +248,11 @@ function ReviewAnalyticsPage() {
                       <rect x="30" y="15" width="8" height="21" rx="2" fill="#60A5FA" opacity="0.65" />
                       <rect x="44" y="11" width="8" height="25" rx="2" fill="#60A5FA" opacity="0.8" />
                       <rect x="58" y="6" width="8" height="30" rx="2" fill="#3B82F6" />
-                      <rect x="72" y="2" width="8" height="34" rx="2" fill="#2563EB" />
+                      <rect x="72" y="2" width="8" height="34" rx="2" fill="#0032ab" />
                     </svg>
                   </div>
-                  <p className="text-[10.5px] text-brand-bright font-medium pt-2 border-t border-white/10 flex items-center gap-1.5">
-                    <BarChart3 className="h-3 w-3 text-brand-bright shrink-0" />
+                  <p className="text-[10.5px] text-brand font-medium pt-2 border-t border-[#0032ab]/10 flex items-center gap-1.5">
+                    <BarChart3 className="h-3 w-3 text-brand shrink-0" />
                     <span>{t('reviewAnalytics.kpi2Footer') || "1,420 monthly solicitations"}</span>
                   </p>
                 </div>
@@ -270,33 +260,33 @@ function ReviewAnalyticsPage() {
 
               {/* Scorecard 3: Dispatch Rate + Pulse Stream Sparkline */}
               <Reveal delay={150}>
-                <div className="rounded-2xl bg-white/[0.05] border border-white/12 p-4 backdrop-blur-md hover:border-sky-400/40 hover:bg-white/[0.08] transition-all flex flex-col justify-between shadow-lg">
+                <div className="rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-white/70">{t('reviewAnalytics.kpi3Label') || "Dispatch Delivery"}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-sky-500/20 text-sky-300 border border-sky-500/30 flex items-center gap-1">
+                    <span className="text-xs font-semibold text-slate-600">{t('reviewAnalytics.kpi3Label') || "Dispatch Delivery"}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-sky-50 text-sky-700 border border-sky-200 flex items-center gap-1">
                       <CheckCircle2 className="h-2.5 w-2.5" />
                       High-Throughput
                     </span>
                   </div>
                   <div className="my-3 flex items-end justify-between">
                     <div>
-                      <p className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">99.8%</p>
-                      <p className="text-[10px] text-white/50">{t('reviewAnalytics.kpi3Sub') || "Direct In-Box Delivery"}</p>
+                      <p className="text-2xl sm:text-3xl font-black text-navy-deep font-mono tracking-tight">99.8%</p>
+                      <p className="text-[10px] text-slate-500">{t('reviewAnalytics.kpi3Sub') || "Direct In-Box Delivery"}</p>
                     </div>
                     {/* Embedded SVG Pulse Stream */}
                     <svg className="w-20 h-9" viewBox="0 0 80 36" fill="none">
                       <path
                         d="M 0 18 L 24 18 L 30 8 L 38 28 L 46 12 L 52 18 L 80 18"
-                        stroke="#38BDF8"
+                        stroke="#0284c7"
                         strokeWidth="2.2"
                         strokeLinecap="round"
                         strokeLinejoin="round"
                       />
-                      <circle cx="80" cy="18" r="3" fill="#38BDF8" />
+                      <circle cx="80" cy="18" r="3" fill="#0284c7" />
                     </svg>
                   </div>
-                  <p className="text-[10.5px] text-sky-300 font-medium pt-2 border-t border-white/10 flex items-center gap-1.5">
-                    <Zap className="h-3 w-3 text-sky-300 shrink-0" />
+                  <p className="text-[10.5px] text-sky-700 font-medium pt-2 border-t border-[#0032ab]/10 flex items-center gap-1.5">
+                    <Zap className="h-3 w-3 text-sky-600 shrink-0" />
                     <span>{t('reviewAnalytics.kpi3Footer') || "studio API automated execution"}</span>
                   </p>
                 </div>
@@ -304,27 +294,27 @@ function ReviewAnalyticsPage() {
 
               {/* Scorecard 4: Policy Warnings + Safety Flatline */}
               <Reveal delay={200}>
-                <div className="rounded-2xl bg-white/[0.05] border border-white/12 p-4 backdrop-blur-md hover:border-brand-bright/40 hover:bg-white/[0.08] transition-all flex flex-col justify-between shadow-lg">
+                <div className="rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-semibold text-white/70">{t('reviewAnalytics.kpi4Label') || "Policy Safety"}</span>
-                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-white/10 text-slate-200 border border-white/20 flex items-center gap-1">
+                    <span className="text-xs font-semibold text-slate-600">{t('reviewAnalytics.kpi4Label') || "Policy Safety"}</span>
+                    <span className="px-2 py-0.5 rounded-full text-[9.5px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1">
                       <ShieldCheck className="h-2.5 w-2.5" />
                       100% Amazon ToS
                     </span>
                   </div>
                   <div className="my-3 flex items-end justify-between">
                     <div>
-                      <p className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">100%</p>
-                      <p className="text-[10px] text-white/50">{t('reviewAnalytics.kpi4Sub') || "Zero Policy Warnings"}</p>
+                      <p className="text-2xl sm:text-3xl font-black text-navy-deep font-mono tracking-tight">100%</p>
+                      <p className="text-[10px] text-slate-500">{t('reviewAnalytics.kpi4Sub') || "Zero Policy Warnings"}</p>
                     </div>
                     {/* Embedded SVG Flatline Shield Meter */}
                     <svg className="w-20 h-9" viewBox="0 0 80 36" fill="none">
-                      <line x1="0" y1="18" x2="80" y2="18" stroke="#9E9E9E" strokeWidth="2.5" strokeDasharray="4 4" />
-                      <circle cx="40" cy="18" r="7" fill="#282828" stroke="#9E9E9E" strokeWidth="1.5" />
-                      <path d="M 37 18 L 39 20 L 43 16" stroke="#FFFFFF" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                      <line x1="0" y1="18" x2="80" y2="18" stroke="#10b981" strokeWidth="2.5" strokeDasharray="4 4" />
+                      <circle cx="40" cy="18" r="7" fill="#ecfdf5" stroke="#10b981" strokeWidth="1.5" />
+                      <path d="M 37 18 L 39 20 L 43 16" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
-                  <p className="text-[10.5px] text-slate-300 font-medium pt-2 border-t border-white/10 flex items-center gap-1">
+                  <p className="text-[10.5px] text-slate-600 font-medium pt-2 border-t border-[#0032ab]/10 flex items-center gap-1">
                     <span>{t('reviewAnalytics.kpi4Footer') || "✓ 0 buyer communication flags"}</span>
                   </p>
                 </div>
@@ -338,7 +328,7 @@ function ReviewAnalyticsPage() {
           <Container>
             <Reveal>
               <div className="max-w-2xl mb-8">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                <span className="section-badge mb-3">
                   {t('reviewAnalytics.featureSectionBadge') || "Intelligence Stack"}
                 </span>
                 <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
@@ -379,7 +369,7 @@ function ReviewAnalyticsPage() {
           <Container>
             <Reveal>
               <div className="max-w-3xl mx-auto text-center mb-8">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                <span className="section-badge mb-3">
                   {t('reviewAnalytics.skuTableBadge') || "SKU Breakdown"}
                 </span>
                 <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
@@ -463,7 +453,7 @@ function ReviewAnalyticsPage() {
               <div className="lg:col-span-7 xl:col-span-7">
                 <Reveal>
                   <div className="mb-6">
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                    <span className="section-badge mb-3">
                       {t('reviewAnalytics.faqBadge') || "Intelligence & Data"}
                     </span>
                     <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
@@ -507,9 +497,9 @@ function ReviewAnalyticsPage() {
           <Container>
             <div className="relative rounded-[2rem] liquid-glass bg-white py-8 px-6 sm:py-9 sm:px-10 text-center shadow-[0_12px_40px_rgba(0,50,171,0.06)] border border-[#0032ab]/15 overflow-hidden">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,50,171,0.03),transparent_70%)] pointer-events-none" />
-              <div className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20 mb-3">
+              <div className="section-badge mb-3">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#155dfc] animate-pulse" />
-                {t('reviewAnalytics.ctaBadge') || "Instant Activation"}
+                <span>{t('reviewAnalytics.ctaBadge') || "Instant Activation"}</span>
               </div>
               <h2 className="relative text-2xl sm:text-3xl font-extrabold text-navy-deep tracking-tight leading-snug">
                 {t('reviewAnalytics.ctaHeading') || "Unlock Intelligent Amazon Review Analytics"}

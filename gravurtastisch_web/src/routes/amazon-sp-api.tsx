@@ -173,73 +173,61 @@ function AmazonSpApiPage() {
 
       <main className="pb-8">
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white">
-          <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/20 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800">
+          <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+          <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
 
-          <Container className="relative">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-              <Reveal className="lg:col-span-6 xl:col-span-6">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 border border-brand/40 px-3.5 py-1 text-xs font-semibold text-brand-bright mb-4">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {t('amazonSpApi.heroBadge')}
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                  <span className="text-gradient-silver">{t('amazonSpApi.heroTitle')}</span>{" "}
-                  <span className="text-gradient-gold">{t('amazonSpApi.heroTitleHighlight')}</span>
-                </h1>
-                <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
-                  {t('amazonSpApi.heroDesc')}
-                </p>
-                <div className="mt-6 flex flex-wrap gap-4">
-                  <a
-                    href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
-                  >
-                    {t('amazonSpApi.heroCtaRegister')}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a
-                    href="#architecture"
-                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-all"
-                  >
-                    {t('amazonSpApi.heroCtaArch')}
-                  </a>
-                </div>
-              </Reveal>
+          <Container className="relative max-w-5xl mx-auto text-center">
+            <Reveal className="max-w-4xl mx-auto flex flex-col items-center">
+              <div className="section-badge mb-4">
+                <ShieldCheck className="h-3.5 w-3.5 text-brand shrink-0" />
+                <span>{t('amazonSpApi.heroBadge')}</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-navy-deep text-center">
+                <span>{t('amazonSpApi.heroTitle')}</span>{" "}
+                <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
+                  {t('amazonSpApi.heroTitleHighlight')}
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
+                {t('amazonSpApi.heroDesc')}
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
+                <a
+                  href="/#register"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
+                >
+                  {t('amazonSpApi.heroCtaRegister')}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#architecture"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-7 py-3 text-sm font-semibold text-navy-deep hover:bg-slate-50 transition-all shadow-xs"
+                >
+                  {t('amazonSpApi.heroCtaArch')}
+                </a>
+              </div>
+            </Reveal>
 
-              <Reveal className="lg:col-span-6 xl:col-span-6 relative" delay={120}>
-                <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  {/* Subtle Glow Backdrop */}
-                  <div className="absolute -inset-2 bg-gradient-to-r from-brand/20 via-sky-400/20 to-indigo-500/15 rounded-3xl blur-xl opacity-60 pointer-events-none" />
-
-                  {/* Clean SVG Vector Illustration Container */}
-                  <div className="relative flex items-center justify-center select-none">
-                    <AmazonSpApiHeroSvg />
-                  </div>
-
-
-                </div>
-              </Reveal>
-            </div>
-
-            {/* Badges Grid */}
-            <div className="mt-8 sm:mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 border-t border-white/10 pt-6">
+            {/* Badges Grid with Liquid Glass - Compact Height with reduced padding */}
+            <div className="mt-8 sm:mt-10 grid sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 border-t border-[#0032ab]/15 pt-6 text-left">
               {securityBadges.map((badge, idx) => {
                 const Icon = badge.icon;
                 return (
                   <Reveal key={badge.title} delay={idx * 60}>
-                    <div className="group relative h-full rounded-2xl bg-white/[0.04] border border-white/10 p-5 backdrop-blur-sm hover:border-brand-bright/50 hover:bg-white/[0.07] hover:-translate-y-1 transition-all duration-300 shadow-lg">
-                      <div className="flex items-center justify-between gap-3 mb-3">
-                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/30 grid place-items-center group-hover:scale-105 transition-transform">
-                          <Icon className="h-5 w-5" />
+                    <div className="group relative h-full rounded-2xl liquid-glass border border-white/80 p-3.5 sm:p-4 shadow-[0_6px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_12px_32px_rgba(0,50,171,0.12)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between">
+                      <div>
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <div className="h-8.5 w-8.5 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-sm shadow-[#0032ab]/30 grid place-items-center group-hover:scale-105 transition-transform">
+                            <Icon className="h-4 w-4" />
+                          </div>
+                          <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-slate-500 group-hover:text-brand transition-colors">
+                            0{idx + 1}
+                          </span>
                         </div>
-                        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-white/40 group-hover:text-brand-bright transition-colors">
-                          0{idx + 1}
-                        </span>
+                        <h3 className="text-sm sm:text-[15px] font-bold text-navy-deep mb-1 group-hover:text-brand transition-colors leading-snug">{badge.title}</h3>
+                        <p className="text-[11.5px] sm:text-xs text-slate-600 leading-relaxed font-normal">{badge.desc}</p>
                       </div>
-                      <h3 className="text-base font-bold text-white mb-1.5 group-hover:text-brand-bright transition-colors">{badge.title}</h3>
-                      <p className="text-xs sm:text-sm text-white/70 leading-relaxed">{badge.desc}</p>
                     </div>
                   </Reveal>
                 );

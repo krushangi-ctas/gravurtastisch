@@ -93,7 +93,7 @@ export function AmazonShowcase() {
             <div className="lg:col-span-5 space-y-6">
               <Reveal>
                 <div>
-                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                  <span className="section-badge mb-3">
                     {t("amazonShowcase.hubBadge", "Custom production studio")}
                   </span>
                   <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep dark:text-white leading-tight">
@@ -229,7 +229,7 @@ export function AmazonShowcase() {
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-slate-900">
                 {t("amazonShowcase.headingMain", "Run custom production")}{" "}
-                <span className="text-[#0032ab]">{t("amazonShowcase.headingHighlight", "without the chaos.")}</span>
+                <span className="text-slate-900">{t("amazonShowcase.headingHighlight", "without the chaos.")}</span>
               </h2>
               <p className="mt-4 text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                 {t(
@@ -291,10 +291,10 @@ export function AmazonShowcase() {
           <Reveal>
             <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-10 border-b border-slate-200/80">
               <div className="max-w-2xl">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                <span className="section-badge mb-3">
                   {t("amazonShowcase.comparisonTag", "WORKFLOW COMPARISON")}
                 </span>
-                <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-navy-deep tracking-tight leading-tight">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
                   {t("amazonShowcase.comparisonHeading", "DIY shops vs. Gravurtastisch studio desk")}
                 </h2>
               </div>

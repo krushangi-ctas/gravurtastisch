@@ -26,19 +26,8 @@ import {
 export function Nav() {
   const { t, i18n } = useTranslation();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const darkHeroPages = [
-    "/",
-    "/amazon-sp-api",
-    "/order-sync",
-    "/smart-scheduling",
-    "/guide",
-    // "/review-analytics",
-    "/blogs",
-  ];
-  const hasDarkHero =
-    darkHeroPages.includes(pathname) ||
-    pathname.startsWith("/blogs") ||
-    pathname.startsWith("/guide");
+  const darkHeroPages: string[] = [];
+  const hasDarkHero = false;
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(true);

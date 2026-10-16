@@ -92,53 +92,64 @@ function Guide() {
 
       <main className="pb-20 w-full max-w-full overflow-x-hidden">
         {/* ==================================================== */}
-        {/* 1. HERO SECTION (DARK NAVY GRADIENT) */}
+        {/* 1. HERO SECTION (SOFT PERIWINKLE GRADIENT) */}
         {/* ==================================================== */}
-        <section className="relative overflow-hidden pt-24 pb-12 lg:pt-28 lg:pb-16 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
-          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/25 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-amber-500/15 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden pt-24 pb-12 lg:pt-28 lg:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 w-full max-w-full">
+          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-amber-500/10 blur-3xl pointer-events-none" />
 
-          <Container className="relative">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-              {/* Left Column: Hero Copy */}
-              <Reveal className="lg:col-span-6 xl:col-span-6">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 border border-brand/40 px-3.5 py-1 text-xs font-semibold text-brand-bright mb-4">
-                  <BookOpen className="h-3.5 w-3.5" />
-                  {t('guide.heroBadge')}
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                  <span className="text-gradient-silver">{t('guide.heroTitle')}</span>{" "}
-                  <span className="text-gradient-gold">{t('guide.heroTitleHighlight')}</span>
-                </h1>
-                <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
-                  {t('guide.heroDesc')}
-                </p>
-                <div className="mt-6 flex flex-wrap gap-4">
-                  <a
-                    href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
-                  >
-                    {t('guide.heroCtaRegister')}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a
-                    href="#visual-workflow-section"
-                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-all"
-                  >
-                    {t('guide.heroCtaWorkflow')}
-                  </a>
-                </div>
-              </Reveal>
+          <Container className="relative max-w-5xl mx-auto text-center">
+            <Reveal className="max-w-4xl mx-auto flex flex-col items-center">
+              <div className="section-badge mb-4">
+                <Workflow className="h-3.5 w-3.5 text-brand shrink-0" />
+                <span>{t('guide.heroBadge')}</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-navy-deep text-center">
+                <span>{t('guide.heroTitle')}</span>{" "}
+                <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
+                  {t('guide.heroTitleHighlight')}
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
+                {t('guide.heroDesc')}
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
+                <a
+                  href="/#register"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
+                >
+                  {t('guide.heroCtaRegister')}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#visual-workflow-section"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-7 py-3 text-sm font-semibold text-navy-deep hover:bg-slate-50 transition-all shadow-xs"
+                >
+                  {t('guide.heroCtaWorkflow')}
+                </a>
+              </div>
+            </Reveal>
 
-              {/* Right Column: Hero Architecture Diagram Vector */}
-              <Reveal className="lg:col-span-6 xl:col-span-6 relative" delay={120}>
-                <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-brand/30 via-brand-bright/20 to-amber-500/20 rounded-3xl blur-2xl opacity-70 pointer-events-none" />
-                  <div className="relative flex items-center justify-center select-none">
-                    <GuideHeroOverviewSvg />
+            {/* 5-Step Process Row in Liquid Glass - Sleek Single-Line Horizontal Cards */}
+            <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5 sm:gap-3 w-full border-t border-[#0032ab]/15 pt-6 text-left">
+              {stepFlowItems.map((step, idx) => (
+                <div
+                  key={idx}
+                  className="group relative rounded-xl sm:rounded-2xl liquid-glass border border-white/85 px-3 py-2 sm:px-3.5 sm:py-2.5 shadow-[0_4px_16px_rgba(0,50,171,0.05)] hover:shadow-[0_8px_24px_rgba(0,50,171,0.12)] transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-2.5 min-w-0"
+                >
+                  <div className="h-7 w-7 rounded-lg bg-brand/10 text-brand grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+                    <step.icon className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="min-w-0 flex items-center gap-1.5 flex-1 overflow-hidden">
+                    <span className="text-[9.5px] font-mono font-bold text-brand bg-brand/10 px-1.5 py-0.5 rounded shrink-0 whitespace-nowrap">
+                      Step {step.num}
+                    </span>
+                    <h4 className="text-xs font-bold text-navy-deep leading-tight whitespace-nowrap truncate">
+                      {step.title}
+                    </h4>
                   </div>
                 </div>
-              </Reveal>
+              ))}
             </div>
           </Container>
         </section>
@@ -155,7 +166,7 @@ function Guide() {
                   <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none backdrop-blur-sm">
                     <div className="flex items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                       <div>
-                        <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand dark:text-brand-bright">
+                        <span className="section-badge mb-3">
                           {t('guide.blueprintBadge')}
                         </span>
                         <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -200,7 +211,7 @@ function Guide() {
               <div className="lg:col-span-5">
                 <Reveal delay={80}>
                   <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none backdrop-blur-sm">
-                    <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand dark:text-brand-bright">
+                    <span className="section-badge mb-3">
                       {t('guide.purposeBadge')}
                     </span>
                     <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
@@ -258,11 +269,11 @@ function Guide() {
                 {/* Left: Content & Streamlined Action Steps */}
                 <div className="lg:col-span-6 space-y-6">
                   <div>
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-bright mb-3">
-                      <ShoppingBag className="h-3.5 w-3.5" />
-                      {t('guide.stage1Badge')}
+                    <div className="section-badge mb-3">
+                      <ShoppingBag className="h-3.5 w-3.5 text-brand shrink-0" />
+                      <span>{t('guide.stage1Badge')}</span>
                     </div>
-                    <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                    <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
                       {t('guide.stage1Title')}
                     </h2>
                     <p className="mt-2 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
@@ -385,11 +396,11 @@ function Guide() {
                 {/* Right: Content & Configuration Flow */}
                 <div className="lg:col-span-6 space-y-6 order-1 lg:order-2">
                   <div>
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-bright mb-3">
-                      <KeyRound className="h-3.5 w-3.5" />
-                      {t('guide.stage2Badge')}
+                    <div className="section-badge mb-3">
+                      <KeyRound className="h-3.5 w-3.5 text-brand shrink-0" />
+                      <span>{t('guide.stage2Badge')}</span>
                     </div>
-                    <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                    <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
                       {t('guide.stage2Title')}
                     </h2>
                     <p className="mt-2 text-base sm:text-lg leading-relaxed text-slate-600 dark:text-slate-300">
@@ -473,11 +484,11 @@ function Guide() {
               <div className="rounded-3xl border border-slate-200/80 dark:border-slate-800 bg-surface/50 dark:bg-slate-900/80 p-6 sm:p-8 shadow-xl shadow-slate-200/40 dark:shadow-none backdrop-blur-sm">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                   <div>
-                    <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-bright">
-                      <Zap className="h-3.5 w-3.5" />
-                      {t('guide.stage3Badge')}
+                    <div className="section-badge mb-3">
+                      <Zap className="h-3.5 w-3.5 text-brand shrink-0" />
+                      <span>{t('guide.stage3Badge')}</span>
                     </div>
-                    <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                    <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
                       {t('guide.stage3Title')}
                     </h2>
                   </div>
@@ -551,11 +562,11 @@ function Guide() {
                 {/* Right: Architecture Summary & Key Connectors */}
                 <div className="lg:col-span-5 space-y-6">
                   <div>
-                    <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brand/10 text-brand dark:bg-brand/20 dark:text-brand-bright mb-3">
-                      <Layers className="h-3.5 w-3.5" />
-                      {t('guide.stage4Badge')}
+                    <div className="section-badge mb-3">
+                      <Layers className="h-3.5 w-3.5 text-brand shrink-0" />
+                      <span>{t('guide.stage4Badge')}</span>
                     </div>
-                    <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+                    <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
                       {t('guide.stage4Title')}
                     </h2>
                     <p className="mt-2 text-base leading-relaxed text-slate-600 dark:text-slate-300">
@@ -951,8 +962,8 @@ function OrderListingStreamSvg() {
           <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#282828" floodOpacity="0.08" />
         </filter>
         <linearGradient id="actionBtnGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#282828" />
-          <stop offset="100%" stopColor="#3E3E3E" />
+          <stop offset="0%" stopColor="#dbeafe" />
+          <stop offset="100%" stopColor="#bfdbfe" />
         </linearGradient>
       </defs>
 
@@ -1021,11 +1032,11 @@ function OrderListingStreamSvg() {
 
         {/* Action Button: Send Request */}
         <g transform="translate(365, 18)">
-          <rect x="0" y="0" width="105" height="28" rx="8" fill="url(#actionBtnGrad)" stroke="#4f6ef7" strokeWidth="0.8" />
-          <text x="52.5" y="17.5" textAnchor="middle" fill="#4f6ef7" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
+          <rect x="0" y="0" width="105" height="28" rx="8" fill="url(#actionBtnGrad)" stroke="#2563eb" strokeWidth="1" />
+          <text x="52.5" y="17.5" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
             Send Request ➔
           </text>
-          <circle cx="96" cy="7" r="3" fill="#4f6ef7">
+          <circle cx="96" cy="7" r="3" fill="#2563eb">
             <animate attributeName="r" values="3;5;3" dur="1.2s" repeatCount="indefinite" />
           </circle>
         </g>
@@ -1411,11 +1422,11 @@ function VisualWorkflowPipelineSvg() {
       {/* Central Heart: Autonomous Cron Engine */}
       <g transform="translate(20, 185)" filter="url(#nodeShadow)">
         <rect x="0" y="0" width="245" height="115" rx="18" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1.5" />
-        <rect x="10" y="10" width="225" height="22" rx="7" fill="#282828" />
-        <circle cx="24" cy="21" r="3.5" fill="#4f6ef7">
+        <rect x="10" y="10" width="225" height="22" rx="7" fill="#dbeafe" stroke="#93c5fd" strokeWidth="1" />
+        <circle cx="24" cy="21" r="3.5" fill="#0032ab">
           <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite" />
         </circle>
-        <text x="34" y="24.5" fill="#4f6ef7" fontFamily="system-ui" fontSize="9" fontWeight="900">
+        <text x="34" y="24.5" fill="#0032ab" fontFamily="system-ui" fontSize="9" fontWeight="900">
           AUTONOMOUS CRON HUB
         </text>
         
@@ -1431,8 +1442,8 @@ function VisualWorkflowPipelineSvg() {
           
           <text x="144" y="17" fill="#4f6ef7" fontSize="11" fontWeight="bold">➔</text>
 
-          <rect x="154" y="0" width="56" height="26" rx="7" fill="#282828" />
-          <text x="182" y="17" textAnchor="middle" fill="#f8fafc" fontFamily="system-ui" fontSize="9.5" fontWeight="900">Send</text>
+          <rect x="154" y="0" width="56" height="26" rx="7" fill="#dbeafe" stroke="#2563eb" strokeWidth="1.2" />
+          <text x="182" y="17" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="9.5" fontWeight="900">Send</text>
         </g>
 
         <g transform="translate(14, 78)">

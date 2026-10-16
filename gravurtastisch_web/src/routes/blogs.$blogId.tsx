@@ -24,6 +24,7 @@ import {
   ChevronLeft,
   ChevronRight,
   ImageIcon,
+  PenTool,
 } from "lucide-react";
 import { format } from "date-fns";
 import { BlogDetailSkeleton } from "@/components/skeletons/BlogDetailSkeleton";
@@ -208,67 +209,68 @@ function BlogDetailPage() {
         {/* ==================================================== */}
         {/* 1. HERO & ARTICLE HEADER */}
         {/* ==================================================== */}
+        {/* ==================================================== */}
         {/* 1. HERO HEADER */}
         {/* ==================================================== */}
-        <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white border-b border-white/10 overflow-hidden">
-          <div className="absolute inset-0 grid-bg opacity-30 pointer-events-none" />
-          <div className="absolute -top-40 right-1/4 w-96 h-96 bg-brand/30 rounded-full blur-[140px] pointer-events-none" />
-          <div className="absolute bottom-0 left-10 w-80 h-80 bg-amber-500/15 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-brand-bright/20 rounded-full blur-[100px] pointer-events-none" />
+        <section className="relative pt-28 pb-14 md:pt-36 md:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border-b border-[#0032ab]/12 overflow-hidden">
+          <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+          <div className="absolute -top-40 right-1/4 w-96 h-96 bg-brand/10 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute bottom-0 left-10 w-80 h-80 bg-brand-bright/10 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/3 w-64 h-64 bg-indigo-500/10 rounded-full blur-[100px] pointer-events-none" />
 
           <Container className="relative max-w-4xl">
             {/* Navigation back */}
-            <div className="mb-8">
+            <div className="mb-6">
               <Link
                 to="/blogs"
-                className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400 hover:text-brand-bright transition-colors group"
+                className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600 hover:text-navy-deep transition-colors group"
               >
-                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1 text-brand-bright" />
+                <ArrowLeft className="h-3.5 w-3.5 transition-transform group-hover:-translate-x-1 text-brand" />
                 Back to all articles
               </Link>
             </div>
 
             <Reveal>
               {/* Category / Badge */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand/20 border border-brand/40 text-brand-bright text-xs font-semibold uppercase tracking-wider mb-6 backdrop-blur-md">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="section-badge mb-5">
+                <PenTool className="h-3.5 w-3.5 text-brand shrink-0" />
                 <span>Studio craft & personalization</span>
               </div>
 
               {/* Title */}
-              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display leading-[1.15] text-gradient-rich">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display leading-[1.15] text-navy-deep">
                 {blog.blog_title}
               </h1>
 
               {/* Short Summary */}
               {blog.short_description && (
-                <p className="mt-5 text-lg sm:text-xl text-slate-300 leading-relaxed max-w-3xl">
+                <p className="mt-5 text-lg sm:text-xl text-slate-700 leading-relaxed max-w-3xl font-medium">
                   {blog.short_description}
                 </p>
               )}
 
               {/* Metadata Bar */}
-              <div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-400">
+              <div className="mt-8 pt-6 border-t border-[#0032ab]/15 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-600 font-medium">
                 <div className="flex items-center gap-4">
-                  <div className="relative h-11 w-11 rounded-2xl bg-[#282828] border border-white/20 flex items-center justify-center p-2 shadow-md shrink-0">
+                  <div className="relative h-11 w-11 rounded-2xl bg-white border border-[#0032ab]/15 flex items-center justify-center p-2 shadow-xs shrink-0">
                     <img src="/g.svg" alt="Gravurtastisch" className="h-full w-full object-contain" />
                   </div>
                   <div>
-                    <div className="font-semibold text-white flex items-center gap-1.5">
+                    <div className="font-bold text-navy-deep flex items-center gap-1.5">
                       Gravurtastisch Editorial Team
-                      <ShieldCheck className="h-4 w-4 text-brand-bright" />
+                      <ShieldCheck className="h-4 w-4 text-brand" />
                     </div>
-                    <div className="text-xs text-slate-400">Custom engraving & order fulfillment</div>
+                    <div className="text-xs text-slate-600">Custom engraving & order fulfillment</div>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-6 text-xs sm:text-sm">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-4 w-4 text-brand-bright" />
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <Calendar className="h-4 w-4 text-brand" />
                     <span>{formattedDate}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-amber-400" />
+                  <div className="flex items-center gap-2 text-slate-700">
+                    <Clock className="h-4 w-4 text-amber-600" />
                     <span>{readingTime} min read</span>
                   </div>
                 </div>
@@ -475,34 +477,34 @@ function BlogDetailPage() {
               {/* Sidebar Column */}
               <div className="lg:col-span-4 space-y-6">
                 {/* Studio quality guarantee box */}
-                <div className="p-6 rounded-3xl bg-gradient-to-br from-navy-deep via-navy to-brand/40 text-white border border-brand/30 shadow-xl relative overflow-hidden">
-                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-brand/30 rounded-full blur-2xl pointer-events-none" />
-                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
-                  <div className="h-10 w-10 rounded-xl bg-brand/25 flex items-center justify-center mb-4 text-brand-bright border border-brand/40 shadow-sm">
+                <div className="p-6 rounded-3xl bg-gradient-to-br from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border border-[#0032ab]/20 shadow-lg relative overflow-hidden">
+                  <div className="absolute -top-12 -right-12 w-32 h-32 bg-brand/10 rounded-full blur-2xl pointer-events-none" />
+                  <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+                  <div className="h-10 w-10 rounded-xl bg-white border border-[#0032ab]/15 flex items-center justify-center mb-4 text-brand shadow-xs">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-bold font-display">Craft-quality workflow</h3>
-                  <p className="mt-2 text-xs leading-relaxed text-slate-300">
+                  <h3 className="text-lg font-bold font-display text-navy-deep">Craft-quality workflow</h3>
+                  <p className="mt-2 text-xs leading-relaxed text-slate-700 font-medium">
                     Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage,
                     and scheduled bench time - no guesswork on the shop floor.
                   </p>
-                  <ul className="mt-4 space-y-2 text-xs text-slate-300">
+                  <ul className="mt-4 space-y-2 text-xs text-slate-700 font-medium">
                     <li className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-brand-bright" />
+                      <Zap className="h-3.5 w-3.5 text-brand" />
                       Proof-before-production on every SKU
                     </li>
                     <li className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-brand-bright" />
+                      <Zap className="h-3.5 w-3.5 text-brand" />
                       Encrypted uploads & scoped shop tokens
                     </li>
                     <li className="flex items-center gap-2">
-                      <Zap className="h-3.5 w-3.5 text-brand-bright" />
+                      <Zap className="h-3.5 w-3.5 text-brand" />
                       Webshop, wholesale & counter orders
                     </li>
                   </ul>
                   <a
                     href="/#register"
-                    className="mt-6 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-100 text-navy-deep font-bold text-xs uppercase tracking-wider transition-colors shadow-md"
+                    className="mt-6 w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-white hover:bg-slate-50 border border-[#0032ab]/15 text-navy-deep font-bold text-xs uppercase tracking-wider transition-colors shadow-xs hover:shadow-md"
                   >
                     Start a custom order
                     <ArrowRight className="h-3.5 w-3.5" />
