@@ -174,22 +174,22 @@ export function Footer() {
 
       <Container className="relative z-10">
         {/* Modern Bento Trust Strip - Interactive Light Capsules */}
-        <div className="pt-12 pb-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="pt-5 pb-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {trustStrip.map(({ icon: Icon, titleKey, copyKey, iconBg, border }) => (
             <div
               key={titleKey}
-              className={`group relative rounded-2xl p-5 bg-white border border-[#0032ab]/15 ${border} shadow-[0_4px_16px_rgba(0,50,171,0.06)] hover:shadow-[0_12px_32px_rgba(0,50,171,0.12)] transition-all duration-300 hover:-translate-y-1 overflow-hidden`}
+              className={`group relative rounded-2xl p-3.5 sm:p-4 bg-white border border-[#0032ab]/15 ${border} shadow-[0_4px_16px_rgba(0,50,171,0.06)] hover:shadow-[0_12px_32px_rgba(0,50,171,0.12)] transition-all duration-300 hover:-translate-y-0.5 overflow-hidden`}
             >
               <div className="absolute top-0 right-0 w-24 h-24 bg-brand/5 rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
-              <div className="relative flex items-start gap-3.5">
-                <div className={`h-11 w-11 rounded-xl ${iconBg} border flex items-center justify-center group-hover:scale-110 shadow-xs shrink-0 transition-all duration-300`}>
-                  <Icon className="h-5 w-5" strokeWidth={1.8} />
+              <div className="relative flex items-start gap-3">
+                <div className={`h-10 w-10 rounded-xl ${iconBg} border flex items-center justify-center group-hover:scale-105 shadow-xs shrink-0 transition-all duration-300`}>
+                  <Icon className="h-4.5 w-4.5" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-sm font-extrabold text-navy-deep group-hover:text-brand transition-colors font-display tracking-tight">
+                  <h4 className="text-xs sm:text-sm font-extrabold text-navy-deep group-hover:text-brand transition-colors font-display tracking-tight">
                     {t(`footer.${titleKey}`)}
                   </h4>
-                  <p className="mt-1 text-xs text-slate-600 leading-relaxed font-normal">
+                  <p className="mt-0.5 text-[11px] sm:text-xs text-slate-600 leading-relaxed font-normal">
                     {t(`footer.${copyKey}`)}
                   </p>
                 </div>
@@ -199,9 +199,9 @@ export function Footer() {
         </div>
 
         {/* Main Footer Body - Modern Bento Architecture */}
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-8 py-10 lg:py-14 border-t border-[#0032ab]/15">
+        <div className="grid lg:grid-cols-12 gap-6 lg:gap-8 py-6 lg:py-7 border-t border-[#0032ab]/15">
           {/* Brand & Interactive Contact Bento (Left Column) */}
-          <div className="lg:col-span-4 flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
             <div>
               <a href="#home" className="inline-flex items-center gap-2.5 group">
                 <img
@@ -360,7 +360,7 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar: Copyright, Metadata, Social Icons, and Smooth Back-to-Top */}
-        <div className="border-t border-[#0032ab]/15 py-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5 text-xs text-slate-600">
+        <div className="border-t border-[#0032ab]/15 py-3.5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 text-xs text-slate-600">
           <div className="space-y-1">
             <p className="text-slate-800 font-semibold">{copyrightText}</p>
             <p className="text-[11px] text-slate-600">

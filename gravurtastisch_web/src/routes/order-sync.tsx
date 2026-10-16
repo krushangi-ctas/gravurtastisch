@@ -154,79 +154,65 @@ function OrderSyncPage() {
 
       <main className="pb-8 w-full max-w-full overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
-          <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/20 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 w-full max-w-full">
+          <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
           <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
 
-          <Container className="relative">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-              {/* Left Column: Hero Copy & CTA */}
-              <Reveal className="lg:col-span-6 xl:col-span-6">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 border border-brand/40 px-3.5 py-1 text-xs font-semibold text-brand-bright mb-4">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {t('orderSync.heroBadge') || "Continuous Two-Way Order Ingestion"}
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                  <span className="text-gradient-silver">{t('orderSync.heroTitle') || "Real-Time"}</span>{" "}
-                  <span className="text-gradient-gold">{t('orderSync.heroTitleHighlight') || "Amazon Order Sync"}</span>
-                </h1>
-                <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
-                  {t('orderSync.heroDesc') || "Delivered orders flow automatically into Gravurtastisch across all 12+ Amazon marketplaces. Track every package from delivery to review dispatch without spreadsheets."}
-                </p>
-                <div className="mt-6 flex flex-wrap gap-4">
-                  <a
-                    href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
-                  >
-                    {t('orderSync.heroCtaRegister') || "Start Syncing Orders"}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a
-                    href="#lifecycle"
-                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-all"
-                  >
-                    {t('orderSync.heroCtaExplore') || "View Order Pipeline"}
-                  </a>
-                </div>
-              </Reveal>
+          <Container className="relative max-w-5xl mx-auto text-center">
+            <Reveal className="max-w-4xl mx-auto flex flex-col items-center">
+              <div className="section-badge mb-4">
+                <RefreshCw className="h-3.5 w-3.5 text-brand shrink-0" />
+                <span>{t('orderSync.heroBadge') || "Continuous Two-Way Order Ingestion"}</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-navy-deep text-center">
+                <span>{t('orderSync.heroTitle') || "Real-Time"}</span>{" "}
+                <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
+                  {t('orderSync.heroTitleHighlight') || "Amazon Order Sync"}
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
+                {t('orderSync.heroDesc') || "Delivered orders flow automatically into Gravurtastisch across all 12+ Amazon marketplaces. Track every package from delivery to review dispatch without spreadsheets."}
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
+                <a
+                  href="/#register"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
+                >
+                  {t('orderSync.heroCtaRegister') || "Start Syncing Orders"}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#lifecycle"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-7 py-3 text-sm font-semibold text-navy-deep hover:bg-slate-50 transition-all shadow-xs"
+                >
+                  {t('orderSync.heroCtaExplore') || "View Order Pipeline"}
+                </a>
+              </div>
+            </Reveal>
 
-              {/* Right Column: Dynamic Real-Time Order Sync Engine Vector Illustration */}
-              <Reveal className="lg:col-span-6 xl:col-span-6 relative" delay={120}>
-                <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  {/* Subtle Brand Aura Glow Backdrop */}
-                  <div className="absolute -inset-2 bg-gradient-to-r from-brand/20 via-brand/10 to-brand/20 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
-
-                  {/* Clean SVG Vector Illustration Container */}
-                  <div className="relative flex items-center justify-center select-none">
-                    <OrderSyncHeroSvg />
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-
-            {/* Connected Live Logistics Telemetry Pipeline Stream */}
+            {/* Connected Live Logistics Telemetry Pipeline Stream with Liquid Glass */}
             <Reveal delay={180}>
-              <div className="mt-8 sm:mt-10 rounded-[2rem] bg-white/[0.06] border border-white/15 backdrop-blur-xl p-4 sm:p-5 shadow-2xl shadow-black/40">
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-white/10">
+              <div className="mt-10 sm:mt-12 rounded-[2rem] liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all text-left">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 divide-y md:divide-y-0 md:divide-x divide-[#0032ab]/10">
                   {/* Pipeline Station 1: Latency */}
                   <div className="flex items-center gap-3.5 p-2.5 sm:p-2 lg:p-3">
                     <div className="relative shrink-0">
                       <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/30 grid place-items-center">
                         <Clock className="h-5 w-5" />
                       </div>
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400 animate-ping opacity-75" />
-                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-400" />
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-500 animate-ping opacity-75" />
+                      <span className="absolute -top-1 -right-1 h-3 w-3 rounded-full bg-emerald-500" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">&lt; 5 mins</span>
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#155dfc]/25 text-cyan-300 border border-cyan-400/30">
+                        <span className="text-xl sm:text-2xl font-black text-navy-deep font-mono tracking-tight">&lt; 5 mins</span>
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
                           LIVE STREAM
                         </span>
                       </div>
-                      <p className="text-xs font-semibold text-white/85">{t('orderSync.statLatencyTitle') || "Real-Time Ingestion"}</p>
-                      <p className="text-[10px] text-white/50">{t('orderSync.statLatencySub') || "High-frequency studio API webhooks"}</p>
+                      <p className="text-xs font-bold text-navy-deep">{t('orderSync.statLatencyTitle') || "Real-Time Ingestion"}</p>
+                      <p className="text-[10px] text-slate-500">{t('orderSync.statLatencySub') || "High-frequency studio API webhooks"}</p>
                     </div>
                   </div>
 
@@ -237,19 +223,19 @@ function OrderSyncPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">12+ Regions</span>
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#155dfc]/25 text-cyan-300 border border-cyan-400/30">
+                        <span className="text-xl sm:text-2xl font-black text-navy-deep font-mono tracking-tight">12+ Regions</span>
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
                           GLOBAL
                         </span>
                       </div>
-                      <p className="text-xs font-semibold text-white/85">{t('orderSync.statMarketplacesTitle') || "Active Marketplaces"}</p>
+                      <p className="text-xs font-bold text-navy-deep">{t('orderSync.statMarketplacesTitle') || "Active Marketplaces"}</p>
                       <div className="flex items-center gap-1.5 text-xs mt-0.5">
                         <span>🇺🇸</span>
                         <span>🇬🇧</span>
                         <span>🇩🇪</span>
                         <span>🇯🇵</span>
                         <span>🇮🇳</span>
-                        <span className="text-[10px] text-white/50 font-semibold">+7 more</span>
+                        <span className="text-[10px] text-slate-500 font-semibold">+7 more</span>
                       </div>
                     </div>
                   </div>
@@ -261,13 +247,13 @@ function OrderSyncPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">99.99%</span>
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                        <span className="text-xl sm:text-2xl font-black text-navy-deep font-mono tracking-tight">99.99%</span>
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-100 text-emerald-700 border border-emerald-300">
                           ZERO DUPES
                         </span>
                       </div>
-                      <p className="text-xs font-semibold text-white/85">{t('orderSync.statAccuracyTitle') || "Order Sync Accuracy"}</p>
-                      <p className="text-[10px] text-white/50">{t('orderSync.statAccuracySub') || "Auto-filters returns & cancellations"}</p>
+                      <p className="text-xs font-bold text-navy-deep">{t('orderSync.statAccuracyTitle') || "Order Sync Accuracy"}</p>
+                      <p className="text-[10px] text-slate-500">{t('orderSync.statAccuracySub') || "Auto-filters returns & cancellations"}</p>
                     </div>
                   </div>
 
@@ -278,13 +264,13 @@ function OrderSyncPage() {
                     </div>
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl sm:text-2xl font-black text-white font-mono tracking-tight">FBA &amp; FBM</span>
-                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#155dfc]/25 text-cyan-300 border border-cyan-400/30">
+                        <span className="text-xl sm:text-2xl font-black text-navy-deep font-mono tracking-tight">FBA &amp; FBM</span>
+                        <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
                           ALL CARRIERS
                         </span>
                       </div>
-                      <p className="text-xs font-semibold text-white/85">{t('orderSync.statFulfillmentTitle') || "Dual Fulfillment Support"}</p>
-                      <p className="text-[10px] text-white/50">{t('orderSync.statFulfillmentSub') || "Prime & Merchant tracking"}</p>
+                      <p className="text-xs font-bold text-navy-deep">{t('orderSync.statFulfillmentTitle') || "Dual Fulfillment Support"}</p>
+                      <p className="text-[10px] text-slate-500">{t('orderSync.statFulfillmentSub') || "Prime & Merchant tracking"}</p>
                     </div>
                   </div>
                 </div>

@@ -10,25 +10,25 @@ export function BlogDetailSkeleton() {
       <Nav />
 
       {/* Blog Detail Hero Skeleton */}
-      <section className="relative pt-32 pb-16 md:pt-40 md:pb-20 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white border-b border-white/10 overflow-hidden">
+      <section className="relative pt-28 pb-14 md:pt-36 md:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border-b border-[#0032ab]/12 overflow-hidden">
         <Container className="max-w-4xl space-y-6">
-          <Skeleton className="h-5 w-32 rounded-full bg-white/10" />
-          <Skeleton className="h-6 w-52 rounded-full bg-brand/30" />
+          <Skeleton className="h-5 w-32 rounded-full bg-slate-400/20" />
+          <Skeleton className="h-6 w-52 rounded-full bg-brand/20" />
           <div className="space-y-3">
-            <Skeleton className="h-12 w-full bg-white/20 rounded-2xl" />
-            <Skeleton className="h-12 w-4/5 bg-white/20 rounded-2xl" />
+            <Skeleton className="h-12 w-full bg-slate-400/25 rounded-2xl" />
+            <Skeleton className="h-12 w-4/5 bg-slate-400/25 rounded-2xl" />
           </div>
-          <div className="pt-6 border-t border-white/10 flex justify-between items-center">
+          <div className="pt-6 border-t border-[#0032ab]/15 flex justify-between items-center">
             <div className="flex items-center gap-3">
-              <Skeleton className="h-10 w-10 rounded-full bg-white/15" />
+              <Skeleton className="h-10 w-10 rounded-full bg-slate-400/20" />
               <div className="space-y-1.5">
-                <Skeleton className="h-4 w-36 bg-white/20" />
-                <Skeleton className="h-3 w-28 bg-white/10" />
+                <Skeleton className="h-4 w-36 bg-slate-400/25" />
+                <Skeleton className="h-3 w-28 bg-slate-400/15" />
               </div>
             </div>
             <div className="flex gap-4">
-              <Skeleton className="h-4 w-24 bg-white/15" />
-              <Skeleton className="h-4 w-20 bg-white/15" />
+              <Skeleton className="h-4 w-24 bg-slate-400/20" />
+              <Skeleton className="h-4 w-20 bg-slate-400/20" />
             </div>
           </div>
         </Container>

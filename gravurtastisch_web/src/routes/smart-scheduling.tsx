@@ -121,72 +121,58 @@ function SmartSchedulingPage() {
 
       <main className="pb-8 w-full max-w-full overflow-x-hidden">
         {/* Hero Section */}
-        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
-          <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-white/5 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-brand/20 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden pt-24 pb-8 lg:pt-28 lg:pb-10 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 w-full max-w-full">
+          <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
 
-          <Container className="relative">
-            <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
-              {/* Left Column: Hero Content */}
-              <Reveal className="lg:col-span-6 xl:col-span-6">
-                <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 border border-brand/40 px-3.5 py-1 text-xs font-semibold text-brand-bright mb-4">
-                  <Sparkles className="h-3.5 w-3.5" />
-                  {t('smartScheduling.heroBadge') || "Algorithmic Delivery Timing"}
-                </div>
-                <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1]">
-                  <span className="text-gradient-silver">{t('smartScheduling.heroTitle') || "Smart Scheduling for"}</span>{" "}
-                  <span className="text-gradient-gold">{t('smartScheduling.heroTitleHighlight') || "Maximum Custom orders"}</span>
-                </h1>
-                <p className="mt-4 text-white/70 text-base sm:text-lg leading-relaxed max-w-xl">
-                  {t('smartScheduling.heroDesc') || "Reach Amazon buyers at the exact moment they are happiest with their order. Fully compliant with Amazon's 5-30 day solicitation window and tailored to buyer timezones."}
-                </p>
-                <div className="mt-6 flex flex-wrap gap-4">
-                  <a
-                    href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
-                  >
-                    {t('smartScheduling.heroCtaRegister') || "Enable Smart Scheduling"}
-                    <ArrowRight className="h-4 w-4" />
-                  </a>
-                  <a
-                    href="#timeline"
-                    className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-6 py-3 text-sm font-semibold text-white hover:bg-white/20 transition-all"
-                  >
-                    {t('smartScheduling.heroCtaHow') || "Explore 5-30 Day Timeline"}
-                  </a>
-                </div>
-              </Reveal>
+          <Container className="relative max-w-5xl mx-auto text-center">
+            <Reveal className="max-w-4xl mx-auto flex flex-col items-center">
+              <div className="section-badge mb-4">
+                <CalendarClock className="h-3.5 w-3.5 text-brand shrink-0" />
+                <span>{t('smartScheduling.heroBadge') || "Algorithmic Delivery Timing"}</span>
+              </div>
+              <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-navy-deep text-center">
+                <span>{t('smartScheduling.heroTitle') || "Smart Scheduling for"}</span>{" "}
+                <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
+                  {t('smartScheduling.heroTitleHighlight') || "Maximum Custom orders"}
+                </span>
+              </h1>
+              <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
+                {t('smartScheduling.heroDesc') || "Reach Amazon buyers at the exact moment they are happiest with their order. Fully compliant with Amazon's 5-30 day solicitation window and tailored to buyer timezones."}
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
+                <a
+                  href="/#register"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
+                >
+                  {t('smartScheduling.heroCtaRegister') || "Enable Smart Scheduling"}
+                  <ArrowRight className="h-4 w-4" />
+                </a>
+                <a
+                  href="#timeline"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-7 py-3 text-sm font-semibold text-navy-deep hover:bg-slate-50 transition-all shadow-xs"
+                >
+                  {t('smartScheduling.heroCtaHow') || "Explore 5-30 Day Timeline"}
+                </a>
+              </div>
+            </Reveal>
 
-              {/* Right Column: Unique Smart Scheduling & Timezone Chronometer Vector SVG */}
-              <Reveal className="lg:col-span-6 xl:col-span-6 relative" delay={120}>
-                <div className="relative max-w-lg mx-auto lg:max-w-none">
-                  {/* Subtle Neon Aura Glow Backdrop */}
-                  <div className="absolute -inset-2 bg-gradient-to-r from-brand/30 via-white/10 to-brand/20 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
-
-                  {/* Clean SVG Vector Illustration Container */}
-                  <div className="relative flex items-center justify-center select-none">
-                    <SmartSchedulingHeroSvg />
-                  </div>
-                </div>
-              </Reveal>
-            </div>
-
-            {/* Chrono Dial & Timing Telemetry Meters */}
-            <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-white/15 pt-8">
+            {/* Chrono Dial & Timing Telemetry Meters with Liquid Glass */}
+            <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 border-t border-[#0032ab]/15 pt-8 text-left">
               {/* Chrono Dial 1: +38% Review Lift */}
               <Reveal delay={50}>
-                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-[#38bdf8]/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(56,189,248,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
+                <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all duration-300 flex items-center gap-4 hover:-translate-y-1">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
                     {/* SVG Radial Arc Meter */}
                     <svg className="h-13 w-13 -rotate-90" viewBox="0 0 48 48">
-                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
+                      <circle cx="24" cy="24" r="18" fill="none" stroke="#e2e8f0" strokeWidth="3.5" />
                       <circle
                         cx="24"
                         cy="24"
                         r="18"
                         fill="none"
-                        stroke="#38bdf8"
+                        stroke="#0284c7"
                         strokeWidth="3.5"
                         strokeDasharray="113"
                         strokeDashoffset="38"
@@ -194,95 +180,95 @@ function SmartSchedulingPage() {
                         className="transition-all duration-700"
                       />
                     </svg>
-                    <span className="absolute text-[11px] font-black text-[#38bdf8] font-mono">+38%</span>
+                    <span className="absolute text-[11px] font-black text-sky-600 font-mono">+38%</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#38bdf8] animate-pulse" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#38bdf8]">{t('smartScheduling.chrono1Tag') || "Conversion Lift"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-sky-500 animate-pulse" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-sky-700">{t('smartScheduling.chrono1Tag') || "Conversion Lift"}</span>
                     </div>
-                    <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono1Title') || "Verified Custom orders"}</p>
-                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono1Sub') || "Optimal timing boost"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono1Title') || "Verified Custom orders"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono1Sub') || "Optimal timing boost"}</p>
                   </div>
                 </div>
               </Reveal>
 
               {/* Chrono Dial 2: 0% Policy Violations */}
               <Reveal delay={100}>
-                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-emerald-400/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(52,211,153,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
+                <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all duration-300 flex items-center gap-4 hover:-translate-y-1">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
                     <svg className="h-13 w-13 -rotate-90" viewBox="0 0 48 48">
-                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
+                      <circle cx="24" cy="24" r="18" fill="none" stroke="#e2e8f0" strokeWidth="3.5" />
                       <circle
                         cx="24"
                         cy="24"
                         r="18"
                         fill="none"
-                        stroke="#34d399"
+                        stroke="#10b981"
                         strokeWidth="3.5"
                         strokeDasharray="113"
                         strokeDashoffset="0"
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="absolute text-[11px] font-black text-emerald-400 font-mono">0%</span>
+                    <span className="absolute text-[11px] font-black text-emerald-600 font-mono">0%</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">{t('smartScheduling.chrono2Tag') || "Policy Violations"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">{t('smartScheduling.chrono2Tag') || "Policy Violations"}</span>
                     </div>
-                    <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono2Title') || "100% Amazon ToS"}</p>
-                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono2Sub') || "Automated safety lock"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono2Title') || "100% Amazon ToS"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono2Sub') || "Automated safety lock"}</p>
                   </div>
                 </div>
               </Reveal>
 
               {/* Chrono Dial 3: 100% Timezone Precision */}
               <Reveal delay={150}>
-                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-[#818cf8]/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(129,140,248,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
+                <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all duration-300 flex items-center gap-4 hover:-translate-y-1">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
                     <svg className="h-13 w-13 -rotate-90" viewBox="0 0 48 48">
-                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
+                      <circle cx="24" cy="24" r="18" fill="none" stroke="#e2e8f0" strokeWidth="3.5" />
                       <circle
                         cx="24"
                         cy="24"
                         r="18"
                         fill="none"
-                        stroke="#818cf8"
+                        stroke="#6366f1"
                         strokeWidth="3.5"
                         strokeDasharray="113"
                         strokeDashoffset="10"
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="absolute text-[10px] font-black text-[#818cf8] font-mono">18:30</span>
+                    <span className="absolute text-[10px] font-black text-indigo-600 font-mono">18:30</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-[#818cf8]" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#818cf8]">{t('smartScheduling.chrono3Tag') || "Buyer Timezone"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">{t('smartScheduling.chrono3Tag') || "Buyer Timezone"}</span>
                     </div>
-                    <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono3Title') || "Evening Peak Slot"}</p>
-                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono3Sub') || "Postal-code aligned"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono3Title') || "Evening Peak Slot"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono3Sub') || "Postal-code aligned"}</p>
                   </div>
                 </div>
               </Reveal>
 
               {/* Chrono Dial 4: 5-30 Days Golden Window */}
               <Reveal delay={200}>
-                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-amber-400/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(251,191,36,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
-                  <div className="relative h-13 w-13 shrink-0 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-400/30 flex flex-col items-center justify-center text-amber-300 shadow-inner">
+                <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all duration-300 flex items-center gap-4 hover:-translate-y-1">
+                  <div className="relative h-13 w-13 shrink-0 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col items-center justify-center text-amber-700 shadow-inner">
                     <span className="text-[12px] font-black font-mono leading-none">5-30</span>
-                    <span className="text-[8px] font-bold uppercase text-amber-400/80 mt-0.5">DAYS</span>
+                    <span className="text-[8px] font-bold uppercase text-amber-600 mt-0.5">DAYS</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">{t('smartScheduling.chrono4Tag') || "Golden Window"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">{t('smartScheduling.chrono4Tag') || "Golden Window"}</span>
                     </div>
-                    <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono4Title') || "Compliant Timeline"}</p>
-                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono4Sub') || "Category-tuned delays"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono4Title') || "Peak Gifting Period"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono4Sub') || "Automated delivery align"}</p>
                   </div>
                 </div>
               </Reveal>

@@ -26,40 +26,22 @@ export function Hero() {
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-28 pb-12 lg:pt-32 lg:pb-16 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white"
+      className="relative overflow-hidden pt-28 pb-12 lg:pt-32 lg:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800"
     >
-      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/20 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-brand-bright/15 blur-3xl pointer-events-none" />
+      <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
+      <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-brand-bright/10 blur-3xl pointer-events-none" />
 
       {/* Ambient Orbs */}
-      <div className="hero-orb blue -top-12 right-[10%] h-72 w-72 opacity-40" />
-      <div className="hero-orb cyan top-[30%] -left-16 h-64 w-64 opacity-30" />
+      <div className="hero-orb blue -top-12 right-[10%] h-72 w-72 opacity-20" />
+      <div className="hero-orb cyan top-[30%] -left-16 h-64 w-64 opacity-20" />
 
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        {Array.from({ length: 14 }).map((_, i) => (
-          <Star
-            key={i}
-            className="absolute text-[#4f6ef7]/35 twinkle"
-            style={{
-              top: `${(i * 53) % 88 + 6}%`,
-              left: `${(i * 37) % 94 + 3}%`,
-              width: 7 + (i % 3) * 3,
-              height: 7 + (i % 3) * 3,
-              animationDelay: `${(i % 5) * 0.35}s`,
-            }}
-            fill="currentColor"
-            strokeWidth={0}
-          />
-        ))}
-      </div>
-
-      <Container className="relative grid lg:grid-cols-12 gap-8 items-center">
-        <div className="lg:col-span-6 xl:col-span-7 rise">
-          <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.75rem] xl:text-[4.5rem] leading-[1.08] text-white">
-            <span className="text-gradient-silver">{t('hero.headline')}</span>{" "}
+      <Container className="relative max-w-5xl mx-auto text-center">
+        <div className="rise max-w-4xl mx-auto flex flex-col items-center">
+          <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.75rem] xl:text-[4.5rem] leading-[1.08] text-navy-deep text-center">
+            <span>{t('hero.headline')}</span>{" "}
             <span className="relative inline-block">
-              <span className="text-gradient-gold">
+              <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
                 {t('hero.headlineHighlight')}
               </span>
               <svg
@@ -70,7 +52,7 @@ export function Hero() {
               >
                 <path
                   d="M2 8 C 80 2, 160 12, 298 4"
-                  stroke="#4f6ef7"
+                  stroke="#0032ab"
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   className="draw-line"
@@ -78,101 +60,104 @@ export function Hero() {
               </svg>
             </span>
           </h1>
-          <p className="mt-8 max-w-xl text-base sm:text-lg text-white/75 leading-[1.7]">
+          <p className="mt-7 max-w-2xl text-base sm:text-lg text-slate-700 leading-[1.7] font-medium text-center mx-auto">
             {t('hero.description')}
           </p>
 
-          <div className="mt-10 flex flex-wrap gap-4">
+          <div className="mt-9 flex flex-wrap justify-center items-center gap-4">
             <a
               href="#register"
-              className="btn-glass-primary !py-3.5 px-8 text-sm font-bold !text-white shadow-[0_8px_24px_rgba(0,50,171,0.45)] hover:-translate-y-0.5 transition-all duration-300"
+              className="btn-glass-primary !py-3.5 px-8 text-sm font-bold !text-white shadow-[0_8px_24px_rgba(0,50,171,0.35)] hover:-translate-y-0.5 transition-all duration-300"
             >
               <span className="!text-white font-bold">{t('hero.ctaRegister')} →</span>
             </a>
             <a
-              href="#how"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-md px-8 py-3.5 text-sm font-semibold text-white hover:bg-white/20 shadow-xs transition-all duration-300"
+              href="/#pricing"
+              className="inline-flex items-center gap-2 rounded-full border border-[#0032ab]/20 bg-white hover:bg-slate-50 px-8 py-3.5 text-sm font-semibold text-navy-deep shadow-xs hover:border-[#0032ab]/40 transition-all duration-300"
             >
               {t('hero.ctaPricing')}
             </a>
           </div>
 
-          <div className="mt-9 grid grid-cols-3 gap-3 sm:gap-4 max-w-lg">
+          {/* Liquid Glass Stats Cards - Sleek Horizontal Single-Row Cards with Static Blue Border */}
+          <div className="mt-9 grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5 w-full max-w-5xl lg:max-w-6xl mx-auto">
             {/* Card 1: 48h Proof Turnaround */}
-            <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.06] to-white/[0.02] p-3.5 sm:p-4 border border-white/20 hover:border-sky-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_36px_rgba(56,189,248,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-2">
-                <div className="h-7 w-7 rounded-lg bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-sky-400 shadow-xs group-hover:scale-105 transition-transform">
-                  <Clock className="h-3.5 w-3.5" />
+            <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass liquid-glass-blue-border px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-300 hover:-translate-y-0.5 text-left flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-9 w-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+                  <Clock className="h-4 w-4" />
                 </div>
-                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-sky-300 bg-sky-500/10 border border-sky-400/20 px-1.5 py-0.5 rounded-md">
-                  Fast SLA
-                </span>
+                <div className="min-w-0">
+                  <div className="text-xl sm:text-2xl font-black text-navy-deep tracking-tight leading-none">
+                    48h
+                  </div>
+                  <p className="text-[11px] font-semibold text-slate-600 mt-1 uppercase tracking-wider leading-none whitespace-nowrap">
+                    {t('hero.statSendWindow') || "Proof Turnaround"}
+                  </p>
+                </div>
               </div>
-              <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                48h
-              </div>
-              <p className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1 uppercase tracking-wider leading-snug">
-                {t('hero.statSendWindow') || "Proof Turnaround"}
-              </p>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 bg-sky-100/90 border border-sky-300/80 px-2 py-0.5 rounded-md shrink-0">
+                Fast SLA
+              </span>
             </div>
 
             {/* Card 2: 10k+ Happy Clients */}
-            <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.06] to-white/[0.02] p-3.5 sm:p-4 border border-white/20 hover:border-amber-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_36px_rgba(245,158,11,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-2">
-                <div className="h-7 w-7 rounded-lg bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400 shadow-xs group-hover:scale-105 transition-transform">
-                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass liquid-glass-blue-border px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-300 hover:-translate-y-0.5 text-left flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-9 w-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+                  <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
                 </div>
-                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-400/20 px-1.5 py-0.5 rounded-md">
-                  ★ 4.9
-                </span>
+                <div className="min-w-0">
+                  <div className="text-xl sm:text-2xl font-black text-navy-deep tracking-tight leading-none">
+                    10k+
+                  </div>
+                  <p className="text-[11px] font-semibold text-slate-600 mt-1 uppercase tracking-wider leading-none whitespace-nowrap">
+                    {t('hero.statReviewLift') || "Happy Clients"}
+                  </p>
+                </div>
               </div>
-              <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                10k+
-              </div>
-              <p className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1 uppercase tracking-wider leading-snug">
-                {t('hero.statReviewLift') || "Happy Clients"}
-              </p>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-100/90 border border-amber-300/80 px-2 py-0.5 rounded-md shrink-0">
+                ★ 4.9
+              </span>
             </div>
 
             {/* Card 3: 99.8% On-Time Ship Rate */}
-            <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.06] to-white/[0.02] p-3.5 sm:p-4 border border-white/20 hover:border-emerald-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_36px_rgba(16,185,129,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
-              <div className="flex items-center justify-between mb-2">
-                <div className="h-7 w-7 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-xs group-hover:scale-105 transition-transform">
-                  <Sparkles className="h-3.5 w-3.5" />
+            <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass liquid-glass-blue-border px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-300 hover:-translate-y-0.5 text-left flex items-center justify-between gap-3">
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
+                  <Sparkles className="h-4 w-4" />
                 </div>
-                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border border-emerald-400/20 px-1.5 py-0.5 rounded-md">
-                  EU Wide
-                </span>
+                <div className="min-w-0">
+                  <div className="text-xl sm:text-2xl font-black text-navy-deep tracking-tight leading-none">
+                    99.8%
+                  </div>
+                  <p className="text-[11px] font-semibold text-slate-600 mt-1 uppercase tracking-wider leading-none whitespace-nowrap">
+                    {t('hero.statUptime') || "On-Time Ship Rate"}
+                  </p>
+                </div>
               </div>
-              <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                99.8%
-              </div>
-              <p className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1 uppercase tracking-wider leading-snug">
-                {t('hero.statUptime') || "On-Time Ship Rate"}
-              </p>
+              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/90 border border-emerald-300/80 px-2 py-0.5 rounded-md shrink-0">
+                EU Wide
+              </span>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-white/15 flex flex-wrap items-center gap-3 text-xs text-white/70">
-            <div className="flex items-center gap-1.5 font-semibold text-white">
-              <span className="h-2 w-2 rounded-full bg-brand-bright animate-pulse" />
+          <div className="mt-8 pt-6 border-t border-[#0032ab]/15 flex flex-wrap items-center justify-center gap-3 text-xs text-slate-600">
+            <div className="flex items-center gap-1.5 font-semibold text-navy-deep">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>{t('hero.spApiVerified')}</span>
             </div>
-            <span className="text-white/30">•</span>
+            <span className="text-slate-400">•</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-white/60">{t('hero.stores')}</span>
-              <FlagDE className="w-3.5 h-2.5" />
-              <FlagFR className="w-3.5 h-2.5" />
-              <FlagGB className="w-3.5 h-2.5" />
-              <FlagIT className="w-3.5 h-2.5" />
-              <FlagES className="w-3.5 h-2.5" />
-              <span className="text-[10px] font-mono text-brand-bright font-bold">+EU</span>
+              <span className="text-[11px] text-slate-600">{t('hero.stores')}</span>
+              <FlagDE className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
+              <FlagFR className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
+              <FlagGB className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
+              <FlagIT className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
+              <FlagES className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
+              <span className="text-[10px] font-mono text-brand font-bold">+EU</span>
             </div>
           </div>
-        </div>
-
-        <div className="lg:col-span-6 xl:col-span-5 rise" style={{ animationDelay: "0.15s" }}>
-          <HeroMock />
         </div>
       </Container>
     </section>

@@ -136,10 +136,10 @@ function RegisterSection() {
     <section id="register" className="relative py-12 lg:py-16 bg-white">
       <Container className="grid lg:grid-cols-12 gap-8">
         <Reveal className="lg:col-span-5">
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+          <span className="section-badge mb-3">
             {t('register.sectionLabel')}
           </span>
-          <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold text-navy-deep leading-tight">
+          <h2 className="mt-4 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
             {t('register.heading1')}
             <br />
             {t('register.heading2')}

@@ -135,7 +135,7 @@ export function AmazonHubDiagram() {
         </svg>
 
         {/* Top channel card */}
-        <div className="absolute left-[60px] top-[8px] w-[230px] bg-white dark:bg-navy border border-slate-200/90 dark:border-white/10 rounded-2xl p-3 shadow-md shadow-slate-200/50 dark:shadow-none hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-3 z-10">
+        <div className="absolute left-[40px] top-[8px] w-[270px] bg-white dark:bg-navy border border-slate-200/90 dark:border-white/10 rounded-2xl px-4 py-3 shadow-md shadow-slate-200/50 dark:shadow-none hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 flex items-center gap-3.5 z-10">
           <div className="relative h-10 w-10 rounded-xl bg-[#F4F4F2] dark:bg-white/5 border border-[#E5E5DF] dark:border-white/10 grid place-items-center shrink-0 shadow-2xs">
             <StudioMark className="w-5 h-5" />
             <span className="absolute -top-1 -right-1 flex h-3 w-3">
@@ -144,11 +144,11 @@ export function AmazonHubDiagram() {
             </span>
           </div>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-1.5">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-bold text-navy-deep dark:text-white whitespace-nowrap">
                 {t("amazonShowcase.diagramTopTitle", "Sales channel")}
               </span>
-              <span className="inline-flex items-center gap-1 text-[9px] font-bold text-emerald-600 bg-emerald-500/10 px-2 py-0.5 rounded-full border border-emerald-500/20 shrink-0">
+              <span className="inline-flex items-center gap-1.5 text-[9.5px] font-bold text-emerald-600 bg-emerald-500/10 px-2.5 py-0.5 rounded-full border border-emerald-500/20 shrink-0">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                 {t("amazonShowcase.diagramTopConnected", "Connected")}
               </span>
@@ -159,24 +159,24 @@ export function AmazonHubDiagram() {
           </div>
         </div>
 
-        {/* Core hub */}
+        {/* Core hub - Light theme */}
         <div className="absolute left-[85px] top-[175px] w-[180px] h-[180px] rounded-full grid place-items-center z-20">
           <div
-            className="absolute inset-0 rounded-full border-2 border-dashed border-[#4A4A4A]/55 dark:border-white/30 animate-spin"
+            className="absolute inset-0 rounded-full border-2 border-dashed border-[#0032ab]/30 dark:border-white/30 animate-spin"
             style={{ animationDuration: "24s" }}
           />
-          <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#4f6ef7]/25 via-[#0032ab]/15 to-transparent pulse-ring blur-xs" />
-          <div className="relative w-[145px] h-[145px] rounded-full bg-gradient-to-b from-[#1e293b] to-[#0f172a] text-white p-3 shadow-xl shadow-brand/30 border border-[#4f6ef7]/40 flex flex-col items-center justify-center text-center hover:scale-105 transition-transform duration-300">
-            <div className="h-8 w-8 rounded-full bg-[#4f6ef7]/20 border border-[#4f6ef7]/40 grid place-items-center mb-1">
-              <RefreshCw className="w-3.5 h-3.5 text-[#4f6ef7] animate-spin" style={{ animationDuration: "8s" }} />
+          <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#4f6ef7]/20 via-[#0032ab]/10 to-transparent pulse-ring blur-xs" />
+          <div className="relative w-[145px] h-[145px] rounded-full bg-gradient-to-b from-white via-[#f0f6ff] to-[#d8e8fc] text-navy-deep p-3 shadow-xl shadow-[#0032ab]/15 border-2 border-[#2563eb]/35 flex flex-col items-center justify-center text-center hover:scale-105 transition-transform duration-300">
+            <div className="h-8 w-8 rounded-full bg-[#0032ab]/10 border border-[#0032ab]/20 grid place-items-center mb-1">
+              <RefreshCw className="w-3.5 h-3.5 text-brand animate-spin" style={{ animationDuration: "8s" }} />
             </div>
-            <h4 className="text-xs font-extrabold text-white tracking-tight leading-tight whitespace-nowrap">
+            <h4 className="text-xs font-extrabold text-navy-deep tracking-tight leading-tight whitespace-nowrap">
               {t("amazonShowcase.diagramCoreTitle", "Gravurtastisch studio")}
             </h4>
-            <p className="text-[10px] text-slate-300 font-medium mt-0.5 whitespace-nowrap">
+            <p className="text-[10px] text-slate-600 font-semibold mt-0.5 whitespace-nowrap">
               {t("amazonShowcase.diagramCoreSub", "Production engine")}
             </p>
-            <span className="mt-1 text-[8px] font-mono font-bold text-[#4f6ef7] bg-black/60 border border-[#4f6ef7]/30 px-2 py-0.5 rounded-full whitespace-nowrap">
+            <span className="mt-1 text-[8px] font-mono font-bold text-brand bg-white border border-[#0032ab]/20 px-2 py-0.5 rounded-full whitespace-nowrap shadow-2xs">
               {t("amazonShowcase.diagramCoreLatency", "< 2s updates")}
             </span>
           </div>
@@ -245,21 +245,21 @@ export function AmazonHubDiagram() {
           </span>
         </div>
 
-        <div className="bg-gradient-to-r from-[#282828] to-[#141414] text-white rounded-2xl p-4 text-center border border-[#4A4A4A]/35 shadow-md flex items-center justify-between">
+        <div className="bg-gradient-to-r from-white via-[#f0f6ff] to-[#d8e8fc] text-navy-deep rounded-2xl p-4 text-center border border-[#0032ab]/20 shadow-sm flex items-center justify-between">
           <div className="flex items-center gap-3 text-left">
-            <div className="h-9 w-9 rounded-full bg-[#282828]/60 border border-white/20 grid place-items-center shrink-0">
-              <RefreshCw className="w-4 h-4 text-[#E89B5C] animate-spin" />
+            <div className="h-9 w-9 rounded-full bg-[#0032ab]/10 border border-[#0032ab]/20 grid place-items-center shrink-0">
+              <RefreshCw className="w-4 h-4 text-brand animate-spin" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-white">
+              <h4 className="text-xs font-bold text-navy-deep">
                 {t("amazonShowcase.diagramCoreTitle", "Gravurtastisch studio")}
               </h4>
-              <p className="text-[10px] text-[#C4B5FD]/90">
+              <p className="text-[10px] text-slate-600 font-medium">
                 {t("amazonShowcase.diagramCoreSub", "Production engine")}
               </p>
             </div>
           </div>
-          <span className="text-[9px] font-mono font-bold text-[#E89B5C] bg-black/40 border border-[#E89B5C]/30 px-2 py-0.5 rounded-full">
+          <span className="text-[9px] font-mono font-bold text-brand bg-white border border-[#0032ab]/20 px-2 py-0.5 rounded-full">
             {t("amazonShowcase.diagramCoreLatency", "< 2s updates")}
           </span>
         </div>

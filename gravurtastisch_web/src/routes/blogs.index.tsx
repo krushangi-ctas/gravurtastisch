@@ -140,35 +140,35 @@ function BlogsPage() {
 
       <main className="pb-20 w-full max-w-full overflow-x-hidden">
         {/* ==================================================== */}
-        {/* 1. HERO SECTION (DARK NAVY GRADIENT) */}
+        {/* 1. HERO SECTION (SOFT PERIWINKLE GRADIENT) */}
         {/* ==================================================== */}
-        <section className="relative overflow-hidden pt-28 pb-16 lg:pt-32 lg:pb-20 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white w-full max-w-full">
-          <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
-          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/25 blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-sky-500/20 blur-3xl pointer-events-none" />
+        <section className="relative overflow-hidden pt-28 pb-16 lg:pt-32 lg:pb-20 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 w-full max-w-full">
+          <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
+          <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-sky-500/10 blur-3xl pointer-events-none" />
 
           <Container className="relative">
             <Reveal className="max-w-3xl mx-auto text-center">
-              <div className="inline-flex items-center gap-2 rounded-full bg-brand/20 border border-brand/40 px-3.5 py-1 text-xs font-semibold text-brand-bright mb-4">
-                <Sparkles className="h-3.5 w-3.5" />
+              <div className="section-badge mb-4">
+                <Newspaper className="h-3.5 w-3.5 text-brand shrink-0" />
                 <span>Gravurtastisch Journal & Studio Notes</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-display leading-[1.15]">
-                <span className="text-gradient-silver">Actionable Insights for</span> <br className="hidden sm:inline" />
-                <span className="text-gradient-gold">
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-display leading-[1.15] text-navy-deep">
+                <span>Actionable Insights for</span> <br className="hidden sm:inline" />
+                <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
                   Premium Personalization Studio
                 </span>
               </h1>
 
-              <p className="mt-4 text-base sm:text-lg text-white/70 max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-4 text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed font-medium">
                 Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Gravurtastisch studio team.
               </p>
 
               {/* Search Bar */}
               <div className="mt-8 max-w-xl mx-auto relative">
                 <div className="relative flex items-center">
-                  <Search className="absolute left-4 h-5 w-5 text-white/50 z-10 pointer-events-none" />
+                  <Search className="absolute left-4 h-5 w-5 text-slate-400 z-10 pointer-events-none" />
                   <Input
                     type="text"
                     placeholder="Search engraving, proofing, scheduling, gifts..."
@@ -177,12 +177,12 @@ function BlogsPage() {
                       setSearchQuery(e.target.value);
                       setCurrentPage(1);
                     }}
-                    className="h-12 w-full pl-12 pr-16 rounded-2xl bg-white/10 border-white/20 text-white placeholder:text-white/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-bright focus-visible:border-transparent backdrop-blur-md text-sm shadow-xl transition-all"
+                    className="h-12 w-full pl-12 pr-16 rounded-2xl bg-white border border-[#0032ab]/20 text-slate-800 placeholder:text-slate-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:border-transparent text-sm shadow-md transition-all"
                   />
                   {searchQuery && (
                     <button
                       onClick={() => setSearchQuery("")}
-                      className="absolute right-4 text-xs font-semibold text-white/60 hover:text-white z-10"
+                      className="absolute right-4 text-xs font-semibold text-slate-500 hover:text-navy-deep z-10"
                     >
                       Clear
                     </button>
@@ -202,7 +202,7 @@ function BlogsPage() {
                     className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                       selectedTag === cat
                         ? "bg-brand !text-white font-bold shadow-md shadow-brand/25 scale-105"
-                        : "bg-white/10 text-white/70 hover:bg-white/15 hover:text-white border border-white/10"
+                        : "bg-white/80 text-slate-700 hover:bg-white hover:text-navy-deep border border-[#0032ab]/15"
                     }`}
                   >
                     {cat}
