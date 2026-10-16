@@ -8,8 +8,9 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useRef, type ReactNode } from "react";
 import { useTranslation, I18nextProvider } from "react-i18next";
+import Lenis from "lenis";
 import i18n from "../i18n/config";
 
 import appCss from "../styles.css?url";
@@ -130,15 +131,37 @@ function RootShell({ children }: { children: ReactNode }) {
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   const location = useLocation();
+  const lenisRef = useRef<Lenis | null>(null);
+
+  // Global Lenis smooth scrolling for all pages
+  useEffect(() => {
+    const lenis = new Lenis({
+      autoRaf: true,
+    });
+    lenisRef.current = lenis;
+
+    return () => {
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     if (!location.hash) {
-      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      if (lenisRef.current) {
+        lenisRef.current.scrollTo(0, { immediate: true });
+      } else {
+        window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+      }
     } else {
       const targetId = location.hash.replace(/^#/, "");
       const el = document.getElementById(targetId);
       if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
+        if (lenisRef.current) {
+          lenisRef.current.scrollTo(el, { offset: -70 });
+        } else {
+          el.scrollIntoView({ behavior: "smooth" });
+        }
       }
     }
   }, [location.pathname, location.hash]);
