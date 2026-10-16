@@ -97,18 +97,61 @@ export function Hero() {
             </a>
           </div>
 
-          <dl className="mt-9 grid grid-cols-3 gap-3 max-w-md">
-            {[
-              { k: "48h", v: t('hero.statSendWindow') },
-              { k: "3D", v: t('hero.statReviewLift') },
-              { k: "EU+", v: t('hero.statUptime') },
-            ].map((s) => (
-              <div key={s.k} className="liquid-glass-dark rounded-2xl border border-white/15 px-3.5 py-3 shadow-lg backdrop-blur-md bg-white/[0.06]">
-                <dt className="text-xl font-extrabold text-white tracking-tight">{s.k}</dt>
-                <dd className="text-[10px] text-white/60 mt-1 uppercase tracking-wider leading-snug font-medium">{s.v}</dd>
+          <div className="mt-9 grid grid-cols-3 gap-3 sm:gap-4 max-w-lg">
+            {/* Card 1: 48h Proof Turnaround */}
+            <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.06] to-white/[0.02] p-3.5 sm:p-4 border border-white/20 hover:border-sky-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_36px_rgba(56,189,248,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-2">
+                <div className="h-7 w-7 rounded-lg bg-sky-500/15 border border-sky-400/30 flex items-center justify-center text-sky-400 shadow-xs group-hover:scale-105 transition-transform">
+                  <Clock className="h-3.5 w-3.5" />
+                </div>
+                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-sky-300 bg-sky-500/10 border border-sky-400/20 px-1.5 py-0.5 rounded-md">
+                  Fast SLA
+                </span>
               </div>
-            ))}
-          </dl>
+              <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                48h
+              </div>
+              <p className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1 uppercase tracking-wider leading-snug">
+                {t('hero.statSendWindow') || "Proof Turnaround"}
+              </p>
+            </div>
+
+            {/* Card 2: 10k+ Happy Clients */}
+            <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.06] to-white/[0.02] p-3.5 sm:p-4 border border-white/20 hover:border-amber-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_36px_rgba(245,158,11,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-2">
+                <div className="h-7 w-7 rounded-lg bg-amber-500/15 border border-amber-400/30 flex items-center justify-center text-amber-400 shadow-xs group-hover:scale-105 transition-transform">
+                  <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                </div>
+                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-amber-300 bg-amber-500/10 border border-amber-400/20 px-1.5 py-0.5 rounded-md">
+                  ★ 4.9
+                </span>
+              </div>
+              <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                10k+
+              </div>
+              <p className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1 uppercase tracking-wider leading-snug">
+                {t('hero.statReviewLift') || "Happy Clients"}
+              </p>
+            </div>
+
+            {/* Card 3: 99.8% On-Time Ship Rate */}
+            <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.12] via-white/[0.06] to-white/[0.02] p-3.5 sm:p-4 border border-white/20 hover:border-emerald-400/50 shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:shadow-[0_12px_36px_rgba(16,185,129,0.2)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1">
+              <div className="flex items-center justify-between mb-2">
+                <div className="h-7 w-7 rounded-lg bg-emerald-500/15 border border-emerald-400/30 flex items-center justify-center text-emerald-400 shadow-xs group-hover:scale-105 transition-transform">
+                  <Sparkles className="h-3.5 w-3.5" />
+                </div>
+                <span className="text-[9px] font-mono font-bold uppercase tracking-wider text-emerald-300 bg-emerald-500/10 border border-emerald-400/20 px-1.5 py-0.5 rounded-md">
+                  EU Wide
+                </span>
+              </div>
+              <div className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                99.8%
+              </div>
+              <p className="text-[10px] sm:text-[11px] font-semibold text-white/70 mt-1 uppercase tracking-wider leading-snug">
+                {t('hero.statUptime') || "On-Time Ship Rate"}
+              </p>
+            </div>
+          </div>
 
           <div className="mt-8 pt-6 border-t border-white/15 flex flex-wrap items-center gap-3 text-xs text-white/70">
             <div className="flex items-center gap-1.5 font-semibold text-white">
