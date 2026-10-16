@@ -109,8 +109,8 @@ export function Footer() {
   ];
 
   return (
-    <footer className="bg-navy-deep text-white/70 relative overflow-hidden">
-      <div className="absolute inset-0 grid-bg opacity-60 pointer-events-none" />
+    <footer className="bg-[#0f172b] text-white/70 relative overflow-hidden border-t border-white/10">
+      <div className="absolute inset-0 grid-bg opacity-40 pointer-events-none" />
       <Container className="relative">
         {/* Trust strip - dividers, not cards */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 border-b border-white/10">
@@ -121,7 +121,7 @@ export function Footer() {
                 } ${i !== trustStrip.length - 1 ? "lg:border-r border-white/10" : ""
                 }`}
             >
-              <Icon className="h-7 w-7 md:h-8 md:w-8 text-brand" strokeWidth={1.75} />
+              <Icon className="h-7 w-7 md:h-8 md:w-8 text-[#4f6ef7]" strokeWidth={1.75} />
               <p className="mt-4 text-sm font-semibold text-white font-display">{t(`footer.${titleKey}`)}</p>
               <p className="mt-1.5 text-[13px] leading-relaxed text-white/70">{t(`footer.${copyKey}`)}</p>
             </div>
@@ -147,19 +147,19 @@ export function Footer() {
 
             <ul className="mt-7 space-y-3 text-sm">
               <li className="flex items-start gap-3">
-                <Mail className="h-4 w-4 mt-0.5 text-brand shrink-0" strokeWidth={1.75} />
-                <a href={`mailto:${contactEmail}`} className="hover:text-brand text-white/80 transition-colors">
+                <Mail className="h-4 w-4 mt-0.5 text-[#4f6ef7] shrink-0" strokeWidth={1.75} />
+                <a href={`mailto:${contactEmail}`} className="hover:text-[#4f6ef7] text-white/80 transition-colors">
                   {contactEmail}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <Phone className="h-4 w-4 mt-0.5 text-brand shrink-0" strokeWidth={1.75} />
-                <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="hover:text-brand text-white/80 transition-colors">
+                <Phone className="h-4 w-4 mt-0.5 text-[#4f6ef7] shrink-0" strokeWidth={1.75} />
+                <a href={`tel:${contactPhone.replace(/\s+/g, '')}`} className="hover:text-[#4f6ef7] text-white/80 transition-colors">
                   {contactPhone}
                 </a>
               </li>
               <li className="flex items-start gap-3">
-                <MapPin className="h-4 w-4 mt-0.5 text-brand shrink-0" strokeWidth={1.75} />
+                <MapPin className="h-4 w-4 mt-0.5 text-[#4f6ef7] shrink-0" strokeWidth={1.75} />
                 <span className="leading-relaxed text-white/70">
                   {contactAddress}
                 </span>

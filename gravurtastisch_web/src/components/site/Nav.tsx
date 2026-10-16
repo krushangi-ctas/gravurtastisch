@@ -163,10 +163,19 @@ export function Nav() {
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         solid
-          ? "backdrop-blur-lg bg-background/90 border-b border-border shadow-sm"
+          ? "backdrop-blur-xl bg-white/95 border-b border-[#0032ab]/12 shadow-[0_4px_24px_rgba(0,50,171,0.06)]"
           : "bg-transparent"
       }`}
     >
+      {/* EcomRetails-style Liquid Top Accent Line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2.5px] pointer-events-none"
+        style={{
+          background: "linear-gradient(90deg, #0032ab 0%, #4f6ef7 50%, #0032ab 100%)",
+          backgroundSize: "200% 100%",
+          animation: "liquid-flow 6s linear infinite",
+        }}
+      />
       <Container className="h-16 lg:h-17 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
           <img
@@ -210,8 +219,8 @@ export function Nav() {
                                 <div
                                   className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 transition-all duration-200 shadow-xs ${
                                     isSubActive
-                                      ? "bg-brand text-navy-deep shadow-brand/30"
-                                      : "bg-brand/10 text-brand group-hover/item:bg-brand group-hover/item:text-navy-deep group-hover/item:scale-105"
+                                      ? "bg-brand text-white shadow-brand/30"
+                                      : "bg-brand/10 text-brand group-hover/item:bg-brand group-hover/item:text-white group-hover/item:scale-105"
                                   }`}
                                 >
                                   <Icon className="w-4 h-4" />
@@ -335,7 +344,7 @@ export function Nav() {
 
           <a
             href="/#register"
-            className="h-9 md:h-10 inline-flex items-center justify-center gap-1.5 rounded-full bg-brand px-4 md:px-5 text-xs md:text-sm font-bold text-navy-deep shadow-[0_8px_20px_-6px_rgba(210,180,140,0.5)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
+            className="h-9 md:h-10 inline-flex items-center justify-center gap-1.5 rounded-full btn-glass-primary !py-0 px-4 md:px-5 text-xs md:text-sm font-semibold !text-white shadow-[0_4px_16px_rgba(0,50,171,0.3)] hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
           >
             <span className="hidden sm:inline">{t("nav.registerAsSeller")}</span>
             <span className="sm:hidden">{t("nav.registerShort") || "Register"}</span>

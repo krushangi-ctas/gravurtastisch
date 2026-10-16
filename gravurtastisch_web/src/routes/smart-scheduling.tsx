@@ -86,7 +86,7 @@ function SmartSchedulingPage() {
       day: "Days 5-8",
       title: t('smartScheduling.phase3Title') || "Golden Solicitation Window",
       desc: t('smartScheduling.phase3Desc') || "Gravurtastisch dispatches official 1-click production job email at peak opening hour.",
-      color: "bg-[#282828] text-[#D2B48C] font-bold border border-[#D2B48C]",
+      color: "bg-brand/10 text-brand font-bold border border-brand/25",
     },
     {
       day: "Day 30+",
@@ -144,7 +144,7 @@ function SmartSchedulingPage() {
                 <div className="mt-6 flex flex-wrap gap-4">
                   <a
                     href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
+                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
                   >
                     {t('smartScheduling.heroCtaRegister') || "Enable Smart Scheduling"}
                     <ArrowRight className="h-4 w-4" />
@@ -173,115 +173,116 @@ function SmartSchedulingPage() {
             </div>
 
             {/* Chrono Dial & Timing Telemetry Meters */}
-            <div className="mt-8 sm:mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-white/10 pt-6">
+            <div className="mt-10 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 border-t border-white/15 pt-8">
               {/* Chrono Dial 1: +38% Review Lift */}
               <Reveal delay={50}>
-                <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 p-3.5 sm:p-4 backdrop-blur-md hover:border-brand/50 transition-all shadow-lg flex items-center gap-3.5">
+                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-[#38bdf8]/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(56,189,248,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
                     {/* SVG Radial Arc Meter */}
                     <svg className="h-13 w-13 -rotate-90" viewBox="0 0 48 48">
-                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3.5" />
+                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
                       <circle
                         cx="24"
                         cy="24"
                         r="18"
                         fill="none"
-                        stroke="#D2B48C"
+                        stroke="#38bdf8"
                         strokeWidth="3.5"
                         strokeDasharray="113"
                         strokeDashoffset="38"
                         strokeLinecap="round"
+                        className="transition-all duration-700"
                       />
                     </svg>
-                    <span className="absolute text-[11px] font-black text-brand-bright font-mono">+38%</span>
+                    <span className="absolute text-[11px] font-black text-[#38bdf8] font-mono">+38%</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-bright animate-pulse" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-bright">{t('smartScheduling.chrono1Tag') || "Conversion Lift"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#38bdf8] animate-pulse" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#38bdf8]">{t('smartScheduling.chrono1Tag') || "Conversion Lift"}</span>
                     </div>
                     <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono1Title') || "Verified Custom orders"}</p>
-                    <p className="text-[10px] text-white/50">{t('smartScheduling.chrono1Sub') || "Optimal timing boost"}</p>
+                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono1Sub') || "Optimal timing boost"}</p>
                   </div>
                 </div>
               </Reveal>
 
               {/* Chrono Dial 2: 0% Policy Violations */}
               <Reveal delay={100}>
-                <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 p-3.5 sm:p-4 backdrop-blur-md hover:border-brand/50 transition-all shadow-lg flex items-center gap-3.5">
+                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-emerald-400/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(52,211,153,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
                     <svg className="h-13 w-13 -rotate-90" viewBox="0 0 48 48">
-                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3.5" />
+                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
                       <circle
                         cx="24"
                         cy="24"
                         r="18"
                         fill="none"
-                        stroke="#D2B48C"
+                        stroke="#34d399"
                         strokeWidth="3.5"
                         strokeDasharray="113"
                         strokeDashoffset="0"
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="absolute text-[11px] font-black text-brand-bright font-mono">0%</span>
+                    <span className="absolute text-[11px] font-black text-emerald-400 font-mono">0%</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-bright" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-bright">{t('smartScheduling.chrono2Tag') || "Policy Violations"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-400">{t('smartScheduling.chrono2Tag') || "Policy Violations"}</span>
                     </div>
                     <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono2Title') || "100% Amazon ToS"}</p>
-                    <p className="text-[10px] text-white/50">{t('smartScheduling.chrono2Sub') || "Automated safety lock"}</p>
+                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono2Sub') || "Automated safety lock"}</p>
                   </div>
                 </div>
               </Reveal>
 
               {/* Chrono Dial 3: 100% Timezone Precision */}
               <Reveal delay={150}>
-                <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 p-3.5 sm:p-4 backdrop-blur-md hover:border-brand/50 transition-all shadow-lg flex items-center gap-3.5">
+                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-[#818cf8]/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(129,140,248,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
                     <svg className="h-13 w-13 -rotate-90" viewBox="0 0 48 48">
-                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="3.5" />
+                      <circle cx="24" cy="24" r="18" fill="none" stroke="rgba(255,255,255,0.12)" strokeWidth="3.5" />
                       <circle
                         cx="24"
                         cy="24"
                         r="18"
                         fill="none"
-                        stroke="#D2B48C"
+                        stroke="#818cf8"
                         strokeWidth="3.5"
                         strokeDasharray="113"
                         strokeDashoffset="10"
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="absolute text-[10px] font-black text-brand-bright font-mono">18:30</span>
+                    <span className="absolute text-[10px] font-black text-[#818cf8] font-mono">18:30</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-brand-bright" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-brand-bright">{t('smartScheduling.chrono3Tag') || "Buyer Timezone"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-[#818cf8]" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-[#818cf8]">{t('smartScheduling.chrono3Tag') || "Buyer Timezone"}</span>
                     </div>
                     <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono3Title') || "Evening Peak Slot"}</p>
-                    <p className="text-[10px] text-white/50">{t('smartScheduling.chrono3Sub') || "Postal-code aligned"}</p>
+                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono3Sub') || "Postal-code aligned"}</p>
                   </div>
                 </div>
               </Reveal>
 
               {/* Chrono Dial 4: 5-30 Days Golden Window */}
               <Reveal delay={200}>
-                <div className="group relative rounded-2xl bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/15 p-3.5 sm:p-4 backdrop-blur-md hover:border-brand-bright/50 transition-all shadow-lg flex items-center gap-3.5">
-                  <div className="relative h-13 w-13 shrink-0 rounded-2xl bg-white/10 border border-white/20 flex flex-col items-center justify-center text-white">
+                <div className="group relative rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/15 hover:border-amber-400/50 p-4 backdrop-blur-xl transition-all duration-300 shadow-lg hover:shadow-[0_8px_25px_rgba(251,191,36,0.15)] flex items-center gap-3.5 hover:-translate-y-0.5">
+                  <div className="relative h-13 w-13 shrink-0 rounded-2xl bg-gradient-to-br from-amber-500/20 to-amber-500/5 border border-amber-400/30 flex flex-col items-center justify-center text-amber-300 shadow-inner">
                     <span className="text-[12px] font-black font-mono leading-none">5-30</span>
-                    <span className="text-[8px] font-bold uppercase text-slate-300 mt-0.5">DAYS</span>
+                    <span className="text-[8px] font-bold uppercase text-amber-400/80 mt-0.5">DAYS</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
-                      <span className="h-1.5 w-1.5 rounded-full bg-white/80" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-slate-300">{t('smartScheduling.chrono4Tag') || "Golden Window"}</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-amber-400" />
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400">{t('smartScheduling.chrono4Tag') || "Golden Window"}</span>
                     </div>
                     <p className="text-sm font-bold text-white mt-0.5">{t('smartScheduling.chrono4Title') || "Compliant Timeline"}</p>
-                    <p className="text-[10px] text-white/50">{t('smartScheduling.chrono4Sub') || "Category-tuned delays"}</p>
+                    <p className="text-[10.5px] text-white/60">{t('smartScheduling.chrono4Sub') || "Category-tuned delays"}</p>
                   </div>
                 </div>
               </Reveal>
@@ -290,224 +291,225 @@ function SmartSchedulingPage() {
         </section>
 
         {/* Interactive 4-Quadrant Timing Engine Matrix */}
-        <section className="py-10 lg:py-14 bg-surface border-b border-border">
+        <section className="py-16 lg:py-24 bg-[#f8f9fc] border-b border-slate-200/60 relative overflow-hidden">
           <Container>
             <Reveal>
-              <div className="max-w-2xl mb-8">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+              <div className="max-w-3xl mb-12">
+                <span className="section-badge mb-3">
                   {t('smartScheduling.matrixSectionBadge') || "Core Algorithm"}
                 </span>
-                <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                   {t('smartScheduling.matrixHeading') || "Timing Is Everything in Amazon Review Conversions"}
                 </h2>
-                <p className="mt-2 text-slate-body text-sm sm:text-base leading-relaxed">
+                <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl">
                   {t('smartScheduling.matrixDesc') || "Sending a production job too early annoys the customer before they've tried the product. Sending too late leads to low recall. Smart scheduling strikes the perfect balance."}
                 </p>
               </div>
             </Reveal>
 
             {/* 2x2 Interactive Control Matrix */}
-            <div className="grid md:grid-cols-2 gap-5 items-stretch">
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-8 items-stretch">
               {/* Quadrant 1: Strict 5-30 Day Policy Guardrail */}
               <Reveal delay={60}>
-                <div className="h-full rounded-3xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/40 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div className="h-full liquid-glass rounded-[2rem] p-6 sm:p-7 border border-white/80 shadow-[0_10px_35px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_45px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                   <div>
-                    <div className="flex items-center justify-between gap-3 mb-3.5">
-                      <div className="h-10 w-10 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center group-hover:bg-brand group-hover:text-white transition-colors">
-                        <ShieldCheck className="h-5 w-5" />
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white flex items-center justify-center shadow-[0_6px_20px_rgba(0,50,171,0.25)] group-hover:scale-105 transition-transform">
+                        <ShieldCheck className="h-6 w-6" />
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
                         {t('smartScheduling.quad1Tag') || "100% Policy-Safe"}
                       </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-navy-deep">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-navy-deep">
                       {t('smartScheduling.quad1Title') || "Strict 5-30 Day Window Compliance"}
                     </h3>
-                    <p className="mt-1.5 text-xs sm:text-sm text-slate-body leading-relaxed">
-                      {t('smartScheduling.quad1Desc') || "Amazon policy strictly prohibits solicitations outside the 5 to 30-day post-delivery range. Gravurtastisch enforces this guardrail automatically."}
-                    </p>
+                    <p className="mt-2 text-sm text-slate-body leading-relaxed">
+                      {t('smartScheduling.quad1Desc') || "Amazon policy strictly prohibits solicitations outside the 5 to 30-day post-delivery range. Gravurtastisch enforces this guardrail automatically."}</p>
 
                     {/* Embedded Widget: 3-Stage Range Gauge */}
-                    <div className="mt-4 rounded-2xl bg-slate-50 border border-slate-200/80 p-3.5 space-y-2">
+                    <div className="mt-5 rounded-2xl bg-white/90 border border-slate-200/80 p-4 space-y-2.5 shadow-xs">
                       <div className="flex items-center justify-between text-[11px] font-mono text-slate-500">
-                        <span>POLICY RANGE TRACKER</span>
-                        <span className="text-brand font-bold flex items-center gap-1">
-                          <CheckCircle2 className="h-3 w-3 text-brand" />
+                        <span className="font-semibold text-slate-600">POLICY RANGE TRACKER</span>
+                        <span className="text-[#0032ab] font-bold flex items-center gap-1">
+                          <CheckCircle2 className="h-3.5 w-3.5 text-[#155dfc]" />
                           AUTO-ENFORCED
                         </span>
                       </div>
-                      <div className="h-2.5 w-full bg-slate-200 rounded-full overflow-hidden flex p-0.5 gap-1">
-                        <div className="h-full w-1/4 bg-slate-400 rounded-full" title="Days 0-4 Cooldown" />
-                        <div className="h-full w-2/4 bg-brand rounded-full animate-pulse" title="Days 5-30 Golden Window" />
-                        <div className="h-full w-1/4 bg-stone-400 rounded-full" title="Day 31+ Cutoff" />
+                      <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden flex p-0.5 gap-1">
+                        <div className="h-full w-1/4 bg-slate-300 rounded-full" title="Days 0-4 Cooldown" />
+                        <div className="h-full w-2/4 bg-gradient-to-r from-[#0032ab] to-[#155dfc] rounded-full animate-pulse shadow-sm" title="Days 5-30 Golden Window" />
+                        <div className="h-full w-1/4 bg-slate-300 rounded-full" title="Day 31+ Cutoff" />
                       </div>
-                      <div className="flex items-center justify-between text-[10.5px] pt-0.5">
-                        <span className="text-slate-400">Day 0-4: Cooldown</span>
-                        <span className="text-brand font-bold flex items-center gap-1">
-                          <Sparkles className="h-3 w-3 text-brand" />
+                      <div className="flex items-center justify-between text-[11px] pt-1">
+                        <span className="text-slate-500 font-medium">Day 0-4: Cooldown</span>
+                        <span className="text-[#0032ab] font-bold flex items-center gap-1">
+                          <Sparkles className="h-3 w-3 text-[#155dfc]" />
                           Day 5-30: Golden Slot
                         </span>
-                        <span className="text-stone-400">Day 31+: Closed</span>
+                        <span className="text-slate-400 font-medium">Day 31+: Closed</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span>Account Strike Protection</span>
-                    <span className="font-semibold text-brand">Idempotent 1-Send Lock</span>
+                  <div className="mt-5 pt-3.5 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-medium">Account Strike Protection</span>
+                    <span className="font-bold text-[#0032ab]">Idempotent 1-Send Lock</span>
                   </div>
                 </div>
               </Reveal>
 
               {/* Quadrant 2: Buyer Timezone Evening Peak Optimization */}
               <Reveal delay={100}>
-                <div className="h-full rounded-3xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/40 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div className="h-full liquid-glass rounded-[2rem] p-6 sm:p-7 border border-white/80 shadow-[0_10px_35px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_45px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                   <div>
-                    <div className="flex items-center justify-between gap-3 mb-3.5">
-                      <div className="h-10 w-10 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center group-hover:bg-brand group-hover:text-white transition-colors">
-                        <SunMedium className="h-5 w-5" />
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white flex items-center justify-center shadow-[0_6px_20px_rgba(0,50,171,0.25)] group-hover:scale-105 transition-transform">
+                        <SunMedium className="h-6 w-6" />
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
                         {t('smartScheduling.quad2Tag') || "18:30 Evening Peak"}
                       </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-navy-deep">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-navy-deep">
                       {t('smartScheduling.quad2Title') || "Buyer Timezone Optimization"}
                     </h3>
-                    <p className="mt-1.5 text-xs sm:text-sm text-slate-body leading-relaxed">
+                    <p className="mt-2 text-sm text-slate-body leading-relaxed">
                       {t('smartScheduling.quad2Desc') || "Review solicitations are scheduled for peak opening hours (6:00 PM - 9:00 PM local buyer time) rather than midnight notifications."}
                     </p>
 
                     {/* Embedded Widget: Live Multi-Market Timezone Console */}
-                    <div className="mt-4 rounded-2xl bg-slate-50 border border-slate-200/80 p-3 space-y-2">
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/60 text-xs">
+                    <div className="mt-5 rounded-2xl bg-white/90 border border-slate-200/80 p-3.5 space-y-2.5 shadow-xs">
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-brand bg-brand/10 px-1.5 py-0.5 rounded">US</span>
-                          <span className="font-semibold text-navy-deep">New York (EDT)</span>
+                          <span className="text-[11px] font-bold text-white bg-gradient-to-r from-[#0032ab] to-[#155dfc] px-2 py-0.5 rounded shadow-xs">US</span>
+                          <span className="font-bold text-navy-deep">New York (EDT)</span>
                         </div>
-                        <span className="font-mono text-[11px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-md">
+                        <span className="font-mono text-[11px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2.5 py-1 rounded-md border border-[#0032ab]/20 flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                           18:30 Local Slot
                         </span>
                       </div>
-                      <div className="flex items-center justify-between p-2 rounded-xl bg-white border border-slate-200/60 text-xs">
+                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-brand bg-brand/10 px-1.5 py-0.5 rounded">UK</span>
-                          <span className="font-semibold text-navy-deep">London (BST)</span>
+                          <span className="text-[11px] font-bold text-white bg-gradient-to-r from-[#0032ab] to-[#155dfc] px-2 py-0.5 rounded shadow-xs">UK</span>
+                          <span className="font-bold text-navy-deep">London (BST)</span>
                         </div>
-                        <span className="font-mono text-[11px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-md">
+                        <span className="font-mono text-[11px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2.5 py-1 rounded-md border border-[#0032ab]/20 flex items-center gap-1.5">
+                          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                           19:00 Local Slot
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span>Postal-Code Geo Mapping</span>
-                    <span className="font-semibold text-brand">Zero Midnight Spam</span>
+                  <div className="mt-5 pt-3.5 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-medium">Postal-Code Geo Mapping</span>
+                    <span className="font-bold text-[#0032ab]">Zero Midnight Spam</span>
                   </div>
                 </div>
               </Reveal>
 
               {/* Quadrant 3: Category-Specific Delay Matrix */}
               <Reveal delay={140}>
-                <div className="h-full rounded-3xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/40 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div className="h-full liquid-glass rounded-[2rem] p-6 sm:p-7 border border-white/80 shadow-[0_10px_35px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_45px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                   <div>
-                    <div className="flex items-center justify-between gap-3 mb-3.5">
-                      <div className="h-10 w-10 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center group-hover:bg-brand group-hover:text-white transition-colors">
-                        <Sliders className="h-5 w-5" />
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white flex items-center justify-center shadow-[0_6px_20px_rgba(0,50,171,0.25)] group-hover:scale-105 transition-transform">
+                        <Sliders className="h-6 w-6" />
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
                         {t('smartScheduling.quad3Tag') || "ASIN Granularity"}
                       </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-navy-deep">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-navy-deep">
                       {t('smartScheduling.quad3Title') || "Category-Specific Smart Delays"}
                     </h3>
-                    <p className="mt-1.5 text-xs sm:text-sm text-slate-body leading-relaxed">
+                    <p className="mt-2 text-sm text-slate-body leading-relaxed">
                       {t('smartScheduling.quad3Desc') || "Tailor send delays to product complexity: supplements need 14 days of usage, whereas simple phone cases can be reviewed in 5 days."}
                     </p>
 
                     {/* Embedded Widget: 3 Category Delay Sliders */}
-                    <div className="mt-4 rounded-2xl bg-slate-50 border border-slate-200/80 p-3 space-y-2">
+                    <div className="mt-5 rounded-2xl bg-white/90 border border-slate-200/80 p-4 space-y-3 shadow-xs">
                       <div>
-                        <div className="flex justify-between text-[11px] font-semibold text-slate-700 mb-1">
+                        <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                           <span className="flex items-center gap-1.5">
-                            <Pill className="h-3.5 w-3.5 text-brand" />
+                            <Pill className="h-3.5 w-3.5 text-[#155dfc]" />
                             Supplements / Skincare
                           </span>
-                          <span className="text-brand font-mono">14 Days Delay</span>
+                          <span className="text-[#0032ab] font-bold font-mono">14 Days Delay</span>
                         </div>
-                        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                          <div className="h-full w-3/4 bg-brand rounded-full" />
+                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full w-3/4 bg-gradient-to-r from-[#0032ab] to-[#155dfc] rounded-full shadow-xs" />
                         </div>
                       </div>
                       <div>
-                        <div className="flex justify-between text-[11px] font-semibold text-slate-700 mb-1">
+                        <div className="flex justify-between text-xs font-semibold text-slate-700 mb-1.5">
                           <span className="flex items-center gap-1.5">
-                            <Headphones className="h-3.5 w-3.5 text-brand" />
+                            <Headphones className="h-3.5 w-3.5 text-[#155dfc]" />
                             Tech &amp; Electronics
                           </span>
-                          <span className="text-brand font-mono">5 Days Delay</span>
+                          <span className="text-[#0032ab] font-bold font-mono">5 Days Delay</span>
                         </div>
-                        <div className="h-2 w-full bg-slate-200 rounded-full overflow-hidden">
-                          <div className="h-full w-1/3 bg-brand rounded-full" />
+                        <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full w-1/3 bg-gradient-to-r from-[#0032ab] to-[#38bdf8] rounded-full shadow-xs" />
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span>SKU Override Rules</span>
-                    <span className="font-semibold text-brand">Adaptive Timing</span>
+                  <div className="mt-5 pt-3.5 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-medium">SKU Override Rules</span>
+                    <span className="font-bold text-[#0032ab]">Adaptive Timing</span>
                   </div>
                 </div>
               </Reveal>
 
               {/* Quadrant 4: +38% Review Conversion Lift Engine */}
               <Reveal delay={180}>
-                <div className="h-full rounded-3xl bg-white border border-border p-5 sm:p-6 shadow-sm hover:border-brand/40 hover:shadow-md transition-all flex flex-col justify-between group">
+                <div className="h-full liquid-glass rounded-[2rem] p-6 sm:p-7 border border-white/80 shadow-[0_10px_35px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_45px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group">
                   <div>
-                    <div className="flex items-center justify-between gap-3 mb-3.5">
-                      <div className="h-10 w-10 rounded-2xl bg-brand/10 text-brand border border-brand/20 grid place-items-center group-hover:bg-brand group-hover:text-white transition-colors">
-                        <TrendingUp className="h-5 w-5" />
+                    <div className="flex items-center justify-between gap-3 mb-4">
+                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white flex items-center justify-center shadow-[0_6px_20px_rgba(0,50,171,0.25)] group-hover:scale-105 transition-transform">
+                        <TrendingUp className="h-6 w-6" />
                       </div>
-                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
+                      <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
                         {t('smartScheduling.quad4Tag') || "Conversion Engine"}
                       </span>
                     </div>
 
-                    <h3 className="text-base sm:text-lg font-bold text-navy-deep">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-navy-deep">
                       {t('smartScheduling.quad4Title') || "+38% Review Conversion Velocity"}
                     </h3>
-                    <p className="mt-1.5 text-xs sm:text-sm text-slate-body leading-relaxed">
+                    <p className="mt-2 text-sm text-slate-body leading-relaxed">
                       {t('smartScheduling.quad4Desc') || "Timing production jobs when buyers are most satisfied with their delivery significantly drives positive feedback and boosts review rates."}
                     </p>
 
                     {/* Embedded Widget: Stat & 5-Star Telemetry Box */}
-                    <div className="mt-4 rounded-2xl bg-slate-50 border border-slate-200/80 p-3.5 flex items-center justify-between">
+                    <div className="mt-5 rounded-2xl bg-white/90 border border-slate-200/80 p-4 flex items-center justify-between shadow-xs">
                       <div>
-                        <p className="text-2xl font-extrabold text-navy-deep font-mono">+38%</p>
-                        <p className="text-[11px] font-semibold text-slate-500">Average Review Velocity Lift</p>
+                        <p className="text-3xl font-extrabold text-navy-deep font-mono tracking-tight">+38%</p>
+                        <p className="text-xs font-medium text-slate-500 mt-0.5">Average Review Velocity Lift</p>
                       </div>
                       <div className="text-right">
-                        <div className="flex items-center justify-end gap-0.5">
+                        <div className="flex items-center justify-end gap-1">
                           {[...Array(5)].map((_, i) => (
-                            <Star key={i} className="h-3.5 w-3.5 fill-brand text-brand" />
+                            <Star key={i} className="h-4 w-4 fill-amber-400 text-amber-400 drop-shadow-[0_2px_4px_rgba(251,191,36,0.3)]" />
                           ))}
                         </div>
-                        <span className="text-[10px] font-bold text-brand bg-brand/10 px-2 py-0.5 rounded-full mt-1 inline-block">
+                        <span className="text-[11px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2.5 py-0.5 rounded-full mt-1.5 inline-block border border-[#0032ab]/20">
                           Verified Amazon ToS
                         </span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span>Organic Feedback Growth</span>
-                    <span className="font-semibold text-brand">Maximum Open Rate</span>
+                  <div className="mt-5 pt-3.5 border-t border-slate-200/60 flex items-center justify-between text-xs text-slate-500">
+                    <span className="font-medium">Organic Feedback Growth</span>
+                    <span className="font-bold text-[#0032ab]">Maximum Open Rate</span>
                   </div>
                 </div>
               </Reveal>
@@ -516,17 +518,17 @@ function SmartSchedulingPage() {
         </section>
 
         {/* Interactive Timeline Diagram */}
-        <section id="timeline" className="py-10 lg:py-14 bg-white">
+        <section id="timeline" className="py-16 lg:py-24 bg-white border-b border-slate-200/60 relative overflow-hidden">
           <Container>
             <Reveal>
-              <div className="text-center max-w-3xl mx-auto mb-8">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+              <div className="text-center max-w-3xl mx-auto mb-14">
+                <span className="section-badge mb-3">
                   {t('smartScheduling.timelineBadge') || "The Review Lifecycle"}
                 </span>
-                <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                   {t('smartScheduling.timelineHeading') || "The Amazon 5 to 30-Day Golden Window"}
                 </h2>
-                <p className="mt-2 text-slate-body text-sm sm:text-base">
+                <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl mx-auto">
                   {t('smartScheduling.timelineDesc') || "How Gravurtastisch sequences every delivered order for maximum buyer engagement."}
                 </p>
               </div>
@@ -535,12 +537,13 @@ function SmartSchedulingPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-5">
               {timelinePhases.map((phase, idx) => (
                 <Reveal key={phase.day} delay={idx * 60}>
-                  <div className="rounded-2xl border border-border bg-surface p-5 sm:p-6 h-full flex flex-col justify-between hover:border-brand/30 transition-colors">
+                  <div className="relative rounded-[1.75rem] liquid-glass p-6 sm:p-7 border border-white/80 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 h-full flex flex-col justify-between overflow-hidden group">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0032ab] to-[#155dfc] opacity-0 group-hover:opacity-100 transition-opacity" />
                     <div>
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono font-bold mb-2.5 ${phase.color}`}>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-mono font-bold mb-3 border ${phase.color}`}>
                         {phase.day}
                       </span>
-                      <h3 className="text-base font-bold text-navy-deep mb-1.5">{phase.title}</h3>
+                      <h3 className="text-base sm:text-lg font-extrabold text-navy-deep mb-2">{phase.title}</h3>
                       <p className="text-xs sm:text-sm text-slate-body leading-relaxed">{phase.desc}</p>
                     </div>
                   </div>
@@ -550,21 +553,22 @@ function SmartSchedulingPage() {
 
             {/* Callout Box */}
             <Reveal delay={200}>
-              <div className="mt-8 rounded-2xl bg-navy-deep text-white p-5 sm:p-7 border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-5">
-                <div className="flex items-center gap-3.5">
-                  <div className="h-11 w-11 rounded-xl bg-brand/20 text-brand-bright grid place-items-center shrink-0">
-                    <Zap className="h-5 w-5" />
+              <div className="mt-10 rounded-[2rem] liquid-glass bg-white p-6 sm:p-8 border border-[#0032ab]/15 shadow-[0_12px_40px_rgba(0,50,171,0.08)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative overflow-hidden">
+                <div className="absolute -right-20 -bottom-20 w-60 h-60 rounded-full bg-[#155dfc]/10 blur-3xl pointer-events-none" />
+                <div className="flex items-center gap-4 relative z-10">
+                  <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white flex items-center justify-center shadow-md shadow-[#0032ab]/25 shrink-0">
+                    <Zap className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-white text-base">{t('smartScheduling.calloutTitle') || "Automatic Status Flip: Counted as Sent"}</h4>
-                    <p className="text-xs sm:text-sm text-white/60 mt-0.5">
+                    <h4 className="font-extrabold text-navy-deep text-base sm:text-lg">{t('smartScheduling.calloutTitle') || "Automatic Status Flip: Counted as Sent"}</h4>
+                    <p className="text-xs sm:text-sm text-slate-body mt-1 max-w-xl leading-relaxed">
                       {t('smartScheduling.calloutDesc') || "The moment Gravurtastisch dispatches the request through studio API, status updates to Sent immediately."}
                     </p>
                   </div>
                 </div>
                 <a
                   href="/#register"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand px-5 py-2.5 text-xs font-bold text-navy-deep hover:bg-brand-bright transition-colors shrink-0"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-xs sm:text-sm font-bold !text-white transition-all shadow-[0_6px_20px_rgba(0,50,171,0.25)] hover:-translate-y-0.5 shrink-0 relative z-10"
                 >
                   {t('smartScheduling.calloutCta') || "Configure Your Delays →"}
                 </a>
@@ -574,30 +578,30 @@ function SmartSchedulingPage() {
         </section>
 
         {/* FAQ Section (2-Column: Left Organic Chrono-Astrolabe SVG, Right FAQs) */}
-        <section className="py-10 lg:py-14 bg-white border-b border-border">
+        <section className="py-16 lg:py-24 bg-[#f8f9fc] border-b border-slate-200/60 relative overflow-hidden">
           <Container>
-            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
               {/* Left Column: Organic Holographic Astrolabe & Precision Arc Time-Stream */}
               <Reveal className="lg:col-span-5 xl:col-span-5">
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {/* Clean Non-Box Floating Vector Graphic */}
                   <div className="relative flex items-center justify-center">
                     <SmartSchedulingFaqSvg />
                   </div>
 
-                  <div className="rounded-2xl bg-surface border border-border p-4 flex items-center justify-between gap-4 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-brand/10 text-brand grid place-items-center shrink-0">
-                        <Headphones className="h-4 w-4" />
+                  <div className="liquid-glass rounded-2xl border border-white/80 p-5 flex items-center justify-between gap-4 shadow-[0_8px_30px_rgba(0,50,171,0.06)]">
+                    <div className="flex items-center gap-3.5">
+                      <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white flex items-center justify-center shadow-[0_4px_15px_rgba(0,50,171,0.2)] shrink-0">
+                        <Headphones className="h-5 w-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-navy-deep">{t('smartScheduling.faqSupportTitle') || "Have timing or policy questions?"}</p>
-                        <p className="text-[10.5px] text-slate-body">{t('smartScheduling.faqSupportDesc') || "Our team assists with custom delay configurations."}</p>
+                        <p className="text-sm font-bold text-navy-deep">{t('smartScheduling.faqSupportTitle') || "Have timing or policy questions?"}</p>
+                        <p className="text-xs text-slate-body mt-0.5">{t('smartScheduling.faqSupportDesc') || "Our team assists with custom delay configurations."}</p>
                       </div>
                     </div>
                     <a
                       href="/#contact"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:text-brand-bright transition-colors shrink-0"
+                      className="inline-flex items-center gap-1 text-xs font-bold text-[#0032ab] hover:text-[#155dfc] px-3.5 py-1.5 rounded-full bg-[#0032ab]/10 border border-[#0032ab]/20 hover:bg-[#0032ab]/15 transition-all shrink-0"
                     >
                       {t('smartScheduling.faqSupportLink') || "Talk to us →"}
                     </a>
@@ -608,35 +612,35 @@ function SmartSchedulingPage() {
               {/* Right Column: FAQs List */}
               <div className="lg:col-span-7 xl:col-span-7">
                 <Reveal>
-                  <div className="mb-6">
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                  <div className="mb-8">
+                    <span className="section-badge mb-3">
                       {t('smartScheduling.faqBadge') || "Timing & Policies"}
                     </span>
-                    <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                    <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                       {t('smartScheduling.faqHeading') || "Smart Scheduling FAQs"}
                     </h2>
-                    <p className="mt-2 text-sm text-slate-body leading-relaxed">
+                    <p className="mt-4 text-base text-slate-body leading-relaxed">
                       {t('smartScheduling.faqDesc') || "Clear answers on Amazon's 5-30 day rule, buyer timezone scheduling, category delays, and account protection."}
                     </p>
                   </div>
                 </Reveal>
 
-                <Accordion type="single" collapsible className="w-full space-y-3.5">
+                <Accordion type="single" collapsible className="w-full space-y-4">
                   {faqs.map((faq, idx) => (
                     <Reveal key={faq.q} delay={idx * 50}>
                       <AccordionItem
                         value={`faq-${idx}`}
-                        className="rounded-2xl border border-slate-200/80 bg-white px-5 sm:px-6 shadow-xs border-b-0 transition-all hover:border-brand/40"
+                        className="liquid-glass rounded-2xl border border-white/80 bg-white/90 px-6 sm:px-7 shadow-[0_4px_20px_rgba(0,50,171,0.04)] border-b-0 transition-all hover:border-[#155dfc]/40 hover:shadow-[0_8px_30px_rgba(0,50,171,0.08)]"
                       >
-                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-sm sm:text-base py-4 sm:py-5 flex gap-3">
-                          <span className="flex items-center gap-3">
-                            <span className="flex h-6 w-6 rounded-full bg-brand/10 text-brand items-center justify-center text-xs font-bold shrink-0">
+                        <AccordionTrigger className="text-left hover:no-underline font-extrabold text-navy-deep text-base sm:text-lg py-5 flex gap-3.5">
+                          <span className="flex items-center gap-3.5">
+                            <span className="flex h-7 w-7 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white items-center justify-center text-xs font-extrabold shadow-xs shrink-0">
                               {idx + 1}
                             </span>
                             <span>{faq.q}</span>
                           </span>
                         </AccordionTrigger>
-                        <AccordionContent className="text-xs sm:text-sm text-slate-body leading-relaxed pb-5 pl-9">
+                        <AccordionContent className="text-sm text-slate-body leading-relaxed pb-6 pl-10.5">
                           {faq.a}
                         </AccordionContent>
                       </AccordionItem>
@@ -649,29 +653,37 @@ function SmartSchedulingPage() {
         </section>
 
         {/* CTA */}
-        <section className="py-8 lg:py-10">
+        <section className="py-8 lg:py-10 bg-[#f8f9fc]">
           <Container>
-            <div className="rounded-3xl bg-gradient-to-br from-navy-deep via-navy-deep to-brand p-8 sm:p-12 text-white text-center shadow-xl">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
-                {t('smartScheduling.ctaHeading') || "Never Miss the Amazon Review Golden Window"}
-              </h2>
-              <p className="mt-3 text-white/75 text-sm sm:text-base max-w-xl mx-auto">
-                {t('smartScheduling.ctaDesc') || "Optimize your review velocity safely with Gravurtastisch's automated scheduler."}
-              </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
-                <a
-                  href="/#register"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-bright px-7 py-3.5 text-sm font-bold text-navy-deep hover:bg-white transition-all shadow-lg hover:-translate-y-0.5"
-                >
-                  {t('smartScheduling.ctaButton') || "Register as Seller"}
-                  <ArrowRight className="h-4 w-4" />
-                </a>
-                <a
-                  href="/#pricing"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition-all"
-                >
-                  {t('smartScheduling.ctaPricing') || "View Pricing Plans"}
-                </a>
+            <div className="relative rounded-[2rem] liquid-glass bg-white py-8 px-6 sm:py-9 sm:px-10 text-center shadow-[0_12px_40px_rgba(0,50,171,0.06)] border border-[#0032ab]/15 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,50,171,0.03),transparent_70%)] pointer-events-none" />
+
+              <div className="relative z-10 max-w-3xl mx-auto">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0032ab]/10 border border-[#0032ab]/20 text-xs font-semibold uppercase tracking-wider text-[#0032ab] mb-3">
+                  <Sparkles className="h-3.5 w-3.5 text-[#155dfc]" />
+                  {t('smartScheduling.ctaBadge') || "Instant Deployment"}
+                </span>
+                <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-deep tracking-tight leading-snug">
+                  {t('smartScheduling.ctaHeading') || "Never Miss the Amazon Review Golden Window"}
+                </h2>
+                <p className="mt-2 text-slate-body text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
+                  {t('smartScheduling.ctaDesc') || "Optimize your review velocity safely with Gravurtastisch's automated scheduler."}
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                  <a
+                    href="/#register"
+                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-2.5 text-xs sm:text-sm font-bold !text-white transition-all shadow-md shadow-[#0032ab]/20 hover:-translate-y-0.5"
+                  >
+                    {t('smartScheduling.ctaButton') || "Register as Seller"}
+                    <ArrowRight className="h-4 w-4" />
+                  </a>
+                  <a
+                    href="/#pricing"
+                    className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-6 py-2.5 text-xs sm:text-sm font-bold text-[#0032ab] hover:bg-blue-50/50 hover:border-[#0032ab]/40 transition-all shadow-xs"
+                  >
+                    {t('smartScheduling.ctaPricing') || "View Pricing Plans"}
+                  </a>
+                </div>
               </div>
             </div>
           </Container>
@@ -691,62 +703,92 @@ function SmartSchedulingHeroSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Smart Scheduling & Timezone Optimization Chronometer Engine"
+      aria-label="Gravurtastisch Precision Chronometer & Smart Solicitation Delay Timing HUD"
     >
       <defs>
-        {/* Soft Drop Shadows for White Cards */}
-        <filter id="white-sched-shadow" x="-8%" y="-8%" width="116%" height="120%">
-          <feDropShadow dx="0" dy="10" stdDeviation="14" floodColor="#0F172A" floodOpacity="0.22" />
-        </filter>
+        {/* Soft Ambient Radial Lights */}
+        <radialGradient id="sched-glow-blue" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#4f6ef7" stopOpacity="0.2" />
+          <stop offset="60%" stopColor="#0032ab" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#001855" stopOpacity="0" />
+        </radialGradient>
+        <radialGradient id="sched-glow-cyan" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.18" />
+          <stop offset="70%" stopColor="#0284c7" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="#001855" stopOpacity="0" />
+        </radialGradient>
 
-        <filter id="white-sched-shadow-sm" x="-8%" y="-8%" width="116%" height="120%">
-          <feDropShadow dx="0" dy="4" stdDeviation="8" floodColor="#0F172A" floodOpacity="0.14" />
-        </filter>
 
-        {/* Clock Dial Radial Gradient on White */}
+
+        {/* Crisp Card Subtle Background Shimmer */}
+        <linearGradient id="sched-white-card-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F8FAFC" />
+        </linearGradient>
+
+        {/* Card Borders */}
+        <linearGradient id="sched-card-border" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#E2E8F0" />
+          <stop offset="50%" stopColor="#CBD5E1" />
+          <stop offset="100%" stopColor="#BFDBFE" />
+        </linearGradient>
+
+        <linearGradient id="sched-blue-pill" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#0032ab" />
+          <stop offset="50%" stopColor="#155dfc" />
+          <stop offset="100%" stopColor="#4f6ef7" />
+        </linearGradient>
+
+        {/* Clock Dial Radial Gradient (Ice Blue) */}
         <radialGradient id="white-dial-center" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="70%" stopColor="#FAF9F6" />
-          <stop offset="100%" stopColor="#F5F2EB" />
+          <stop offset="70%" stopColor="#F0F7FF" />
+          <stop offset="100%" stopColor="#E0EDFF" />
         </radialGradient>
 
         {/* Golden Hour Window Arc Gradient */}
-        <linearGradient id="white-arc-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+        <linearGradient id="sched-arc-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#155dfc" />
+          <stop offset="100%" stopColor="#0032ab" />
         </linearGradient>
 
         {/* Slider Gradients */}
         <linearGradient id="slider-grad-cyan" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#EAD7BC" />
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="100%" stopColor="#155dfc" />
         </linearGradient>
         <linearGradient id="slider-grad-indigo" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#282828" />
-          <stop offset="100%" stopColor="#4A4A4A" />
+          <stop offset="0%" stopColor="#0032ab" />
+          <stop offset="100%" stopColor="#155dfc" />
         </linearGradient>
         <linearGradient id="slider-grad-emerald" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+          <stop offset="0%" stopColor="#059669" />
+          <stop offset="100%" stopColor="#10b981" />
         </linearGradient>
 
         {/* Sparkline Gradient */}
         <linearGradient id="sparkline-grad-clean" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="50%" stopColor="#EAD7BC" />
-          <stop offset="100%" stopColor="#D2B48C" />
+          <stop offset="0%" stopColor="#0032ab" />
+          <stop offset="50%" stopColor="#155dfc" />
+          <stop offset="100%" stopColor="#38bdf8" />
         </linearGradient>
       </defs>
+
+      {/* Ambient Lighting Orbs */}
+      <circle cx="140" cy="180" r="150" fill="url(#sched-glow-cyan)" pointerEvents="none" />
+      <circle cx="410" cy="180" r="160" fill="url(#sched-glow-blue)" pointerEvents="none" />
+      <circle cx="300" cy="340" r="150" fill="url(#sched-glow-blue)" pointerEvents="none" />
 
       {/* ==================================================== */}
       {/* 1. BACKGROUND CONNECTING BEAMS & PHOTONS */}
       {/* ==================================================== */}
       {/* Curved Beam from Dial to Category Delay Matrix */}
       <path
-        d="M 230 160 C 270 160, 260 110, 300 110"
+        d="M 270 160 C 285 160, 275 110, 290 110"
         fill="none"
-        stroke="#D2B48C"
-        strokeWidth="2.2"
+        stroke="#38bdf8"
+        strokeWidth="2.5"
         strokeDasharray="5 5"
       >
         <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.4s" repeatCount="indefinite" />
@@ -754,123 +796,119 @@ function SmartSchedulingHeroSvg() {
 
       {/* Curved Beam from Dial to Timezone Matrix */}
       <path
-        d="M 230 250 C 270 250, 260 330, 300 330"
+        d="M 270 250 C 285 250, 275 330, 290 330"
         fill="none"
-        stroke="#D2B48C"
-        strokeWidth="2.2"
+        stroke="#38bdf8"
+        strokeWidth="2.5"
         strokeDasharray="5 5"
       >
         <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite" />
       </path>
 
       {/* Traveling Energy Photons */}
-      <circle cx="0" cy="0" r="3.5" fill="#D2B48C">
+      <circle cx="0" cy="0" r="4" fill="#155dfc" filter="drop-shadow(0 0 4px #38bdf8)">
         <animateMotion
-          path="M 230 160 C 270 160, 260 110, 300 110"
+          path="M 270 160 C 285 160, 275 110, 290 110"
           dur="1.4s"
           repeatCount="indefinite"
         />
       </circle>
-      <circle cx="0" cy="0" r="3.5" fill="#D2B48C">
+      <circle cx="0" cy="0" r="4" fill="#155dfc" filter="drop-shadow(0 0 4px #38bdf8)">
         <animateMotion
-          path="M 230 250 C 270 250, 260 330, 300 330"
+          path="M 270 250 C 285 250, 275 330, 290 330"
           dur="1.2s"
           repeatCount="indefinite"
         />
       </circle>
 
       {/* ==================================================== */}
-      {/* 2. TOP HUD: CHRONO ALGORITHM GATEWAY (WHITE) */}
+      {/* 2. TOP HUD: CHRONO ALGORITHM GATEWAY (WHITE PILL) */}
       {/* ==================================================== */}
-      <g transform="translate(20, 15)" filter="url(#white-sched-shadow)">
+      <g transform="translate(15, 14)">
         <rect
           x="0"
           y="0"
-          width="520"
+          width="530"
           height="38"
-          rx="12"
-          fill="#FAF9F6"
-          stroke="#D2B48C"
+          rx="19"
+          fill="#FFFFFF"
+          stroke="#E2E8F0"
           strokeWidth="1.2"
+          style={{ filter: "drop-shadow(0 6px 14px rgba(0, 26, 77, 0.16))" }}
         />
-        {/* Pulsing Tan Light */}
-        <circle cx="20" cy="19" r="4.5" fill="#D2B48C">
+        {/* Pulsing Blue Light */}
+        <circle cx="22" cy="19" r="4.5" fill="#155dfc">
           <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
         </circle>
-        <circle cx="20" cy="19" r="8.5" fill="none" stroke="#D2B48C" strokeWidth="1" opacity="0.4">
+        <circle cx="22" cy="19" r="9" fill="none" stroke="#38bdf8" strokeWidth="1" opacity="0.6">
           <animate attributeName="r" values="4.5;11;4.5" dur="1.6s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.6;0;0.6" dur="1.6s" repeatCount="indefinite" />
+          <animate attributeName="opacity" values="0.8;0;0.8" dur="1.6s" repeatCount="indefinite" />
         </circle>
 
         {/* Title */}
-        <text x="36" y="23" fill="#282828" fontFamily="system-ui" fontSize="11" fontWeight="800">
+        <text x="38" y="23.5" fill="#0f172a" fontFamily="system-ui, -apple-system, sans-serif" fontSize="11" fontWeight="800">
           ChronoTiming Precision Engine
         </text>
 
         {/* Window Badge */}
-        <g transform="translate(230, 9)">
-          <rect x="0" y="0" width="130" height="20" rx="6" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="65" y="14" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="9" fontWeight="800">
+        <g transform="translate(230, 8)">
+          <rect x="0" y="0" width="144" height="22" rx="11" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+          <text x="72" y="15.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
             AMAZON 5-30 DAY WINDOW
           </text>
         </g>
 
         {/* Optimal Dispatch Pill */}
-        <g transform="translate(375, 8)">
-          <rect x="0" y="0" width="132" height="22" rx="7" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="66" y="15" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="9" fontWeight="800">
+        <g transform="translate(385, 8)">
+          <rect x="0" y="0" width="134" height="22" rx="11" fill="url(#sched-blue-pill)" />
+          <text x="67" y="15.5" textAnchor="middle" fill="#ffffff" fontFamily="monospace" fontSize="8.5" fontWeight="800">
             ⚡ Peak: 18:30 Local Time
           </text>
         </g>
       </g>
 
       {/* ==================================================== */}
-      {/* 3. CARD 1: 3D CHRONOMETER GOLDEN-HOUR DIAL (LEFT - WHITE) */}
+      {/* 3. CARD 1: 3D CHRONOMETER GOLDEN-HOUR DIAL (WHITE CARD) */}
       {/* ==================================================== */}
-      <g transform="translate(20, 68)" filter="url(#white-sched-shadow)">
+      <g transform="translate(15, 66)">
         <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -4; 0 0"
-            dur="4s"
-            repeatCount="indefinite"
-          />
           {/* Card Body */}
           <rect
             x="0"
             y="0"
-            width="250"
-            height="235"
-            rx="16"
-            fill="#FAF9F6"
-            stroke="#D2B48C"
+            width="255"
+            height="240"
+            rx="18"
+            fill="url(#sched-white-card-bg)"
+            stroke="url(#sched-card-border)"
             strokeWidth="1.2"
+            style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }}
           />
 
           {/* Header */}
-          <rect x="10" y="10" width="230" height="24" rx="7" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="18" y="26" fill="#D2B48C" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+          <rect x="10" y="10" width="235" height="26" rx="13" fill="url(#sched-blue-pill)" />
+          <text x="20" y="27" fill="#ffffff" fontFamily="monospace" fontSize="9.5" fontWeight="800">
             01. GOLDEN HOUR RADAR
           </text>
-          <rect x="175" y="13" width="58" height="18" rx="5" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="204" y="25" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          <rect x="180" y="13.5" width="58" height="19" rx="9.5" fill="#FFFFFF" />
+          <text x="209" y="26.5" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="8.5" fontWeight="900">
             18:30 PM
           </text>
 
           {/* Chronometer Circular Dial */}
-          <g transform="translate(125, 125)">
+          <g transform="translate(127, 128)">
             {/* Outer Tech Ring */}
-            <circle cx="0" cy="0" r="62" fill="none" stroke="#D2B48C" strokeWidth="1" strokeDasharray="3 5" opacity="0.4" />
-            <circle cx="0" cy="0" r="54" fill="url(#white-dial-center)" stroke="#D2B48C" strokeWidth="1.5" />
+            <circle cx="0" cy="0" r="62" fill="none" stroke="#bfdbfe" strokeWidth="1.2" strokeDasharray="3 4" />
+            <circle cx="0" cy="0" r="54" fill="url(#white-dial-center)" stroke="#93c5fd" strokeWidth="1.5" />
 
-            {/* Golden Arc (Peak Evening Window 17:00 - 21:00) */}
+            {/* Glowing Arc (Peak Evening Window 17:00 - 21:00) */}
             <path
               d="M 28 42 A 54 54 0 0 1 -48 24"
               fill="none"
-              stroke="url(#white-arc-grad)"
-              strokeWidth="5.5"
+              stroke="url(#sched-arc-grad)"
+              strokeWidth="6"
               strokeLinecap="round"
+              filter="drop-shadow(0 0 4px #38bdf8)"
             />
 
             {/* Hour Markers */}
@@ -878,10 +916,10 @@ function SmartSchedulingHeroSvg() {
               <line
                 key={i}
                 x1="0"
-                y1="-46"
+                y1="-44"
                 x2="0"
-                y2="-51"
-                stroke={i % 3 === 0 ? "#282828" : "#D2B48C"}
+                y2="-50"
+                stroke={i % 3 === 0 ? "#0032ab" : "#93c5fd"}
                 strokeWidth={i % 3 === 0 ? "2" : "1"}
                 transform={`rotate(${deg})`}
               />
@@ -889,10 +927,10 @@ function SmartSchedulingHeroSvg() {
 
             {/* Rotating Radar Hand */}
             <g>
-              <line x1="0" y1="0" x2="28" y2="38" stroke="#282828" strokeWidth="2.5" strokeLinecap="round" />
-              <line x1="0" y1="0" x2="-20" y2="-28" stroke="#D2B48C" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="0" cy="0" r="5.5" fill="#282828" />
-              <circle cx="0" cy="0" r="2.5" fill="#FAF9F6" />
+              <line x1="0" y1="0" x2="28" y2="38" stroke="#0032ab" strokeWidth="2.5" strokeLinecap="round" />
+              <line x1="0" y1="0" x2="-20" y2="-28" stroke="#155dfc" strokeWidth="1.5" strokeLinecap="round" />
+              <circle cx="0" cy="0" r="6" fill="#0032ab" stroke="#38bdf8" strokeWidth="1.5" />
+              <circle cx="0" cy="0" r="2.5" fill="#ffffff" />
             </g>
 
             {/* Central Rotating Photon */}
@@ -902,18 +940,18 @@ function SmartSchedulingHeroSvg() {
                 type="rotate"
                 from="0"
                 to="360"
-                dur="12s"
+                dur="10s"
                 repeatCount="indefinite"
               />
-              <circle cx="36" cy="0" r="3.5" fill="#D2B48C" />
+              <circle cx="36" cy="0" r="4" fill="#155dfc" filter="drop-shadow(0 0 3px #38bdf8)" />
             </g>
           </g>
 
           {/* Bottom Timezone Note */}
-          <g transform="translate(12, 195)">
-            <rect x="0" y="0" width="226" height="28" rx="7" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
-            <circle cx="12" cy="14" r="3.5" fill="#D2B48C" />
-            <text x="22" y="17.5" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
+          <g transform="translate(12, 200)">
+            <rect x="0" y="0" width="231" height="28" rx="14" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+            <circle cx="14" cy="14" r="3.5" fill="#10b981" />
+            <text x="26" y="18" fill="#0032ab" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
               Auto-Adjusted to Buyer Local Time
             </text>
           </g>
@@ -921,133 +959,127 @@ function SmartSchedulingHeroSvg() {
       </g>
 
       {/* ==================================================== */}
-      {/* 4. CARD 2: CATEGORY-SPECIFIC DELAY SLIDERS (RIGHT TOP - WHITE) */}
+      {/* 4. CARD 2: CATEGORY-SPECIFIC DELAY SLIDERS (WHITE CARD) */}
       {/* ==================================================== */}
-      <g transform="translate(285, 68)" filter="url(#white-sched-shadow)">
+      <g transform="translate(285, 66)">
         <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -5; 0 0"
-            dur="4.5s"
-            repeatCount="indefinite"
-          />
           {/* Card Body */}
           <rect
             x="0"
             y="0"
-            width="255"
-            height="170"
-            rx="16"
-            fill="#FAF9F6"
-            stroke="#D2B48C"
+            width="260"
+            height="174"
+            rx="18"
+            fill="url(#sched-white-card-bg)"
+            stroke="url(#sched-card-border)"
             strokeWidth="1.2"
+            style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }}
           />
 
           {/* Header */}
-          <rect x="10" y="10" width="235" height="24" rx="7" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="18" y="26" fill="#D2B48C" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+          <rect x="10" y="10" width="240" height="26" rx="13" fill="url(#sched-blue-pill)" />
+          <text x="20" y="27" fill="#ffffff" fontFamily="monospace" fontSize="9.5" fontWeight="800">
             02. CATEGORY DELAY MATRIX
           </text>
-          <rect x="195" y="13" width="44" height="18" rx="5" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="217" y="25" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          <rect x="200" y="13.5" width="44" height="19" rx="9.5" fill="#FFFFFF" />
+          <text x="222" y="26.5" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="8" fontWeight="900">
             AUTO
           </text>
 
           {/* Slider 1: Supplements / Consumables (14 Days) */}
-          <g transform="translate(14, 48)">
-            <text x="0" y="0" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <g transform="translate(14, 50)">
+            <text x="0" y="0" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
               💊 Supplements / Beauty
             </text>
-            <text x="226" y="0" textAnchor="end" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+            <text x="232" y="0" textAnchor="end" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
               Day 14 (Usage)
             </text>
             {/* Slider track */}
-            <rect x="0" y="7" width="226" height="6" rx="3" fill="#E5E5DF" />
-            <rect x="0" y="7" width="135" height="6" rx="3" fill="url(#slider-grad-indigo)" />
-            <circle cx="135" cy="10" r="5" fill="#FFFFFF" stroke="#282828" strokeWidth="2" />
+            <rect x="0" y="7" width="232" height="7" rx="3.5" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="0.8" />
+            <rect x="0" y="7" width="140" height="7" rx="3.5" fill="url(#slider-grad-indigo)" />
+            <circle cx="140" cy="10.5" r="5.5" fill="#155dfc" stroke="#ffffff" strokeWidth="2" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.2))">
+              <animate attributeName="cx" values="140;144;140" dur="2s" repeatCount="indefinite" />
+            </circle>
           </g>
 
           {/* Slider 2: Electronics / Gadgets (5 Days) */}
-          <g transform="translate(14, 88)">
-            <text x="0" y="0" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <g transform="translate(14, 90)">
+            <text x="0" y="0" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
               🎧 Electronics &amp; Audio
             </text>
-            <text x="226" y="0" textAnchor="end" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+            <text x="232" y="0" textAnchor="end" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
               Day 5 (Golden)
             </text>
             {/* Slider track */}
-            <rect x="0" y="7" width="226" height="6" rx="3" fill="#E5E5DF" />
-            <rect x="0" y="7" width="60" height="6" rx="3" fill="url(#slider-grad-cyan)" />
-            <circle cx="60" cy="10" r="5" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="2" />
+            <rect x="0" y="7" width="232" height="7" rx="3.5" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="0.8" />
+            <rect x="0" y="7" width="65" height="7" rx="3.5" fill="url(#slider-grad-cyan)" />
+            <circle cx="65" cy="10.5" r="5.5" fill="#38bdf8" stroke="#ffffff" strokeWidth="2" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.2))">
+              <animate attributeName="cx" values="65;68;65" dur="2.4s" repeatCount="indefinite" />
+            </circle>
           </g>
 
           {/* Slider 3: Apparel / Lifestyle (7 Days) */}
-          <g transform="translate(14, 128)">
-            <text x="0" y="0" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <g transform="translate(14, 130)">
+            <text x="0" y="0" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
               👕 Apparel &amp; Fashion
             </text>
-            <text x="226" y="0" textAnchor="end" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+            <text x="232" y="0" textAnchor="end" fill="#059669" fontFamily="monospace" fontSize="8.5" fontWeight="800">
               Day 7 (Fit Test)
             </text>
             {/* Slider track */}
-            <rect x="0" y="7" width="226" height="6" rx="3" fill="#E5E5DF" />
-            <rect x="0" y="7" width="85" height="6" rx="3" fill="url(#slider-grad-emerald)" />
-            <circle cx="85" cy="10" r="5" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="2" />
+            <rect x="0" y="7" width="232" height="7" rx="3.5" fill="#f1f5f9" stroke="#e2e8f0" strokeWidth="0.8" />
+            <rect x="0" y="7" width="90" height="7" rx="3.5" fill="url(#slider-grad-emerald)" />
+            <circle cx="90" cy="10.5" r="5.5" fill="#10b981" stroke="#ffffff" strokeWidth="2" filter="drop-shadow(0 1px 3px rgba(0,0,0,0.2))">
+              <animate attributeName="cx" values="90;94;90" dur="2.2s" repeatCount="indefinite" />
+            </circle>
           </g>
         </g>
       </g>
 
       {/* ==================================================== */}
-      {/* 5. CARD 3: CONVERSION VELOCITY LIFT (BOTTOM LEFT - WHITE) */}
+      {/* 5. CARD 3: CONVERSION VELOCITY LIFT (WHITE CARD) */}
       {/* ==================================================== */}
-      <g transform="translate(20, 318)" filter="url(#white-sched-shadow)">
+      <g transform="translate(15, 318)">
         <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -4; 0 0"
-            dur="4.2s"
-            repeatCount="indefinite"
-          />
           {/* Card Body */}
           <rect
             x="0"
             y="0"
-            width="250"
-            height="108"
-            rx="14"
-            fill="#FAF9F6"
-            stroke="#D2B48C"
+            width="255"
+            height="110"
+            rx="16"
+            fill="url(#sched-white-card-bg)"
+            stroke="url(#sched-card-border)"
             strokeWidth="1.2"
+            style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }}
           />
 
           <g transform="translate(16, 18)">
-            <text x="0" y="0" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800" letterSpacing="0.5">
+            <text x="0" y="0" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="900" letterSpacing="0.5">
               CONVERSION LIFT
             </text>
-            <text x="215" y="0" textAnchor="end" fill="#D2B48C" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+            <text x="220" y="0" textAnchor="end" fill="#f59e0b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
               ★★★★★ 5-Star
             </text>
 
-            <text x="0" y="24" fill="#282828" fontFamily="monospace" fontSize="22" fontWeight="900">
+            <text x="0" y="26" fill="#0032ab" fontFamily="monospace" fontSize="24" fontWeight="900">
               +38%
             </text>
-            <text x="62" y="21" fill="#666666" fontFamily="system-ui" fontSize="9" fontWeight="700">
+            <text x="68" y="22" fill="#475569" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
               More Verified Custom orders
             </text>
 
             {/* Gradient Sparkline Graphic */}
             <path
-              d="M 0 46 Q 50 44, 100 38 T 165 32 T 215 24"
+              d="M 0 46 Q 50 44, 100 38 T 165 32 T 220 22"
               fill="none"
               stroke="url(#sparkline-grad-clean)"
-              strokeWidth="2.5"
+              strokeWidth="3"
               strokeLinecap="round"
             />
-            <circle cx="215" cy="24" r="3.5" fill="#D2B48C" />
+            <circle cx="220" cy="22" r="4" fill="#155dfc" filter="drop-shadow(0 0 3px #38bdf8)" />
 
-            <text x="0" y="66" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
+            <text x="0" y="68" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Optimal timing prevents buyer irritation &amp; strikes
             </text>
           </g>
@@ -1055,77 +1087,71 @@ function SmartSchedulingHeroSvg() {
       </g>
 
       {/* ==================================================== */}
-      {/* 6. CARD 4: GLOBAL BUYER TIMEZONE SYNC (BOTTOM RIGHT - WHITE) */}
+      {/* 6. CARD 4: GLOBAL BUYER TIMEZONE SYNC (WHITE CARD) */}
       {/* ==================================================== */}
-      <g transform="translate(285, 252)" filter="url(#white-sched-shadow)">
+      <g transform="translate(285, 252)">
         <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -4; 0 0"
-            dur="3.8s"
-            repeatCount="indefinite"
-          />
           {/* Card Body */}
           <rect
             x="0"
             y="0"
-            width="255"
-            height="174"
-            rx="16"
-            fill="#FAF9F6"
-            stroke="#D2B48C"
+            width="260"
+            height="176"
+            rx="18"
+            fill="url(#sched-white-card-bg)"
+            stroke="url(#sched-card-border)"
             strokeWidth="1.2"
+            style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }}
           />
 
           {/* Header */}
-          <rect x="10" y="10" width="235" height="24" rx="7" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="18" y="26" fill="#D2B48C" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+          <rect x="10" y="10" width="240" height="26" rx="13" fill="url(#sched-blue-pill)" />
+          <text x="20" y="27" fill="#ffffff" fontFamily="monospace" fontSize="9.5" fontWeight="800">
             03. GLOBAL TIMEZONE SYNC
           </text>
-          <circle cx="228" cy="22" r="4" fill="#D2B48C" />
+          <circle cx="232" cy="23" r="4" fill="#ffffff" />
 
           {/* Timezone Row 1: US East */}
           <g transform="translate(14, 48)">
-            <rect x="0" y="0" width="226" height="32" rx="8" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
-            <text x="10" y="15" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
+            <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
+            <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
               🇺🇸 New York (EDT)
             </text>
-            <text x="10" y="26" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="500">
+            <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Postal Code Mapped
             </text>
-            <rect x="144" y="7" width="74" height="18" rx="5" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
-            <text x="181" y="19" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="8" fontWeight="800">
+            <rect x="146" y="7" width="76" height="20" rx="10" fill="url(#sched-blue-pill)" />
+            <text x="184" y="20.5" textAnchor="middle" fill="#ffffff" fontFamily="monospace" fontSize="8" fontWeight="800">
               18:30 QUEUED
             </text>
           </g>
 
           {/* Timezone Row 2: UK */}
-          <g transform="translate(14, 86)">
-            <rect x="0" y="0" width="226" height="32" rx="8" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
-            <text x="10" y="15" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
+          <g transform="translate(14, 88)">
+            <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
+            <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
               🇬🇧 London (BST)
             </text>
-            <text x="10" y="26" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="500">
+            <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Evening Slot Target
             </text>
-            <rect x="144" y="7" width="74" height="18" rx="5" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-            <text x="181" y="19" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="800">
+            <rect x="146" y="7" width="76" height="20" rx="10" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="0.8" />
+            <text x="184" y="20.5" textAnchor="middle" fill="#065f46" fontFamily="monospace" fontSize="8" fontWeight="800">
               19:00 READY
             </text>
           </g>
 
           {/* Timezone Row 3: EU Germany */}
-          <g transform="translate(14, 124)">
-            <rect x="0" y="0" width="226" height="32" rx="8" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="0.8" />
-            <text x="10" y="15" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
+          <g transform="translate(14, 128)">
+            <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
+            <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
               🇩🇪 Berlin (CEST)
             </text>
-            <text x="10" y="26" fill="#666666" fontFamily="system-ui" fontSize="7.5" fontWeight="500">
+            <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Post-Dinner Window
             </text>
-            <rect x="144" y="7" width="74" height="18" rx="5" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-            <text x="181" y="19" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="800">
+            <rect x="146" y="7" width="76" height="20" rx="10" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+            <text x="184" y="20.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="800">
               18:45 SYNCED
             </text>
           </g>
@@ -1148,21 +1174,20 @@ function SmartSchedulingFaqSvg() {
       <defs>
         {/* Modern Brand Gradients */}
         <linearGradient id="sched-s-ribbon-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="40%" stopColor="#B8966C" />
-          <stop offset="70%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#8C7355" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="40%" stopColor="#0032ab" />
+          <stop offset="70%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#1d4ed8" />
         </linearGradient>
 
         <linearGradient id="sched-dial-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#282828" />
-          <stop offset="60%" stopColor="#1E1E1E" />
-          <stop offset="100%" stopColor="#141414" />
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F0F4FF" />
         </linearGradient>
 
         <linearGradient id="sched-pill-bg" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="100%" stopColor="#FAF9F6" />
+          <stop offset="100%" stopColor="#F8FAFC" />
         </linearGradient>
 
         {/* Soft Drop Shadows & Glows */}
@@ -1171,7 +1196,7 @@ function SmartSchedulingFaqSvg() {
         </filter>
 
         <filter id="sched-core-glow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="8" stdDeviation="14" floodColor="#D2B48C" floodOpacity="0.25" />
+          <feDropShadow dx="0" dy="8" stdDeviation="14" floodColor="#4f6ef7" floodOpacity="0.25" />
         </filter>
       </defs>
 
@@ -1200,7 +1225,7 @@ function SmartSchedulingFaqSvg() {
       </path>
 
       {/* Pulsing Energy Photons Traveling along Timeline */}
-      <circle cx="0" cy="0" r="5" fill="#D2B48C">
+      <circle cx="0" cy="0" r="5" fill="#4f6ef7">
         <animateMotion
           path="M 130 60 C 260 60, 410 80, 410 150 C 410 220, 130 210, 130 310 C 130 400, 350 400, 410 445"
           dur="5s"
@@ -1221,26 +1246,26 @@ function SmartSchedulingFaqSvg() {
             repeatCount="indefinite"
           />
           {/* Pill Container */}
-          <rect width="220" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#D2B48C" strokeWidth="1" strokeOpacity="0.5" />
+          <rect width="220" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#4f6ef7" strokeWidth="1" strokeOpacity="0.5" />
 
-          <rect x="10" y="10" width="34" height="34" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="10" y="10" width="34" height="34" rx="8" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
           {/* Crisp Vector Parcel Box Icon */}
-          <g transform="translate(19, 19)" stroke="#B8966C" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M 8 1 L 15 4.5 L 8 8 L 1 4.5 Z" fill="#F5EBE1" />
+          <g transform="translate(19, 19)" stroke="#0032ab" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M 8 1 L 15 4.5 L 8 8 L 1 4.5 Z" fill="#EFF6FF" />
             <path d="M 1 4.5 L 1 11.5 L 8 15 L 8 8" />
             <path d="M 15 4.5 L 15 11.5 L 8 15" />
             <path d="M 4.5 6.2 L 11.5 2.7" />
           </g>
 
-          <text x="52" y="24" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
+          <text x="52" y="24" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
             Day 0: Delivered
           </text>
-          <text x="52" y="38" fill="#B8966C" fontFamily="monospace" fontSize="8" fontWeight="700">
+          <text x="52" y="38" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="700">
             studio API Webhook Sync
           </text>
 
-          <rect x="162" y="10" width="48" height="18" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="186" y="22.5" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+          <rect x="162" y="10" width="48" height="18" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+          <text x="186" y="22.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">
             START
           </text>
         </g>
@@ -1258,26 +1283,26 @@ function SmartSchedulingFaqSvg() {
             dur="4.5s"
             repeatCount="indefinite"
           />
-          <rect width="225" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#D2B48C" strokeWidth="1" strokeOpacity="0.5" />
+          <rect width="225" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#4f6ef7" strokeWidth="1" strokeOpacity="0.5" />
 
-          <rect x="10" y="10" width="34" height="34" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="10" y="10" width="34" height="34" rx="8" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
           {/* Crisp Vector Hourglass Timer Icon */}
-          <g transform="translate(19, 19)" stroke="#B8966C" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <g transform="translate(19, 19)" stroke="#0032ab" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <path d="M 2 1 L 14 1 M 2 15 L 14 15" />
-            <path d="M 3 1 C 3 6, 7 7, 8 8 C 9 7, 13 6, 13 1" fill="#FAF9F6" />
-            <path d="M 3 15 C 3 10, 7 9, 8 8 C 9 9, 13 10, 13 15" fill="#F5EBE1" />
-            <circle cx="8" cy="12" r="0.8" fill="#B8966C" stroke="none" />
+            <path d="M 3 1 C 3 6, 7 7, 8 8 C 9 7, 13 6, 13 1" fill="#F8FAFC" />
+            <path d="M 3 15 C 3 10, 7 9, 8 8 C 9 9, 13 10, 13 15" fill="#EFF6FF" />
+            <circle cx="8" cy="12" r="0.8" fill="#0032ab" stroke="none" />
           </g>
 
-          <text x="52" y="24" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
+          <text x="52" y="24" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
             Days 1-4: Buffer
           </text>
-          <text x="52" y="38" fill="#B8966C" fontFamily="monospace" fontSize="8" fontWeight="700">
+          <text x="52" y="38" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="700">
             0 Early Spam Sent
           </text>
 
-          <rect x="150" y="10" width="65" height="18" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="182" y="22.5" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+          <rect x="150" y="10" width="65" height="18" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+          <text x="182" y="22.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">
             COOLDOWN
           </text>
         </g>
@@ -1289,12 +1314,12 @@ function SmartSchedulingFaqSvg() {
       <g transform="translate(30, 215)" filter="url(#sched-core-glow)">
         <g>
           {/* Main Hero Capsule */}
-          <rect width="480" height="92" rx="18" fill="url(#sched-dial-grad)" stroke="#D2B48C" strokeWidth="1.5" />
+          <rect width="480" height="92" rx="18" fill="url(#sched-dial-grad)" stroke="#155dfc" strokeWidth="1.2" />
 
           {/* Left Hero Rotating Chrono Clock */}
           <g transform="translate(46, 46)">
             {/* Outer Orbit */}
-            <circle cx="0" cy="0" r="30" fill="none" stroke="#D2B48C" strokeWidth="1.5" strokeDasharray="4 5">
+            <circle cx="0" cy="0" r="30" fill="none" stroke="#155dfc" strokeWidth="1.5" strokeDasharray="4 5">
               <animateTransform
                 attributeName="transform"
                 type="rotate"
@@ -1306,10 +1331,10 @@ function SmartSchedulingFaqSvg() {
             </circle>
 
             {/* Glowing Dial Body */}
-            <circle cx="0" cy="0" r="25" fill="#1C1C1C" stroke="#D2B48C" strokeWidth="2" />
+            <circle cx="0" cy="0" r="25" fill="#EEF2FF" stroke="#155dfc" strokeWidth="1.8" />
 
             {/* Clock Hand pointing to 18:30 */}
-            <line x1="0" y1="0" x2="12" y2="15" stroke="#D2B48C" strokeWidth="2.2" strokeLinecap="round">
+            <line x1="0" y1="0" x2="12" y2="15" stroke="#0032ab" strokeWidth="2.2" strokeLinecap="round">
               <animateTransform
                 attributeName="transform"
                 type="rotate"
@@ -1319,36 +1344,36 @@ function SmartSchedulingFaqSvg() {
                 repeatCount="indefinite"
               />
             </line>
-            <circle cx="0" cy="0" r="3" fill="#FAF9F6" />
+            <circle cx="0" cy="0" r="3" fill="#0032ab" />
           </g>
 
           {/* Hero Center Text & Details */}
           <g transform="translate(90, 16)">
             {/* Optimal Tag */}
-            <rect x="0" y="0" width="98" height="16" rx="8" fill="#1E1E1E" stroke="#D2B48C" strokeWidth="0.8" />
-            <text x="49" y="11.5" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+            <rect x="0" y="0" width="98" height="16" rx="8" fill="rgba(0,50,171,0.08)" stroke="#155dfc" strokeWidth="0.8" />
+            <text x="49" y="11.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">
               ★ DAY 05 OPTIMAL
             </text>
 
-            <text x="0" y="38" fill="#FAF9F6" fontFamily="system-ui" fontSize="15" fontWeight="900">
+            <text x="0" y="38" fill="#0b132b" fontFamily="system-ui" fontSize="15" fontWeight="900">
               18:30 Buyer Local Peak
             </text>
-            <text x="0" y="54" fill="#A8A29E" fontFamily="system-ui" fontSize="8.5">
+            <text x="0" y="54" fill="#4b5563" fontFamily="system-ui" fontSize="8.5">
               Postal Geo-Sync • 0 Midnight Notification Spam
             </text>
           </g>
 
           {/* Right Status Badge Box */}
           <g transform="translate(378, 15)">
-            <rect width="88" height="62" rx="10" fill="#1E1E1E" stroke="#383838" strokeWidth="0.8" />
-            <text x="44" y="24" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="15" fontWeight="900">
+            <rect width="88" height="62" rx="10" fill="#FFFFFF" stroke="#0032ab" strokeOpacity="0.2" strokeWidth="0.8" />
+            <text x="44" y="24" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="15" fontWeight="900">
               +38%
             </text>
-            <text x="44" y="38" textAnchor="middle" fill="#A8A29E" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+            <text x="44" y="38" textAnchor="middle" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
               OPEN RATE
             </text>
-            <rect x="10" y="46" width="68" height="6" rx="3" fill="#383838" />
-            <rect x="10" y="46" width="52" height="6" rx="3" fill="#D2B48C" />
+            <rect x="10" y="46" width="68" height="6" rx="3" fill="#E2E8F0" />
+            <rect x="10" y="46" width="52" height="6" rx="3" fill="#155dfc" />
           </g>
         </g>
       </g>
@@ -1365,26 +1390,26 @@ function SmartSchedulingFaqSvg() {
             dur="4.2s"
             repeatCount="indefinite"
           />
-          <rect width="225" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#D2B48C" strokeWidth="1" strokeOpacity="0.5" />
+          <rect width="225" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#4f6ef7" strokeWidth="1" strokeOpacity="0.5" />
 
-          <rect x="10" y="10" width="34" height="34" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="10" y="10" width="34" height="34" rx="8" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
           {/* Crisp Vector Tuning Sliders Icon */}
-          <g transform="translate(19, 19)" stroke="#B8966C" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <g transform="translate(19, 19)" stroke="#0032ab" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
             <line x1="2" y1="4" x2="14" y2="4" />
-            <circle cx="5" cy="4" r="2.2" fill="#FAF9F6" stroke="#B8966C" strokeWidth="1.4" />
+            <circle cx="5" cy="4" r="2.2" fill="#F8FAFC" stroke="#0032ab" strokeWidth="1.4" />
             <line x1="2" y1="12" x2="14" y2="12" />
-            <circle cx="11" cy="12" r="2.2" fill="#FAF9F6" stroke="#B8966C" strokeWidth="1.4" />
+            <circle cx="11" cy="12" r="2.2" fill="#F8FAFC" stroke="#0032ab" strokeWidth="1.4" />
           </g>
 
-          <text x="52" y="24" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
+          <text x="52" y="24" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
             Day 14: Category
           </text>
-          <text x="52" y="38" fill="#B8966C" fontFamily="monospace" fontSize="8" fontWeight="700">
+          <text x="52" y="38" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="700">
             Supplements / Beauty
           </text>
 
-          <rect x="156" y="10" width="58" height="18" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="185" y="22.5" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+          <rect x="156" y="10" width="58" height="18" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+          <text x="185" y="22.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">
             CUSTOM
           </text>
         </g>
@@ -1402,24 +1427,24 @@ function SmartSchedulingFaqSvg() {
             dur="4.6s"
             repeatCount="indefinite"
           />
-          <rect width="225" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#D2B48C" strokeWidth="1" strokeOpacity="0.5" />
+          <rect width="225" height="54" rx="14" fill="url(#sched-pill-bg)" stroke="#4f6ef7" strokeWidth="1" strokeOpacity="0.5" />
 
-          <rect x="10" y="10" width="34" height="34" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="10" y="10" width="34" height="34" rx="8" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
           {/* Crisp Vector Shield / Lock Cutoff Icon */}
-          <g transform="translate(19, 19)" stroke="#282828" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M 8 1 C 13 1, 15 4, 15 8 C 15 12.5, 8 15.5, 8 15.5 C 8 15.5, 1 12.5, 1 8 C 1 4, 3 1, 8 1 Z" fill="#F5EBE1" />
-            <path d="M 5.5 8 L 10.5 8" stroke="#282828" strokeWidth="1.8" />
+          <g transform="translate(19, 19)" stroke="#0032ab" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M 8 1 C 13 1, 15 4, 15 8 C 15 12.5, 8 15.5, 8 15.5 C 8 15.5, 1 12.5, 1 8 C 1 4, 3 1, 8 1 Z" fill="#EFF6FF" />
+            <path d="M 5.5 8 L 10.5 8" stroke="#0032ab" strokeWidth="1.8" />
           </g>
 
-          <text x="52" y="24" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
+          <text x="52" y="24" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="800">
             Day 30: Cutoff
           </text>
           <text x="52" y="38" fill="#78716C" fontFamily="monospace" fontSize="8" fontWeight="700">
             Auto-Stop Guard
           </text>
 
-          <rect x="156" y="10" width="58" height="18" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="185" y="22.5" textAnchor="middle" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+          <rect x="156" y="10" width="58" height="18" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+          <text x="185" y="22.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">
             LOCKED
           </text>
         </g>
@@ -1429,25 +1454,25 @@ function SmartSchedulingFaqSvg() {
       {/* 7. FLOATING TIMEZONE PILLS IN CLEAR EMPTY SPACES */}
       {/* ==================================================== */}
       <g transform="translate(248, 70)" filter="url(#sched-pill-shadow)">
-        <rect width="84" height="22" rx="11" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-        <circle cx="10" cy="11" r="3" fill="#D2B48C" />
-        <text x="18" y="15" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+        <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
+        <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
           🇺🇸 18:30 EDT
         </text>
       </g>
 
       <g transform="translate(425, 40)" filter="url(#sched-pill-shadow)">
-        <rect width="84" height="22" rx="11" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-        <circle cx="10" cy="11" r="3" fill="#D2B48C" />
-        <text x="18" y="15" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+        <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
+        <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
           🇬🇧 19:00 BST
         </text>
       </g>
 
       <g transform="translate(255, 330)" filter="url(#sched-pill-shadow)">
-        <rect width="84" height="22" rx="11" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-        <circle cx="10" cy="11" r="3" fill="#D2B48C" />
-        <text x="18" y="15" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
+        <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+        <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
+        <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
           🇩🇪 18:45 CEST
         </text>
       </g>

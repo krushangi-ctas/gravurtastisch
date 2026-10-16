@@ -173,7 +173,7 @@ function ReviewAnalyticsPage() {
                   <div className="mt-6 flex flex-wrap gap-4">
                     <a
                       href="/#register"
-                      className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
+                      className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
                     >
                       {t('reviewAnalytics.heroCtaRegister') || "Get Store Analytics"}
                       <ArrowRight className="h-4 w-4" />
@@ -394,7 +394,7 @@ function ReviewAnalyticsPage() {
             <Reveal delay={100}>
               <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm">
                 <table className="w-full text-left text-sm min-w-[640px]">
-                  <thead className="bg-navy-deep text-white text-xs uppercase tracking-wider">
+                  <thead className="bg-[#e2e8f0] border-b border-slate-300 text-navy-deep text-xs uppercase tracking-wider font-mono">
                     <tr>
                       <th className="p-3.5 sm:p-4">{t('reviewAnalytics.tableColProduct') || "Product & SKU"}</th>
                       <th className="p-3.5 sm:p-4">{t('reviewAnalytics.tableColAsin') || "ASIN"}</th>
@@ -505,24 +505,29 @@ function ReviewAnalyticsPage() {
         {/* CTA */}
         <section className="py-8 lg:py-10">
           <Container>
-            <div className="rounded-3xl bg-gradient-to-br from-navy-deep via-navy-deep to-brand p-6 sm:p-10 text-white text-center shadow-xl">
-              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight">
+            <div className="relative rounded-[2rem] liquid-glass bg-white py-8 px-6 sm:py-9 sm:px-10 text-center shadow-[0_12px_40px_rgba(0,50,171,0.06)] border border-[#0032ab]/15 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,50,171,0.03),transparent_70%)] pointer-events-none" />
+              <div className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20 mb-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#155dfc] animate-pulse" />
+                {t('reviewAnalytics.ctaBadge') || "Instant Activation"}
+              </div>
+              <h2 className="relative text-2xl sm:text-3xl font-extrabold text-navy-deep tracking-tight leading-snug">
                 {t('reviewAnalytics.ctaHeading') || "Unlock Intelligent Amazon Review Analytics"}
               </h2>
-              <p className="mt-3 text-white/75 text-sm sm:text-base max-w-xl mx-auto">
+              <p className="relative mt-2 text-slate-body text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
                 {t('reviewAnalytics.ctaDesc') || "Discover the data behind your custom orders and grow your FBA brand with confidence."}
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <div className="relative mt-5 flex flex-wrap justify-center gap-3">
                 <a
                   href="/#register"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-bright px-7 py-3.5 text-sm font-bold text-navy-deep hover:bg-white transition-all shadow-lg hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-2.5 text-xs sm:text-sm font-bold !text-white transition-all shadow-md shadow-[#0032ab]/20 hover:-translate-y-0.5"
                 >
                   {t('reviewAnalytics.ctaButton') || "Register as Seller"}
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href="/#pricing"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition-all"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-6 py-2.5 text-xs sm:text-sm font-bold text-[#0032ab] hover:bg-blue-50/50 hover:border-[#0032ab]/40 transition-all shadow-xs"
                 >
                   {t('reviewAnalytics.ctaPricing') || "View Pricing Plans"}
                 </a>

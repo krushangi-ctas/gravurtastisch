@@ -116,7 +116,7 @@ function Guide() {
                 <div className="mt-6 flex flex-wrap gap-4">
                   <a
                     href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
+                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
                   >
                     {t('guide.heroCtaRegister')}
                     <ArrowRight className="h-4 w-4" />
@@ -273,7 +273,7 @@ function Guide() {
                   <div className="pt-2">
                     {/* Step 1 */}
                     <div className="relative pl-12 pb-8 before:absolute before:left-4 before:top-8 before:bottom-0 before:w-[2px] before:bg-brand/30 dark:before:bg-brand/20">
-                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-navy-deep font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
+                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-white font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
                         1
                       </span>
                       <div>
@@ -294,7 +294,7 @@ function Guide() {
 
                     {/* Step 2 */}
                     <div className="relative pl-12 pb-8 before:absolute before:left-4 before:top-8 before:bottom-0 before:w-[2px] before:bg-brand/30 dark:before:bg-brand/20">
-                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-navy-deep font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
+                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-white font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
                         2
                       </span>
                       <div>
@@ -315,7 +315,7 @@ function Guide() {
 
                     {/* Step 3 */}
                     <div className="relative pl-12">
-                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-navy-deep font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
+                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-white font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
                         3
                       </span>
                       <div>
@@ -324,7 +324,7 @@ function Guide() {
                           {t('guide.stage1Step3Desc')}
                         </p>
                         <div className="mt-3.5">
-                          <span className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-brand text-navy-deep shadow-md shadow-brand/20">
+                          <span className="inline-flex items-center gap-1.5 px-4.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-brand text-white shadow-md shadow-brand/20">
                             {t('guide.stage1SendRequest')}
                           </span>
                         </div>
@@ -400,7 +400,7 @@ function Guide() {
                   <div className="pt-2">
                     {/* Credential Step 1 */}
                     <div className="relative pl-12 pb-8 before:absolute before:left-4 before:top-8 before:bottom-0 before:w-[2px] before:bg-brand/30 dark:before:bg-brand/20">
-                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-navy-deep font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
+                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-white font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
                         1
                       </span>
                       <div>
@@ -418,7 +418,7 @@ function Guide() {
 
                     {/* Credential Step 2 */}
                     <div className="relative pl-12 pb-8 before:absolute before:left-4 before:top-8 before:bottom-0 before:w-[2px] before:bg-brand/30 dark:before:bg-brand/20">
-                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-navy-deep font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
+                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-white font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
                         2
                       </span>
                       <div>
@@ -439,7 +439,7 @@ function Guide() {
 
                     {/* Credential Step 3 */}
                     <div className="relative pl-12">
-                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-navy-deep font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
+                      <span className="absolute left-0 top-0.5 h-8 w-8 rounded-full bg-brand text-white font-extrabold text-sm grid place-items-center ring-4 ring-white dark:ring-slate-900 shadow-sm">
                         3
                       </span>
                       <div>
@@ -626,64 +626,88 @@ function GuideHeroOverviewSvg() {
       aria-label="Gravurtastisch Custom Order & Laser Craft Workflow Visual Pipeline"
     >
       <defs>
-        {/* Ambient Brand Glow */}
+        {/* Soft Ambient Radial Lights */}
         <radialGradient id="guide-hero-glow-brand" cx="50%" cy="50%" r="50%">
-          <stop offset="0%" stopColor="#D2B48C" stopOpacity="0.16" />
-          <stop offset="60%" stopColor="#282828" stopOpacity="0.08" />
-          <stop offset="100%" stopColor="#141414" stopOpacity="0" />
+          <stop offset="0%" stopColor="#4f6ef7" stopOpacity="0.22" />
+          <stop offset="60%" stopColor="#0032ab" stopOpacity="0.08" />
+          <stop offset="100%" stopColor="#001855" stopOpacity="0" />
         </radialGradient>
 
         <radialGradient id="guide-laser-spark" cx="50%" cy="50%" r="50%">
           <stop offset="0%" stopColor="#FFFFFF" stopOpacity="1" />
-          <stop offset="40%" stopColor="#D2B48C" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#8C7355" stopOpacity="0" />
+          <stop offset="35%" stopColor="#38bdf8" stopOpacity="0.9" />
+          <stop offset="70%" stopColor="#4f6ef7" stopOpacity="0.8" />
+          <stop offset="100%" stopColor="#1d4ed8" stopOpacity="0" />
         </radialGradient>
 
-        {/* Soft blur for clean card shadows without clipping boundaries */}
-        <filter id="softCardShadow" x="-10%" y="-10%" width="120%" height="130%">
-          <feGaussianBlur stdDeviation="8" />
-        </filter>
+
 
         {/* Animated Connecting Conduit Gradients */}
         <linearGradient id="guide-conduit-gradient" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#282828" />
-          <stop offset="50%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#282828" />
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#0032ab" />
         </linearGradient>
 
-        {/* Card Header Gradients */}
-        <linearGradient id="card1-accent" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#282828" />
-          <stop offset="100%" stopColor="#4A4A4A" />
+        {/* Card Header Royal Gradients */}
+        <linearGradient id="card1-header-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#0032ab" />
+          <stop offset="100%" stopColor="#155dfc" />
         </linearGradient>
 
-        <linearGradient id="card2-accent" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+        <linearGradient id="card2-header-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#00258a" />
+          <stop offset="50%" stopColor="#155dfc" />
+          <stop offset="100%" stopColor="#38bdf8" />
         </linearGradient>
 
-        <linearGradient id="card3-accent" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#4A4A4A" />
-          <stop offset="100%" stopColor="#282828" />
+        <linearGradient id="card3-header-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#155dfc" />
+          <stop offset="100%" stopColor="#0032ab" />
+        </linearGradient>
+
+        {/* Crisp Card Subtle Background Shimmer */}
+        <linearGradient id="guide-white-card-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F8FAFC" />
+        </linearGradient>
+
+        <linearGradient id="guide-center-card-bg" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="50%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F0F7FF" />
+        </linearGradient>
+
+        <linearGradient id="guide-card-border" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#E2E8F0" />
+          <stop offset="50%" stopColor="#CBD5E1" />
+          <stop offset="100%" stopColor="#BFDBFE" />
+        </linearGradient>
+
+        <linearGradient id="guide-center-border" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#155dfc" />
         </linearGradient>
       </defs>
 
-      {/* Ambient Background Glow */}
-      <circle cx="270" cy="180" r="175" fill="url(#guide-hero-glow-brand)" />
+      {/* Ambient Background Aura */}
+      <circle cx="270" cy="180" r="180" fill="url(#guide-hero-glow-brand)" pointerEvents="none" />
 
-      {/* Pulsing Inter-card Laser Path */}
+      {/* Pulsing Inter-card Laser Path with High-Speed Photon Stream */}
       <path
         d="M 120 180 C 180 180, 195 180, 270 180 C 345 180, 360 180, 420 180"
         stroke="url(#guide-conduit-gradient)"
-        strokeWidth="2.5"
+        strokeWidth="3"
         strokeDasharray="6 6"
         strokeLinecap="round"
+        opacity="0.85"
       >
         <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.2s" repeatCount="indefinite" />
       </path>
 
-      {/* Flying Laser Photon Particle (1 -> 2 -> 3) */}
-      <circle r="4" fill="#D2B48C">
+      {/* Flying Laser Photon Particle 1 (1 -> 2 -> 3) */}
+      <circle r="4.5" fill="#38bdf8" filter="drop-shadow(0 0 6px #38bdf8)">
         <animateMotion
           path="M 120 180 C 180 180, 195 180, 270 180 C 345 180, 360 180, 420 180"
           dur="2.4s"
@@ -691,197 +715,217 @@ function GuideHeroOverviewSvg() {
         />
       </circle>
 
-      {/* Top Floating Badge */}
-      <g transform="translate(140, 18)">
-        <rect x="2" y="4" width="256" height="32" rx="16" fill="#181818" opacity="0.2" filter="url(#softCardShadow)" />
-        <rect x="0" y="0" width="260" height="32" rx="16" fill="#FAF9F6" stroke="#E5D9C5" strokeWidth="1.2" />
-        <circle cx="18" cy="16" r="4.5" fill="#D2B48C">
-          <animate attributeName="opacity" values="1;0.35;1" dur="1.2s" repeatCount="indefinite" />
+      {/* Flying Laser Photon Particle 2 (Staggered) */}
+      <circle r="3.5" fill="#FFFFFF" filter="drop-shadow(0 0 4px #4f6ef7)">
+        <animateMotion
+          path="M 120 180 C 180 180, 195 180, 270 180 C 345 180, 360 180, 420 180"
+          dur="2.4s"
+          begin="1.2s"
+          repeatCount="indefinite"
+        />
+      </circle>
+
+      {/* ===================================================================== */}
+      {/* Top Floating Badge (Clean White Pill with Cool Royal Accents)        */}
+      {/* ===================================================================== */}
+      <g transform="translate(135, 16)">
+        <rect x="0" y="0" width="270" height="32" rx="16" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1.2" style={{ filter: "drop-shadow(0 6px 12px rgba(0, 26, 77, 0.16))" }} />
+        <circle cx="18" cy="16" r="4.5" fill="#155dfc">
+          <animate attributeName="opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite" />
         </circle>
-        <text x="32" y="20.5" fill="#282828" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9.5" fontWeight="800" letterSpacing="0.04em">
+        <text x="32" y="20.5" fill="#0f172a" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9.5" fontWeight="800" letterSpacing="0.04em">
           STUDIO PIPELINE • UPLOAD TO DELIVERY
+        </text>
+        <rect x="216" y="5.5" width="46" height="21" rx="10.5" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+        <text x="239" y="19" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+          LIVE
         </text>
       </g>
 
       {/* ===================================================================== */}
-      {/* Card 1 (Left): 01. Artwork & Intake                                    */}
+      {/* Card 1 (Left): 01. Artwork & Intake (Crisp White Card)                */}
       {/* ===================================================================== */}
-      <g transform="translate(18, 74)">
-        {/* Soft shadow */}
-        <rect x="4" y="8" width="140" height="196" rx="18" fill="#181818" opacity="0.25" filter="url(#softCardShadow)" />
-        {/* Main Card Body */}
-        <rect x="0" y="0" width="148" height="204" rx="18" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="1.2" />
-        {/* Top Accent Band */}
-        <path d="M 0 18 Q 0 0 18 0 L 130 0 Q 148 0 148 18 L 148 20 L 0 20 Z" fill="url(#card1-accent)" />
+      <g transform="translate(18, 70)">
+        {/* Main White Card Body */}
+        <rect x="0" y="0" width="148" height="212" rx="18" fill="url(#guide-white-card-bg)" stroke="url(#guide-card-border)" strokeWidth="1.2" style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }} />
 
-        {/* Header tag */}
-        <rect x="12" y="10" width="124" height="22" rx="7" fill="#FAF9F6" stroke="#E5E5DF" strokeWidth="0.8" />
-        <circle cx="22" cy="21" r="3" fill="#282828" />
-        <text x="30" y="24.5" fill="#282828" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800">
-          01. INTAKE & UPLOAD
-        </text>
+        {/* Top Header Pill */}
+        <g transform="translate(10, 10)">
+          <rect x="0" y="0" width="128" height="24" rx="12" fill="url(#card1-header-grad)" />
+          <circle cx="12" cy="12" r="3" fill="#ffffff" />
+          <text x="22" y="15.5" fill="#ffffff" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800" letterSpacing="0.02em">
+            01. INTAKE & UPLOAD
+          </text>
+        </g>
 
         {/* Artwork Graphic (Document with vector crosshair) */}
-        <g transform="translate(74, 82)">
-          <rect x="-24" y="-24" width="48" height="48" rx="14" fill="#FAF9F6" stroke="#E5D9C5" strokeWidth="1.2" />
+        <g transform="translate(74, 86)">
+          <rect x="-26" y="-26" width="52" height="52" rx="14" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1.2" />
           {/* File Sheet */}
-          <rect x="-14" y="-15" width="28" height="32" rx="4" fill="#FFFFFF" stroke="#282828" strokeWidth="1.5" />
+          <rect x="-14" y="-16" width="28" height="34" rx="5" fill="#FFFFFF" stroke="#0032ab" strokeWidth="1.6" />
           {/* Vector Pen / Node Lines */}
-          <path d="M -8 -4 L -2 4 L 8 -6" fill="none" stroke="#282828" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-          <circle cx="-8" cy="-4" r="2" fill="#D2B48C" />
-          <circle cx="-2" cy="4" r="2" fill="#D2B48C" />
-          <circle cx="8" cy="-6" r="2" fill="#D2B48C" />
+          <path d="M -8 -4 L -2 4 L 8 -6" fill="none" stroke="#155dfc" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+          <circle cx="-8" cy="-4" r="2.5" fill="#38bdf8" />
+          <circle cx="-2" cy="4" r="2.5" fill="#38bdf8" />
+          <circle cx="8" cy="-6" r="2.5" fill="#38bdf8" />
+
           {/* Upload arrow with subtle bounce */}
-          <g transform="translate(6, 4)">
-            <circle cx="5" cy="5" r="7" fill="#282828" />
-            <path d="M 5 8 L 5 2 M 3 4 L 5 2 L 7 4" stroke="#FAF9F6" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-              <animateTransform attributeName="transform" type="translate" values="0,1; 0,-1.5; 0,1" dur="1.8s" repeatCount="indefinite" />
+          <g transform="translate(6, 6)">
+            <circle cx="5" cy="5" r="7" fill="#0032ab" />
+            <path d="M 5 8 L 5 2 M 3 4 L 5 2 L 7 4" stroke="#FFFFFF" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+              <animateTransform attributeName="transform" type="translate" values="0,1; 0,-2; 0,1" dur="1.8s" repeatCount="indefinite" />
             </path>
           </g>
         </g>
 
-        <text x="74" y="128" textAnchor="middle" fill="#282828" fontFamily="system-ui, sans-serif" fontSize="10" fontWeight="800">
+        <text x="74" y="136" textAnchor="middle" fill="#0f172a" fontFamily="system-ui, sans-serif" fontSize="10.5" fontWeight="800">
           Vector & Custom Info
         </text>
-        <text x="74" y="142" textAnchor="middle" fill="#78716C" fontFamily="system-ui, sans-serif" fontSize="8">
+        <text x="74" y="150" textAnchor="middle" fill="#64748b" fontFamily="system-ui, sans-serif" fontSize="8">
           Auto Size & Safe Margins
         </text>
 
-        <rect x="12" y="160" width="124" height="24" rx="7" fill="#FAF9F6" stroke="#E5E5DF" strokeWidth="0.8" />
-        <text x="74" y="175.5" textAnchor="middle" fill="#282828" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="700">
-          ✓ Artwork Verified
-        </text>
+        {/* Verification Status Pill */}
+        <g transform="translate(12, 168)">
+          <rect x="0" y="0" width="124" height="24" rx="12" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+          <circle cx="16" cy="12" r="3" fill="#10b981" />
+          <text x="70" y="15.5" textAnchor="middle" fill="#0032ab" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="800">
+            ✓ Artwork Verified
+          </text>
+        </g>
       </g>
 
       {/* ===================================================================== */}
       {/* Card 2 (Center): 02. Digital Proofing & Laser Precision (Elevated)     */}
       {/* ===================================================================== */}
-      <g transform="translate(192, 56)">
-        {/* Soft shadow */}
-        <rect x="4" y="10" width="148" height="226" rx="20" fill="#181818" opacity="0.3" filter="url(#softCardShadow)" />
-        {/* Main Card Body */}
-        <rect x="0" y="0" width="156" height="238" rx="20" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1.6" />
-        {/* Top Accent Band */}
-        <path d="M 0 20 Q 0 0 20 0 L 136 0 Q 156 0 156 20 L 156 22 L 0 22 Z" fill="url(#card2-accent)" />
+      <g transform="translate(192, 52)">
+        {/* Main Elevated White Card Body */}
+        <rect x="0" y="0" width="156" height="246" rx="20" fill="url(#guide-center-card-bg)" stroke="url(#guide-center-border)" strokeWidth="2" style={{ filter: "drop-shadow(0 14px 22px rgba(0, 26, 77, 0.22))" }} />
 
-        {/* Header tag */}
-        <rect x="12" y="11" width="132" height="23" rx="8" fill="#FAF7F2" stroke="#E5D9C5" strokeWidth="0.8" />
-        <circle cx="23" cy="22.5" r="3.5" fill="#D2B48C">
-          <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />
-        </circle>
-        <text x="32" y="26.5" fill="#8C7355" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800">
-          02. DIGITAL PROOF
-        </text>
+        {/* Top Header Pill (Royal Gradient) */}
+        <g transform="translate(10, 10)">
+          <rect x="0" y="0" width="136" height="25" rx="12.5" fill="url(#card2-header-grad)" />
+          <circle cx="14" cy="12.5" r="3.5" fill="#38bdf8">
+            <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />
+          </circle>
+          <text x="24" y="16.5" fill="#ffffff" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="900" letterSpacing="0.02em">
+            02. DIGITAL PROOF
+          </text>
+        </g>
 
         {/* Interactive Laser Engraving Reticle Graphic */}
-        <g transform="translate(78, 86)">
-          <circle cx="0" cy="0" r="30" fill="#FAF7F2" stroke="#E5D9C5" strokeWidth="1.2" />
+        <g transform="translate(78, 88)">
+          <circle cx="0" cy="0" r="32" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1.2" />
 
           {/* Rotating Laser Calibration Dial */}
-          <circle cx="0" cy="0" r="24" fill="none" stroke="#D2B48C" strokeWidth="1.2" strokeDasharray="4 3">
+          <circle cx="0" cy="0" r="25" fill="none" stroke="#155dfc" strokeWidth="1.4" strokeDasharray="5 3">
             <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
           </circle>
 
           {/* Laser Crosshair Target */}
-          <line x1="-18" y1="0" x2="18" y2="0" stroke="#8C7355" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
-          <line x1="0" y1="-18" x2="0" y2="18" stroke="#8C7355" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
+          <line x1="-20" y1="0" x2="20" y2="0" stroke="#0032ab" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
+          <line x1="0" y1="-20" x2="0" y2="20" stroke="#0032ab" strokeWidth="1.2" strokeLinecap="round" opacity="0.8" />
 
           {/* Laser Scan Line sweeping vertically */}
-          <line x1="-15" y1="0" x2="15" y2="0" stroke="#D2B48C" strokeWidth="1.8" strokeLinecap="round" opacity="0.95">
-            <animateTransform attributeName="transform" type="translate" values="0,-14; 0,14; 0,-14" dur="2s" repeatCount="indefinite" />
+          <line x1="-16" y1="0" x2="16" y2="0" stroke="#38bdf8" strokeWidth="2" strokeLinecap="round" opacity="0.95" filter="drop-shadow(0 0 3px #38bdf8)">
+            <animateTransform attributeName="transform" type="translate" values="0,-16; 0,16; 0,-16" dur="2s" repeatCount="indefinite" />
           </line>
 
           {/* Laser Core Spark */}
           <circle cx="0" cy="0" r="6" fill="url(#guide-laser-spark)">
-            <animate attributeName="r" values="5;7.5;5" dur="0.8s" repeatCount="indefinite" />
+            <animate attributeName="r" values="5;8;5" dur="0.9s" repeatCount="indefinite" />
           </circle>
         </g>
 
-        <text x="78" y="136" textAnchor="middle" fill="#282828" fontFamily="system-ui, sans-serif" fontSize="10.5" fontWeight="900">
+        <text x="78" y="140" textAnchor="middle" fill="#0f172a" fontFamily="system-ui, sans-serif" fontSize="11" fontWeight="900">
           Laser & Craft Proof
         </text>
-        <text x="78" y="150" textAnchor="middle" fill="#8C7355" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="700">
+        <text x="78" y="154" textAnchor="middle" fill="#0032ab" fontFamily="system-ui, sans-serif" fontSize="8.5" fontWeight="800">
           0.05mm Exact Tolerance
         </text>
 
         {/* Dual Status Tags */}
-        <g transform="translate(14, 166)">
-          <rect x="0" y="0" width="128" height="22" rx="6" fill="#FAF7F2" stroke="#E5D9C5" strokeWidth="0.8" />
-          <text x="64" y="14.5" textAnchor="middle" fill="#8C7355" fontFamily="system-ui, sans-serif" fontSize="7.8" fontWeight="700">
+        <g transform="translate(14, 172)">
+          <rect x="0" y="0" width="128" height="23" rx="11.5" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+          <circle cx="14" cy="11.5" r="3" fill="#10b981" />
+          <text x="72" y="15" textAnchor="middle" fill="#0032ab" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="800">
             ✓ Proof Approved 100%
           </text>
-          <rect x="0" y="27" width="128" height="22" rx="6" fill="#FAF9F6" stroke="#E5E5DF" strokeWidth="0.8" />
-          <text x="64" y="41.5" textAnchor="middle" fill="#282828" fontFamily="system-ui, sans-serif" fontSize="7.8" fontWeight="700">
+
+          <rect x="0" y="29" width="128" height="23" rx="11.5" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="0.8" />
+          <circle cx="14" cy="40.5" r="3" fill="#155dfc" />
+          <text x="72" y="44" textAnchor="middle" fill="#0f172a" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="800">
             ✓ Sent to Laser Bed
           </text>
         </g>
       </g>
 
       {/* ===================================================================== */}
-      {/* Card 3 (Right): 03. Laser Craft & Fast Dispatch                        */}
+      {/* Card 3 (Right): 03. Laser Craft & Fast Dispatch (Crisp White Card)     */}
       {/* ===================================================================== */}
-      <g transform="translate(374, 74)">
-        {/* Soft shadow */}
-        <rect x="4" y="8" width="140" height="196" rx="18" fill="#181818" opacity="0.25" filter="url(#softCardShadow)" />
-        {/* Main Card Body */}
-        <rect x="0" y="0" width="148" height="204" rx="18" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="1.2" />
-        {/* Top Accent Band */}
-        <path d="M 0 18 Q 0 0 18 0 L 130 0 Q 148 0 148 18 L 148 20 L 0 20 Z" fill="url(#card3-accent)" />
+      <g transform="translate(374, 70)">
+        {/* Main White Card Body */}
+        <rect x="0" y="0" width="148" height="212" rx="18" fill="url(#guide-white-card-bg)" stroke="url(#guide-card-border)" strokeWidth="1.2" style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }} />
 
-        {/* Header tag */}
-        <rect x="12" y="10" width="124" height="22" rx="7" fill="#FAF9F6" stroke="#E5E5DF" strokeWidth="0.8" />
-        <circle cx="22" cy="21" r="3" fill="#4A4A4A" />
-        <text x="30" y="24.5" fill="#282828" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800">
-          03. CRAFT & SHIP
-        </text>
+        {/* Top Header Pill */}
+        <g transform="translate(10, 10)">
+          <rect x="0" y="0" width="128" height="24" rx="12" fill="url(#card3-header-grad)" />
+          <circle cx="12" cy="12" r="3" fill="#ffffff" />
+          <text x="24" y="15.5" fill="#ffffff" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="800" letterSpacing="0.02em">
+            03. CRAFT & SHIP
+          </text>
+        </g>
 
-        {/* Crafted Gift / Package Icon Graphic */}
-        <g transform="translate(74, 82)">
-          <rect x="-24" y="-24" width="48" height="48" rx="14" fill="#FAF9F6" stroke="#E5D9C5" strokeWidth="1.2" />
+        {/* Crafted Keepsake / Parcel Graphic */}
+        <g transform="translate(74, 86)">
+          <rect x="-26" y="-26" width="52" height="52" rx="14" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1.2" />
           {/* Engraved Keepsake Silhouette */}
-          <path d="M -11 -12 L 11 -12 L 8 10 C 7 14 -7 14 -8 10 Z" fill="#FFFFFF" stroke="#282828" strokeWidth="1.6" strokeLinejoin="round" />
+          <path d="M -12 -12 L 12 -12 L 9 11 C 8 15 -8 15 -9 11 Z" fill="#FFFFFF" stroke="#0032ab" strokeWidth="1.6" strokeLinejoin="round" />
           {/* Laser Engraved Star on Product */}
-          <path d="M 0 -7 L 1.5 -3 L 5.5 -3 L 2.5 -0.5 L 3.5 3.5 L 0 1.2 L -3.5 3.5 L -2.5 -0.5 L -5.5 -3 L -1.5 -3 Z" fill="#D2B48C" />
+          <path d="M 0 -6 L 1.5 -2.5 L 5.5 -2.5 L 2.5 0 L 3.5 4 L 0 1.8 L -3.5 4 L -2.5 0 L -5.5 -2.5 L -1.5 -2.5 Z" fill="#155dfc" />
           {/* Sparkles with twinkle animation */}
-          <g transform="translate(13, -12)">
-            <circle cx="0" cy="0" r="2.5" fill="#D2B48C">
-              <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" />
+          <g transform="translate(14, -12)">
+            <circle cx="0" cy="0" r="2.5" fill="#38bdf8" filter="drop-shadow(0 0 3px #38bdf8)">
+              <animate attributeName="opacity" values="0.2;1;0.2" dur="1.2s" repeatCount="indefinite" />
             </circle>
           </g>
           <g transform="translate(-14, 10)">
-            <circle cx="0" cy="0" r="2" fill="#4A4A4A">
+            <circle cx="0" cy="0" r="2" fill="#155dfc">
               <animate attributeName="opacity" values="1;0.2;1" dur="1.5s" repeatCount="indefinite" />
             </circle>
           </g>
         </g>
 
-        <text x="74" y="128" textAnchor="middle" fill="#282828" fontFamily="system-ui, sans-serif" fontSize="10" fontWeight="800">
+        <text x="74" y="136" textAnchor="middle" fill="#0f172a" fontFamily="system-ui, sans-serif" fontSize="10.5" fontWeight="800">
           Finished & Packed
         </text>
-        <text x="74" y="142" textAnchor="middle" fill="#78716C" fontFamily="system-ui, sans-serif" fontSize="8">
+        <text x="74" y="150" textAnchor="middle" fill="#64748b" fontFamily="system-ui, sans-serif" fontSize="8">
           Live Tracking Updates
         </text>
 
-        <rect x="12" y="160" width="124" height="24" rx="7" fill="#FAF9F6" stroke="#E5E5DF" strokeWidth="0.8" />
-        <text x="74" y="175.5" textAnchor="middle" fill="#282828" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="700">
-          ✓ Studio Dispatched
-        </text>
+        {/* Status Tag */}
+        <g transform="translate(12, 168)">
+          <rect x="0" y="0" width="124" height="24" rx="12" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+          <circle cx="16" cy="12" r="3" fill="#10b981" />
+          <text x="70" y="15.5" textAnchor="middle" fill="#0032ab" fontFamily="system-ui, sans-serif" fontSize="8" fontWeight="800">
+            ✓ Studio Dispatched
+          </text>
+        </g>
       </g>
 
       {/* ===================================================================== */}
-      {/* Bottom Telemetry Bar                                                  */}
+      {/* Bottom Telemetry Bar (Crisp White Pill with Royal Status)            */}
       {/* ===================================================================== */}
-      <g transform="translate(60, 320)">
-        <rect x="2" y="4" width="416" height="28" rx="14" fill="#181818" opacity="0.2" filter="url(#softCardShadow)" />
-        <rect x="0" y="0" width="420" height="28" rx="14" fill="#FFFFFF" stroke="#E5E5DF" strokeWidth="1.2" />
-        <circle cx="18" cy="14" r="4" fill="#D2B48C">
+      <g transform="translate(45, 318)">
+        <rect x="0" y="0" width="450" height="30" rx="15" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1.2" style={{ filter: "drop-shadow(0 6px 12px rgba(0, 26, 77, 0.16))" }} />
+        <circle cx="18" cy="15" r="4" fill="#155dfc">
           <animate attributeName="opacity" values="1;0.4;1" dur="1.6s" repeatCount="indefinite" />
         </circle>
-        <text x="32" y="18" fill="#282828" fontFamily="system-ui, -apple-system, sans-serif" fontSize="8.8" fontWeight="700">
+        <text x="32" y="19" fill="#0f172a" fontFamily="system-ui, -apple-system, sans-serif" fontSize="9" fontWeight="800">
           Gravurtastisch Proof-First Pipeline Active • Precision Craft Flow
         </text>
-        <rect x="334" y="5" width="74" height="18" rx="9" fill="#FAF7F2" stroke="#E5D9C5" strokeWidth="0.8" />
-        <text x="371" y="17" textAnchor="middle" fill="#8C7355" fontFamily="ui-monospace, monospace" fontSize="8" fontWeight="800">
+        <rect x="366" y="5" width="74" height="20" rx="10" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+        <text x="403" y="18" textAnchor="middle" fill="#0032ab" fontFamily="ui-monospace, monospace" fontSize="8.5" fontWeight="900">
           ONLINE
         </text>
       </g>
@@ -914,17 +958,17 @@ function OrderListingStreamSvg() {
 
       {/* Top Filter Controls Bar */}
       <g transform="translate(10, 10)">
-        <rect x="0" y="0" width="480" height="38" rx="10" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="1" />
+        <rect x="0" y="0" width="480" height="38" rx="10" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="1" />
         
         {/* Marketplace Pill */}
         <g transform="translate(10, 8)">
-          <rect x="0" y="0" width="105" height="22" rx="6" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="105" height="22" rx="6" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="8" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">🇺🇸 US Store ▼</text>
         </g>
 
         {/* Filter State Pill */}
         <g transform="translate(122, 8)">
-          <rect x="0" y="0" width="85" height="22" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="85" height="22" rx="6" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="8" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">Filtered ✓</text>
         </g>
 
@@ -953,23 +997,23 @@ function OrderListingStreamSvg() {
 
       {/* Row 1: Target Active Order (Pending -> Send Action Highlighted) */}
       <g transform="translate(10, 76)" filter="url(#rowGlow)">
-        <rect x="0" y="0" width="480" height="66" rx="12" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1.5" />
+        <rect x="0" y="0" width="480" height="66" rx="12" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1.5" />
         
         {/* Order Info */}
         <text x="14" y="24" fill="#282828" fontFamily="monospace" fontSize="11" fontWeight="800">#114-892314-9912</text>
         <text x="14" y="42" fill="#78716C" fontFamily="system-ui" fontSize="9.5">Echo ANC Earbuds Pro • $49.99</text>
-        <text x="14" y="55" fill="#B8966C" fontFamily="system-ui" fontSize="8" fontWeight="700">● Delivered 4 days ago (Eligible)</text>
+        <text x="14" y="55" fill="#0032ab" fontFamily="system-ui" fontSize="8" fontWeight="700">● Delivered 4 days ago (Eligible)</text>
 
         {/* Marketplace */}
         <g transform="translate(180, 22)">
-          <rect x="0" y="0" width="60" height="20" rx="5" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="0.8" />
+          <rect x="0" y="0" width="60" height="20" rx="5" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="0.8" />
           <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇺🇸 Amazon</text>
         </g>
 
         {/* Status Pill: Pending */}
         <g transform="translate(275, 20)">
-          <rect x="0" y="0" width="76" height="24" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
-          <circle cx="12" cy="12" r="3" fill="#D2B48C">
+          <rect x="0" y="0" width="76" height="24" rx="12" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1" />
+          <circle cx="12" cy="12" r="3" fill="#4f6ef7">
             <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite" />
           </circle>
           <text x="44" y="15.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">Pending</text>
@@ -977,11 +1021,11 @@ function OrderListingStreamSvg() {
 
         {/* Action Button: Send Request */}
         <g transform="translate(365, 18)">
-          <rect x="0" y="0" width="105" height="28" rx="8" fill="url(#actionBtnGrad)" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="52.5" y="17.5" textAnchor="middle" fill="#D2B48C" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
+          <rect x="0" y="0" width="105" height="28" rx="8" fill="url(#actionBtnGrad)" stroke="#4f6ef7" strokeWidth="0.8" />
+          <text x="52.5" y="17.5" textAnchor="middle" fill="#4f6ef7" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
             Send Request ➔
           </text>
-          <circle cx="96" cy="7" r="3" fill="#D2B48C">
+          <circle cx="96" cy="7" r="3" fill="#4f6ef7">
             <animate attributeName="r" values="3;5;3" dur="1.2s" repeatCount="indefinite" />
           </circle>
         </g>
@@ -989,7 +1033,7 @@ function OrderListingStreamSvg() {
 
       {/* Row 2: Completed / Sent Order */}
       <g transform="translate(10, 150)">
-        <rect x="0" y="0" width="480" height="54" rx="10" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="1" />
+        <rect x="0" y="0" width="480" height="54" rx="10" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="1" />
         
         {/* Order Info */}
         <text x="14" y="22" fill="#282828" fontFamily="monospace" fontSize="10.5" fontWeight="700">#112-748291-1024</text>
@@ -1003,7 +1047,7 @@ function OrderListingStreamSvg() {
 
         {/* Status Pill: Sent */}
         <g transform="translate(275, 15)">
-          <rect x="0" y="0" width="76" height="24" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
+          <rect x="0" y="0" width="76" height="24" rx="12" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1" />
           <text x="38" y="15.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">✓ Sent</text>
         </g>
 
@@ -1016,7 +1060,7 @@ function OrderListingStreamSvg() {
 
       {/* Row 3: Auto-Queued Order */}
       <g transform="translate(10, 212)">
-        <rect x="0" y="0" width="480" height="54" rx="10" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="1" />
+        <rect x="0" y="0" width="480" height="54" rx="10" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="1" />
         
         {/* Order Info */}
         <text x="14" y="22" fill="#282828" fontFamily="monospace" fontSize="10.5" fontWeight="700">#114-382910-4491</text>
@@ -1030,21 +1074,21 @@ function OrderListingStreamSvg() {
 
         {/* Status Pill: Queued */}
         <g transform="translate(275, 15)">
-          <rect x="0" y="0" width="76" height="24" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
+          <rect x="0" y="0" width="76" height="24" rx="12" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1" />
           <text x="38" y="15.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">Queued</text>
         </g>
 
         {/* Action: Scheduled */}
         <g transform="translate(365, 15)">
-          <rect x="0" y="0" width="105" height="24" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="105" height="24" rx="6" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="52.5" y="15.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">⚡ Auto-Queue</text>
         </g>
       </g>
 
       {/* Footer Info Strip */}
       <g transform="translate(10, 280)">
-        <rect x="0" y="0" width="480" height="42" rx="10" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
-        <circle cx="20" cy="21" r="5" fill="#D2B48C" />
+        <rect x="0" y="0" width="480" height="42" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1" />
+        <circle cx="20" cy="21" r="5" fill="#4f6ef7" />
         <text x="34" y="24" fill="#282828" fontFamily="system-ui" fontSize="10" fontWeight="700">
           Real-Time Sync • Manual trigger or auto-queue dispatches production job instantly.
         </text>
@@ -1068,8 +1112,8 @@ function AmazonCredentialsConsoleSvg() {
     >
       <defs>
         <linearGradient id="shieldGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#0032ab" />
         </linearGradient>
         <filter id="consoleDropShadow" x="-5%" y="-10%" width="110%" height="120%">
           <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#282828" floodOpacity="0.06" />
@@ -1078,11 +1122,11 @@ function AmazonCredentialsConsoleSvg() {
 
       {/* 1. Top Section: studio API Encrypted Token Authentication Box */}
       <g transform="translate(10, 10)" filter="url(#consoleDropShadow)">
-        <rect x="0" y="0" width="480" height="88" rx="14" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1" />
+        <rect x="0" y="0" width="480" height="88" rx="14" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1" />
         
         {/* Glowing Shield Icon */}
         <g transform="translate(30, 44)">
-          <circle cx="0" cy="0" r="22" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.5" />
+          <circle cx="0" cy="0" r="22" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1.5" />
           <path d="M -8 -8 L 8 -8 L 8 2 C 8 8, 0 12, 0 12 C 0 12, -8 8, -8 2 Z" fill="url(#shieldGrad)" />
           <path d="M -3 0 L 0 3 L 5 -2" stroke="#282828" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
         </g>
@@ -1097,11 +1141,11 @@ function AmazonCredentialsConsoleSvg() {
 
         {/* Token Key Bar */}
         <g transform="translate(64, 56)">
-          <rect x="0" y="0" width="280" height="22" rx="6" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="0.8" />
+          <rect x="0" y="0" width="280" height="22" rx="6" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="0.8" />
           <text x="10" y="15" fill="#78716C" fontFamily="monospace" fontSize="9.5">
             amzn.lwa.oa2.at.pv2.983f...••••••••
           </text>
-          <rect x="290" y="0" width="115" height="22" rx="6" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="290" y="0" width="115" height="22" rx="6" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="347.5" y="15" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
             🔒 Encrypted Token
           </text>
@@ -1109,16 +1153,16 @@ function AmazonCredentialsConsoleSvg() {
       </g>
 
       {/* Downward Conduit Link 1 -> 2 */}
-      <path d="M 250 98 L 250 114" stroke="#D2B48C" strokeWidth="2" strokeDasharray="3 3" />
-      <polygon points="250,115 247,110 253,110" fill="#D2B48C" />
+      <path d="M 250 98 L 250 114" stroke="#4f6ef7" strokeWidth="2" strokeDasharray="3 3" />
+      <polygon points="250,115 247,110 253,110" fill="#4f6ef7" />
 
       {/* 2. Middle Section: Set Rules & Time Controls */}
       <g transform="translate(10, 115)" filter="url(#consoleDropShadow)">
-        <rect x="0" y="0" width="480" height="96" rx="14" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1" />
+        <rect x="0" y="0" width="480" height="96" rx="14" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1" />
 
         {/* Clock/Rule Icon */}
         <g transform="translate(30, 48)">
-          <circle cx="0" cy="0" r="22" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.5" />
+          <circle cx="0" cy="0" r="22" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1.5" />
           <circle cx="0" cy="0" r="10" fill="none" stroke="#282828" strokeWidth="1.8" />
           <path d="M 0 -6 L 0 0 L 4 3" stroke="#282828" strokeWidth="1.8" strokeLinecap="round" />
         </g>
@@ -1134,15 +1178,15 @@ function AmazonCredentialsConsoleSvg() {
         {/* Interactive Controls Pill Row */}
         <g transform="translate(64, 56)">
           {/* Switch 1: Auto On/Off */}
-          <rect x="0" y="0" width="105" height="28" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
-          <circle cx="16" cy="14" r="5" fill="#D2B48C" />
+          <rect x="0" y="0" width="105" height="28" rx="8" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1" />
+          <circle cx="16" cy="14" r="5" fill="#4f6ef7" />
           <text x="58" y="18" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
             Auto: ON ✓
           </text>
 
           {/* Switch 2: Channel Retail / wholesale */}
           <g transform="translate(115, 0)">
-            <rect x="0" y="0" width="130" height="28" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+            <rect x="0" y="0" width="130" height="28" rx="8" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
             <text x="65" y="18" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
               Channel: Retail / wholesale
             </text>
@@ -1150,7 +1194,7 @@ function AmazonCredentialsConsoleSvg() {
 
           {/* Timing Window Pill */}
           <g transform="translate(255, 0)">
-            <rect x="0" y="0" width="145" height="28" rx="8" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="1" />
+            <rect x="0" y="0" width="145" height="28" rx="8" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="1" />
             <text x="72.5" y="18" textAnchor="middle" fill="#78716C" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
               ⏰ Schedule: 09:00 AM
             </text>
@@ -1159,18 +1203,18 @@ function AmazonCredentialsConsoleSvg() {
       </g>
 
       {/* Downward Conduit Link 2 -> 3 */}
-      <path d="M 250 211 L 250 227" stroke="#D2B48C" strokeWidth="2" strokeDasharray="3 3" />
-      <polygon points="250,228 247,223 253,223" fill="#D2B48C" />
+      <path d="M 250 211 L 250 227" stroke="#4f6ef7" strokeWidth="2" strokeDasharray="3 3" />
+      <polygon points="250,228 247,223 253,223" fill="#4f6ef7" />
 
       {/* 3. Bottom Section: Target Matching (Shipped items only vs All) */}
       <g transform="translate(10, 228)" filter="url(#consoleDropShadow)">
-        <rect x="0" y="0" width="480" height="96" rx="14" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1" />
+        <rect x="0" y="0" width="480" height="96" rx="14" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1" />
 
         {/* Target Bullseye Icon */}
         <g transform="translate(30, 48)">
-          <circle cx="0" cy="0" r="22" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.5" />
+          <circle cx="0" cy="0" r="22" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1.5" />
           <circle cx="0" cy="0" r="12" fill="none" stroke="#282828" strokeWidth="2" />
-          <circle cx="0" cy="0" r="5" fill="#D2B48C" />
+          <circle cx="0" cy="0" r="5" fill="#4f6ef7" />
         </g>
 
         {/* Title */}
@@ -1184,8 +1228,8 @@ function AmazonCredentialsConsoleSvg() {
         {/* Selection Options */}
         <g transform="translate(64, 56)">
           {/* Active Option: Shipped items only */}
-          <rect x="0" y="0" width="180" height="28" rx="8" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.5" />
-          <circle cx="16" cy="14" r="5" fill="#D2B48C" />
+          <rect x="0" y="0" width="180" height="28" rx="8" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="1.5" />
+          <circle cx="16" cy="14" r="5" fill="#4f6ef7" />
           <text x="96" y="18" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
             ✓ Shipped Items Only
           </text>
@@ -1219,27 +1263,27 @@ function VisualWorkflowPipelineSvg() {
     >
       <defs>
         <linearGradient id="pipeFlowGradTop" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="50%" stopColor="#B8966C" />
-          <stop offset="100%" stopColor="#8C7355" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="50%" stopColor="#0032ab" />
+          <stop offset="100%" stopColor="#1d4ed8" />
         </linearGradient>
         <linearGradient id="pipeFeedDownGrad" x1="1" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="60%" stopColor="#B8966C" />
-          <stop offset="100%" stopColor="#8C7355" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="60%" stopColor="#0032ab" />
+          <stop offset="100%" stopColor="#1d4ed8" />
         </linearGradient>
         <linearGradient id="pipeDispatchGrad" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#0032ab" />
         </linearGradient>
         <filter id="nodeShadow" x="-10%" y="-15%" width="120%" height="130%">
           <feDropShadow dx="0" dy="5" stdDeviation="6" floodColor="#282828" floodOpacity="0.06" />
         </filter>
         <marker id="tanHead" markerWidth="6" markerHeight="6" refX="4" refY="3" orient="auto">
-          <path d="M0,1 L5,3 L0,5 Z" fill="#D2B48C" />
+          <path d="M0,1 L5,3 L0,5 Z" fill="#4f6ef7" />
         </marker>
         <marker id="brandHead" markerWidth="7" markerHeight="7" refX="4" refY="3" orient="auto">
-          <path d="M0,1 L6,3 L0,5 Z" fill="#B8966C" />
+          <path d="M0,1 L6,3 L0,5 Z" fill="#0032ab" />
         </marker>
       </defs>
 
@@ -1247,14 +1291,14 @@ function VisualWorkflowPipelineSvg() {
       {/* 1. TOP ROW CONDUITS (Left to Right: Node 1 -> 2 -> 3) */}
       {/* ==================================================== */}
       {/* Connector: Stage 1 -> Stage 2 */}
-      <path d="M 160 85 L 188 85" stroke="#FAF9F6" strokeWidth="6" strokeLinecap="round" />
-      <path d="M 160 85 L 186 85" stroke="#D2B48C" strokeWidth="2.5" strokeDasharray="4 4" markerEnd="url(#tanHead)">
+      <path d="M 160 85 L 188 85" stroke="#f8fafc" strokeWidth="6" strokeLinecap="round" />
+      <path d="M 160 85 L 186 85" stroke="#4f6ef7" strokeWidth="2.5" strokeDasharray="4 4" markerEnd="url(#tanHead)">
         <animate attributeName="stroke-dashoffset" values="0;-16" dur="0.8s" repeatCount="indefinite" />
       </path>
 
       {/* Connector: Stage 2 -> Stage 3 */}
-      <path d="M 345 85 L 372 85" stroke="#FAF9F6" strokeWidth="6" strokeLinecap="round" />
-      <path d="M 345 85 L 370 85" stroke="#B8966C" strokeWidth="2.5" strokeDasharray="4 4" markerEnd="url(#brandHead)">
+      <path d="M 345 85 L 372 85" stroke="#f8fafc" strokeWidth="6" strokeLinecap="round" />
+      <path d="M 345 85 L 370 85" stroke="#0032ab" strokeWidth="2.5" strokeDasharray="4 4" markerEnd="url(#brandHead)">
         <animate attributeName="stroke-dashoffset" values="0;-16" dur="0.8s" repeatCount="indefinite" />
       </path>
 
@@ -1282,10 +1326,10 @@ function VisualWorkflowPipelineSvg() {
       {/* ==================================================== */}
       {/* 3. DISPATCH CONDUIT FROM CRON HUB TO CONVERSION (Bottom-Left -> Bottom-Right) */}
       {/* ==================================================== */}
-      <path d="M 265 242 L 338 242" stroke="#FAF9F6" strokeWidth="6" strokeLinecap="round" />
+      <path d="M 265 242 L 338 242" stroke="#f8fafc" strokeWidth="6" strokeLinecap="round" />
       <path
         d="M 265 242 L 335 242"
-        stroke="#D2B48C"
+        stroke="#4f6ef7"
         strokeWidth="2.5"
         strokeDasharray="4 4"
         markerEnd="url(#tanHead)"
@@ -1299,8 +1343,8 @@ function VisualWorkflowPipelineSvg() {
 
       {/* Node 1: Order Listing & Marketplace Filter */}
       <g transform="translate(15, 35)" filter="url(#nodeShadow)">
-        <rect x="0" y="0" width="145" height="100" rx="14" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1" />
-        <rect x="8" y="8" width="129" height="20" rx="6" fill="#FAF9F6" />
+        <rect x="0" y="0" width="145" height="100" rx="14" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1" />
+        <rect x="8" y="8" width="129" height="20" rx="6" fill="#f8fafc" />
         <text x="14" y="21.5" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
           STAGE 01 • INGESTION
         </text>
@@ -1311,7 +1355,7 @@ function VisualWorkflowPipelineSvg() {
           Marketplace filters
         </text>
         <g transform="translate(12, 68)">
-          <rect x="0" y="0" width="121" height="20" rx="10" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="121" height="20" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="60.5" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
             🇺🇸 US • 🇨🇦 CA • 🇬🇧 UK
           </text>
@@ -1320,8 +1364,8 @@ function VisualWorkflowPipelineSvg() {
 
       {/* Node 2: Amazon Credentials */}
       <g transform="translate(195, 35)" filter="url(#nodeShadow)">
-        <rect x="0" y="0" width="150" height="100" rx="14" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1" />
-        <rect x="8" y="8" width="134" height="20" rx="6" fill="#FAF9F6" />
+        <rect x="0" y="0" width="150" height="100" rx="14" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1" />
+        <rect x="8" y="8" width="134" height="20" rx="6" fill="#f8fafc" />
         <text x="14" y="21.5" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
           STAGE 02 • SECURITY
         </text>
@@ -1332,7 +1376,7 @@ function VisualWorkflowPipelineSvg() {
           studio API OAuth 2.0 Vault
         </text>
         <g transform="translate(12, 68)">
-          <rect x="0" y="0" width="126" height="20" rx="10" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="126" height="20" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="63" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
             🔒 Encrypted &amp; Authorized
           </text>
@@ -1341,8 +1385,8 @@ function VisualWorkflowPipelineSvg() {
 
       {/* Node 3: Rules & Settings */}
       <g transform="translate(378, 35)" filter="url(#nodeShadow)">
-        <rect x="0" y="0" width="145" height="100" rx="14" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1" />
-        <rect x="8" y="8" width="129" height="20" rx="6" fill="#FAF9F6" />
+        <rect x="0" y="0" width="145" height="100" rx="14" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1" />
+        <rect x="8" y="8" width="129" height="20" rx="6" fill="#f8fafc" />
         <text x="14" y="21.5" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
           STAGE 03 • RULES
         </text>
@@ -1353,7 +1397,7 @@ function VisualWorkflowPipelineSvg() {
           FBA/FBM &amp; Shipped only
         </text>
         <g transform="translate(12, 68)">
-          <rect x="0" y="0" width="121" height="20" rx="10" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="121" height="20" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="60.5" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
             Auto On/Off: ACTIVE
           </text>
@@ -1366,34 +1410,34 @@ function VisualWorkflowPipelineSvg() {
 
       {/* Central Heart: Autonomous Cron Engine */}
       <g transform="translate(20, 185)" filter="url(#nodeShadow)">
-        <rect x="0" y="0" width="245" height="115" rx="18" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1.5" />
+        <rect x="0" y="0" width="245" height="115" rx="18" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1.5" />
         <rect x="10" y="10" width="225" height="22" rx="7" fill="#282828" />
-        <circle cx="24" cy="21" r="3.5" fill="#D2B48C">
+        <circle cx="24" cy="21" r="3.5" fill="#4f6ef7">
           <animate attributeName="opacity" values="1;0.2;1" dur="1s" repeatCount="indefinite" />
         </circle>
-        <text x="34" y="24.5" fill="#D2B48C" fontFamily="system-ui" fontSize="9" fontWeight="900">
+        <text x="34" y="24.5" fill="#4f6ef7" fontFamily="system-ui" fontSize="9" fontWeight="900">
           AUTONOMOUS CRON HUB
         </text>
         
         {/* 3 Step Pill Loop: Fetch -> Review -> Send */}
         <g transform="translate(14, 42)">
-          <rect x="0" y="0" width="58" height="26" rx="7" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="58" height="26" rx="7" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="29" y="17" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">Fetch</text>
           
-          <text x="66" y="17" fill="#D2B48C" fontSize="11" fontWeight="bold">➔</text>
+          <text x="66" y="17" fill="#4f6ef7" fontSize="11" fontWeight="bold">➔</text>
           
-          <rect x="76" y="0" width="60" height="26" rx="7" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="76" y="0" width="60" height="26" rx="7" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="106" y="17" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">Review</text>
           
-          <text x="144" y="17" fill="#D2B48C" fontSize="11" fontWeight="bold">➔</text>
+          <text x="144" y="17" fill="#4f6ef7" fontSize="11" fontWeight="bold">➔</text>
 
           <rect x="154" y="0" width="56" height="26" rx="7" fill="#282828" />
-          <text x="182" y="17" textAnchor="middle" fill="#FAF9F6" fontFamily="system-ui" fontSize="9.5" fontWeight="900">Send</text>
+          <text x="182" y="17" textAnchor="middle" fill="#f8fafc" fontFamily="system-ui" fontSize="9.5" fontWeight="900">Send</text>
         </g>
 
         <g transform="translate(14, 78)">
-          <rect x="0" y="0" width="217" height="24" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
-          <circle cx="14" cy="12" r="3" fill="#D2B48C" />
+          <rect x="0" y="0" width="217" height="24" rx="12" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
+          <circle cx="14" cy="12" r="3" fill="#4f6ef7" />
           <text x="112" y="15.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
             Cron Job Scheduler Active
           </text>
@@ -1402,14 +1446,14 @@ function VisualWorkflowPipelineSvg() {
 
       {/* Output Destination: Verified Amazon Review Solicitation */}
       <g transform="translate(345, 185)" filter="url(#nodeShadow)">
-        <rect x="0" y="0" width="180" height="115" rx="18" fill="#FFFFFF" stroke="#D2B48C" strokeWidth="1.4" />
-        <rect x="10" y="10" width="160" height="22" rx="7" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.6" />
+        <rect x="0" y="0" width="180" height="115" rx="18" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="1.4" />
+        <rect x="10" y="10" width="160" height="22" rx="7" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.6" />
         <text x="90" y="24.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="900">
           5-STAR REVIEW CONVERSION
         </text>
 
         <g transform="translate(90, 54)">
-          <text x="0" y="0" textAnchor="middle" fill="#D2B48C" fontSize="15" fontWeight="bold">
+          <text x="0" y="0" textAnchor="middle" fill="#4f6ef7" fontSize="15" fontWeight="bold">
             ★★★★★
           </text>
           <text x="0" y="17" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="10" fontWeight="800">
@@ -1418,7 +1462,7 @@ function VisualWorkflowPipelineSvg() {
         </g>
 
         <g transform="translate(10, 80)">
-          <rect x="0" y="0" width="160" height="22" rx="11" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="0.8" />
+          <rect x="0" y="0" width="160" height="22" rx="11" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="80" y="14.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="800">
             ✓ 100% Policy Compliant
           </text>
@@ -1427,8 +1471,8 @@ function VisualWorkflowPipelineSvg() {
 
       {/* Bottom Telemetry Bar */}
       <g transform="translate(25, 330)">
-        <rect x="0" y="0" width="490" height="26" rx="13" fill="#FAF9F6" stroke="#E7E5E4" strokeWidth="0.8" />
-        <circle cx="16" cy="13" r="3" fill="#D2B48C" />
+        <rect x="0" y="0" width="490" height="26" rx="13" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="0.8" />
+        <circle cx="16" cy="13" r="3" fill="#4f6ef7" />
         <text x="26" y="16.5" fill="#78716C" fontFamily="system-ui" fontSize="8" fontWeight="700">
           Order Ingestion ➔ studio API OAuth ➔ Rules Engine ➔ Cron Automation ➔ Amazon Feedback Delivered
         </text>

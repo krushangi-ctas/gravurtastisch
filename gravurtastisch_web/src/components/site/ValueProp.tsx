@@ -19,7 +19,7 @@ export function ValueProp() {
       titleKey: "feature1Title",
       bodyKey: "feature1Body",
       tag: t("valueProp.feature1Tag", "Drinkware"),
-      accent: "from-[#282828] to-[#4A4A4A]",
+      accent: "from-[#0032ab] to-[#4f6ef7]",
     },
     {
       id: "02",
@@ -27,7 +27,7 @@ export function ValueProp() {
       titleKey: "feature2Title",
       bodyKey: "feature2Body",
       tag: t("valueProp.feature2Tag", "Laser engraving"),
-      accent: "from-[#4A4A4A] to-[#6E6E6E]",
+      accent: "from-[#4f6ef7] to-[#155dfc]",
     },
     {
       id: "03",
@@ -35,7 +35,7 @@ export function ValueProp() {
       titleKey: "feature3Title",
       bodyKey: "feature3Body",
       tag: t("valueProp.feature3Tag", "Lifestyle"),
-      accent: "from-[#181818] to-[#282828]",
+      accent: "from-[#1447e6] to-[#0032ab]",
     },
     {
       id: "04",
@@ -43,17 +43,17 @@ export function ValueProp() {
       titleKey: "feature4Title",
       bodyKey: "feature4Body",
       tag: t("valueProp.feature4Tag", "Apparel"),
-      accent: "from-[#3A3A3A] to-[#5A5A5A]",
+      accent: "from-[#0032ab] to-[#3080ff]",
     },
   ];
 
   return (
-    <section className="relative py-20 lg:py-28 bg-[#F8F8F6] overflow-hidden">
+    <section className="relative py-20 lg:py-28 bg-[#f8f9fc] overflow-hidden">
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.45]"
         style={{
           backgroundImage:
-            "radial-gradient(circle at 12% 20%, rgba(40,40,40,0.06), transparent 42%), radial-gradient(circle at 88% 70%, rgba(80,80,80,0.06), transparent 40%)",
+            "radial-gradient(circle at 12% 20%, rgba(0,50,171,0.05), transparent 42%), radial-gradient(circle at 88% 70%, rgba(79,110,247,0.05), transparent 40%)",
         }}
         aria-hidden
       />
@@ -61,7 +61,7 @@ export function ValueProp() {
       <Container className="relative">
         <Reveal>
           <div className="max-w-3xl">
-            <span className="text-xs font-bold uppercase tracking-[0.22em] text-brand">
+            <span className="section-badge mb-3">
               {t("valueProp.sectionLabel")}
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
@@ -82,16 +82,16 @@ export function ValueProp() {
             return (
               <Reveal key={f.id} delay={i * 60}>
                 <article
-                  className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.75rem] border border-[#E5E5DF] bg-white p-6 sm:p-7 shadow-[0_1px_0_rgba(40,40,40,0.04)] hover:shadow-[0_24px_60px_-28px_rgba(40,40,40,0.25)] hover:-translate-y-1 transition-all duration-300"
+                  className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[1.75rem] liquid-glass border border-[#0032ab]/12 p-6 sm:p-7 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_20px_48px_rgba(0,50,171,0.12)] hover:-translate-y-1.5 transition-all duration-300"
                 >
                   <div>
                     <div
-                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${f.accent} opacity-80`}
+                      className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${f.accent} opacity-85`}
                       aria-hidden
                     />
                     <div className="flex items-start justify-between gap-4">
                       <div
-                        className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${f.accent} text-white shadow-md`}
+                        className={`grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br ${f.accent} text-white shadow-md shadow-[#0032ab]/25`}
                       >
                         <Icon className="h-5 w-5" strokeWidth={1.75} />
                       </div>
@@ -107,7 +107,7 @@ export function ValueProp() {
                     </p>
                   </div>
                   <div className="mt-6 flex items-center justify-between pt-2">
-                    <span className="rounded-full border border-[#E5E5DF] bg-[#F2F2EF] px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand">
+                    <span className="rounded-full border border-[#0032ab]/15 bg-[#0032ab]/05 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand">
                       {f.tag}
                     </span>
                     <ArrowUpRight className="h-4 w-4 text-slate-300 group-hover:text-brand group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />

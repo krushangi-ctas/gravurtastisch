@@ -196,14 +196,14 @@ export function Pricing() {
   };
 
   return (
-    <section id="pricing" className="relative py-12 lg:py-16 bg-surface-alt">
+    <section id="pricing" className="relative py-12 lg:py-16 bg-[#f8f9fc]">
       <Container>
         <Reveal>
           <div className="max-w-3xl">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+            <span className="section-badge mb-3">
               {t("pricing.sectionLabel")}
             </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
               {t("pricing.heading1")}
               <br />
               {t("pricing.heading2")}
@@ -219,8 +219,8 @@ export function Pricing() {
                     type="button"
                     onClick={() => setCycleFilter("all")}
                     className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === "all"
-                      ? "bg-navy-deep text-white shadow-xs"
-                      : "text-slate-body hover:text-navy-deep"
+                      ? "bg-brand !text-white shadow-xs"
+                      : "text-slate-body hover:text-brand"
                       }`}
                   >
                     All Plans ({plans.length})
@@ -230,8 +230,8 @@ export function Pricing() {
                       type="button"
                       onClick={() => setCycleFilter(1)}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 1
-                        ? "bg-navy-deep text-white shadow-xs"
-                        : "text-slate-body hover:text-navy-deep"
+                        ? "bg-brand !text-white shadow-xs"
+                        : "text-slate-body hover:text-brand"
                         }`}
                     >
                       Monthly
@@ -242,8 +242,8 @@ export function Pricing() {
                       type="button"
                       onClick={() => setCycleFilter(2)}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 2
-                        ? "bg-navy-deep text-white shadow-xs"
-                        : "text-slate-body hover:text-navy-deep"
+                        ? "bg-brand !text-white shadow-xs"
+                        : "text-slate-body hover:text-brand"
                         }`}
                     >
                       Quarterly
@@ -254,8 +254,8 @@ export function Pricing() {
                       type="button"
                       onClick={() => setCycleFilter(3)}
                       className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 3
-                        ? "bg-navy-deep text-white shadow-xs"
-                        : "text-slate-body hover:text-navy-deep"
+                        ? "bg-brand !text-white shadow-xs"
+                        : "text-slate-body hover:text-brand"
                         }`}
                     >
                       Yearly
@@ -287,28 +287,24 @@ export function Pricing() {
                 <div
                   key={plan._id || plan.id || `${plan.name}-${index}`}
                   className={`relative flex flex-col rounded-3xl p-8 lg:p-10 transition-all duration-300 hover:-translate-y-1 ${isHighlight
-                    ? "bg-gradient-to-br from-navy-deep to-navy text-white shadow-xl shadow-navy-deep/25"
+                    ? "bg-white border-2 border-brand shadow-xl shadow-brand/15 ring-4 ring-brand/10 -translate-y-1"
                     : "bg-white border border-border shadow-sm hover:shadow-md"
                     }`}
                 >
                   <div className="flex items-center justify-between gap-2">
                     <p
-                      className={`text-xs font-bold uppercase tracking-widest truncate ${isHighlight ? "text-brand" : "text-[#9E7A52]"
-                        }`}
+                      className="text-xs font-bold uppercase tracking-widest truncate text-brand"
                     >
                       {tag}
                     </p>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {isHighlight && (
-                        <span className="rounded-full bg-brand px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-navy-deep shadow-xs">
+                        <span className="rounded-full bg-brand text-white px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider shadow-xs">
                           {t("pricing.popular") || "Popular"}
                         </span>
                       )}
                       <span
-                        className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${isHighlight
-                          ? "bg-white/15 text-brand border border-white/20"
-                          : "bg-[#FAF5EE] text-[#9A6F33] border border-[#EBDCC8]"
-                          }`}
+                        className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-brand/10 text-brand border border-brand/20"
                       >
                         {getCycleBadge(plan.billingCycle)}
                       </span>
@@ -316,8 +312,7 @@ export function Pricing() {
                   </div>
 
                   <h3
-                    className={`mt-2 text-3xl font-extrabold ${isHighlight ? "text-white" : "text-navy-deep"
-                      }`}
+                    className="mt-2 text-3xl font-extrabold text-foreground"
                   >
                     {plan.name}
                   </h3>
@@ -325,14 +320,12 @@ export function Pricing() {
                   <div className="mt-8 min-h-[3.5rem] flex items-end">
                     <div className="flex items-baseline gap-1">
                       <span
-                        className={`text-5xl font-extrabold tracking-tight ${isHighlight ? "text-white" : "text-navy-deep"
-                          }`}
+                        className="text-5xl font-extrabold tracking-tight text-foreground"
                       >
                         ${plan.price}
                       </span>
                       <span
-                        className={`${isHighlight ? "text-white/65" : "text-slate-body"
-                          } text-sm font-semibold`}
+                        className="text-slate-body text-sm font-semibold"
                       >
                         {getCycleSuffix(plan.billingCycle)}
                       </span>
@@ -340,8 +333,7 @@ export function Pricing() {
                   </div>
 
                   <p
-                    className={`mt-3 text-sm ${isHighlight ? "text-white/75" : "text-slate-body"
-                      }`}
+                    className="mt-3 text-sm text-slate-body"
                   >
                     {plan.request_quota
                       ? `${Number(plan.request_quota).toLocaleString()} custom units / month included`
@@ -352,11 +344,10 @@ export function Pricing() {
                     {perks.map((p: string) => (
                       <li key={p} className="flex items-start gap-2.5 text-sm">
                         <Check
-                          className={`h-4 w-4 mt-0.5 shrink-0 ${isHighlight ? "text-brand" : "text-[#B8966C]"
-                            }`}
+                          className="h-4 w-4 mt-0.5 shrink-0 text-brand"
                           strokeWidth={2.5}
                         />
-                        <span className={isHighlight ? "text-white/90" : "text-navy-deep"}>
+                        <span className="text-foreground">
                           {p}
                         </span>
                       </li>
@@ -367,9 +358,9 @@ export function Pricing() {
                     type="button"
                     disabled={isLoading}
                     onClick={() => openCheckout(plan)}
-                    className="mt-10 inline-flex w-full items-center justify-center rounded-full bg-brand px-5 py-3.5 text-sm font-bold text-navy-deep shadow-sm hover:shadow-md hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300"
+                    className="mt-10 inline-flex w-full items-center justify-center rounded-full btn-glass-primary !py-3.5 px-5 text-sm font-bold !text-white shadow-md hover:-translate-y-0.5 transition-all duration-300"
                   >
-                    {t("pricing.tiers.starter.cta") || "Get started"}
+                    <span className="!text-white font-bold">{t("pricing.tiers.starter.cta") || "Get started"}</span>
                   </button>
                 </div>
               );
@@ -384,7 +375,7 @@ export function Pricing() {
                 <Sparkles className="h-6 w-6 text-brand" />
               </div>
               <div>
-                <h4 className="text-lg sm:text-xl font-bold text-navy-deep">
+                <h4 className="text-lg sm:text-xl font-bold text-foreground">
                   {t("pricing.customPlanTitle") || "Need a custom high-volume plan?"}
                 </h4>
                 <p className="mt-1 text-sm text-slate-body max-w-xl">
@@ -396,10 +387,10 @@ export function Pricing() {
 
             <a
               href="/#contact"
-              className="inline-flex items-center justify-center gap-2 rounded-full bg-navy-deep px-6 py-3.5 text-sm font-semibold text-white shadow-md hover:bg-navy transition-all duration-300 shrink-0 group hover:shadow-lg"
+              className="inline-flex items-center justify-center gap-2 rounded-full btn-glass-primary px-6 py-3.5 text-sm font-bold !text-white shadow-md hover:-translate-y-0.5 transition-all duration-300 shrink-0 group hover:shadow-lg"
             >
-              <span>{t("pricing.customPlanCta") || "Contact for Custom Plan"}</span>
-              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+              <span className="!text-white font-bold">{t("pricing.customPlanCta") || "Contact for Custom Plan"}</span>
+              <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1 !text-white" />
             </a>
           </div>
         </Reveal>
@@ -408,7 +399,7 @@ export function Pricing() {
       {/* Stripe checkout email gate — then redirect to Stripe hosted Checkout */}
       {selectedPlan && (
         <div
-          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-navy-deep/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
           role="dialog"
           aria-modal="true"
           aria-labelledby="checkout-title"
@@ -426,7 +417,7 @@ export function Pricing() {
                 <h3 id="checkout-title" className="mt-1 text-xl font-extrabold text-navy-deep">
                   {selectedPlan.name} — ${selectedPlan.price}{getCycleSuffix(selectedPlan.billingCycle)}
                 </h3>
-                <span className="inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#FAF5EE] text-[#9A6F33] border border-[#EBDCC8]">
+                <span className="inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
                   {getCycleBillingText(selectedPlan.billingCycle)}
                 </span>
                 <p className="mt-1.5 text-sm text-slate-body">
@@ -483,17 +474,17 @@ export function Pricing() {
               <button
                 type="submit"
                 disabled={checkoutLoading || !(selectedPlan._id || selectedPlan.id)}
-                className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-brand px-5 py-3.5 text-sm font-bold text-navy-deep hover:bg-brand-bright disabled:opacity-60 transition"
+                className="w-full inline-flex items-center justify-center gap-2 rounded-full btn-glass-primary !py-3.5 px-5 text-sm font-bold !text-white hover:opacity-95 disabled:opacity-60 transition shadow-md"
               >
                 {checkoutLoading ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Opening Stripe…
+                    <Loader2 className="h-4 w-4 animate-spin text-white" />
+                    <span className="!text-white">Opening Stripe…</span>
                   </>
                 ) : (
                   <>
-                    Continue to Stripe
-                    <ArrowRight className="h-4 w-4" />
+                    <span className="!text-white">Continue to Stripe</span>
+                    <ArrowRight className="h-4 w-4 text-white" />
                   </>
                 )}
               </button>

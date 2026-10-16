@@ -25,14 +25,14 @@ function PaymentCancelPage() {
               <Link
                 to="/"
                 hash="pricing"
-                className="inline-flex rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition"
+                className="inline-flex rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white transition"
               >
                 Choose a plan
               </Link>
               <Link
                 to="/"
                 hash="contact"
-                className="inline-flex rounded-full border border-border px-6 py-3 text-sm font-semibold text-navy-deep hover:bg-surface-alt transition"
+                className="inline-flex rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-surface-alt transition"
               >
                 Talk to us
               </Link>

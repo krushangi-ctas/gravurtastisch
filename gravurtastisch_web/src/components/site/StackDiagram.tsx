@@ -17,11 +17,11 @@ export function StackDiagram() {
   ];
 
   return (
-    <section id="stack" className="relative py-12 lg:py-16 bg-white overflow-hidden">
+    <section id="stack" className="relative py-12 lg:py-16 bg-[#f8f9fc] overflow-hidden">
       <Container>
         <div className="grid lg:grid-cols-12 gap-8 items-center">
           <Reveal className="lg:col-span-5 min-w-0 w-full">
-            <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+            <span className="section-badge mb-3">
               {t("stackDiagram.sectionLabel")}
             </span>
             <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
@@ -42,7 +42,7 @@ export function StackDiagram() {
           <Reveal className="lg:col-span-7 min-w-0 w-full" delay={120}>
             <div className="relative space-y-3">
               <div
-                className="absolute left-[1.15rem] top-6 bottom-6 w-px bg-gradient-to-b from-brand via-[#E89B5C]/60 to-navy-deep"
+                className="absolute left-[1.15rem] top-6 bottom-6 w-px bg-gradient-to-b from-[#0032ab] via-[#4f6ef7] to-[#155dfc]"
                 aria-hidden
               />
               {layers.map((l, i) => (
@@ -51,10 +51,10 @@ export function StackDiagram() {
                   className="relative flex items-center gap-3 sm:gap-4 pl-0 group"
                   style={{ animationDelay: `${i * 0.08}s` }}
                 >
-                  <span className="relative z-10 grid place-items-center h-9 w-9 shrink-0 rounded-full bg-white border-2 border-brand text-[10px] font-mono font-bold text-brand shadow-sm pulse-node">
+                  <span className="relative z-10 grid place-items-center h-9 w-9 shrink-0 rounded-full bg-white border-2 border-[#0032ab] text-[10px] font-mono font-bold text-[#0032ab] shadow-sm pulse-node">
                     {String(i).padStart(2, "0")}
                   </span>
-                  <div className="flex-1 min-w-0 flex items-center justify-between gap-3 sm:gap-4 rounded-2xl border border-border bg-surface px-4 py-3.5 sm:px-5 sm:py-4 transition-all duration-300 group-hover:border-brand/40 group-hover:shadow-md group-hover:-translate-y-0.5">
+                  <div className="flex-1 min-w-0 flex items-center justify-between gap-3 sm:gap-4 rounded-2xl liquid-glass border border-[#0032ab]/12 px-4 py-3.5 sm:px-5 sm:py-4 transition-all duration-300 group-hover:border-[#0032ab]/40 group-hover:shadow-md group-hover:-translate-y-0.5">
                     <div className="min-w-0 flex-1">
                       <p className="font-bold text-navy-deep text-sm sm:text-base leading-snug">
                         {t(`stackDiagram.${l.labelKey}`)}
