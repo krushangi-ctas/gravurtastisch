@@ -354,14 +354,12 @@ export function Pricing() {
                     ))}
                   </ul>
 
-                  <button
-                    type="button"
-                    disabled={isLoading}
-                    onClick={() => openCheckout(plan)}
+                  <a
+                    href="/#contact"
                     className="mt-10 inline-flex w-full items-center justify-center rounded-full btn-glass-primary !py-3.5 px-5 text-sm font-bold !text-white shadow-md hover:-translate-y-0.5 transition-all duration-300"
                   >
                     <span className="!text-white font-bold">{t("pricing.tiers.starter.cta") || "Get started"}</span>
-                  </button>
+                  </a>
                 </div>
               );
             })}
