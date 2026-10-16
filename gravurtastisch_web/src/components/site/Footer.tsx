@@ -116,16 +116,7 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-700 relative overflow-hidden border-t-2 border-[#0032ab]/20 shadow-[inset_0_4px_24px_rgba(0,50,171,0.05)]">
-      {/* EcomRetails-style Liquid Top Accent Line */}
-      <div
-        className="absolute top-0 inset-x-0 h-[3px] pointer-events-none z-20"
-        style={{
-          background: "linear-gradient(90deg, #0032ab 0%, #4f6ef7 50%, #0032ab 100%)",
-          backgroundSize: "200% 100%",
-          animation: "liquid-flow 6s linear infinite",
-        }}
-      />
+    <footer className="bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-700 relative overflow-hidden">
 
       {/* Live Seamless Floating Wave Ribbons (Confined to middle band, criss-crossing and overlapping) */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">

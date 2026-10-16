@@ -26,6 +26,26 @@ export function FlagDE({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
+export function FlagAT({ className = "w-4 h-3" }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="60" height="12" y="0" fill="#C8102E" />
+      <rect width="60" height="12" y="12" fill="#FFFFFF" />
+      <rect width="60" height="12" y="24" fill="#C8102E" />
+    </svg>
+  );
+}
+
+export function FlagCH({ className = "w-4 h-3" }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="60" height="36" fill="#D52B1E" />
+      <rect width="8" height="22" x="26" y="7" fill="#FFFFFF" />
+      <rect width="22" height="8" x="19" y="14" fill="#FFFFFF" />
+    </svg>
+  );
+}
+
 export function FlagFR({ className = "w-4 h-3" }: FlagProps) {
   return (
     <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
@@ -176,6 +196,10 @@ export function FlagIcon({ code, className = "w-4 h-3" }: { code: string; classN
       return <FlagGB className={className} />;
     case "de":
       return <FlagDE className={className} />;
+    case "at":
+      return <FlagAT className={className} />;
+    case "ch":
+      return <FlagCH className={className} />;
     case "fr":
       return <FlagFR className={className} />;
     case "es":

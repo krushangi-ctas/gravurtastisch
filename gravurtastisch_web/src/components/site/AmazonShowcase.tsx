@@ -20,6 +20,8 @@ import {
 import {
   FlagGB,
   FlagDE,
+  FlagAT,
+  FlagCH,
   FlagFR,
   FlagIT,
   FlagES,
@@ -71,8 +73,8 @@ export function AmazonShowcase() {
 
   const marketplaces = [
     { name: "DE", Flag: FlagDE, share: "Studio DE" },
-    { name: "AT", Flag: FlagDE, share: "Studio AT" },
-    { name: "CH", Flag: FlagDE, share: "Studio CH" },
+    { name: "AT", Flag: FlagAT, share: "Studio AT" },
+    { name: "CH", Flag: FlagCH, share: "Studio CH" },
     { name: "UK", Flag: FlagGB, share: "Studio UK" },
     { name: "FR", Flag: FlagFR, share: "Studio FR" },
     { name: "IT", Flag: FlagIT, share: "Studio IT" },
