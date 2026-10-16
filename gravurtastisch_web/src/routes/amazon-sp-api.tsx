@@ -194,7 +194,7 @@ function AmazonSpApiPage() {
                 <div className="mt-6 flex flex-wrap gap-4">
                   <a
                     href="/#register"
-                    className="inline-flex items-center gap-2 rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep shadow-lg shadow-brand/30 hover:bg-brand-bright hover:-translate-y-0.5 transition-all"
+                    className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
                   >
                     {t('amazonSpApi.heroCtaRegister')}
                     <ArrowRight className="h-4 w-4" />
@@ -213,31 +213,12 @@ function AmazonSpApiPage() {
                   {/* Subtle Glow Backdrop */}
                   <div className="absolute -inset-2 bg-gradient-to-r from-brand/20 via-sky-400/20 to-indigo-500/15 rounded-3xl blur-xl opacity-60 pointer-events-none" />
 
-                  {/* Animated SVG Container (Clean White Background) */}
-                  <div className="relative rounded-2xl bg-white border border-slate-200/80 p-1.5 sm:p-2.5 shadow-2xl overflow-hidden">
+                  {/* Clean SVG Vector Illustration Container */}
+                  <div className="relative flex items-center justify-center select-none">
                     <AmazonSpApiHeroSvg />
                   </div>
 
-                  {/* Floating Micro-Badges (White Card Style - hidden on small mobile to avoid overflow) */}
-                  <div className="hidden sm:flex absolute -top-3 -left-4 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-lg items-center gap-2 backdrop-blur-md">
-                    <div className="h-6 w-6 rounded-lg bg-emerald-50 text-emerald-600 grid place-items-center">
-                      <ShieldCheck className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-[11px] font-bold text-slate-900 leading-tight">{t('amazonSpApi.badgeCertified') || "studio API v1 Certified"}</p>
-                      <p className="text-[10px] text-emerald-600 font-mono font-semibold">{t('amazonSpApi.badgePolicySafe') || "100% Policy-Compliant"}</p>
-                    </div>
-                  </div>
 
-                  <div className="hidden sm:flex absolute -bottom-3 -right-4 bg-white border border-slate-200 rounded-xl px-3 py-1.5 shadow-lg items-center gap-2 backdrop-blur-md">
-                    <div className="h-6 w-6 rounded-lg bg-blue-50 text-brand grid place-items-center">
-                      <Lock className="h-3.5 w-3.5" />
-                    </div>
-                    <div className="text-left">
-                      <p className="text-[11px] font-bold text-slate-900 leading-tight">{t('amazonSpApi.badgeOauthVault') || "OAuth 2.0 LWA Vault"}</p>
-                      <p className="text-[10px] text-slate-500 font-mono">AES-256 GCM</p>
-                    </div>
-                  </div>
                 </div>
               </Reveal>
             </div>
@@ -248,12 +229,17 @@ function AmazonSpApiPage() {
                 const Icon = badge.icon;
                 return (
                   <Reveal key={badge.title} delay={idx * 60}>
-                    <div className="h-full rounded-2xl bg-white/[0.04] border border-white/10 p-5 backdrop-blur-sm hover:border-brand/50 transition-colors">
-                      <div className="h-10 w-10 rounded-xl bg-brand/20 text-brand-bright grid place-items-center mb-3">
-                        <Icon className="h-5 w-5" />
+                    <div className="group relative h-full rounded-2xl bg-white/[0.04] border border-white/10 p-5 backdrop-blur-sm hover:border-brand-bright/50 hover:bg-white/[0.07] hover:-translate-y-1 transition-all duration-300 shadow-lg">
+                      <div className="flex items-center justify-between gap-3 mb-3">
+                        <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/30 grid place-items-center group-hover:scale-105 transition-transform">
+                          <Icon className="h-5 w-5" />
+                        </div>
+                        <span className="font-mono text-[10px] font-bold uppercase tracking-wider text-white/40 group-hover:text-brand-bright transition-colors">
+                          0{idx + 1}
+                        </span>
                       </div>
-                      <h3 className="text-base font-bold text-white mb-1.5">{badge.title}</h3>
-                      <p className="text-xs sm:text-sm text-white/60 leading-relaxed">{badge.desc}</p>
+                      <h3 className="text-base font-bold text-white mb-1.5 group-hover:text-brand-bright transition-colors">{badge.title}</h3>
+                      <p className="text-xs sm:text-sm text-white/70 leading-relaxed">{badge.desc}</p>
                     </div>
                   </Reveal>
                 );
@@ -263,66 +249,81 @@ function AmazonSpApiPage() {
         </section>
 
         {/* 5-Layer Stack Architecture */}
-        <section id="architecture" className="py-10 lg:py-14 bg-surface border-b border-border">
-          <Container>
-            <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 items-center">
+        <section id="architecture" className="relative py-16 lg:py-24 bg-[#f8f9fc] overflow-hidden border-b border-[#0032ab]/10">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.45]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 12% 20%, rgba(0,50,171,0.05), transparent 42%), radial-gradient(circle at 88% 70%, rgba(79,110,247,0.05), transparent 40%)",
+            }}
+            aria-hidden
+          />
+          <Container className="relative">
+            <div className="grid lg:grid-cols-12 gap-8 lg:gap-12 items-center">
               <Reveal className="lg:col-span-5 min-w-0">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                <span className="section-badge mb-3">
                   {t('amazonSpApi.archSectionBadge')}
                 </span>
-                <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                   {t('amazonSpApi.archHeading')}
                 </h2>
-                <p className="mt-3 text-slate-body leading-relaxed text-sm sm:text-base">
+                <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl text-left">
                   {t('amazonSpApi.archDesc')}
                 </p>
 
-                <div className="mt-6 space-y-3.5">
-                  <div className="flex items-start gap-3.5 p-3.5 sm:p-4 rounded-xl bg-white border border-border">
-                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+                <div className="mt-8 space-y-4">
+                  <div className="group relative flex items-start gap-4 p-5 rounded-2xl liquid-glass border border-[#0032ab]/12 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-bold text-navy-deep">{t('amazonSpApi.archFeature1Title') || "AWS SigV4 Authentication"}</h4>
-                      <p className="text-xs text-slate-body mt-0.5 leading-relaxed">{t('amazonSpApi.archFeature1Desc') || "Every request is signed using AWS Signature Version 4 with time-limited tokens."}</p>
+                      <h4 className="text-base font-bold text-navy-deep group-hover:text-brand transition-colors">{t('amazonSpApi.archFeature1Title') || "AWS SigV4 Authentication"}</h4>
+                      <p className="text-xs sm:text-sm text-slate-body mt-1 leading-relaxed">{t('amazonSpApi.archFeature1Desc') || "Every request is signed using AWS Signature Version 4 with time-limited tokens."}</p>
                     </div>
                   </div>
-                  <div className="flex items-start gap-3.5 p-3.5 sm:p-4 rounded-xl bg-white border border-border">
-                    <CheckCircle2 className="h-5 w-5 text-brand shrink-0 mt-0.5" />
+                  <div className="group relative flex items-start gap-4 p-5 rounded-2xl liquid-glass border border-[#0032ab]/12 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300">
+                    <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0">
+                      <CheckCircle2 className="h-5 w-5" />
+                    </div>
                     <div className="min-w-0 flex-1">
-                      <h4 className="text-sm font-bold text-navy-deep">{t('amazonSpApi.archFeature2Title') || "Token Isolation Vault"}</h4>
-                      <p className="text-xs text-slate-body mt-0.5 leading-relaxed">{t('amazonSpApi.archFeature2Desc') || "Tokens live in a dedicated KMS-backed memory enclave, isolated from public web endpoints."}</p>
+                      <h4 className="text-base font-bold text-navy-deep group-hover:text-brand transition-colors">{t('amazonSpApi.archFeature2Title') || "Token Isolation Vault"}</h4>
+                      <p className="text-xs sm:text-sm text-slate-body mt-1 leading-relaxed">{t('amazonSpApi.archFeature2Desc') || "Tokens live in a dedicated KMS-backed memory enclave, isolated from public web endpoints."}</p>
                     </div>
                   </div>
                 </div>
               </Reveal>
 
               <Reveal className="lg:col-span-7 min-w-0" delay={100}>
-                <div className="rounded-3xl bg-navy-deep p-4 sm:p-6 lg:p-8 text-white border border-white/10 shadow-xl space-y-3">
-                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3 mb-3">
-                    <span className="font-mono text-xs text-white/50">ARCH-DIAGRAM // v2.4</span>
-                    <span className="inline-flex items-center gap-1.5 text-xs text-brand-bright font-semibold">
-                      <Cpu className="h-3.5 w-3.5 shrink-0" /> Active studio API Pipeline
+                <div className="rounded-[2rem] liquid-glass bg-white p-6 sm:p-8 text-navy-deep border border-[#0032ab]/15 shadow-[0_16px_45px_rgba(0,50,171,0.08)] space-y-3.5 relative overflow-hidden">
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-4 mb-4">
+                    <div className="flex items-center gap-2">
+                      <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="font-mono text-xs font-bold text-navy-deep">ARCH-DIAGRAM // v2.4</span>
+                    </div>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs text-[#0032ab] font-bold bg-[#0032ab]/10 border border-[#0032ab]/25">
+                      <Cpu className="h-3.5 w-3.5 shrink-0 animate-[spin_8s_linear_infinite]" /> Active studio API Pipeline
                     </span>
                   </div>
 
                   {[
-                    { num: "01", title: t('amazonSpApi.archLayer1Title') || "Amazon Buyer Touchpoint", sub: t('amazonSpApi.archLayer1Sub') || "Official Amazon-rendered template with verified 1-click star rating UI", tag: ".io" },
-                    { num: "02", title: t('amazonSpApi.archLayer2Title') || "Delivery API Gateway", sub: t('amazonSpApi.archLayer2Sub') || "Dispatches review solicitations via official solicitations/v1 endpoint", tag: ".api" },
-                    { num: "03", title: t('amazonSpApi.archLayer3Title') || "Rate-Shaped Queue Worker", sub: t('amazonSpApi.archLayer3Sub') || "Strict throttling to prevent Studio production API 429 quota exceed errors", tag: ".queue" },
-                    { num: "04", title: t('amazonSpApi.archLayer4Title') || "Two-Way Order Sync Engine", sub: t('amazonSpApi.archLayer4Sub') || "Continuous order status, delivery timestamp, and refund event polling", tag: ".sync" },
-                    { num: "05", title: t('amazonSpApi.archLayer5Title') || "KMS Credential Vault", sub: t('amazonSpApi.archLayer5Sub') || "AES-256 encrypted OAuth refresh tokens with automated key rotation", tag: ".vault" },
+                    { num: "01", title: t('amazonSpApi.archLayer1Title') || "Amazon Buyer Touchpoint", sub: t('amazonSpApi.archLayer1Sub') || "Official Amazon-rendered template with verified 1-click star rating UI", tag: ".io", accent: "from-[#0032ab] to-[#155dfc]" },
+                    { num: "02", title: t('amazonSpApi.archLayer2Title') || "Delivery API Gateway", sub: t('amazonSpApi.archLayer2Sub') || "Dispatches review solicitations via official solicitations/v1 endpoint", tag: ".api", accent: "from-[#155dfc] to-[#4f6ef7]" },
+                    { num: "03", title: t('amazonSpApi.archLayer3Title') || "Rate-Shaped Queue Worker", sub: t('amazonSpApi.archLayer3Sub') || "Strict throttling to prevent Studio production API 429 quota exceed errors", tag: ".queue", accent: "from-[#0032ab] to-[#38bdf8]" },
+                    { num: "04", title: t('amazonSpApi.archLayer4Title') || "Two-Way Order Sync Engine", sub: t('amazonSpApi.archLayer4Sub') || "Continuous order status, delivery timestamp, and refund event polling", tag: ".sync", accent: "from-[#155dfc] to-[#0032ab]" },
+                    { num: "05", title: t('amazonSpApi.archLayer5Title') || "KMS Credential Vault", sub: t('amazonSpApi.archLayer5Sub') || "AES-256 encrypted OAuth refresh tokens with automated key rotation", tag: ".vault", accent: "from-emerald-500 to-[#0032ab]" },
                   ].map((layer) => (
                     <div
                       key={layer.num}
-                      className="flex items-center gap-3 sm:gap-4 rounded-xl bg-white/[0.04] border border-white/10 p-3 sm:p-3.5 transition-all hover:border-brand/40 hover:bg-white/[0.07]"
+                      className="group flex items-center gap-3.5 sm:gap-4 rounded-2xl bg-[#f8f9fc] hover:bg-white border border-slate-200/80 hover:border-[#155dfc]/50 p-3.5 sm:p-4 transition-all duration-300 hover:shadow-md hover:translate-x-1"
                     >
-                      <span className="grid place-items-center h-8 w-8 rounded-lg bg-brand/20 text-brand-bright text-xs font-mono font-bold shrink-0">
+                      <span className={`grid place-items-center h-9 w-9 rounded-xl bg-gradient-to-br ${layer.accent} text-white text-xs font-mono font-bold shrink-0 shadow-sm`}>
                         {layer.num}
                       </span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-bold text-white leading-snug">{layer.title}</p>
-                        <p className="text-xs text-white/60 leading-relaxed mt-0.5">{layer.sub}</p>
+                        <p className="text-sm sm:text-base font-extrabold text-navy-deep leading-snug group-hover:text-[#0032ab] transition-colors">{layer.title}</p>
+                        <p className="text-xs text-slate-600 font-medium leading-relaxed mt-0.5">{layer.sub}</p>
                       </div>
-                      <span className="font-mono text-[11px] text-white/40 hidden sm:inline shrink-0">{layer.tag}</span>
+                      <span className="font-mono text-[11px] font-bold text-[#0032ab] group-hover:text-[#155dfc] px-2 py-0.5 rounded bg-[#0032ab]/10 border border-[#0032ab]/20 hidden sm:inline shrink-0">{layer.tag}</span>
                     </div>
                   ))}
                 </div>
@@ -332,41 +333,44 @@ function AmazonSpApiPage() {
         </section>
 
         {/* Endpoints & Technical Specs */}
-        <section className="py-10 lg:py-14 bg-white">
-          <Container>
+        <section className="relative py-16 lg:py-24 bg-white overflow-hidden border-b border-[#0032ab]/10">
+          <Container className="relative">
             <Reveal>
-              <div className="max-w-2xl mb-8">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+              <div className="max-w-3xl mb-12">
+                <span className="section-badge mb-3">
                   {t('amazonSpApi.endpointsSectionBadge')}
                 </span>
-                <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                   {t('amazonSpApi.endpointsHeading')}
                 </h2>
-                <p className="mt-2 text-slate-body text-sm sm:text-base">
+                <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl text-left">
                   {t('amazonSpApi.endpointsDesc') || "Gravurtastisch uses only approved Amazon Selling Partner API endpoints. We never scrape HTML or reverse-engineer private APIs."}
                 </p>
               </div>
             </Reveal>
 
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="grid md:grid-cols-2 gap-6">
               {apiEndpoints.map((ep, i) => (
-                <Reveal key={ep.name} delay={i * 50} className="h-full">
-                  <div className="rounded-2xl border border-border bg-surface p-4 sm:p-5 lg:p-6 h-full flex flex-col justify-between hover:shadow-md transition-shadow">
+                <Reveal key={ep.name} delay={i * 60} className="h-full">
+                  <div className="group relative h-full rounded-[1.75rem] liquid-glass border border-[#0032ab]/12 p-6 sm:p-7 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_20px_48px_rgba(0,50,171,0.12)] hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between">
                     <div>
-                      <div className="flex items-center justify-between gap-2 mb-3">
-                        <span className="font-bold text-navy-deep text-base truncate">{ep.name}</span>
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-brand/10 text-brand shrink-0">
+                      <div className="flex items-center justify-between gap-3 mb-4">
+                        <span className="font-bold text-navy-deep text-lg group-hover:text-brand transition-colors truncate">{ep.name}</span>
+                        <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20 shrink-0">
                           {ep.method}
                         </span>
                       </div>
-                      <div className="rounded-lg bg-slate-900 text-slate-200 font-mono text-[11px] p-2.5 mb-3 overflow-x-auto break-all whitespace-pre-wrap">
-                        {ep.endpoint}
+                      <div className="rounded-xl bg-[#f8f9fc] text-[#0b132b] font-mono text-xs p-3.5 mb-4 overflow-x-auto break-all whitespace-pre-wrap border border-slate-200/90 shadow-xs font-semibold">
+                        <span className="text-[#155dfc] font-black select-none mr-2">$</span>{ep.endpoint}
                       </div>
-                      <p className="text-xs sm:text-sm text-slate-body leading-relaxed">{ep.purpose}</p>
+                      <p className="text-sm text-slate-600 leading-relaxed">{ep.purpose}</p>
                     </div>
-                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-xs text-slate-body">
-                      <span>Status: <strong className="text-brand font-semibold">{ep.status}</strong></span>
-                      <span className="text-slate-400">AWS REST v1</span>
+                    <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                      <span className="flex items-center gap-1.5">
+                        <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                        Status: <strong className="text-brand font-semibold">{ep.status}</strong>
+                      </span>
+                      <span className="font-mono text-slate-400">AWS REST v1</span>
                     </div>
                   </div>
                 </Reveal>
@@ -376,43 +380,51 @@ function AmazonSpApiPage() {
         </section>
 
         {/* Comparison Table: Official studio API vs Scraping vs SMTP */}
-        <section className="py-10 lg:py-14 bg-surface-alt border-y border-border">
-          <Container>
+        <section className="relative py-16 lg:py-24 bg-[#f8f9fc] border-b border-[#0032ab]/10 overflow-hidden">
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.4]"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 10% 30%, rgba(0,50,171,0.05), transparent 45%), radial-gradient(circle at 90% 70%, rgba(79,110,247,0.05), transparent 40%)",
+            }}
+            aria-hidden
+          />
+          <Container className="relative">
             <Reveal>
-              <div className="text-center max-w-3xl mx-auto mb-8">
-                <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+              <div className="text-center max-w-3xl mx-auto mb-12">
+                <span className="section-badge mb-3">
                   {t('amazonSpApi.comparisonBadge')}
                 </span>
-                <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                   {t('amazonSpApi.comparisonHeading')}
                 </h2>
-                <p className="mt-2 text-slate-body text-sm sm:text-base">
+                <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl mx-auto">
                   {t('amazonSpApi.comparisonDesc') || "Compare official Selling Partner API automation with risky legacy alternatives."}
                 </p>
               </div>
             </Reveal>
 
             <Reveal delay={100} className="min-w-0">
-              <div className="overflow-x-auto rounded-2xl border border-border bg-white shadow-sm">
-                <table className="w-full text-left text-sm min-w-[580px] sm:min-w-[640px]">
-                  <thead className="bg-navy-deep text-white text-xs uppercase tracking-wider">
+              <div className="overflow-x-auto rounded-[2rem] liquid-glass border border-[#0032ab]/15 shadow-[0_12px_40px_rgba(0,50,171,0.08)] bg-white">
+                <table className="w-full text-left text-sm min-w-[620px]">
+                  <thead className="bg-[#e2e8f0] border-b border-slate-300 text-navy-deep text-xs uppercase tracking-wider font-mono">
                     <tr>
-                      <th className="p-3.5 sm:p-4">{t('amazonSpApi.compColFeature') || "Security Feature"}</th>
-                      <th className="p-3.5 sm:p-4 text-brand-bright">{t('amazonSpApi.compColGravurtastisch') || "Gravurtastisch (studio API)"}</th>
-                      <th className="p-3.5 sm:p-4 text-slate-300">{t('amazonSpApi.compColScraping') || "Web Scraping / Extensions"}</th>
-                      <th className="p-3.5 sm:p-4 text-slate-300">{t('amazonSpApi.compColSmtp') || "SMTP Buyer Messaging"}</th>
+                      <th className="p-4 sm:p-5 font-bold text-navy-deep">{t('amazonSpApi.compColFeature') || "Quality Feature"}</th>
+                      <th className="p-4 sm:p-5 text-brand font-black bg-[#0032ab]/10 border-x border-[#0032ab]/20">{t('amazonSpApi.compColGravurtastisch') || "Gravurtastisch Hub"}</th>
+                      <th className="p-4 sm:p-5 text-slate-700 font-bold">{t('amazonSpApi.compColScraping') || "Manual Email / Freelancers"}</th>
+                      <th className="p-4 sm:p-5 text-slate-700 font-bold">{t('amazonSpApi.compColSmtp') || "Generic Print Dropship"}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-border">
+                  <tbody className="divide-y divide-slate-100">
                     {comparisonRows.map((row, idx) => (
-                      <tr key={row.feature} className={idx % 2 === 0 ? "bg-white" : "bg-slate-50/50"}>
-                        <td className="p-3.5 sm:p-4 font-semibold text-navy-deep">{row.feature}</td>
-                        <td className="p-3.5 sm:p-4 text-brand font-bold bg-brand/5 flex items-center gap-1.5">
+                      <tr key={row.feature} className={`hover:bg-blue-50/40 transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-slate-50/60"}`}>
+                        <td className="p-4 sm:p-5 font-bold text-navy-deep text-sm">{row.feature}</td>
+                        <td className="p-4 sm:p-5 text-brand font-bold bg-[#0032ab]/[0.04] border-x border-[#0032ab]/12 flex items-center gap-2">
                           <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
                           {row.reviewSnapp}
                         </td>
-                        <td className="p-3.5 sm:p-4 text-stone-500 font-medium">{row.scraping}</td>
-                        <td className="p-3.5 sm:p-4 text-stone-500 font-medium">{row.smtp}</td>
+                        <td className="p-4 sm:p-5 text-slate-500 font-medium text-xs sm:text-sm">{row.scraping}</td>
+                        <td className="p-4 sm:p-5 text-slate-500 font-medium text-xs sm:text-sm">{row.smtp}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -423,30 +435,30 @@ function AmazonSpApiPage() {
         </section>
 
         {/* FAQ Section (2-Column: Left SVG, Right FAQs) */}
-        <section className="py-10 lg:py-14 bg-white border-b border-border">
+        <section className="relative py-16 lg:py-24 bg-white border-b border-[#0032ab]/10">
           <Container>
-            <div className="grid lg:grid-cols-12 gap-8 lg:gap-10 lg:gap-14 items-center">
+            <div className="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
               {/* Left Column: studio API FAQ & Security Assistant Vector Illustration */}
               <Reveal className="lg:col-span-5 xl:col-span-5">
-                <div className="space-y-5">
+                <div className="space-y-6">
                   {/* Clean Vector Graphic (No card background, border, or shadow) */}
                   <div className="relative flex items-center justify-center">
                     <SpApiFaqSvg />
                   </div>
 
-                  <div className="rounded-2xl bg-surface border border-border p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-brand/10 text-brand grid place-items-center shrink-0">
+                  <div className="rounded-2xl liquid-glass border border-[#0032ab]/15 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_12px_32px_rgba(0,50,171,0.12)] transition-all">
+                    <div className="flex items-center gap-3.5">
+                      <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0">
                         <Headphones className="h-5 w-5" />
                       </div>
                       <div>
-                        <p className="text-xs font-bold text-navy-deep leading-tight">{t('amazonSpApi.faqSupportTitle') || "Have custom API questions?"}</p>
-                        <p className="text-[11px] text-slate-body leading-relaxed mt-0.5">{t('amazonSpApi.faqSupportDesc') || "Our team assists with order desk onboarding."}</p>
+                        <p className="text-sm font-bold text-navy-deep leading-tight">{t('amazonSpApi.faqSupportTitle') || "Have custom API questions?"}</p>
+                        <p className="text-xs text-slate-body leading-relaxed mt-0.5">{t('amazonSpApi.faqSupportDesc') || "Our team assists with order desk onboarding."}</p>
                       </div>
                     </div>
                     <a
                       href="/#contact"
-                      className="inline-flex items-center gap-1 text-xs font-bold text-brand hover:text-brand-bright transition-colors shrink-0 self-start sm:self-auto"
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-bright transition-colors shrink-0 self-start sm:self-auto"
                     >
                       {t('amazonSpApi.faqSupportLink') || "Talk to us →"}
                     </a>
@@ -457,33 +469,35 @@ function AmazonSpApiPage() {
               {/* Right Column: FAQs List */}
               <div className="lg:col-span-7 xl:col-span-7">
                 <Reveal>
-                  <div className="mb-6">
-                    <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+                  <div className="mb-8">
+                    <span className="section-badge mb-3">
                       {t('amazonSpApi.faqBadge')}
                     </span>
-                    <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
+                    <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
                       {t('amazonSpApi.faqHeading')}
                     </h2>
-                    <p className="mt-2 text-sm text-slate-body leading-relaxed">
+                    <p className="mt-4 text-base text-slate-body leading-relaxed">
                       {t('amazonSpApi.faqDesc') || "Clear answers on authorization, data security, Amazon ToS compliance, and credentials."}
                     </p>
                   </div>
                 </Reveal>
 
-                <Accordion type="single" collapsible className="w-full space-y-3.5">
+                <Accordion type="single" collapsible className="w-full space-y-4">
                   {faqs.map((faq, idx) => (
                     <Reveal key={idx} delay={idx * 50}>
                       <AccordionItem
                         value={`faq-${idx}`}
-                        className="rounded-2xl border border-border bg-surface px-5 sm:px-6 transition-colors border-b-0"
+                        className="rounded-2xl liquid-glass border border-[#0032ab]/12 px-5 sm:px-6 shadow-[0_2px_12px_rgba(0,50,171,0.04)] hover:border-[#0032ab]/30 transition-all border-b-0"
                       >
-                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-sm sm:text-base py-4 sm:py-5 flex gap-3">
-                          <span className="flex items-center gap-3">
-                            <HelpCircle className="h-5 w-5 text-brand shrink-0" />
+                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-base sm:text-lg py-4 sm:py-5 flex gap-3.5">
+                          <span className="flex items-center gap-3.5">
+                            <span className="flex h-7 w-7 rounded-xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white text-xs font-bold items-center justify-center shrink-0 shadow-sm shadow-[#0032ab]/30">
+                              {idx + 1}
+                            </span>
                             <span>{faq.q}</span>
                           </span>
                         </AccordionTrigger>
-                        <AccordionContent className="text-xs sm:text-sm text-slate-body leading-relaxed pb-5 pl-8">
+                        <AccordionContent className="text-sm text-slate-600 leading-relaxed pb-5 pl-10.5">
                           {faq.a}
                         </AccordionContent>
                       </AccordionItem>
@@ -498,24 +512,29 @@ function AmazonSpApiPage() {
         {/* CTA Banner */}
         <section className="py-8 lg:py-10">
           <Container>
-            <div className="rounded-3xl bg-gradient-to-br from-navy-deep via-navy-deep to-brand p-8 sm:p-12 text-white text-center shadow-xl">
-              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+            <div className="relative rounded-[2rem] liquid-glass bg-white py-8 px-6 sm:py-9 sm:px-10 text-center shadow-[0_12px_40px_rgba(0,50,171,0.06)] border border-[#0032ab]/15 overflow-hidden">
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(0,50,171,0.03),transparent_70%)] pointer-events-none" />
+              <div className="relative inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20 mb-3">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#155dfc] animate-pulse" />
+                {t('amazonSpApi.ctaBadge') || "Zero Password Storage"}
+              </div>
+              <h2 className="relative text-2xl sm:text-3xl font-extrabold text-navy-deep tracking-tight leading-snug">
                 {t('amazonSpApi.ctaHeading')}
               </h2>
-              <p className="mt-3 text-white/75 text-sm sm:text-base max-w-xl mx-auto">
+              <p className="relative mt-2 text-slate-body text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
                 {t('amazonSpApi.ctaDesc')}
               </p>
-              <div className="mt-8 flex flex-wrap justify-center gap-4">
+              <div className="relative mt-5 flex flex-wrap justify-center gap-3">
                 <a
                   href="/#register"
-                  className="inline-flex items-center gap-2 rounded-full bg-brand-bright px-7 py-3.5 text-sm font-bold text-navy-deep hover:bg-white transition-all shadow-lg hover:-translate-y-0.5"
+                  className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-2.5 text-xs sm:text-sm font-bold !text-white transition-all shadow-md shadow-[#0032ab]/20 hover:-translate-y-0.5"
                 >
                   {t('amazonSpApi.ctaButton')}
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href="/#pricing"
-                  className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/20 px-7 py-3.5 text-sm font-semibold text-white hover:bg-white/20 transition-all"
+                  className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-6 py-2.5 text-xs sm:text-sm font-bold text-[#0032ab] hover:bg-blue-50/50 hover:border-[#0032ab]/40 transition-all shadow-xs"
                 >
                   {t('amazonSpApi.ctaPricing') || "View Pricing Plans"}
                 </a>
@@ -544,7 +563,7 @@ function SpApiFaqSvg() {
         {/* Soft Modern Gradients */}
         <linearGradient id="faq-spapi-card-bg" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="100%" stopColor="#FAF9F6" />
+          <stop offset="100%" stopColor="#F8FAFC" />
         </linearGradient>
 
         <linearGradient id="faq-spapi-vault-grad" x1="0" y1="0" x2="1" y2="1">
@@ -554,20 +573,20 @@ function SpApiFaqSvg() {
         </linearGradient>
 
         <linearGradient id="faq-spapi-shield-grad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="50%" stopColor="#B8966C" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="50%" stopColor="#0032ab" />
           <stop offset="100%" stopColor="#282828" />
         </linearGradient>
 
         <linearGradient id="faq-spapi-emerald-badge" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#0032ab" />
         </linearGradient>
 
         <linearGradient id="faq-spapi-brand-beam" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="50%" stopColor="#FAF9F6" />
-          <stop offset="100%" stopColor="#D2B48C" />
+          <stop offset="0%" stopColor="#4f6ef7" />
+          <stop offset="50%" stopColor="#F8FAFC" />
+          <stop offset="100%" stopColor="#4f6ef7" />
         </linearGradient>
 
         {/* Soft Drop Shadows */}
@@ -576,39 +595,39 @@ function SpApiFaqSvg() {
         </filter>
 
         <filter id="faq-spapi-core-glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#D2B48C" floodOpacity="0.25" />
+          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#4f6ef7" floodOpacity="0.25" />
         </filter>
       </defs>
 
       {/* Main Base Canvas Container */}
-      <rect x="8" y="8" width="524" height="464" rx="20" fill="url(#faq-spapi-card-bg)" stroke="#D2B48C" strokeWidth="1.2" />
+      <rect x="8" y="8" width="524" height="464" rx="20" fill="url(#faq-spapi-card-bg)" stroke="#4f6ef7" strokeWidth="1.2" />
 
       {/* Subtle Background Grid & Dots */}
       <g opacity="0.3">
         {[...Array(9)].map((_, i) => (
-          <line key={`fgh-${i}`} x1="8" y1={48 + i * 46} x2="532" y2={48 + i * 46} stroke="#D2B48C" strokeWidth="1" strokeDasharray="3 3" />
+          <line key={`fgh-${i}`} x1="8" y1={48 + i * 46} x2="532" y2={48 + i * 46} stroke="#4f6ef7" strokeWidth="1" strokeDasharray="3 3" />
         ))}
         {[...Array(11)].map((_, i) => (
-          <line key={`fgv-${i}`} x1={32 + i * 46} y1="8" x2={32 + i * 46} y2="472" stroke="#D2B48C" strokeWidth="1" strokeDasharray="3 3" />
+          <line key={`fgv-${i}`} x1={32 + i * 46} y1="8" x2={32 + i * 46} y2="472" stroke="#4f6ef7" strokeWidth="1" strokeDasharray="3 3" />
         ))}
       </g>
 
       {/* Top Header Console Bar */}
       <g transform="translate(24, 22)">
-        <rect width="492" height="34" rx="10" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
-        <circle cx="16" cy="17" r="4" fill="#282828" opacity="0.85" />
-        <circle cx="28" cy="17" r="4" fill="#D2B48C" opacity="0.85" />
-        <circle cx="40" cy="17" r="4" fill="#B8966C" opacity="0.85" />
+        <rect width="492" height="34" rx="10" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="1" />
+        <circle cx="16" cy="17" r="4" fill="#155dfc" opacity="0.85" />
+        <circle cx="28" cy="17" r="4" fill="#4f6ef7" opacity="0.85" />
+        <circle cx="40" cy="17" r="4" fill="#0032ab" opacity="0.85" />
 
-        <text x="56" y="21" fill="#282828" fontFamily="monospace" fontSize="10.5" fontWeight="700">
+        <text x="56" y="21" fill="#0b132b" fontFamily="monospace" fontSize="10.5" fontWeight="700">
           studio API GATEWAY // AWS SigV4 KMS ENCLAVE
         </text>
 
-        <rect x="360" y="7" width="120" height="20" rx="10" fill="#282828" stroke="#D2B48C" />
-        <circle cx="372" cy="17" r="3" fill="#D2B48C">
+        <rect x="360" y="7" width="120" height="20" rx="10" fill="rgba(0,50,171,0.08)" stroke="#155dfc" strokeWidth="1" />
+        <circle cx="372" cy="17" r="3" fill="#155dfc">
           <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
         </circle>
-        <text x="382" y="20.5" fill="#D2B48C" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
+        <text x="382" y="20.5" fill="#0032ab" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
           100% Policy-Safe
         </text>
       </g>
@@ -620,7 +639,7 @@ function SpApiFaqSvg() {
       <path
         d="M 145 150 C 145 200, 210 235, 270 235"
         fill="none"
-        stroke="#D2B48C"
+        stroke="#4f6ef7"
         strokeWidth="2.5"
         strokeDasharray="6 6"
       >
@@ -631,7 +650,7 @@ function SpApiFaqSvg() {
       <path
         d="M 270 235 C 330 235, 395 200, 395 150"
         fill="none"
-        stroke="#D2B48C"
+        stroke="#4f6ef7"
         strokeWidth="2.5"
         strokeDasharray="6 6"
       >
@@ -642,13 +661,13 @@ function SpApiFaqSvg() {
       <path
         d="M 270 295 L 270 345"
         fill="none"
-        stroke="#D2B48C"
+        stroke="#4f6ef7"
         strokeWidth="2"
         strokeDasharray="4 4"
       />
 
       {/* Flowing Energy Packets */}
-      <circle cx="0" cy="0" r="4" fill="#D2B48C">
+      <circle cx="0" cy="0" r="4" fill="#4f6ef7">
         <animateMotion
           path="M 145 150 C 145 200, 210 235, 270 235"
           dur="1.8s"
@@ -657,7 +676,7 @@ function SpApiFaqSvg() {
         <animate attributeName="opacity" values="0.2;1;0.2" dur="1.8s" repeatCount="indefinite" />
       </circle>
 
-      <circle cx="0" cy="0" r="4" fill="#D2B48C">
+      <circle cx="0" cy="0" r="4" fill="#4f6ef7">
         <animateMotion
           path="M 270 235 C 330 235, 395 200, 395 150"
           dur="1.8s"
@@ -670,30 +689,30 @@ function SpApiFaqSvg() {
       {/* 2. TOP-LEFT CARD: AMAZON SELLER CENTRAL LWA AUTH */}
       {/* ==================================================== */}
       <g transform="translate(35, 75)" filter="url(#faq-spapi-shadow)">
-        <rect width="215" height="110" rx="14" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.2" />
+        <rect width="215" height="110" rx="14" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="1.2" />
 
         {/* Amazon Smile Badge */}
-        <rect x="12" y="12" width="34" height="34" rx="8" fill="#282828" stroke="#D2B48C" />
-        <text x="23" y="35" fill="#D2B48C" fontFamily="system-ui" fontSize="18" fontWeight="900">a</text>
+        <rect x="12" y="12" width="34" height="34" rx="8" fill="rgba(0,50,171,0.08)" stroke="#0032ab" strokeWidth="1" />
+        <text x="23" y="35" fill="#0032ab" fontFamily="system-ui" fontSize="18" fontWeight="900">a</text>
 
-        <text x="54" y="24" fill="#282828" fontFamily="system-ui" fontSize="12" fontWeight="700">order desk LWA</text>
-        <text x="54" y="38" fill="#666666" fontFamily="monospace" fontSize="9" fontWeight="700">OAuth 2.0 Token Handshake</text>
+        <text x="54" y="24" fill="#0b132b" fontFamily="system-ui" fontSize="12" fontWeight="700">order desk LWA</text>
+        <text x="54" y="38" fill="#475569" fontFamily="monospace" fontSize="9" fontWeight="700">OAuth 2.0 Token Handshake</text>
 
         {/* Divider */}
-        <line x1="12" y1="54" x2="203" y2="54" stroke="#E5E5DF" strokeWidth="1" />
+        <line x1="12" y1="54" x2="203" y2="54" stroke="#E2E8F0" strokeWidth="1" />
 
         {/* Status Line 1 */}
         <g transform="translate(14, 62)">
-          <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-          <text x="14" y="9" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="600">Zero Passwords Shared</text>
-          <text x="140" y="9" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="700">SECURE</text>
+          <circle cx="4" cy="6" r="3" fill="#155dfc" />
+          <text x="14" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="9.5" fontWeight="600">Zero Passwords Shared</text>
+          <text x="140" y="9" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">SECURE</text>
         </g>
 
         {/* Status Line 2 */}
         <g transform="translate(14, 82)">
-          <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-          <text x="14" y="9" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="600">Scoped API Metadata</text>
-          <text x="135" y="9" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="700">REVOCABLE</text>
+          <circle cx="4" cy="6" r="3" fill="#155dfc" />
+          <text x="14" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="9.5" fontWeight="600">Scoped API Metadata</text>
+          <text x="135" y="9" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">REVOCABLE</text>
         </g>
       </g>
 
@@ -701,30 +720,30 @@ function SpApiFaqSvg() {
       {/* 3. TOP-RIGHT CARD: OFFICIAL SOLICITATIONS API */}
       {/* ==================================================== */}
       <g transform="translate(290, 75)" filter="url(#faq-spapi-shadow)">
-        <rect width="215" height="110" rx="14" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.2" />
+        <rect width="215" height="110" rx="14" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="1.2" />
 
         {/* Solicitations Star Badge */}
-        <rect x="12" y="12" width="34" height="34" rx="8" fill="#282828" stroke="#D2B48C" />
-        <text x="21" y="35" fill="#D2B48C" fontFamily="system-ui" fontSize="17">⭐</text>
+        <rect x="12" y="12" width="34" height="34" rx="8" fill="rgba(0,50,171,0.08)" stroke="#0032ab" strokeWidth="1" />
+        <text x="21" y="35" fill="#4f6ef7" fontFamily="system-ui" fontSize="17">⭐</text>
 
-        <text x="54" y="24" fill="#282828" fontFamily="system-ui" fontSize="12" fontWeight="700">Official Solicitations</text>
-        <text x="54" y="38" fill="#666666" fontFamily="monospace" fontSize="9" fontWeight="700">solicitations/v1 API</text>
+        <text x="54" y="24" fill="#0b132b" fontFamily="system-ui" fontSize="12" fontWeight="700">Official Solicitations</text>
+        <text x="54" y="38" fill="#475569" fontFamily="monospace" fontSize="9" fontWeight="700">solicitations/v1 API</text>
 
         {/* Divider */}
-        <line x1="12" y1="54" x2="203" y2="54" stroke="#E5E5DF" strokeWidth="1" />
+        <line x1="12" y1="54" x2="203" y2="54" stroke="#E2E8F0" strokeWidth="1" />
 
         {/* Status Line 1 */}
         <g transform="translate(14, 62)">
-          <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-          <text x="14" y="9" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="600">Amazon Standard Email</text>
-          <text x="138" y="9" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="700">VERIFIED</text>
+          <circle cx="4" cy="6" r="3" fill="#155dfc" />
+          <text x="14" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="9.5" fontWeight="600">Amazon Standard Email</text>
+          <text x="138" y="9" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">VERIFIED</text>
         </g>
 
         {/* Status Line 2 */}
         <g transform="translate(14, 82)">
-          <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-          <text x="14" y="9" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="600">1-Click Star Rating UI</text>
-          <text x="135" y="9" fill="#282828" fontFamily="monospace" fontSize="8.5" fontWeight="700">IN-BOX</text>
+          <circle cx="4" cy="6" r="3" fill="#155dfc" />
+          <text x="14" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="9.5" fontWeight="600">1-Click Star Rating UI</text>
+          <text x="135" y="9" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">IN-BOX</text>
         </g>
       </g>
 
@@ -733,7 +752,7 @@ function SpApiFaqSvg() {
       {/* ==================================================== */}
       <g transform="translate(270, 235)" filter="url(#faq-spapi-core-glow)">
         {/* Rotating Concentric Tech Security Rings */}
-        <circle cx="0" cy="0" r="56" fill="none" stroke="#D2B48C" strokeWidth="1.5" strokeDasharray="6 8">
+        <circle cx="0" cy="0" r="56" fill="none" stroke="#4f6ef7" strokeWidth="1.5" strokeDasharray="6 8">
           <animateTransform
             attributeName="transform"
             type="rotate"
@@ -744,7 +763,7 @@ function SpApiFaqSvg() {
           />
         </circle>
 
-        <circle cx="0" cy="0" r="48" fill="none" stroke="#D2B48C" strokeWidth="2" strokeDasharray="16 20">
+        <circle cx="0" cy="0" r="48" fill="none" stroke="#4f6ef7" strokeWidth="2" strokeDasharray="16 20">
           <animateTransform
             attributeName="transform"
             type="rotate"
@@ -759,7 +778,7 @@ function SpApiFaqSvg() {
         <polygon
           points="0,-40 35,-20 35,20 0,40 -35,20 -35,-20"
           fill="url(#faq-spapi-vault-grad)"
-          stroke="#D2B48C"
+          stroke="#4f6ef7"
           strokeWidth="2"
         />
 
@@ -767,24 +786,24 @@ function SpApiFaqSvg() {
         <path
           d="M 0 -20 C 12 -20 18 -12 18 4 C 18 16 0 24 0 24 C 0 24 -18 16 -18 4 C -18 -12 -12 -20 0 -20 Z"
           fill="url(#faq-spapi-shield-grad)"
-          stroke="#D2B48C"
+          stroke="#4f6ef7"
           strokeWidth="1.5"
         />
 
         {/* Central Padlock Icon */}
         <g transform="translate(-8, -12)">
-          <rect x="2" y="8" width="12" height="10" rx="2" fill="#FAF9F6" />
-          <path d="M 4 8 L 4 5 C 4 2.8 5.8 1 8 1 C 10.2 1 12 2.8 12 5 L 12 8" fill="none" stroke="#FAF9F6" strokeWidth="2" strokeLinecap="round" />
-          <circle cx="8" cy="13" r="1.5" fill="#282828" />
+          <rect x="2" y="8" width="12" height="10" rx="2" fill="#F8FAFC" />
+          <path d="M 4 8 L 4 5 C 4 2.8 5.8 1 8 1 C 10.2 1 12 2.8 12 5 L 12 8" fill="none" stroke="#F8FAFC" strokeWidth="2" strokeLinecap="round" />
+          <circle cx="8" cy="13" r="1.5" fill="#0032ab" />
         </g>
 
         {/* Center Badge Pill */}
         <g transform="translate(0, 48)">
-          <rect x="-65" y="-10" width="130" height="20" rx="10" fill="#282828" stroke="#D2B48C" strokeWidth="1" />
-          <circle cx="-52" cy="0" r="2.5" fill="#D2B48C">
+          <rect x="-65" y="-10" width="130" height="20" rx="10" fill="#0032ab" stroke="#155dfc" strokeWidth="1" />
+          <circle cx="-52" cy="0" r="2.5" fill="#38bdf8">
             <animate attributeName="opacity" values="1;0.2;1" dur="1.2s" repeatCount="indefinite" />
           </circle>
-          <text x="4" y="3.5" textAnchor="middle" fill="#FAF9F6" fontFamily="monospace" fontSize="8.5" fontWeight="700">
+          <text x="4" y="3.5" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="8.5" fontWeight="700">
             AES-256 KMS VAULT
           </text>
         </g>
@@ -796,61 +815,61 @@ function SpApiFaqSvg() {
       <g transform="translate(24, 352)">
         {/* Card 1: Zero Scraping */}
         <g transform="translate(0, 0)" filter="url(#faq-spapi-shadow)">
-          <rect width="154" height="100" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.2" />
+          <rect width="154" height="100" rx="12" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="1.2" />
           <g>
-            <rect x="10" y="10" width="26" height="26" rx="6" fill="#282828" stroke="#D2B48C" />
-            <text x="18" y="27" fill="#D2B48C" fontFamily="system-ui" fontSize="13" fontWeight="bold">✓</text>
+            <rect x="10" y="10" width="26" height="26" rx="6" fill="rgba(0,50,171,0.08)" stroke="#0032ab" strokeWidth="1" />
+            <text x="18" y="27" fill="#0032ab" fontFamily="system-ui" fontSize="13" fontWeight="bold">✓</text>
 
-            <text x="42" y="22" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="700">Zero Scraping</text>
-            <text x="42" y="32" fill="#666666" fontFamily="system-ui" fontSize="8">No Chrome ext.</text>
+            <text x="42" y="22" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="700">Zero Scraping</text>
+            <text x="42" y="32" fill="#475569" fontFamily="system-ui" fontSize="8">No Chrome ext.</text>
 
-            <line x1="10" y1="44" x2="144" y2="44" stroke="#E5E5DF" strokeWidth="1" />
+            <line x1="10" y1="44" x2="144" y2="44" stroke="#E2E8F0" strokeWidth="1" />
 
-            <text x="10" y="60" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Pure studio API protocol</text>
-            <text x="10" y="74" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Zero HTML injection</text>
+            <text x="10" y="60" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Pure studio API protocol</text>
+            <text x="10" y="74" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Zero HTML injection</text>
 
-            <rect x="10" y="80" width="134" height="14" rx="4" fill="#282828" />
-            <text x="77" y="90" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="7.5" fontWeight="700">100% TOS COMPLIANT</text>
+            <rect x="10" y="80" width="134" height="14" rx="4" fill="rgba(0,50,171,0.08)" stroke="rgba(0,50,171,0.2)" strokeWidth="0.8" />
+            <text x="77" y="90" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="700">100% TOS COMPLIANT</text>
           </g>
         </g>
 
         {/* Card 2: AWS SigV4 Encryption */}
         <g transform="translate(169, 0)" filter="url(#faq-spapi-shadow)">
-          <rect width="154" height="100" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.2" />
+          <rect width="154" height="100" rx="12" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="1.2" />
           <g>
-            <rect x="10" y="10" width="26" height="26" rx="6" fill="#282828" stroke="#D2B48C" />
-            <text x="18" y="27" fill="#D2B48C" fontFamily="system-ui" fontSize="13">🔒</text>
+            <rect x="10" y="10" width="26" height="26" rx="6" fill="rgba(0,50,171,0.08)" stroke="#0032ab" strokeWidth="1" />
+            <text x="18" y="27" fill="#0032ab" fontFamily="system-ui" fontSize="13">🔒</text>
 
-            <text x="42" y="22" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="700">AWS SigV4</text>
-            <text x="42" y="32" fill="#666666" fontFamily="system-ui" fontSize="8">Signed requests</text>
+            <text x="42" y="22" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="700">AWS SigV4</text>
+            <text x="42" y="32" fill="#475569" fontFamily="system-ui" fontSize="8">Signed requests</text>
 
-            <line x1="10" y1="44" x2="144" y2="44" stroke="#E5E5DF" strokeWidth="1" />
+            <line x1="10" y1="44" x2="144" y2="44" stroke="#E2E8F0" strokeWidth="1" />
 
-            <text x="10" y="60" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="500">KMS Key Rotation</text>
-            <text x="10" y="74" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Isolated memory pool</text>
+            <text x="10" y="60" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="500">KMS Key Rotation</text>
+            <text x="10" y="74" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Isolated memory pool</text>
 
-            <rect x="10" y="80" width="134" height="14" rx="4" fill="#282828" />
-            <text x="77" y="90" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="7.5" fontWeight="700">256-BIT ENCRYPTED</text>
+            <rect x="10" y="80" width="134" height="14" rx="4" fill="rgba(0,50,171,0.08)" stroke="rgba(0,50,171,0.2)" strokeWidth="0.8" />
+            <text x="77" y="90" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="700">256-BIT ENCRYPTED</text>
           </g>
         </g>
 
         {/* Card 3: Rate Limiting & Account Safety */}
         <g transform="translate(338, 0)" filter="url(#faq-spapi-shadow)">
-          <rect width="154" height="100" rx="12" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.2" />
+          <rect width="154" height="100" rx="12" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="1.2" />
           <g>
-            <rect x="10" y="10" width="26" height="26" rx="6" fill="#282828" stroke="#D2B48C" />
-            <text x="18" y="27" fill="#D2B48C" fontFamily="system-ui" fontSize="13">🛡️</text>
+            <rect x="10" y="10" width="26" height="26" rx="6" fill="rgba(0,50,171,0.08)" stroke="#0032ab" strokeWidth="1" />
+            <text x="18" y="27" fill="#0032ab" fontFamily="system-ui" fontSize="13">🛡️</text>
 
-            <text x="42" y="22" fill="#282828" fontFamily="system-ui" fontSize="10.5" fontWeight="700">Account Safety</text>
-            <text x="42" y="32" fill="#666666" fontFamily="system-ui" fontSize="8">Rate-shaped queue</text>
+            <text x="42" y="22" fill="#0b132b" fontFamily="system-ui" fontSize="10.5" fontWeight="700">Account Safety</text>
+            <text x="42" y="32" fill="#475569" fontFamily="system-ui" fontSize="8">Rate-shaped queue</text>
 
-            <line x1="10" y1="44" x2="144" y2="44" stroke="#E5E5DF" strokeWidth="1" />
+            <line x1="10" y1="44" x2="144" y2="44" stroke="#E2E8F0" strokeWidth="1" />
 
-            <text x="10" y="60" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Zero 429 Quota errors</text>
-            <text x="10" y="74" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="500">0 Policy warning strikes</text>
+            <text x="10" y="60" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="500">Zero 429 Quota errors</text>
+            <text x="10" y="74" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="500">0 Policy warning strikes</text>
 
-            <rect x="10" y="80" width="134" height="14" rx="4" fill="#282828" />
-            <text x="77" y="90" textAnchor="middle" fill="#D2B48C" fontFamily="monospace" fontSize="7.5" fontWeight="700">STRIKE PROTECTION</text>
+            <rect x="10" y="80" width="134" height="14" rx="4" fill="rgba(0,50,171,0.08)" stroke="rgba(0,50,171,0.2)" strokeWidth="0.8" />
+            <text x="77" y="90" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="700">STRIKE PROTECTION</text>
           </g>
         </g>
       </g>
@@ -869,314 +888,311 @@ function AmazonSpApiHeroSvg() {
       aria-label="Studio production API Connected Architecture Animation"
     >
       <defs>
+        {/* Soft Ambient Radial Lights */}
+        <radialGradient id="spapi-orb-blue" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#4f6ef7" stopOpacity="0.2" />
+          <stop offset="60%" stopColor="#0032ab" stopOpacity="0.06" />
+          <stop offset="100%" stopColor="#001855" stopOpacity="0" />
+        </radialGradient>
+
+        <radialGradient id="spapi-orb-cyan" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.18" />
+          <stop offset="70%" stopColor="#0284c7" stopOpacity="0.05" />
+          <stop offset="100%" stopColor="#001855" stopOpacity="0" />
+        </radialGradient>
+
+
+        {/* Crisp White Card Backgrounds */}
         <linearGradient id="spapi-white-card" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%" stopColor="#FFFFFF" />
           <stop offset="100%" stopColor="#F8FAFC" />
         </linearGradient>
 
+        <linearGradient id="spapi-center-card" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="50%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F0F7FF" />
+        </linearGradient>
+
+        <linearGradient id="spapi-card-border" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#E2E8F0" />
+          <stop offset="50%" stopColor="#CBD5E1" />
+          <stop offset="100%" stopColor="#BFDBFE" />
+        </linearGradient>
+
+        <linearGradient id="spapi-center-border" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#38bdf8" />
+          <stop offset="50%" stopColor="#4f6ef7" />
+          <stop offset="100%" stopColor="#155dfc" />
+        </linearGradient>
+
         <linearGradient id="spapi-blue-header" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#D2B48C" />
-          <stop offset="100%" stopColor="#B8966C" />
+          <stop offset="0%" stopColor="#0032ab" />
+          <stop offset="50%" stopColor="#155dfc" />
+          <stop offset="100%" stopColor="#4f6ef7" />
         </linearGradient>
-
-        <linearGradient id="spapi-shine-light" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0" />
-          <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.75" />
-          <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-        </linearGradient>
-
-        <filter id="spapi-soft-shadow" x="-5%" y="-5%" width="110%" height="110%">
-          <feDropShadow dx="0" dy="4" stdDeviation="6" floodColor="#282828" floodOpacity="0.06" />
-        </filter>
-
-        <clipPath id="spapi-clean-clip">
-          <rect x="0" y="0" width="700" height="450" rx="14" />
-        </clipPath>
       </defs>
 
-      <g clipPath="url(#spapi-clean-clip)">
-        {/* Crisp White Canvas Background */}
-        <rect width="700" height="450" fill="#FFFFFF" />
+      {/* Ambient Glow Orbs */}
+      <circle cx="350" cy="225" r="220" fill="url(#spapi-orb-blue)" pointerEvents="none" />
+      <circle cx="120" cy="180" r="160" fill="url(#spapi-orb-cyan)" pointerEvents="none" />
+      <circle cx="560" cy="240" r="150" fill="url(#spapi-orb-blue)" pointerEvents="none" />
 
-        {/* Subtle Light Grid Pattern */}
-        <g opacity="0.6">
-          {[...Array(14)].map((_, i) => (
-            <line
-              key={`gh-${i}`}
-              x1="0"
-              y1={i * 32}
-              x2="700"
-              y2={i * 32}
-              stroke="#F1F5F9"
-              strokeWidth="1"
-            />
-          ))}
-          {[...Array(22)].map((_, i) => (
-            <line
-              key={`gv-${i}`}
-              x1={i * 32}
-              y1="0"
-              x2={i * 32}
-              y2="450"
-              stroke="#F1F5F9"
-              strokeWidth="1"
-            />
-          ))}
-        </g>
+      {/* Top Terminal Bar (Crisp White Pill) */}
+      <g transform="translate(14, 12)">
+        <rect x="0" y="0" width="672" height="34" rx="17" fill="#FFFFFF" stroke="#E2E8F0" strokeWidth="1.2" style={{ filter: "drop-shadow(0 6px 12px rgba(0, 26, 77, 0.16))" }} />
+        <circle cx="20" cy="17" r="4" fill="#ef4444" />
+        <circle cx="33" cy="17" r="4" fill="#f59e0b" />
+        <circle cx="46" cy="17" r="4" fill="#10b981" />
 
-        {/* Top Terminal Bar (Light SaaS Style) */}
-        <rect x="14" y="12" width="672" height="34" rx="8" fill="#F8FAFC" stroke="#E2E8F0" strokeWidth="1" />
-        <circle cx="32" cy="29" r="4" fill="#78716C" />
-        <circle cx="45" cy="29" r="4" fill="#A8A29E" />
-        <circle cx="58" cy="29" r="4" fill="#D2B48C" />
-
-        <text x="76" y="33" fill="#475569" fontFamily="monospace" fontSize="10.5" fontWeight="600">
+        <text x="64" y="21" fill="#0f172a" fontFamily="monospace" fontSize="10.5" fontWeight="700">
           sp-api-pipeline.ts // AWS SigV4 · OAuth 2.0 LWA
         </text>
 
-        <rect x="548" y="20" width="126" height="18" rx="9" fill="#FAF9F6" stroke="#D2B48C" />
-        <circle cx="560" cy="29" r="3" fill="#D2B48C">
+        <rect x="526" y="6" width="134" height="22" rx="11" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="0.8" />
+        <circle cx="540" cy="17" r="3.5" fill="#10b981">
           <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite" />
         </circle>
-        <text x="570" y="32.5" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
+        <text x="550" y="20.5" fill="#065f46" fontFamily="system-ui" fontSize="9" fontWeight="800">
           studio API · 200 OK
         </text>
+      </g>
 
-        {/* Animated Cables Connecting Nodes */}
-        {/* Left to Center Wire */}
-        <path
-          d="M 215 220 L 260 220"
-          stroke="#D2B48C"
-          strokeWidth="2.5"
-          strokeDasharray="5 5"
-        >
-          <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite" />
-        </path>
+      {/* Animated Connecting Data Cables with Fast Stream Photons */}
+      {/* Left to Center Wire */}
+      <path
+        d="M 215 225 L 260 225"
+        stroke="#38bdf8"
+        strokeWidth="3"
+        strokeDasharray="5 5"
+      >
+        <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite" />
+      </path>
 
-        {/* Center to Right Wire */}
-        <path
-          d="M 440 220 L 485 220"
-          stroke="#D2B48C"
-          strokeWidth="2.5"
-          strokeDasharray="5 5"
-        >
-          <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite" />
-        </path>
+      {/* Center to Right Wire */}
+      <path
+        d="M 440 225 L 485 225"
+        stroke="#38bdf8"
+        strokeWidth="3"
+        strokeDasharray="5 5"
+      >
+        <animate attributeName="stroke-dashoffset" values="0;-20" dur="1.2s" repeatCount="indefinite" />
+      </path>
 
-        {/* Dynamic Flowing Packet Pulses */}
-        <circle cx="237" cy="220" r="3.5" fill="#282828">
-          <animate attributeName="cx" values="215;260" dur="1.2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" />
-        </circle>
+      {/* Flowing Laser Packet Photons */}
+      <circle cx="237" cy="225" r="4" fill="#155dfc" filter="drop-shadow(0 0 4px #38bdf8)">
+        <animate attributeName="cx" values="215;260" dur="1.2s" repeatCount="indefinite" />
+      </circle>
 
-        <circle cx="462" cy="220" r="3.5" fill="#D2B48C">
-          <animate attributeName="cx" values="440;485" dur="1.2s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.3;1;0.3" dur="1.2s" repeatCount="indefinite" />
-        </circle>
+      <circle cx="462" cy="225" r="4" fill="#155dfc" filter="drop-shadow(0 0 4px #38bdf8)">
+        <animate attributeName="cx" values="440;485" dur="1.2s" repeatCount="indefinite" />
+      </circle>
 
-        {/* LEFT NODE: Amazon order desk (OAuth / Orders) */}
-        <g transform="translate(25, 60)" filter="url(#spapi-soft-shadow)">
-          <rect width="190" height="365" rx="12" fill="url(#spapi-white-card)" stroke="#E2E8F0" strokeWidth="1.2" />
+      {/* LEFT NODE: Amazon Seller (Crisp White Card) */}
+      <g transform="translate(25, 58)">
+        <rect width="190" height="370" rx="18" fill="url(#spapi-white-card)" stroke="url(#spapi-card-border)" strokeWidth="1.2" style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }} />
 
-          <rect x="12" y="12" width="30" height="30" rx="6" fill="#FAF9F6" stroke="#D2B48C" />
-          <text x="21" y="32" fill="#282828" fontFamily="system-ui" fontSize="15" fontWeight="bold">a</text>
-
-          <text x="48" y="24" fill="#0F172A" fontFamily="system-ui" fontSize="11" fontWeight="700">Amazon Seller</text>
-          <text x="48" y="37" fill="#64748B" fontFamily="system-ui" fontSize="9">order desk LWA</text>
-
-          <rect x="12" y="52" width="166" height="24" rx="6" fill="#FAF9F6" stroke="#E2E8F0" />
-          <circle cx="22" cy="64" r="3" fill="#D2B48C" />
-          <text x="32" y="67.5" fill="#0F172A" fontFamily="monospace" fontSize="8.5" fontWeight="600">TOKEN: LWA_AUTHORIZED</text>
-
-          <g transform="translate(12, 86)">
-            <rect width="166" height="48" rx="6" fill="#FFFFFF" stroke="#E2E8F0" />
-            <text x="10" y="16" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="700">SCOPES GRANTED</text>
-            <text x="10" y="30" fill="#475569" fontFamily="monospace" fontSize="8.5">✓ orders:v0/read</text>
-            <text x="10" y="42" fill="#475569" fontFamily="monospace" fontSize="8.5">✓ solicitations:v1</text>
-          </g>
-
-          <g transform="translate(12, 142)">
-            <rect width="166" height="46" rx="6" fill="#FFFFFF" stroke="#E2E8F0" />
-            <text x="10" y="16" fill="#282828" fontFamily="system-ui" fontSize="8.5" fontWeight="700">ACCOUNT PROTECTION</text>
-            <text x="10" y="29" fill="#475569" fontFamily="system-ui" fontSize="8.5">0 Password Access</text>
-            <text x="10" y="40" fill="#475569" fontFamily="system-ui" fontSize="8.5">Revocable in 1-Click</text>
-          </g>
-
-          <g transform="translate(12, 198)">
-            <rect width="166" height="152" rx="6" fill="#FFFFFF" stroke="#E2E8F0" />
-            <text x="10" y="16" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="700">REAL-TIME ORDER STREAM</text>
-
-            <g transform="translate(10, 26)">
-              <rect width="146" height="34" rx="4" fill="#FAF9F6" stroke="#F1F5F9" />
-              <circle cx="8" cy="12" r="2.5" fill="#D2B48C">
-                <animate attributeName="r" values="2;3.5;2" dur="1.5s" repeatCount="indefinite" />
-              </circle>
-              <text x="16" y="14" fill="#0F172A" fontFamily="monospace" fontSize="8" fontWeight="600">#114-8923019</text>
-              <text x="16" y="26" fill="#64748B" fontFamily="system-ui" fontSize="7.5">FBA · Water Bottle</text>
-              <text x="102" y="14" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="700">DELIVERED</text>
-            </g>
-
-            <g transform="translate(10, 66)">
-              <rect width="146" height="34" rx="4" fill="#FAF9F6" stroke="#F1F5F9" />
-              <circle cx="8" cy="12" r="2.5" fill="#D2B48C" />
-              <text x="16" y="14" fill="#0F172A" fontFamily="monospace" fontSize="8" fontWeight="600">#402-9918231</text>
-              <text x="16" y="26" fill="#64748B" fontFamily="system-ui" fontSize="7.5">FBA · Leather Wallet</text>
-              <text x="102" y="14" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="700">DELIVERED</text>
-            </g>
-
-            <g transform="translate(10, 106)">
-              <rect width="146" height="34" rx="4" fill="#FAF9F6" stroke="#F1F5F9" />
-              <circle cx="8" cy="12" r="2.5" fill="#D2B48C" />
-              <text x="16" y="14" fill="#0F172A" fontFamily="monospace" fontSize="8" fontWeight="600">#028-4491023</text>
-              <text x="16" y="26" fill="#64748B" fontFamily="system-ui" fontSize="7.5">FBM · Yoga Mat</text>
-              <text x="102" y="14" fill="#282828" fontFamily="monospace" fontSize="7.5" fontWeight="700">SHIPPED</text>
-            </g>
-          </g>
+        {/* Node Header */}
+        <g transform="translate(12, 12)">
+          <rect width="32" height="32" rx="8" fill="#eff6ff" stroke="#bfdbfe" />
+          <text x="11" y="22" fill="#0032ab" fontFamily="system-ui" fontSize="16" fontWeight="bold">a</text>
+          <text x="40" y="14" fill="#0f172a" fontFamily="system-ui" fontSize="11" fontWeight="800">Amazon Seller</text>
+          <text x="40" y="27" fill="#64748b" fontFamily="system-ui" fontSize="8.5">order desk LWA</text>
         </g>
 
-        {/* CENTER HUB: Gravurtastisch studio API Core & Vault */}
-        <g transform="translate(260, 50)" filter="url(#spapi-soft-shadow)">
-          <rect width="180" height="385" rx="14" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1.5" />
+        {/* Token Badge */}
+        <rect x="12" y="54" width="166" height="24" rx="12" fill="#eff6ff" stroke="#bfdbfe" />
+        <circle cx="22" cy="66" r="3" fill="#155dfc" />
+        <text x="32" y="69.5" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">TOKEN: LWA_AUTHORIZED</text>
 
-          <rect x="10" y="10" width="160" height="32" rx="6" fill="#282828" stroke="#D2B48C" strokeWidth="0.8" />
-          <text x="90" y="30" textAnchor="middle" fill="#D2B48C" fontFamily="system-ui" fontSize="11" fontWeight="800" letterSpacing="0.4">
-            Gravurtastisch Core
+        {/* Scopes Box */}
+        <g transform="translate(12, 88)">
+          <rect width="166" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+          <text x="10" y="16" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">SCOPES GRANTED</text>
+          <text x="10" y="30" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">✓ orders:v0/read</text>
+          <text x="10" y="42" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">✓ solicitations:v1</text>
+        </g>
+
+        {/* Protection Box */}
+        <g transform="translate(12, 144)">
+          <rect width="166" height="48" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+          <text x="10" y="16" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">ACCOUNT PROTECTION</text>
+          <text x="10" y="30" fill="#64748b" fontFamily="system-ui" fontSize="8">0 Password Access</text>
+          <text x="10" y="42" fill="#059669" fontFamily="system-ui" fontSize="8" fontWeight="700">Revocable in 1-Click</text>
+        </g>
+
+        {/* Real-Time Order Stream Box */}
+        <g transform="translate(12, 200)">
+          <rect width="166" height="156" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+          <text x="10" y="16" fill="#0f172a" fontFamily="system-ui" fontSize="8" fontWeight="800">REAL-TIME ORDER STREAM</text>
+
+          <g transform="translate(8, 26)">
+            <rect width="150" height="36" rx="6" fill="#FFFFFF" stroke="#e2e8f0" />
+            <circle cx="8" cy="14" r="2.5" fill="#10b981">
+              <animate attributeName="r" values="2;3.5;2" dur="1.5s" repeatCount="indefinite" />
+            </circle>
+            <text x="16" y="15" fill="#0f172a" fontFamily="monospace" fontSize="8" fontWeight="700">#114-8923019</text>
+            <text x="16" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5">FBA · Water Bottle</text>
+            <text x="104" y="15" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">DELIVERED</text>
+          </g>
+
+          <g transform="translate(8, 68)">
+            <rect width="150" height="36" rx="6" fill="#FFFFFF" stroke="#e2e8f0" />
+            <circle cx="8" cy="14" r="2.5" fill="#10b981" />
+            <text x="16" y="15" fill="#0f172a" fontFamily="monospace" fontSize="8" fontWeight="700">#402-9918231</text>
+            <text x="16" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5">FBA · Leather Wallet</text>
+            <text x="104" y="15" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">DELIVERED</text>
+          </g>
+
+          <g transform="translate(8, 110)">
+            <rect width="150" height="36" rx="6" fill="#FFFFFF" stroke="#e2e8f0" />
+            <circle cx="8" cy="14" r="2.5" fill="#155dfc" />
+            <text x="16" y="15" fill="#0f172a" fontFamily="monospace" fontSize="8" fontWeight="700">#028-4491023</text>
+            <text x="16" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5">FBM · Yoga Mat</text>
+            <text x="104" y="15" fill="#155dfc" fontFamily="monospace" fontSize="7.5" fontWeight="800">SHIPPED</text>
+          </g>
+        </g>
+      </g>
+
+      {/* CENTER HUB: Gravurtastisch Core (Elevated White Hero Card) */}
+      <g transform="translate(260, 48)">
+        <rect width="180" height="390" rx="20" fill="url(#spapi-center-card)" stroke="url(#spapi-center-border)" strokeWidth="2" style={{ filter: "drop-shadow(0 14px 22px rgba(0, 26, 77, 0.22))" }} />
+
+        {/* Hero Header Pill */}
+        <rect x="10" y="10" width="160" height="32" rx="16" fill="url(#spapi-blue-header)" />
+        <text x="90" y="30" textAnchor="middle" fill="#ffffff" fontFamily="system-ui" fontSize="11" fontWeight="900" letterSpacing="0.4">
+          Gravurtastisch Core
+        </text>
+
+        {/* KMS Vault Box */}
+        <g transform="translate(10, 52)">
+          <rect width="160" height="66" rx="8" fill="#eff6ff" stroke="#bfdbfe" />
+          <circle cx="18" cy="18" r="7" fill="#FFFFFF" stroke="#155dfc" strokeWidth="1" />
+          <text x="18" y="22" textAnchor="middle" fill="#0032ab" fontSize="9">🔒</text>
+
+          <text x="32" y="21" fill="#0f172a" fontFamily="system-ui" fontSize="9.5" fontWeight="800">AES-256 KMS Vault</text>
+          <text x="10" y="42" fill="#64748b" fontFamily="monospace" fontSize="8">Encrypted token enclave</text>
+          <text x="10" y="55" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">● Auto-rotated keys</text>
+        </g>
+
+        {/* Rate-Shaped Queue Box */}
+        <g transform="translate(10, 126)">
+          <rect width="160" height="88" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+          <text x="10" y="16" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">RATE-SHAPED QUEUE</text>
+          <text x="10" y="30" fill="#64748b" fontFamily="system-ui" fontSize="8">Amazon Throttle Guard</text>
+
+          <rect x="10" y="40" width="140" height="8" rx="4" fill="#e2e8f0" />
+          <rect x="10" y="40" width="95" height="8" rx="4" fill="url(#spapi-blue-header)">
+            <animate attributeName="width" values="40;125;70;105" dur="3s" repeatCount="indefinite" />
+          </rect>
+
+          <text x="10" y="64" fill="#0f172a" fontFamily="monospace" fontSize="8" fontWeight="700">Capacity: 15 req/sec</text>
+          <text x="10" y="78" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">Status: 0 Quota Spikes</text>
+        </g>
+
+        {/* Solicitations Engine Box */}
+        <g transform="translate(10, 222)">
+          <rect width="160" height="154" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
+          <text x="10" y="16" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">SOLICITATIONS ENGINE</text>
+
+          <rect x="10" y="24" width="140" height="22" rx="6" fill="#eff6ff" stroke="#bfdbfe" />
+          <text x="14" y="38" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="800">POST /solicitations/v1</text>
+
+          <g transform="translate(10, 60)">
+            <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="8">5-30 Day Window:</text>
+            <text x="88" y="10" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">VERIFIED</text>
+          </g>
+
+          <g transform="translate(10, 82)">
+            <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="8">Opt-Out Safe:</text>
+            <text x="88" y="10" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">100% TOS</text>
+          </g>
+
+          <g transform="translate(10, 104)">
+            <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="8">Single-Send Lock:</text>
+            <text x="88" y="10" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">ENFORCED</text>
+          </g>
+
+          <g transform="translate(10, 126)">
+            <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="8">Timezone Align:</text>
+            <text x="88" y="10" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">ACTIVE</text>
+          </g>
+        </g>
+      </g>
+
+      {/* RIGHT NODE: Official Delivery (Crisp White Card) */}
+      <g transform="translate(485, 58)">
+        <rect width="190" height="370" rx="18" fill="url(#spapi-white-card)" stroke="url(#spapi-card-border)" strokeWidth="1.2" style={{ filter: "drop-shadow(0 10px 18px rgba(0, 26, 77, 0.18))" }} />
+
+        {/* Node Header */}
+        <g transform="translate(12, 12)">
+          <rect width="32" height="32" rx="8" fill="#eff6ff" stroke="#bfdbfe" />
+          <text x="10" y="22" fill="#0032ab" fontFamily="system-ui" fontSize="15">✉</text>
+          <text x="40" y="14" fill="#0f172a" fontFamily="system-ui" fontSize="11" fontWeight="800">Official Delivery</text>
+          <text x="40" y="27" fill="#64748b" fontFamily="system-ui" fontSize="8.5">Amazon In-Box Email</text>
+        </g>
+
+        {/* Email Preview Card */}
+        <g transform="translate(12, 54)">
+          <rect width="166" height="186" rx="10" fill="#FFFFFF" stroke="#bfdbfe" strokeWidth="1" />
+
+          <rect x="0" y="0" width="166" height="24" rx="10" fill="#eff6ff" />
+          <text x="10" y="16" fill="#0032ab" fontFamily="system-ui" fontSize="9" fontWeight="bold">amazon</text>
+          <text x="56" y="16" fill="#64748b" fontFamily="system-ui" fontSize="7.5">Customer Feedback</text>
+
+          <text x="10" y="40" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">How was your item?</text>
+          <text x="10" y="52" fill="#64748b" fontFamily="system-ui" fontSize="7.5">32oz Insulated Water Bottle</text>
+
+          {/* Glowing Amber Stars */}
+          <g transform="translate(10, 62)">
+            {["★", "★", "★", "★", "★"].map((star, sIdx) => (
+              <text key={sIdx} x={sIdx * 27} y="22" fill="#f59e0b" fontSize="18">
+                {star}
+              </text>
+            ))}
+          </g>
+
+          {/* CTA Button with pure WHITE text */}
+          <rect x="10" y="96" width="146" height="22" rx="11" fill="url(#spapi-blue-header)" />
+          <text x="83" y="110" textAnchor="middle" fill="#ffffff" fontFamily="system-ui" fontSize="8" fontWeight="800">
+            Submit Review on Amazon
           </text>
 
-          <g transform="translate(10, 50)">
-            <rect width="160" height="66" rx="6" fill="#FFFFFF" stroke="#E5E0D5" />
-            <circle cx="18" cy="18" r="7" fill="#FAF9F6" stroke="#D2B48C" strokeWidth="1" />
-            <text x="18" y="22" textAnchor="middle" fill="#282828" fontSize="9">🔒</text>
+          <text x="83" y="132" textAnchor="middle" fill="#64748b" fontFamily="system-ui" fontSize="7">
+            Standard Amazon-managed template
+          </text>
 
-            <text x="32" y="21" fill="#0F172A" fontFamily="system-ui" fontSize="9.5" fontWeight="700">AES-256 KMS Vault</text>
-            <text x="10" y="42" fill="#64748B" fontFamily="monospace" fontSize="8">Encrypted token enclave</text>
-            <text x="10" y="55" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="700">● Auto-rotated keys</text>
-          </g>
-
-          <g transform="translate(10, 124)">
-            <rect width="160" height="88" rx="6" fill="#FFFFFF" stroke="#E5E0D5" />
-            <text x="10" y="16" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">RATE-SHAPED QUEUE</text>
-            <text x="10" y="30" fill="#64748B" fontFamily="system-ui" fontSize="8">Amazon Throttle Guard</text>
-
-            <rect x="10" y="40" width="140" height="8" rx="4" fill="#E2E8F0" />
-            <rect x="10" y="40" width="95" height="8" rx="4" fill="#D2B48C">
-              <animate attributeName="width" values="40;125;70;105" dur="3s" repeatCount="indefinite" />
-            </rect>
-
-            <text x="10" y="64" fill="#334155" fontFamily="monospace" fontSize="8">Capacity: 15 req/sec</text>
-            <text x="10" y="78" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="700">Status: 0 Quota Spikes</text>
-          </g>
-
-          <g transform="translate(10, 220)">
-            <rect width="160" height="150" rx="6" fill="#FFFFFF" stroke="#E5E0D5" />
-            <text x="10" y="16" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">SOLICITATIONS ENGINE</text>
-
-            <rect x="10" y="24" width="140" height="20" rx="4" fill="#FAF9F6" stroke="#E2E8F0" />
-            <text x="14" y="37" fill="#0F172A" fontFamily="monospace" fontSize="7.5" fontWeight="600">POST /solicitations/v1</text>
-
-            <g transform="translate(10, 56)">
-              <text x="0" y="10" fill="#64748B" fontFamily="system-ui" fontSize="8">5-30 Day Window:</text>
-              <text x="88" y="10" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="700">VERIFIED</text>
-            </g>
-
-            <g transform="translate(10, 78)">
-              <text x="0" y="10" fill="#64748B" fontFamily="system-ui" fontSize="8">Opt-Out Safe:</text>
-              <text x="88" y="10" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="700">100% TOS</text>
-            </g>
-
-            <g transform="translate(10, 100)">
-              <text x="0" y="10" fill="#64748B" fontFamily="system-ui" fontSize="8">Single-Send Lock:</text>
-              <text x="88" y="10" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="700">ENFORCED</text>
-            </g>
-
-            <g transform="translate(10, 122)">
-              <text x="0" y="10" fill="#64748B" fontFamily="system-ui" fontSize="8">Timezone Align:</text>
-              <text x="88" y="10" fill="#282828" fontFamily="monospace" fontSize="8" fontWeight="700">ACTIVE</text>
-            </g>
-          </g>
+          {/* Verified Buyer Badge */}
+          <rect x="10" y="144" width="146" height="28" rx="6" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="0.8" />
+          <text x="83" y="157" textAnchor="middle" fill="#065f46" fontFamily="system-ui" fontSize="7.5" fontWeight="800">
+            ✓ Verified Amazon Buyer
+          </text>
+          <text x="83" y="167" textAnchor="middle" fill="#059669" fontFamily="system-ui" fontSize="6.5">
+            1-Click Instant Star Rating
+          </text>
         </g>
 
-        {/* RIGHT NODE: Official Solicitation & Buyer Delivery */}
-        <g transform="translate(485, 60)" filter="url(#spapi-soft-shadow)">
-          <rect width="190" height="365" rx="12" fill="url(#spapi-white-card)" stroke="#E2E8F0" strokeWidth="1.2" />
+        {/* Compliance Rows */}
+        <g transform="translate(12, 248)">
+          <rect width="166" height="108" rx="8" fill="#f8fafc" stroke="#e2e8f0" />
 
-          <rect x="12" y="12" width="30" height="30" rx="6" fill="#FAF9F6" stroke="#D2B48C" />
-          <text x="20" y="32" fill="#282828" fontFamily="system-ui" fontSize="15">✉</text>
-
-          <text x="48" y="24" fill="#0F172A" fontFamily="system-ui" fontSize="11" fontWeight="700">Official Delivery</text>
-          <text x="48" y="37" fill="#64748B" fontFamily="system-ui" fontSize="9">Amazon In-Box Email</text>
-
-          <g transform="translate(12, 52)">
-            <rect width="166" height="182" rx="8" fill="#FFFFFF" stroke="#E2E8F0" />
-
-            <rect x="0" y="0" width="166" height="22" rx="8" fill="#282828" />
-            <text x="10" y="15" fill="#D2B48C" fontFamily="system-ui" fontSize="9" fontWeight="bold">amazon</text>
-            <text x="56" y="15" fill="#FFFFFF" fontFamily="system-ui" fontSize="7.5">Customer Feedback</text>
-
-            <text x="10" y="38" fill="#0F172A" fontFamily="system-ui" fontSize="8.5" fontWeight="700">How was your item?</text>
-            <text x="10" y="50" fill="#64748B" fontFamily="system-ui" fontSize="7.5">32oz Insulated Water Bottle</text>
-
-            <g transform="translate(10, 60)">
-              {['★', '★', '★', '★', '★'].map((star, sIdx) => (
-                <text key={sIdx} x={sIdx * 27} y="22" fill="#D2B48C" fontSize="18">
-                  {star}
-                </text>
-              ))}
-            </g>
-
-            <rect x="10" y="94" width="146" height="20" rx="4" fill="#D2B48C" stroke="#B8966C" />
-            <text x="83" y="107" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="700">
-              Submit Review on Amazon
-            </text>
-
-            <text x="83" y="130" textAnchor="middle" fill="#94A3B8" fontFamily="system-ui" fontSize="7">
-              Standard Amazon-managed template
-            </text>
-
-            <rect x="10" y="142" width="146" height="28" rx="4" fill="#FAF9F6" stroke="#D2B48C" />
-            <text x="83" y="155" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
-              ✓ Verified Amazon Buyer
-            </text>
-            <text x="83" y="165" textAnchor="middle" fill="#64748B" fontFamily="system-ui" fontSize="6.5">
-              1-Click Instant Star Rating
-            </text>
+          <g transform="translate(10, 16)">
+            <circle cx="4" cy="6" r="3" fill="#155dfc" />
+            <text x="14" y="9" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">Review Request Sent</text>
+            <text x="14" y="21" fill="#64748b" fontFamily="system-ui" fontSize="7.5">Counted instantly as Sent</text>
           </g>
 
-          <g transform="translate(12, 244)">
-            <rect width="166" height="106" rx="6" fill="#FFFFFF" stroke="#E2E8F0" />
-
-            <g transform="translate(10, 16)">
-              <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-              <text x="14" y="9" fill="#0F172A" fontFamily="system-ui" fontSize="8.5" fontWeight="700">Review Request Sent</text>
-              <text x="14" y="21" fill="#64748B" fontFamily="system-ui" fontSize="7.5">Counted instantly as Sent</text>
-            </g>
-
-            <g transform="translate(10, 46)">
-              <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-              <text x="14" y="9" fill="#0F172A" fontFamily="system-ui" fontSize="8.5" fontWeight="700">Zero Spam Risk</text>
-              <text x="14" y="21" fill="#64748B" fontFamily="system-ui" fontSize="7.5">No Buyer-Seller strike</text>
-            </g>
-
-            <g transform="translate(10, 76)">
-              <circle cx="4" cy="6" r="3" fill="#D2B48C" />
-              <text x="14" y="9" fill="#0F172A" fontFamily="system-ui" fontSize="8.5" fontWeight="700">Compliant Flow</text>
-              <text x="14" y="21" fill="#64748B" fontFamily="system-ui" fontSize="7.5">100% Studio production API ToS</text>
-            </g>
+          <g transform="translate(10, 48)">
+            <circle cx="4" cy="6" r="3" fill="#10b981" />
+            <text x="14" y="9" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">Zero Spam Risk</text>
+            <text x="14" y="21" fill="#64748b" fontFamily="system-ui" fontSize="7.5">No Buyer-Seller strike</text>
           </g>
-        </g>
 
-        {/* Ambient Moving Scan / Shine Sweep */}
-        <g transform="rotate(-15 350 225)">
-          <rect x="-200" y="60" width="80" height="380" fill="url(#spapi-shine-light)" opacity="0.5" style={{ mixBlendMode: 'overlay' }}>
-            <animateTransform
-              attributeName="transform"
-              type="translate"
-              values="0 0; 900 0; 900 0"
-              keyTimes="0; 0.6; 1"
-              dur="4.5s"
-              repeatCount="indefinite"
-            />
-          </rect>
+          <g transform="translate(10, 80)">
+            <circle cx="4" cy="6" r="3" fill="#0032ab" />
+            <text x="14" y="9" fill="#0f172a" fontFamily="system-ui" fontSize="8.5" fontWeight="800">Compliant Flow</text>
+            <text x="14" y="21" fill="#64748b" fontFamily="system-ui" fontSize="7.5">100% Studio production API ToS</text>
+          </g>
         </g>
       </g>
     </svg>

@@ -161,7 +161,7 @@ function PaymentSuccessPage() {
                     return (
                       <a
                         href={resolvedSignInUrl}
-                        className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition shadow-md"
+                        className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white transition shadow-md"
                       >
                         <span>Go to Seller Panel</span>
                         <span>→</span>
@@ -170,7 +170,7 @@ function PaymentSuccessPage() {
                   })()}
                   <Link
                     to="/"
-                    className="inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-semibold text-navy-deep hover:bg-surface-alt transition"
+                    className="inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-surface-alt transition"
                   >
                     Back to Home
                   </Link>
@@ -180,7 +180,7 @@ function PaymentSuccessPage() {
                   <Link
                     to="/"
                     hash="pricing"
-                    className="inline-flex rounded-full bg-brand px-6 py-3 text-sm font-bold text-navy-deep hover:bg-brand-bright transition"
+                    className="inline-flex rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white transition"
                   >
                     Back to pricing
                   </Link>

@@ -48,38 +48,38 @@
 :root {
   --radius: 0.75rem;
 
-  /* Brand Tri-Color Architecture: #D2B48C (Craft Tan) + #282828 (Charcoal Dark) + Warm Off-White */
-  --navy-deep: #1A1A1A;                      /* Deep Charcoal Obsidian #1A1A1A */
-  --navy: #242424;                           /* Dark Graphite #242424 */
-  --navy-soft: #282828;                      /* Core Charcoal Brand Dark #282828 */
-  --brand: #D2B48C;                          /* Primary Tan Craft Sand #D2B48C */
-  --brand-bright: #DECAA8;                   /* Bright Tan Accent #DECAA8 */
-  --brand-dark: #B8966C;                     /* Dark Wood / Leather Tan #B8966C */
-  --secondary-blue: #3E3E3E;                 /* Secondary Deep Charcoal */
-  --secondary-blue-bright: #5A5A5A;          /* Secondary Medium Graphite */
-  --amazon: #D2B48C;                         /* Warm Craft Accent */
-  --slate-body: #4A4A48;                     /* Neutral Charcoal Body Text #4A4A48 */
-  --surface: #FAF9F6;                        /* Clean Warm Off-White Surface #FAF9F6 */
-  --surface-alt: #F4F1EA;                    /* Soft Warm Off-White Alt #F4F1EA */
+  /* EcomRetails.in Royal Blue & Electric Indigo Design System */
+  --navy-deep: #0b132b;                      /* Deep Slate Midnight #0B132B */
+  --navy: #152238;                           /* Dark Slate Navy #152238 */
+  --navy-soft: #1e293b;                      /* Rich Slate Dark #1E293B */
+  --brand: #0032ab;                          /* Primary EcomRetails Royal Blue #0032ab */
+  --brand-bright: #4f6ef7;                   /* Electric Indigo Accent #4f6ef7 */
+  --brand-dark: #00227a;                     /* Deep Cobalt #00227a */
+  --secondary-blue: #155dfc;                 /* Electric Blue #155dfc */
+  --secondary-blue-bright: #3080ff;          /* Sky Blue Accent #3080ff */
+  --amazon: #ff9900;                         /* Amazon Warm Amber/Gold */
+  --slate-body: #475569;                     /* Clean Neutral Slate Body #475569 */
+  --surface: #ffffff;                        /* Crisp White Surface */
+  --surface-alt: #f8f9fc;                    /* Crisp Slate-Ice White #f8f9fc */
 
-  --background: #FAF9F6;                     /* Clean Off-White Background */
-  --foreground: #282828;                     /* Deep Charcoal Text */
-  --card: #FFFFFF;
-  --card-foreground: #282828;
-  --popover: #FFFFFF;
-  --popover-foreground: #282828;
-  --primary: var(--brand);                   /* Action / Button Color #D2B48C */
-  --primary-foreground: #282828;             /* Bold Charcoal Text on Tan Buttons */
+  --background: #f8f9fc;                     /* Crisp Clean Light Background */
+  --foreground: #0f172b;                     /* Deep Slate 900 Text */
+  --card: #ffffff;
+  --card-foreground: #0f172b;
+  --popover: #ffffff;
+  --popover-foreground: #0f172b;
+  --primary: var(--brand);                   /* Action Color #0032ab */
+  --primary-foreground: #ffffff;             /* Crisp White Text on Blue Buttons */
   --secondary: var(--surface-alt);
-  --secondary-foreground: #282828;
-  --muted: var(--surface-alt);
-  --muted-foreground: var(--slate-body);
-  --accent: #EFECE4;
-  --accent-foreground: #282828;
+  --secondary-foreground: #0f172b;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eef2ff;                         /* Soft Royal Tint */
+  --accent-foreground: #0032ab;
   --destructive: oklch(0.60 0.22 27);
-  --destructive-foreground: #FFFFFF;
-  --border: #E5E0D5;                         /* Warm Neutral Off-White Border */
-  --input: #E5E0D5;
+  --destructive-foreground: #ffffff;
+  --border: #e2e8f0;                         /* Clean Slate Border */
+  --input: #e2e8f0;
   --ring: var(--brand);
 }
 
@@ -345,10 +345,10 @@
 }
 
 /* ========================================================================== */
-/* Luxury Light-to-Dark Typography Gradients                                 */
+/* EcomRetails.in Premium Typography Gradients & UI System                    */
 /* ========================================================================== */
 .text-gradient-gold {
-  background: linear-gradient(135deg, #FFF4E2 0%, #E8CCA1 28%, #D2B48C 50%, #B89260 75%, #7D5B2A 100%);
+  background: linear-gradient(135deg, #93c5fd 0%, #60a5fa 35%, #818cf8 70%, #4f6ef7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -356,11 +356,11 @@
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   display: inline-block;
-  filter: drop-shadow(0 2px 18px rgba(210, 180, 140, 0.25));
+  filter: drop-shadow(0 2px 18px rgba(79, 110, 247, 0.35));
 }
 
 .text-gradient-silver {
-  background: linear-gradient(180deg, #FFFFFF 0%, #F5F5F0 35%, #D4D4CC 70%, #9E9E94 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 45%, #cbd5e1 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -368,11 +368,11 @@
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   display: inline;
-  filter: drop-shadow(0 2px 14px rgba(255, 255, 255, 0.12));
+  filter: drop-shadow(0 2px 14px rgba(255, 255, 255, 0.15));
 }
 
 .text-gradient-rich {
-  background: linear-gradient(135deg, #FFFFFF 0%, #FAF6EE 30%, #DECAA8 65%, #B8966C 85%, #8C6D46 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 35%, #818cf8 70%, #4f6ef7 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -380,5 +380,141 @@
   -webkit-box-decoration-break: clone;
   box-decoration-break: clone;
   display: inline-block;
-  filter: drop-shadow(0 2px 16px rgba(210, 180, 140, 0.20));
+  filter: drop-shadow(0 2px 16px rgba(79, 110, 247, 0.25));
+}
+
+/* ========================================================================== */
+/* EcomRetails.in Liquid Glassmorphism, Orbs & Button System                  */
+/* ========================================================================== */
+@keyframes liquid-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.animate-liquid-flow {
+  background-size: 200% 100%;
+  animation: liquid-flow 6s linear infinite;
+}
+
+@keyframes liquid-border {
+  to { background-position: 240% 240%; }
+}
+
+.liquid-glass {
+  -webkit-backdrop-filter: blur(14px) saturate(1.4);
+  backdrop-filter: blur(14px) saturate(1.4);
+  background: radial-gradient(80% 60% at 10% 0, rgba(0, 50, 171, 0.06) 0%, transparent 60%),
+              radial-gradient(60% 50% at 90% 100%, rgba(79, 110, 247, 0.05) 0%, transparent 55%),
+              linear-gradient(148deg, rgba(255, 255, 255, 0.94) 0%, rgba(240, 246, 255, 0.82) 40%, rgba(255, 255, 255, 0.7) 100%);
+  border: 1px solid rgba(0, 50, 171, 0.11);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.85), inset 0 -1px rgba(0, 50, 171, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 50, 171, 0.07);
+  transition: transform 0.22s ease, box-shadow 0.28s ease, border-color 0.22s ease;
+}
+.liquid-glass:hover {
+  transform: translateY(-2px);
+  border-color: rgba(0, 50, 171, 0.24);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.95), 0 12px 32px rgba(0, 50, 171, 0.12);
+}
+
+.liquid-glass-strong {
+  -webkit-backdrop-filter: blur(28px) saturate(1.6) brightness(1.02);
+  backdrop-filter: blur(28px) saturate(1.6) brightness(1.02);
+  background: radial-gradient(70% 55% at 15% 0, rgba(0, 50, 171, 0.09) 0%, transparent 55%),
+              radial-gradient(55% 50% at 85% 100%, rgba(79, 110, 247, 0.07) 0%, transparent 50%),
+              linear-gradient(148deg, rgba(255, 255, 255, 0.96) 0%, rgba(232, 242, 255, 0.88) 40%, rgba(255, 255, 255, 0.75) 100%);
+  border: 1px solid rgba(0, 50, 171, 0.15);
+  position: relative;
+  overflow: hidden;
+  box-shadow: inset 0 1px #ffffff, inset 0 -1px rgba(0, 50, 171, 0.08), 0 4px 12px rgba(0, 0, 0, 0.05), 0 14px 36px rgba(0, 50, 171, 0.1);
+  transition: transform 0.22s ease, box-shadow 0.28s ease;
+}
+.liquid-glass-strong:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px #ffffff, 0 18px 42px rgba(0, 50, 171, 0.15);
+}
+
+.liquid-glass-dark {
+  -webkit-backdrop-filter: blur(16px) saturate(1.4);
+  backdrop-filter: blur(16px) saturate(1.4);
+  background: radial-gradient(70% 50% at 20% 0%, rgba(79, 110, 247, 0.14) 0%, transparent 70%),
+              linear-gradient(145deg, rgba(15, 23, 42, 0.88) 0%, rgba(30, 41, 59, 0.75) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.15), 0 10px 30px rgba(0, 0, 0, 0.35);
+}
+
+.btn-glass-primary {
+  color: #ffffff !important;
+  background: linear-gradient(135deg, #0032ab 0%, #155dfc 100%) !important;
+  cursor: pointer;
+  border-radius: 9999px;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.6rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  transition: transform 0.22s ease, box-shadow 0.28s ease, filter 0.28s ease;
+  display: inline-flex;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(0, 50, 171, 0.35), 0 1px 2px rgba(0, 0, 0, 0.08);
+}
+.btn-glass-primary * {
+  color: #ffffff !important;
+}
+button.bg-brand:not([class*="/"]),
+a.bg-brand:not([class*="/"]),
+button.bg-brand:not([class*="/"]) *,
+a.bg-brand:not([class*="/"]) * {
+  color: #ffffff !important;
+}
+.btn-glass-primary:hover {
+  transform: translateY(-1.5px);
+  filter: brightness(1.08) saturate(1.05);
+  box-shadow: 0 8px 24px rgba(0, 50, 171, 0.45), 0 2px 4px rgba(0, 0, 0, 0.12);
+}
+.btn-glass-primary:active {
+  transform: translateY(0) scale(0.985);
+}
+
+.section-badge {
+  color: #0032ab;
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: linear-gradient(135deg, rgba(0, 50, 171, 0.08) 0%, rgba(79, 110, 247, 0.05) 50%, rgba(255, 255, 255, 0.85) 100%);
+  border: 1px solid rgba(0, 50, 171, 0.16);
+  border-radius: 9999px;
+  padding: 0.35rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  box-shadow: 0 2px 8px rgba(0, 50, 171, 0.06);
+}
+
+.hero-orb {
+  position: absolute;
+  border-radius: 9999px;
+  pointer-events: none;
+  filter: blur(65px);
+  opacity: 0.45;
+  animation: orb-float 10s ease-in-out infinite alternate;
+}
+.hero-orb.blue {
+  background: radial-gradient(circle, #4f6ef7 0%, rgba(0, 50, 171, 0.4) 60%, transparent 80%);
+}
+.hero-orb.orange {
+  background: radial-gradient(circle, #ff9900 0%, rgba(249, 156, 0, 0.35) 60%, transparent 80%);
+}
+.hero-orb.cyan {
+  background: radial-gradient(circle, #38bdf8 0%, rgba(79, 110, 247, 0.3) 60%, transparent 80%);
+}
+@keyframes orb-float {
+  0% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-20px) scale(1.08); }
+  100% { transform: translateY(10px) scale(0.95); }
 }

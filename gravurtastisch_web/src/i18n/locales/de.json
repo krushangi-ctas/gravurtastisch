@@ -22,9 +22,9 @@
     "description": "Von Fototassen und Küchenaccessoires bis Textilien und Erinnerungsstücke - Gravurtastisch verwandelt Ihre Motive in handgefertigte Unikate mit digitalen Korrekturabzügen, präziser Gravur und zuverlässiger Lieferung.",
     "ctaRegister": "Individuelle Bestellung",
     "ctaPricing": "Preise ansehen",
-    "statReviewLift": "Bewertungssteigerung",
-    "statSendWindow": "Sendezeitfenster",
-    "statUptime": "Verfügbarkeit",
+    "statReviewLift": "Zufriedene Kunden",
+    "statSendWindow": "Proof Turnaround",
+    "statUptime": "Pünktliche Lieferung",
     "mockReviewPipeline": "Bewertungspipeline",
     "mockTodayOrders": "Heute · 1.248 Bestellungen",
     "mockLive": "LIVE",
@@ -575,6 +575,7 @@
     "faq3A": "Gravurtastisch fordert lediglich Lesezugriff auf Bestelldaten an (um den Lieferstatus zu erkennen) sowie die Berechtigung zum Auslösen von Bewertungsanfragen.",
     "faq4Q": "Kann ich den Zugriff von Gravurtastisch jederzeit widerrufen?",
     "faq4A": "Ja. Sie behalten die volle Kontrolle und können den Zugriff jederzeit direkt in Seller Central unter 'Anwendungen verwalten' widerrufen.",
+    "ctaBadge": "Keine Passwort-Speicherung",
     "ctaPricing": "Preise ansehen"
   },
   "orderSync": {
@@ -598,6 +599,7 @@
     "tableHeading": "Transparente Übersicht für jedes Paket",
     "faqBadge": "Bestell-Sync FAQs",
     "faqHeading": "Häufig gestellte Fragen",
+    "ctaBadge": "Sofortige Aktivierung",
     "ctaHeading": "Setzen Sie Ihre Amazon-Bestellungen auf Autopilot",
     "ctaDesc": "Keine CSV-Tabellen, keine verpassten Bewertungen und kein Risiko bei retournierter Ware.",
     "ctaButton": "Als Verkäufer registrieren",
@@ -713,6 +715,7 @@
     "faq3A": "Gravurtastisch gleicht die Postleitzahl und den Marktplatz der Bestellung ab, um den Versand für die idealen Abendstunden zu planen.",
     "faq4Q": "Können Käufer doppelte Anfragen erhalten?",
     "faq4A": "Niemals. Gravurtastisch wendet strenge Idempotenz-Prüfungen an und Amazon erlaubt strikt maximal 1 Anfrage pro Bestellung.",
+    "ctaBadge": "Sofort einsatzbereit",
     "ctaPricing": "Preise ansehen"
   },
   "reviewAnalytics": {

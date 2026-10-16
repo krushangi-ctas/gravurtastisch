@@ -175,17 +175,17 @@ export function AmazonShowcase() {
                 <div className="flex flex-wrap items-center gap-3 pt-1">
                   <a
                     href="#amazon-ecosystem"
-                    className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-white dark:bg-navy border border-slate-300 dark:border-white/20 text-navy-deep dark:text-white hover:border-brand hover:text-brand shadow-2xs hover:shadow-xs transition-all"
+                    className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider liquid-glass border border-[#0032ab]/15 text-slate-700 hover:border-[#0032ab]/40 hover:text-[#0032ab] shadow-2xs hover:shadow-xs transition-all"
                   >
                     {t("amazonShowcase.btnExplore", "Explore the studio hub")}
                   </a>
 
                   <a
                     href="/#contact"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider bg-brand hover:bg-brand-bright text-navy-deep shadow-sm shadow-brand/40 hover:scale-[1.02] transition-all"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider btn-glass-primary !text-white shadow-sm shadow-[#0032ab]/30 hover:scale-[1.02] transition-all"
                   >
-                    <span>{t("amazonShowcase.btnTalk", "Talk to our team")}</span>
-                    <ArrowRight className="w-4 h-4" />
+                    <span className="!text-white">{t("amazonShowcase.btnTalk", "Talk to our team")}</span>
+                    <ArrowRight className="w-4 h-4 text-white" />
                   </a>
                 </div>
               </Reveal>
@@ -218,23 +218,20 @@ export function AmazonShowcase() {
         </Container>
       </section>
 
-      {/* 2. Dark Section: 4 Core Pillars of Amazon SP-API Integration */}
-      <section id="amazon-ecosystem" className="relative py-14 lg:py-18 bg-navy-deep text-white overflow-hidden">
-        <div className="absolute inset-0 grid-bg opacity-30" aria-hidden />
-        <div className="absolute inset-0 noise-bg opacity-80" aria-hidden />
-
+      {/* 2. 4 Core Pillars of Studio Production in EcomRetails light theme */}
+      <section id="amazon-ecosystem" className="relative py-14 lg:py-18 bg-[#f8f9fc] text-slate-900 overflow-hidden border-t border-slate-200/80">
         <Container className="relative">
           {/* Header Subtitle & Title (Center Aligned) */}
           <Reveal>
             <div className="text-center max-w-3xl mx-auto">
-              <span className="block text-xs font-bold uppercase tracking-[0.2em] text-brand">
+              <span className="section-badge mb-3">
                 {t("amazonShowcase.badge", "GRAVURTASTISCH STUDIO HUB")}
               </span>
-              <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-white">
+              <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-slate-900">
                 {t("amazonShowcase.headingMain", "Run custom production")}{" "}
-                {t("amazonShowcase.headingHighlight", "without the chaos.")}
+                <span className="text-[#0032ab]">{t("amazonShowcase.headingHighlight", "without the chaos.")}</span>
               </h2>
-              <p className="mt-4 text-white/80 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
+              <p className="mt-4 text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                 {t(
                   "amazonShowcase.description",
                   "From artwork intake to laser engraving and delivery - Gravurtastisch keeps proofs, craft cells, and shipping on one clear timeline."
@@ -243,40 +240,39 @@ export function AmazonShowcase() {
             </div>
           </Reveal>
 
-          {/* 4 Core Pillars Grid with Animated Amazon SVGs */}
+          {/* 4 Core Pillars Grid with Liquid Glass cards */}
           <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {amazonPillars.map((pillar, i) => {
               const IconComponent = pillar.icon;
               return (
                 <Reveal key={pillar.titleKey} delay={i * 70}>
-                  <div className="group relative h-full rounded-2xl bg-white/[0.04] border border-white/10 hover:border-brand/60 p-6 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden">
-                    {/* Hover ambient top highlight */}
-                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-bright via-brand to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="group relative h-full rounded-2xl liquid-glass border border-[#0032ab]/12 hover:border-[#0032ab]/30 p-6 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between overflow-hidden">
+                    <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0032ab] via-[#4f6ef7] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     <div>
                       <div className="flex items-center justify-between mb-5">
-                        <div className="h-12 w-12 rounded-2xl bg-white/[0.06] border border-white/10 grid place-items-center group-hover:scale-105 group-hover:border-brand/50 transition-all duration-300">
-                          <IconComponent className="w-8 h-8" />
+                        <div className="h-12 w-12 rounded-2xl bg-[#0032ab]/10 border border-[#0032ab]/20 text-[#0032ab] grid place-items-center group-hover:scale-105 transition-all duration-300">
+                          <IconComponent className="w-6 h-6 text-[#0032ab]" />
                         </div>
-                        <span className={`text-[11px] font-mono font-bold px-2.5 py-1 rounded-full border ${pillar.badgeColor}`}>
+                        <span className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-full border border-[#0032ab]/20 bg-[#0032ab]/06 text-[#0032ab]">
                           {pillar.badge}
                         </span>
                       </div>
 
-                      <h3 className="text-lg font-bold text-white group-hover:text-brand transition-colors leading-snug">
+                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-[#0032ab] transition-colors leading-snug">
                         {t(pillar.titleKey, pillar.badge)}
                       </h3>
 
-                      <p className="mt-3 text-sm text-white/80 leading-[1.7]">
+                      <p className="mt-3 text-sm text-slate-600 leading-[1.7]">
                         {t(pillar.descKey, "")}
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs text-white/50 group-hover:text-white transition-colors">
-                      <span className="font-mono text-[11px] uppercase tracking-wider text-brand font-bold">
+                    <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500 group-hover:text-slate-900 transition-colors">
+                      <span className="font-mono text-[11px] uppercase tracking-wider text-[#0032ab] font-bold">
                         {t("amazonShowcase.verifiedTag", "Craft verified")}
                       </span>
-                      <ArrowRight className="w-4 h-4 text-brand opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
+                      <ArrowRight className="w-4 h-4 text-[#0032ab] opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all duration-200" />
                     </div>
                   </div>
                 </Reveal>
@@ -308,24 +304,28 @@ export function AmazonShowcase() {
                 <button
                   type="button"
                   onClick={() => setActiveTab("fba")}
-                  className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all ${
+                  className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                     activeTab === "fba"
-                      ? "bg-brand text-navy-deep font-bold shadow-md shadow-brand/40 scale-102"
-                      : "text-slate-600 hover:text-navy-deep font-medium"
+                      ? "bg-[#0032ab] text-white font-bold shadow-md shadow-[#0032ab]/35 scale-102"
+                      : "text-slate-600 hover:text-slate-900 font-medium"
                   }`}
                 >
-                  {t("amazonShowcase.tabFba", "Marketplace orders")}
+                  <span className={activeTab === "fba" ? "text-white font-bold" : ""}>
+                    {t("amazonShowcase.tabFba", "Marketplace orders")}
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("fbm")}
-                  className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all ${
+                  className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
                     activeTab === "fbm"
-                      ? "bg-brand-bright text-navy-deep font-bold shadow-md shadow-brand/40 scale-102"
-                      : "text-slate-600 hover:text-navy-deep font-medium"
+                      ? "bg-[#0032ab] text-white font-bold shadow-md shadow-[#0032ab]/35 scale-102"
+                      : "text-slate-600 hover:text-slate-900 font-medium"
                   }`}
                 >
-                  {t("amazonShowcase.tabFbm", "Direct & B2B")}
+                  <span className={activeTab === "fbm" ? "text-white font-bold" : ""}>
+                    {t("amazonShowcase.tabFbm", "Direct & B2B")}
+                  </span>
                 </button>
               </div>
             </div>

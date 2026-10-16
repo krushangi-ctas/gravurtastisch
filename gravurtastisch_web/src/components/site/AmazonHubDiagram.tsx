@@ -47,9 +47,9 @@ export function AmazonHubDiagram() {
       desc: t("amazonShowcase.diagramNode2Desc", "Approve before craft"),
       icon: BadgeCheck,
       topPx: 165,
-      bgLight: "bg-amber-50 dark:bg-amber-950/40",
-      borderLight: "border-amber-200 dark:border-amber-800/40",
-      iconColor: "text-[#B8966C] dark:text-amber-300",
+      bgLight: "bg-blue-50 dark:bg-blue-950/40",
+      borderLight: "border-blue-200 dark:border-blue-800/40",
+      iconColor: "text-brand-bright dark:text-brand-bright",
       glowColor: "hover:shadow-brand/25",
     },
     {
@@ -90,21 +90,21 @@ export function AmazonHubDiagram() {
         >
           <defs>
             <linearGradient id="hubWireGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#282828" stopOpacity="0.85" />
-              <stop offset="50%" stopColor="#D2B48C" stopOpacity="0.95" />
-              <stop offset="100%" stopColor="#DECAA8" stopOpacity="0.85" />
+              <stop offset="0%" stopColor="#0032ab" stopOpacity="0.85" />
+              <stop offset="50%" stopColor="#4f6ef7" stopOpacity="0.95" />
+              <stop offset="100%" stopColor="#38bdf8" stopOpacity="0.85" />
             </linearGradient>
             <linearGradient id="hubWireGradAmber" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#282828" />
-              <stop offset="100%" stopColor="#D2B48C" />
+              <stop offset="0%" stopColor="#0032ab" />
+              <stop offset="100%" stopColor="#4f6ef7" />
             </linearGradient>
             <linearGradient id="hubWireGradRose" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#282828" />
-              <stop offset="100%" stopColor="#E11D48" />
+              <stop offset="0%" stopColor="#0032ab" />
+              <stop offset="100%" stopColor="#6366f1" />
             </linearGradient>
             <linearGradient id="hubWireGradEmerald" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#282828" />
-              <stop offset="100%" stopColor="#059669" />
+              <stop offset="0%" stopColor="#0032ab" />
+              <stop offset="100%" stopColor="#0ea5e9" />
             </linearGradient>
           </defs>
 
@@ -126,12 +126,12 @@ export function AmazonHubDiagram() {
           <path d="M 260 290 C 310 290, 320 404, 370 404" stroke="#CBD5E1" strokeWidth="2" strokeDasharray="4 4" className="dark:stroke-slate-700" />
           <path d="M 260 290 C 310 290, 320 404, 370 404" stroke="url(#hubWireGradEmerald)" strokeWidth="2.5" className="flow-dash" />
 
-          <circle cx="175" cy="175" r="3.5" fill="#D2B48C" />
-          <circle cx="175" cy="355" r="3.5" fill="#D2B48C" />
-          <circle cx="370" cy="95" r="3.5" fill="#282828" />
-          <circle cx="370" cy="198" r="3.5" fill="#D2B48C" />
-          <circle cx="370" cy="301" r="3.5" fill="#E11D48" />
-          <circle cx="370" cy="404" r="3.5" fill="#059669" />
+          <circle cx="175" cy="175" r="3.5" fill="#4f6ef7" />
+          <circle cx="175" cy="355" r="3.5" fill="#4f6ef7" />
+          <circle cx="370" cy="95" r="3.5" fill="#0032ab" />
+          <circle cx="370" cy="198" r="3.5" fill="#4f6ef7" />
+          <circle cx="370" cy="301" r="3.5" fill="#6366f1" />
+          <circle cx="370" cy="404" r="3.5" fill="#0ea5e9" />
         </svg>
 
         {/* Top channel card */}
@@ -165,10 +165,10 @@ export function AmazonHubDiagram() {
             className="absolute inset-0 rounded-full border-2 border-dashed border-[#4A4A4A]/55 dark:border-white/30 animate-spin"
             style={{ animationDuration: "24s" }}
           />
-          <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#D2B48C]/25 via-[#B8966C]/15 to-transparent pulse-ring blur-xs" />
-          <div className="relative w-[145px] h-[145px] rounded-full bg-gradient-to-b from-[#282828] to-[#141414] text-white p-3 shadow-xl shadow-brand/30 border border-[#D2B48C]/40 flex flex-col items-center justify-center text-center hover:scale-105 transition-transform duration-300">
-            <div className="h-8 w-8 rounded-full bg-[#D2B48C]/20 border border-[#D2B48C]/40 grid place-items-center mb-1">
-              <RefreshCw className="w-3.5 h-3.5 text-[#D2B48C] animate-spin" style={{ animationDuration: "8s" }} />
+          <div className="absolute inset-2 rounded-full bg-gradient-to-tr from-[#4f6ef7]/25 via-[#0032ab]/15 to-transparent pulse-ring blur-xs" />
+          <div className="relative w-[145px] h-[145px] rounded-full bg-gradient-to-b from-[#1e293b] to-[#0f172a] text-white p-3 shadow-xl shadow-brand/30 border border-[#4f6ef7]/40 flex flex-col items-center justify-center text-center hover:scale-105 transition-transform duration-300">
+            <div className="h-8 w-8 rounded-full bg-[#4f6ef7]/20 border border-[#4f6ef7]/40 grid place-items-center mb-1">
+              <RefreshCw className="w-3.5 h-3.5 text-[#4f6ef7] animate-spin" style={{ animationDuration: "8s" }} />
             </div>
             <h4 className="text-xs font-extrabold text-white tracking-tight leading-tight whitespace-nowrap">
               {t("amazonShowcase.diagramCoreTitle", "Gravurtastisch studio")}
@@ -176,7 +176,7 @@ export function AmazonHubDiagram() {
             <p className="text-[10px] text-slate-300 font-medium mt-0.5 whitespace-nowrap">
               {t("amazonShowcase.diagramCoreSub", "Production engine")}
             </p>
-            <span className="mt-1 text-[8px] font-mono font-bold text-[#D2B48C] bg-black/60 border border-[#D2B48C]/30 px-2 py-0.5 rounded-full whitespace-nowrap">
+            <span className="mt-1 text-[8px] font-mono font-bold text-[#4f6ef7] bg-black/60 border border-[#4f6ef7]/30 px-2 py-0.5 rounded-full whitespace-nowrap">
               {t("amazonShowcase.diagramCoreLatency", "< 2s updates")}
             </span>
           </div>

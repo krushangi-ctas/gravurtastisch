@@ -181,7 +181,7 @@ function BlogDetailPage() {
           </p>
           <Link
             to="/blogs"
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-brand hover:bg-brand-bright text-navy-deep font-bold transition-colors shadow-lg shadow-brand/25"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl btn-glass-primary !text-white font-bold transition-all shadow-lg shadow-brand/25"
           >
             <ArrowLeft className="h-4 w-4" />
             Return to All Blogs
@@ -371,7 +371,7 @@ function BlogDetailPage() {
                                   prev > 0 ? prev - 1 : validImages.length - 1
                                 )
                               }
-                              className="absolute left-3.5 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-navy-deep/80 hover:bg-brand text-white hover:text-navy-deep flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
+                              className="absolute left-3.5 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900/80 hover:bg-brand text-white hover:text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
                               aria-label="Previous image"
                             >
                               <ChevronLeft className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -385,7 +385,7 @@ function BlogDetailPage() {
                                   prev < validImages.length - 1 ? prev + 1 : 0
                                 )
                               }
-                              className="absolute right-3.5 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-navy-deep/80 hover:bg-brand text-white hover:text-navy-deep flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 h-10 w-10 sm:h-11 sm:w-11 rounded-full bg-slate-900/80 hover:bg-brand text-white hover:text-white flex items-center justify-center backdrop-blur-md border border-white/20 shadow-xl transition-all cursor-pointer hover:scale-110 active:scale-95"
                               aria-label="Next image"
                             >
                               <ChevronRight className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -462,7 +462,7 @@ function BlogDetailPage() {
                       </div>
                       <a
                         href="/#register"
-                        className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand hover:bg-brand-bright text-navy-deep text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-brand/20"
+                        className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl btn-glass-primary !text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-brand/20"
                       >
                         <span>Start Free</span>
                         <ArrowRight className="h-3.5 w-3.5" />

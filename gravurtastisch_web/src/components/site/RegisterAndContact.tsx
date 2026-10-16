@@ -159,9 +159,8 @@ function RegisterSection() {
         <Reveal className="lg:col-span-7" delay={100}>
           <form
             onSubmit={handleSubmit}
-            className="rounded-3xl bg-navy-deep text-white p-8 lg:p-10 relative overflow-hidden"
+            className="rounded-3xl bg-white border border-border shadow-xl p-8 lg:p-10 relative overflow-hidden"
           >
-            <div className="absolute inset-0 noise-bg opacity-70" aria-hidden />
             <div className="relative grid sm:grid-cols-2 gap-5">
               <Field label={t('register.fieldBusinessName')} name="business" placeholder={t('register.fieldBusinessPlaceholder')} />
               <Field label={t('register.fieldSellerName')} name="seller" placeholder={t('register.fieldSellerPlaceholder')} />
@@ -171,7 +170,7 @@ function RegisterSection() {
               {/* Dynamic Subscription Plan Selector */}
               <div className="sm:col-span-2 space-y-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="plan" className="block text-xs font-semibold uppercase tracking-widest text-white/70">
+                  <Label htmlFor="plan" className="block text-xs font-semibold uppercase tracking-widest text-slate-body">
                     Subscription Plan
                   </Label>
                   {currentPlan && (
@@ -187,7 +186,7 @@ function RegisterSection() {
                   )}
                 </div>
                 {plansLoading ? (
-                  <div className="h-12 rounded-xl bg-white/5 border border-white/10 animate-pulse flex items-center px-4 text-xs text-white/50">
+                  <div className="h-12 rounded-xl bg-slate-50 border border-border animate-pulse flex items-center px-4 text-xs text-muted-foreground">
                     Loading available plans...
                   </div>
                 ) : plans.length > 0 ? (
@@ -200,14 +199,14 @@ function RegisterSection() {
                   >
                     <SelectTrigger
                       id="plan"
-                      className="h-12 w-full rounded-xl bg-white/5 border border-white/15 px-4 py-3 text-sm text-white shadow-none hover:bg-white/[0.08] hover:border-white/25 focus:outline-none focus:ring-2 focus:ring-brand/40 focus:border-brand transition [&>svg]:text-brand [&>svg]:opacity-90 cursor-pointer"
+                      className="h-12 w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-foreground shadow-xs hover:border-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition [&>svg]:text-brand cursor-pointer"
                     >
                       <SelectValue placeholder="Select a subscription plan">
                         {currentPlan && (
                           <div className="flex items-center justify-between w-full pr-2 text-left truncate">
-                            <span className="font-semibold text-white truncate">
+                            <span className="font-semibold text-foreground truncate">
                               {currentPlan.name}{" "}
-                              <span className="text-brand font-medium">
+                              <span className="text-brand font-bold">
                                 — ${currentPlan.price}
                                 {currentPlan.billingCycle === 3
                                   ? "/yr"
@@ -216,7 +215,7 @@ function RegisterSection() {
                                   : "/mo"}
                               </span>
                             </span>
-                            <span className="hidden sm:inline-block text-xs text-white/55 font-mono ml-3 shrink-0">
+                            <span className="hidden sm:inline-block text-xs text-muted-foreground font-mono ml-3 shrink-0">
                               {currentPlan.marketplace}{" "}
                               {currentPlan.marketplace === 1
                                 ? "marketplace"
@@ -228,7 +227,7 @@ function RegisterSection() {
                       </SelectValue>
                     </SelectTrigger>
                     <SelectContent
-                      className="bg-white border border-[#E8E3DA] text-[#282828] shadow-[0_20px_50px_rgba(0,0,0,0.25)] rounded-2xl p-1.5 z-50 min-w-[var(--radix-select-trigger-width)]"
+                      className="bg-white border border-border text-foreground shadow-2xl rounded-2xl p-1.5 z-50 min-w-[var(--radix-select-trigger-width)]"
                     >
                       {plans.map((p) => {
                         const planId = (p._id || p.id) as string;
@@ -242,18 +241,18 @@ function RegisterSection() {
                           <SelectItem
                             key={planId}
                             value={planId}
-                            className="rounded-xl px-3.5 py-3 text-sm text-[#282828] hover:bg-[#FAF6F0] hover:text-[#282828] focus:bg-[#FAF6F0] focus:text-[#282828] cursor-pointer transition-colors data-[state=checked]:bg-[#F4ECE1] data-[state=checked]:text-[#282828] [&_svg]:text-[#B8966C] [&_svg]:stroke-[2.5] my-0.5"
+                            className="rounded-xl px-3.5 py-3 text-sm text-foreground hover:bg-slate-100 focus:bg-slate-100 cursor-pointer transition-colors data-[state=checked]:bg-brand/10 data-[state=checked]:text-brand [&_svg]:text-brand my-0.5"
                           >
                             <div className="flex items-center justify-between w-full gap-4 pr-3">
                               <div className="flex items-center gap-2">
-                                <span className="font-bold text-[#282828]">
+                                <span className="font-bold text-foreground">
                                   {p.name}
                                 </span>
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-[#FAF4EB] text-[#B8966C] border border-[#EBDCC8]">
+                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
                                   ${p.price}{cycleShort}
                                 </span>
                               </div>
-                              <span className="text-xs text-[#73736E] font-mono">
+                              <span className="text-xs text-muted-foreground font-mono">
                                 {p.marketplace}{" "}
                                 {p.marketplace === 1
                                   ? "marketplace"
@@ -267,21 +266,21 @@ function RegisterSection() {
                     </SelectContent>
                   </Select>
                 ) : (
-                  <div className="text-xs text-white/50">Standard plan (5 marketplaces, 1000 requests/mo)</div>
+                  <div className="text-xs text-muted-foreground">Standard plan (5 marketplaces, 1000 requests/mo)</div>
                 )}
               </div>
 
               {/* Supported Marketplaces (View Purpose Only) */}
               <div className="sm:col-span-2">
                 <div className="flex items-center justify-between mb-2.5">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-white/70">
+                  <p className="text-xs font-semibold uppercase tracking-widest text-slate-body">
                     {t('register.marketplacesLabel')}{' '}
-                    <span className="normal-case font-normal text-white/50">
+                    <span className="normal-case font-normal text-muted-foreground">
                       ({t('register.configuredAfter')})
                     </span>
                   </p>
                   {currentPlan && (
-                    <span className="text-xs font-mono text-white/60">
+                    <span className="text-xs font-mono text-muted-foreground">
                       Plan allowance:{' '}
                       <strong className="text-brand">
                         {currentPlan.marketplace} {currentPlan.marketplace === 1 ? 'marketplace' : 'marketplaces'}
@@ -293,7 +292,7 @@ function RegisterSection() {
                   {AVAILABLE_MARKETPLACES.map(({ code }) => (
                     <span
                       key={code}
-                      className="inline-flex items-center gap-1.5 rounded-full bg-white/10 border border-white/15 px-3 py-1.5 text-xs font-mono font-medium text-white/90 select-none cursor-default shadow-xs"
+                      className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 border border-slate-200 px-3 py-1.5 text-xs font-mono font-medium text-slate-700 select-none cursor-default shadow-2xs hover:bg-slate-200/50"
                       title={code}
                     >
                       <FlagIcon code={code} className="w-3.5 h-2.5 rounded-[2px]" />
@@ -307,17 +306,17 @@ function RegisterSection() {
             <button
               type="submit"
               disabled={loading}
-              className="relative mt-8 inline-flex items-center gap-2 rounded-full bg-brand px-8 py-3.5 text-sm font-bold text-navy-deep shadow-[0_16px_36px_-10px_rgba(210,180,140,0.55)] hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
+              className="relative mt-8 inline-flex items-center gap-2 rounded-full btn-glass-primary !py-3.5 px-8 text-sm font-bold !text-white shadow-[0_8px_24px_rgba(0,50,171,0.35)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
             >
               {loading ? (
-                currentPlan && currentPlan.price > 0 ? "Redirecting to checkout..." : t('register.submitSending')
+                <span className="!text-white">{currentPlan && currentPlan.price > 0 ? "Redirecting to checkout..." : t('register.submitSending')}</span>
               ) : currentPlan && currentPlan.price > 0 ? (
                 <>
-                  <span>Continue to Payment (${currentPlan.price}/mo)</span>
-                  <Sparkles className="w-4 h-4" />
+                  <span className="!text-white">Continue to Payment (${currentPlan.price}/mo)</span>
+                  <Sparkles className="w-4 h-4 text-white" />
                 </>
               ) : (
-                t('register.submitLabel')
+                <span className="!text-white">{t('register.submitLabel')}</span>
               )}
             </button>
             {sent && (
@@ -350,7 +349,7 @@ function Field({
 }) {
   return (
     <div className="space-y-2">
-      <Label htmlFor={name} className="block text-xs font-semibold uppercase tracking-widest text-white/70">
+      <Label htmlFor={name} className="block text-xs font-semibold uppercase tracking-widest text-slate-body">
         {label}
       </Label>
       <Input
@@ -359,7 +358,7 @@ function Field({
         type={type}
         required={type !== "tel" && name !== "phone"}
         placeholder={placeholder}
-        className="h-12 rounded-xl bg-white/5 border-white/15 px-4 py-3 text-sm text-white placeholder:text-white/35 shadow-none focus-visible:outline-none focus-visible:border-brand-bright focus-visible:bg-white/10 focus-visible:ring-2 focus-visible:ring-brand-bright/30 transition"
+        className="h-12 rounded-xl bg-slate-50 border border-slate-200 px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-xs focus-visible:outline-none focus-visible:border-brand focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-brand/20 transition"
       />
     </div>
   );
@@ -452,9 +451,9 @@ function ContactSection() {
             <button
               type="submit"
               disabled={loading}
-              className="inline-flex items-center gap-2 rounded-full bg-brand px-7 py-3.5 text-sm font-bold text-navy-deep shadow-sm hover:shadow-md hover:bg-brand-bright hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
+              className="inline-flex items-center gap-2 rounded-full btn-glass-primary !py-3.5 px-7 text-sm font-bold !text-white shadow-md hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
             >
-              {loading ? t('contact.submitSending') : t('contact.submitLabel')}
+              <span className="!text-white">{loading ? t('contact.submitSending') : t('contact.submitLabel')}</span>
             </button>
             {sent && (
               <p className="text-sm text-emerald-600 font-medium">
@@ -467,7 +466,7 @@ function ContactSection() {
           </form>
         </Reveal>
         <Reveal className="lg:col-span-5 order-1 lg:order-2" delay={80}>
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-brand">
+          <span className="section-badge mb-3">
             {t('contact.sectionLabel')}
           </span>
           <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep leading-tight">
