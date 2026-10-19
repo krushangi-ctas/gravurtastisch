@@ -138,26 +138,26 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 			}}
 		>
 			<form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
-				{/* Top Tan Banner Header */}
-				<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+				{/* Top Header */}
+				<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 					<div className="flex items-center gap-2.5">
-						<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-							<FuseSvgIcon size={18} className="text-slate-900">
+						<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+							<FuseSvgIcon size={18} className="text-primary">
 								heroicons-outline:cube
 							</FuseSvgIcon>
 						</div>
-						<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+						<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 							{isEdit ? 'Edit Plan' : 'Add New Plan'}
-						</h1>
+						</h2>
 					</div>
 
 					<IconButton
 						size="small"
 						onClick={onClose}
-						className="text-slate-900 hover:bg-black/10 transition-colors"
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 						aria-label="Close"
 					>
-						<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>
 				</div>
 

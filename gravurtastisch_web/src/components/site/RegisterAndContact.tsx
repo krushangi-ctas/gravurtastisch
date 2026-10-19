@@ -303,32 +303,34 @@ function RegisterSection() {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="relative mt-8 inline-flex items-center gap-2 rounded-full btn-glass-primary !py-3.5 px-8 text-sm font-bold !text-white shadow-[0_8px_24px_rgba(0,50,171,0.35)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
-            >
-              {loading ? (
-                <span className="!text-white">{currentPlan && currentPlan.price > 0 ? "Redirecting to checkout..." : t('register.submitSending')}</span>
-              ) : currentPlan && currentPlan.price > 0 ? (
-                <>
-                  <span className="!text-white">Continue to Payment (${currentPlan.price}/mo)</span>
-                  <Sparkles className="w-4 h-4 text-white" />
-                </>
-              ) : (
-                <span className="!text-white">{t('register.submitLabel')}</span>
+            <div className="mt-8 flex flex-col items-end">
+              <button
+                type="submit"
+                disabled={loading}
+                className="relative inline-flex items-center gap-2 rounded-full btn-glass-primary !py-3.5 px-8 text-sm font-bold !text-white shadow-[0_8px_24px_rgba(0,50,171,0.35)] hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none"
+              >
+                {loading ? (
+                  <span className="!text-white">{currentPlan && currentPlan.price > 0 ? "Redirecting to checkout..." : t('register.submitSending')}</span>
+                ) : currentPlan && currentPlan.price > 0 ? (
+                  <>
+                    <span className="!text-white">Continue to Payment (${currentPlan.price}/mo)</span>
+                    <Sparkles className="w-4 h-4 text-white" />
+                  </>
+                ) : (
+                  <span className="!text-white">{t('register.submitLabel')}</span>
+                )}
+              </button>
+              {sent && (
+                <p className="relative mt-3 text-sm text-emerald-600 font-medium text-right">
+                  ✓ {t('register.successMessage')}
+                </p>
               )}
-            </button>
-            {sent && (
-              <p className="relative mt-4 text-sm text-emerald-300">
-                ✓ {t('register.successMessage')}
-              </p>
-            )}
-            {error && (
-              <p className="relative mt-4 text-sm text-red-400">
-                ✗ {error}
-              </p>
-            )}
+              {error && (
+                <p className="relative mt-3 text-sm text-red-500 font-medium text-right">
+                  ✗ {error}
+                </p>
+              )}
+            </div>
           </form>
         </Reveal>
       </Container>
@@ -448,21 +450,25 @@ function ContactSection() {
                 className="w-full min-h-[140px] rounded-xl border border-border bg-white px-4 py-3.5 text-sm text-navy-deep placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-brand focus-visible:ring-2 focus-visible:ring-brand/20 resize-y"
               />
             </div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="inline-flex items-center gap-2 rounded-full btn-glass-primary !py-3.5 px-7 text-sm font-bold !text-white shadow-md hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
-            >
-              <span className="!text-white">{loading ? t('contact.submitSending') : t('contact.submitLabel')}</span>
-            </button>
-            {sent && (
-              <p className="text-sm text-emerald-600 font-medium">
-                ✓ {t('contact.successMessage')}
-              </p>
-            )}
-            {error && (
-              <p className="text-sm text-red-500 font-medium">✗ {error}</p>
-            )}
+            <div className="flex flex-col items-end pt-2">
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex items-center gap-2 rounded-full btn-glass-primary !py-3.5 px-7 text-sm font-bold !text-white shadow-md hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50"
+              >
+                <span className="!text-white">{loading ? t('contact.submitSending') : t('contact.submitLabel')}</span>
+              </button>
+              {sent && (
+                <p className="text-sm text-emerald-600 font-medium text-right mt-2">
+                  ✓ {t('contact.successMessage')}
+                </p>
+              )}
+              {error && (
+                <p className="text-sm text-red-500 font-medium text-right mt-2">
+                  ✗ {error}
+                </p>
+              )}
+            </div>
           </form>
         </Reveal>
         <Reveal className="lg:col-span-5 order-1 lg:order-2" delay={80}>

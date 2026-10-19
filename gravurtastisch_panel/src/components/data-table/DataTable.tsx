@@ -86,6 +86,10 @@ function DataTable<TData>({
   data,
   tableId,
   initialState = {},
+  title,
+  icon,
+  actionButtons,
+  onRefresh,
   ...rest
 }: any) {
   const getColumnOrderFromLocalStorage = (id: string) => {
@@ -277,13 +281,13 @@ function DataTable<TData>({
         },
         muiSearchTextFieldProps: {
           placeholder: 'Search',
-          sx: { minWidth: '380px', minHeight: '38px !important' },
+          sx: { minWidth: { xs: '160px', sm: '220px', md: '280px' }, minHeight: '32px !important' },
           variant: 'outlined',
-          size: 'medium',
+          size: 'small',
         },
         muiFilterTextFieldProps: {
           variant: 'outlined',
-          size: 'medium',
+          size: 'small',
           sx: {
             '& .MuiInputBase-root': {
               padding: '0px 8px',
@@ -377,10 +381,18 @@ function DataTable<TData>({
         muiCircularProgressProps: {
           sx: { display: 'none' },
         },
-        renderTopToolbar: (_props) => <DataTableTopToolbar {..._props} />,
+        renderTopToolbar: (_props) => (
+          <DataTableTopToolbar
+            {..._props}
+            title={title}
+            icon={icon}
+            actionButtons={actionButtons}
+            onRefresh={onRefresh}
+          />
+        ),
         icons: tableIcons,
       } as Partial<MaterialReactTableProps<TData>>),
-    [rest, columnOrder, density]
+    [rest, columnOrder, density, title, icon, actionButtons, onRefresh]
   );
 
   const tableOptions = useMemo(

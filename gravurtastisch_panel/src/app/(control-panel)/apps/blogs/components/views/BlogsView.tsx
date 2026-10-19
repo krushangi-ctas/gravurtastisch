@@ -60,119 +60,6 @@ const Root = styled(FusePageCarded)(() => ({
 	}
 }));
 
-function BlogsHeader({
-	statusFilter,
-	onStatusChange,
-	onRefresh,
-	onAddNew,
-	canCreate
-}: {
-	statusFilter: string;
-	onStatusChange: (val: string) => void;
-	onRefresh: () => void;
-	onAddNew: () => void;
-	canCreate: boolean;
-}) {
-	return (
-		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md">
-			{/* Left Title & Icon */}
-			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
-					<FuseSvgIcon size={18} className="text-slate-900">
-						heroicons-outline:newspaper
-					</FuseSvgIcon>
-				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-					Blogs
-				</h1>
-			</div>
-
-			{/* Right Controls: Status, Reload, Add New Blog */}
-			<div className="flex items-center gap-2 w-full sm:w-auto">
-				{/* Status Filter */}
-				<FormControl size="small" className="min-w-[115px] bg-white rounded-lg shadow-xs" sx={{ height: '32px' }}>
-					<Select
-						value={statusFilter}
-						onChange={(e) => onStatusChange(e.target.value)}
-						displayEmpty
-						className="text-xs sm:text-sm bg-white font-medium text-slate-700"
-						sx={{
-							height: '32px',
-							borderRadius: '8px',
-							'& .MuiOutlinedInput-notchedOutline': {
-								border: 'none'
-							},
-							'& .MuiSelect-select': {
-								py: 0,
-								height: '32px',
-								display: 'flex',
-								alignItems: 'center'
-							}
-						}}
-						renderValue={(selected) => {
-							if (!selected) {
-								return (
-									<span className="flex items-center gap-1.5 text-slate-600 text-xs sm:text-sm font-medium">
-										<FuseSvgIcon size={15} className="text-slate-500">
-											heroicons-outline:funnel
-										</FuseSvgIcon>
-										Status
-									</span>
-								);
-							}
-							return (
-								<span className="flex items-center gap-1.5 text-slate-800 text-xs sm:text-sm font-semibold">
-									<FuseSvgIcon size={15} className="text-slate-600">
-										heroicons-outline:funnel
-									</FuseSvgIcon>
-									{selected === 'active' ? 'Active' : selected === 'inactive' ? 'Inactive' : 'All Status'}
-								</span>
-							);
-						}}
-					>
-						<MenuItem value="">
-							<span className="text-xs sm:text-sm">All Status</span>
-						</MenuItem>
-						<MenuItem value="active">
-							<span className="text-xs sm:text-sm">Active</span>
-						</MenuItem>
-						<MenuItem value="inactive">
-							<span className="text-xs sm:text-sm">Inactive</span>
-						</MenuItem>
-					</Select>
-				</FormControl>
-
-				{/* Refresh Button */}
-				<Tooltip title="Refresh list" arrow>
-					<button
-						type="button"
-						onClick={onRefresh}
-						style={{ height: '32px', width: '32px' }}
-						className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
-					>
-						<FuseSvgIcon size={16} className="text-slate-800">
-							heroicons-outline:arrow-path
-						</FuseSvgIcon>
-					</button>
-				</Tooltip>
-
-				{canCreate && (
-					<button
-						type="button"
-						onClick={onAddNew}
-						style={{ height: '32px' }}
-						className="h-8 px-3 bg-primary-800 hover:bg-primary-900 text-white text-xs sm:text-sm font-semibold rounded-lg border border-white/80 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0"
-					>
-						<FuseSvgIcon size={15} className="text-white">
-							heroicons-outline:plus
-						</FuseSvgIcon>
-						<span>Add Blog</span>
-					</button>
-				)}
-			</div>
-		</div>
-	);
-}
 
 function BlogsContent({
 	blogs,
@@ -190,7 +77,11 @@ function BlogsContent({
 	onEditBlog,
 	onPreviewBlog,
 	canUpdate,
-	canDelete
+	canDelete,
+	statusFilter,
+	onStatusChange,
+	onAddNew,
+	canCreate
 }: {
 	blogs: Blog[];
 	isLoading: boolean;
@@ -208,6 +99,10 @@ function BlogsContent({
 	onPreviewBlog: (blog: Blog) => void;
 	canUpdate: boolean;
 	canDelete: boolean;
+	statusFilter: string;
+	onStatusChange: (val: string) => void;
+	onAddNew: () => void;
+	canCreate: boolean;
 }) {
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 	const updateStatusMutation = useUpdateBlogStatus();
@@ -381,6 +276,60 @@ function BlogsContent({
 		);
 	}
 
+	const actionButtons = (
+		<div className="flex items-center gap-2">
+			{/* Status Filter */}
+			<FormControl size="small" className="min-w-[115px] bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700" sx={{ height: '32px' }}>
+				<Select
+					value={statusFilter}
+					onChange={(e) => onStatusChange(e.target.value)}
+					displayEmpty
+					className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
+					sx={{
+						height: '32px',
+						borderRadius: '8px',
+						'& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+						'& .MuiSelect-select': { py: 0, height: '32px', display: 'flex', alignItems: 'center' }
+					}}
+					renderValue={(selected) => {
+						if (!selected) {
+							return (
+								<span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs sm:text-sm font-medium">
+									<FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:funnel</FuseSvgIcon>
+									Status
+								</span>
+							);
+						}
+						return (
+							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-semibold">
+								<FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:funnel</FuseSvgIcon>
+								{selected === 'active' ? 'Active' : selected === 'inactive' ? 'Inactive' : 'All Status'}
+							</span>
+						);
+					}}
+				>
+					<MenuItem value=""><span className="text-xs sm:text-sm">All Status</span></MenuItem>
+					<MenuItem value="active"><span className="text-xs sm:text-sm">Active</span></MenuItem>
+					<MenuItem value="inactive"><span className="text-xs sm:text-sm">Inactive</span></MenuItem>
+				</Select>
+			</FormControl>
+
+			{canCreate && (
+				<button
+					type="button"
+					onClick={onAddNew}
+					style={{ height: '32px' }}
+					className="h-8 px-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+				>
+					<FuseSvgIcon size={15} className="text-white">
+						heroicons-outline:plus
+					</FuseSvgIcon>
+					<span>Add Blog</span>
+				</button>
+			)}
+		</div>
+	);
+
 	return (
 		<>
 			<Paper
@@ -407,6 +356,10 @@ function BlogsContent({
 					columns={columns}
 					data={blogs}
 					tableId="blogs-management-table"
+					title="Blogs"
+					icon="heroicons-outline:newspaper"
+					actionButtons={actionButtons}
+					onRefresh={onRefresh}
 					enableRowActions
 					positionActionsColumn="last"
 					displayColumnDefOptions={{
@@ -817,15 +770,6 @@ export default function BlogsView() {
 	return (
 		<>
 			<Root
-				header={
-					<BlogsHeader
-						statusFilter={statusFilter}
-						onStatusChange={handleStatusChange}
-						onRefresh={handleRefresh}
-						onAddNew={handleOpenCreate}
-						canCreate={canCreate('blogs')}
-					/>
-				}
 				content={
 					<BlogsContent
 						blogs={blogs}
@@ -844,6 +788,10 @@ export default function BlogsView() {
 						onPreviewBlog={handleOpenPreview}
 						canUpdate={canUpdate('blogs')}
 						canDelete={canDelete('blogs')}
+						statusFilter={statusFilter}
+						onStatusChange={handleStatusChange}
+						onAddNew={handleOpenCreate}
+						canCreate={canCreate('blogs')}
 					/>
 				}
 				scroll="content"

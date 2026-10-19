@@ -205,18 +205,18 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 		>
 			<form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
 				{/* Dialog Header */}
-				<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+				<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 					<div className="flex items-center gap-2.5">
-						<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-							<FuseSvgIcon size={18} className="text-slate-900">
+						<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary shrink-0">
+							<FuseSvgIcon size={18} className="text-primary">
 								lucide:sparkles
 							</FuseSvgIcon>
 						</div>
 						<div>
-							<h2 className="text-base font-bold tracking-tight text-slate-900 m-0">
+							<h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white m-0">
 								Assign Plan to Seller
 							</h2>
-							<p className="text-xs text-slate-700 m-0">
+							<p className="text-xs text-slate-500 dark:text-slate-400 m-0">
 								Manually assign, renew, or upgrade subscription plan for this seller
 							</p>
 						</div>
@@ -226,7 +226,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 						size="small"
 						onClick={onClose}
 						disabled={isSubmitting}
-						className="text-slate-900/70 hover:text-slate-900 hover:bg-black/10 transition-colors p-1"
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
 					>
 						<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>

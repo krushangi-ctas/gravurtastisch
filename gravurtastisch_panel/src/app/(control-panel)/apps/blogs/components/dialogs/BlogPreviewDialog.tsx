@@ -278,24 +278,24 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 				}
 			}}
 		>
-			{/* Top Preview Bar in Secondary Tan */}
-			<div className="bg-secondary-500 text-slate-900 px-5 py-3.5 flex items-center justify-between border-b border-secondary-600 shadow-sm">
+			{/* Top Preview Bar */}
+			<div className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-5 py-3.5 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shadow-xs">
 				<div className="flex items-center gap-2.5">
-					<div className="h-7 w-7 rounded-lg bg-black/10 text-slate-900 flex items-center justify-center">
-						<FuseSvgIcon size={18} className="text-slate-900">heroicons-outline:eye</FuseSvgIcon>
+					<div className="h-7 w-7 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+						<FuseSvgIcon size={18} className="text-primary">heroicons-outline:eye</FuseSvgIcon>
 					</div>
 					<div>
-						<span className="text-[11px] uppercase tracking-wider text-slate-800 font-semibold">
+						<span className="text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold">
 							Live Website Preview
 						</span>
-						<h3 className="text-sm font-bold text-slate-900 truncate max-w-md m-0">
+						<h3 className="text-sm font-bold text-slate-900 dark:text-white truncate max-w-md m-0">
 							{blog.blog_title}
 						</h3>
 					</div>
 					<span
 						className={`ml-2 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${blog.status === 1
-								? 'bg-emerald-600/20 text-emerald-900 border border-emerald-600/40'
-								: 'bg-rose-600/20 text-rose-900 border border-rose-600/40'
+								? 'bg-emerald-600/20 text-emerald-900 dark:text-emerald-300 border border-emerald-600/40'
+								: 'bg-rose-600/20 text-rose-900 dark:text-rose-300 border border-rose-600/40'
 							}`}
 					>
 						{blog.status === 1 ? 'Active' : 'Inactive'}
@@ -306,9 +306,9 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 					<IconButton
 						onClick={onClose}
 						size="small"
-						className="text-slate-900 hover:bg-black/10 transition-colors"
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 					>
-						<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>
 				</div>
 			</div>
@@ -317,21 +317,21 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 				{/* ==================================================== */}
 				{/* 1. HERO SECTION (MATCHING WEBSITE BLOG DESIGN) */}
 				{/* ==================================================== */}
-				<section className="relative px-6 py-10 sm:px-12 sm:py-14 bg-gradient-to-b from-[#101726] via-[#162035] to-[#1c2840] text-white border-b border-white/10 overflow-hidden">
-					<div className="absolute -top-24 right-1/4 w-80 h-80 bg-[#D2B48C]/20 rounded-full blur-[120px] pointer-events-none" />
-					<div className="absolute bottom-0 left-10 w-72 h-72 bg-amber-500/15 rounded-full blur-[100px] pointer-events-none" />
+				<section className="relative px-6 py-10 sm:px-12 sm:py-14 bg-gradient-to-b from-[#0b132b] via-[#152238] to-[#1e293b] text-white border-b border-white/10 overflow-hidden">
+					<div className="absolute -top-24 right-1/4 w-80 h-80 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
+					<div className="absolute bottom-0 left-10 w-72 h-72 bg-blue-500/15 rounded-full blur-[100px] pointer-events-none" />
 
 					<div className="relative max-w-4xl mx-auto text-left">
 						{/* Navigation back simulation */}
 						<div className="mb-6">
 							<span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-								<FuseSvgIcon size={14} className="text-[#DECAA8]">heroicons-outline:arrow-left</FuseSvgIcon>
+								<FuseSvgIcon size={14} className="text-blue-400">heroicons-outline:arrow-left</FuseSvgIcon>
 								Back to all articles
 							</span>
 						</div>
 
 						{/* Category / Badge */}
-						<div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#D2B48C]/20 border border-[#D2B48C]/40 text-[#DECAA8] text-xs font-semibold uppercase tracking-wider mb-5 backdrop-blur-md">
+						<div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-5 backdrop-blur-md">
 							<FuseSvgIcon size={14}>heroicons-outline:sparkles</FuseSvgIcon>
 							<span>Studio craft &amp; personalization</span>
 						</div>
@@ -351,13 +351,13 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 						{/* Metadata Bar */}
 						<div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-400">
 							<div className="flex items-center gap-4">
-								<div className="relative h-11 w-11 rounded-2xl bg-[#282828] border border-white/20 flex items-center justify-center p-2 shadow-md shrink-0">
-									<span className="font-extrabold text-base text-[#D2B48C]">G</span>
+								<div className="relative h-11 w-11 rounded-2xl bg-primary border border-white/20 flex items-center justify-center p-2 shadow-md shrink-0">
+									<span className="font-extrabold text-base text-white">G</span>
 								</div>
 								<div>
 									<div className="font-semibold text-white flex items-center gap-1.5 text-sm">
 										Gravurtastisch Editorial Team
-										<FuseSvgIcon size={16} className="text-[#DECAA8]">heroicons-solid:check-badge</FuseSvgIcon>
+										<FuseSvgIcon size={16} className="text-blue-400">heroicons-solid:check-badge</FuseSvgIcon>
 									</div>
 									<div className="text-xs text-slate-400">
 										Custom engraving &amp; order fulfillment
@@ -508,7 +508,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 												Gravurtastisch connects intake, proofs, and production so every mug and engraved piece ships as promised.
 											</p>
 										</div>
-										<span className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary-500 hover:bg-secondary-light text-slate-900 text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-secondary/20 cursor-pointer">
+										<span className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-primary/20 cursor-pointer">
 											<span>Start a custom order</span>
 											<FuseSvgIcon size={14}>heroicons-outline:arrow-right</FuseSvgIcon>
 										</span>
@@ -520,10 +520,10 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 						{/* Sidebar Column (Matching Website Blog Sidebar) */}
 						<div className="lg:col-span-4 space-y-6">
 							{/* Studio Craft Workflow Card */}
-							<div className="p-6 rounded-3xl bg-gradient-to-br from-[#101726] via-[#162035] to-[#D2B48C]/30 text-white border border-[#D2B48C]/30 shadow-xl relative overflow-hidden">
-								<div className="absolute -top-12 -right-12 w-32 h-32 bg-[#D2B48C]/30 rounded-full blur-2xl pointer-events-none" />
-								<div className="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/15 rounded-full blur-xl pointer-events-none" />
-								<div className="h-10 w-10 rounded-xl bg-[#D2B48C]/25 flex items-center justify-center mb-4 text-[#DECAA8] border border-[#D2B48C]/40 shadow-sm">
+							<div className="p-6 rounded-3xl bg-gradient-to-br from-[#0b132b] via-[#152238] to-[#0032ab]/30 text-white border border-primary/30 shadow-xl relative overflow-hidden">
+								<div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/30 rounded-full blur-2xl pointer-events-none" />
+								<div className="absolute -bottom-8 -left-8 w-24 h-24 bg-blue-500/15 rounded-full blur-xl pointer-events-none" />
+								<div className="h-10 w-10 rounded-xl bg-primary/25 flex items-center justify-center mb-4 text-blue-300 border border-primary/40 shadow-sm">
 									<FuseSvgIcon size={20}>heroicons-solid:shield-check</FuseSvgIcon>
 								</div>
 								<h3 className="text-lg font-bold font-display text-white">
@@ -535,15 +535,15 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 
 								<ul className="mt-4 space-y-2 text-xs text-slate-300">
 									<li className="flex items-center gap-2">
-										<FuseSvgIcon size={14} className="text-[#DECAA8] shrink-0">heroicons-solid:bolt</FuseSvgIcon>
+										<FuseSvgIcon size={14} className="text-blue-400 shrink-0">heroicons-solid:bolt</FuseSvgIcon>
 										<span>Proof-before-production on every SKU</span>
 									</li>
 									<li className="flex items-center gap-2">
-										<FuseSvgIcon size={14} className="text-[#DECAA8] shrink-0">heroicons-solid:bolt</FuseSvgIcon>
+										<FuseSvgIcon size={14} className="text-blue-400 shrink-0">heroicons-solid:bolt</FuseSvgIcon>
 										<span>Encrypted uploads &amp; scoped shop tokens</span>
 									</li>
 									<li className="flex items-center gap-2">
-										<FuseSvgIcon size={14} className="text-[#DECAA8] shrink-0">heroicons-solid:bolt</FuseSvgIcon>
+										<FuseSvgIcon size={14} className="text-blue-400 shrink-0">heroicons-solid:bolt</FuseSvgIcon>
 										<span>Webshop, wholesale &amp; counter orders</span>
 									</li>
 								</ul>

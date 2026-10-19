@@ -84,72 +84,6 @@ function roleLabel(user: User) {
 
 export type UsersViewVariant = 'sellers' | 'admin-users' | 'team';
 
-function UsersHeader({
-	variant,
-	canCreateUser,
-	onCreateClick,
-	onRefresh
-}: {
-	variant: UsersViewVariant;
-	canCreateUser: boolean;
-	onCreateClick: () => void;
-	onRefresh: () => void;
-}) {
-	const isSellersMode = variant === 'sellers';
-	const isTeamMode = variant === 'team';
-	const title = isSellersMode ? 'Sellers' : isTeamMode ? 'Team' : 'Admin Users';
-	const icon = isSellersMode
-		? 'lucide:store'
-		: isTeamMode
-			? 'lucide:users'
-			: 'lucide:user-cog';
-
-	return (
-		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
-			{/* Left Title & Icon */}
-			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
-					<FuseSvgIcon size={18} className="text-slate-900">
-						{icon}
-					</FuseSvgIcon>
-				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-					{title}
-				</h1>
-			</div>
-
-			{/* Right Controls: Refresh + Add User */}
-			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-				<Tooltip title="Refresh list" arrow>
-					<button
-						type="button"
-						onClick={onRefresh}
-						style={{ height: '32px', width: '32px' }}
-						className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
-					>
-						<FuseSvgIcon size={16} className="text-slate-800">
-							heroicons-outline:arrow-path
-						</FuseSvgIcon>
-					</button>
-				</Tooltip>
-
-				{!isSellersMode && canCreateUser && (
-					<button
-						type="button"
-						onClick={onCreateClick}
-						style={{ height: '32px' }}
-						className="h-8 px-3 bg-primary-800 hover:bg-primary-900 text-white text-xs sm:text-sm font-semibold rounded-lg border border-white/80 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0"
-					>
-						<FuseSvgIcon size={15} className="text-white">
-							heroicons-outline:plus
-						</FuseSvgIcon>
-						<span>Add User</span>
-					</button>
-				)}
-			</div>
-		</div>
-	);
-}
 
 function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const {
@@ -638,19 +572,32 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		);
 	}
 
+	const title = isSellersMode ? 'Sellers' : isTeamMode ? 'Team' : 'Admin Users';
+	const icon = isSellersMode
+		? 'lucide:store'
+		: isTeamMode
+			? 'lucide:users'
+			: 'lucide:user-cog';
+
+	const actionButtons = !isSellersMode && canCreate(sectionKey) ? (
+		<button
+			type="button"
+			onClick={() => {
+				resetCreateForm();
+				setCreateOpen(true);
+			}}
+			style={{ height: '32px' }}
+			className="h-8 px-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+		>
+			<FuseSvgIcon size={15} className="text-white">
+				heroicons-outline:plus
+			</FuseSvgIcon>
+			<span>Add User</span>
+		</button>
+	) : null;
+
 	return (
 		<Root
-			header={
-				<UsersHeader
-					variant={variant}
-					canCreateUser={canCreate(sectionKey)}
-					onCreateClick={() => {
-						resetCreateForm();
-						setCreateOpen(true);
-					}}
-					onRefresh={handleRefresh}
-				/>
-			}
 			content={
 				<Paper
 					ref={autoScrollRef}
@@ -676,6 +623,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						columns={columns}
 						data={users}
 						tableId={isSellersMode ? 'sellers-table' : isTeamMode ? 'team-table' : 'admin-users-table'}
+						title={title}
+						icon={icon}
+						actionButtons={actionButtons}
+						onRefresh={handleRefresh}
 						enableRowActions
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
@@ -924,25 +875,25 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-										<FuseSvgIcon size={18} className="text-slate-900">
+									<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+										<FuseSvgIcon size={18} className="text-primary">
 											{isTeamMode ? 'heroicons-outline:user-group' : 'heroicons-outline:user-plus'}
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 										{isTeamMode ? 'Create Team Member' : 'Create Admin User'}
-									</h1>
+									</h2>
 								</div>
 
 								<IconButton
 									size="small"
 									onClick={() => setCreateOpen(false)}
-									className="text-slate-900 hover:bg-black/10 transition-colors"
+									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
-									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
 							</div>
 
@@ -1132,25 +1083,25 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-										<FuseSvgIcon size={18} className="text-slate-900">
+									<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+										<FuseSvgIcon size={18} className="text-primary">
 											heroicons-outline:pencil-square
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 										Edit User
-									</h1>
+									</h2>
 								</div>
 
 								<IconButton
 									size="small"
 									onClick={() => setEditOpen(false)}
-									className="text-slate-900 hover:bg-black/10 transition-colors"
+									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
-									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
 							</div>
 

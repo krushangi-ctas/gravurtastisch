@@ -56,101 +56,6 @@ const Root = styled(FusePageCarded)(() => ({
 	}
 }));
 
-function SupportHeader({
-	statusFilter,
-	onStatusChange,
-	onRefresh
-}: {
-	statusFilter: string;
-	onStatusChange: (val: string) => void;
-	onRefresh: () => void;
-}) {
-	return (
-		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
-			{/* Left Title & Icon */}
-			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
-					<FuseSvgIcon size={18} className="text-slate-900">
-						heroicons-outline:chat-bubble-left-right
-					</FuseSvgIcon>
-				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-					Support
-				</h1>
-			</div>
-
-			{/* Right Controls: Status, Reload */}
-			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-				{/* Status Filter */}
-				<FormControl size="small" className="min-w-[115px] bg-white rounded-lg shadow-xs" sx={{ height: '32px' }}>
-					<Select
-						value={statusFilter}
-						onChange={(e) => onStatusChange(e.target.value)}
-						displayEmpty
-						className="text-xs sm:text-sm bg-white font-medium text-slate-700"
-						sx={{
-							height: '32px',
-							borderRadius: '8px',
-							'& .MuiOutlinedInput-notchedOutline': {
-								border: 'none'
-							},
-							'& .MuiSelect-select': {
-								py: 0,
-								height: '32px',
-								display: 'flex',
-								alignItems: 'center'
-							}
-						}}
-						renderValue={(selected) => {
-							if (!selected) {
-								return (
-									<span className="flex items-center gap-1.5 text-slate-600 text-xs sm:text-sm font-medium">
-										<FuseSvgIcon size={15} className="text-slate-500">
-											heroicons-outline:funnel
-										</FuseSvgIcon>
-										Status
-									</span>
-								);
-							}
-							return (
-								<span className="flex items-center gap-1.5 text-slate-800 text-xs sm:text-sm font-semibold">
-									<FuseSvgIcon size={15} className="text-slate-600">
-										heroicons-outline:funnel
-									</FuseSvgIcon>
-									{selected === 'resolved' ? 'Resolved' : selected === 'pending' ? 'Pending' : 'All Status'}
-								</span>
-							);
-						}}
-					>
-						<MenuItem value="">
-							<span className="text-xs sm:text-sm">All Status</span>
-						</MenuItem>
-						<MenuItem value="pending">
-							<span className="text-xs sm:text-sm">Pending</span>
-						</MenuItem>
-						<MenuItem value="resolved">
-							<span className="text-xs sm:text-sm">Resolved</span>
-						</MenuItem>
-					</Select>
-				</FormControl>
-
-				{/* Refresh Button (White Card Style) */}
-				<Tooltip title="Refresh list" arrow>
-					<button
-						type="button"
-						onClick={onRefresh}
-						style={{ height: '32px', width: '32px' }}
-						className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
-					>
-						<FuseSvgIcon size={16} className="text-slate-800">
-							heroicons-outline:arrow-path
-						</FuseSvgIcon>
-					</button>
-				</Tooltip>
-			</div>
-		</div>
-	);
-}
 
 function SupportContent({
 	supportRequests,
@@ -166,6 +71,8 @@ function SupportContent({
 	totalResults,
 	onRefresh,
 	canUpdate,
+	statusFilter,
+	onStatusChange,
 }: {
 	supportRequests: SupportRequest[];
 	isLoading: boolean;
@@ -180,6 +87,8 @@ function SupportContent({
 	totalResults: number;
 	onRefresh: () => void;
 	canUpdate: boolean;
+	statusFilter: string;
+	onStatusChange: (val: string) => void;
 }) {
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 	const updateMutation = useUpdateSupportStatus();
@@ -376,6 +285,46 @@ function SupportContent({
 		);
 	}
 
+	const actionButtons = (
+		<div className="flex items-center gap-2">
+			{/* Status Filter */}
+			<FormControl size="small" className="min-w-[115px] bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700" sx={{ height: '32px' }}>
+				<Select
+					value={statusFilter}
+					onChange={(e) => onStatusChange(e.target.value)}
+					displayEmpty
+					className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
+					sx={{
+						height: '32px',
+						borderRadius: '8px',
+						'& .MuiOutlinedInput-notchedOutline': { border: 'none' },
+						'& .MuiSelect-select': { py: 0, height: '32px', display: 'flex', alignItems: 'center' }
+					}}
+					renderValue={(selected) => {
+						if (!selected) {
+							return (
+								<span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs sm:text-sm font-medium">
+									<FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:funnel</FuseSvgIcon>
+									Status
+								</span>
+							);
+						}
+						return (
+							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-semibold">
+								<FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:funnel</FuseSvgIcon>
+								{selected === 'resolved' ? 'Resolved' : selected === 'pending' ? 'Pending' : 'All Status'}
+							</span>
+						);
+					}}
+				>
+					<MenuItem value=""><span className="text-xs sm:text-sm">All Status</span></MenuItem>
+					<MenuItem value="pending"><span className="text-xs sm:text-sm">Pending</span></MenuItem>
+					<MenuItem value="resolved"><span className="text-xs sm:text-sm">Resolved</span></MenuItem>
+				</Select>
+			</FormControl>
+		</div>
+	);
+
 	return (
 		<>
 			<Paper
@@ -402,6 +351,10 @@ function SupportContent({
 					columns={columns}
 					data={supportRequests}
 					tableId="support-management-table"
+					title="Support"
+					icon="heroicons-outline:chat-bubble-left-right"
+					actionButtons={actionButtons}
+					onRefresh={onRefresh}
 					enableRowActions
 					positionActionsColumn="last"
 					displayColumnDefOptions={{
@@ -762,13 +715,6 @@ function SupportView() {
 
 	return (
 		<Root
-			header={
-				<SupportHeader
-					statusFilter={statusFilter}
-					onStatusChange={handleStatusChange}
-					onRefresh={handleRefresh}
-				/>
-			}
 			content={
 				<SupportContent
 					supportRequests={supportRequests}
@@ -784,6 +730,8 @@ function SupportView() {
 					totalResults={totalResults}
 					onRefresh={handleRefresh}
 					canUpdate={canUpdate('support')}
+					statusFilter={statusFilter}
+					onStatusChange={handleStatusChange}
 				/>
 			}
 			scroll="content"
