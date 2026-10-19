@@ -13,8 +13,6 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogTitle,
-	FormControlLabel,
 	IconButton,
 	InputAdornment,
 	Paper,
@@ -248,13 +246,34 @@ function RolesView() {
 			{
 				accessorKey: 'role_name',
 				header: 'ROLE',
-				size: 160,
+				size: 170,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+					const val = cell.getValue<string>() || '—';
 					return (
-						<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-							{val || '—'}
-						</Typography>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<Box
+								sx={{
+									width: 26,
+									height: 26,
+									borderRadius: '6px',
+									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.08)',
+									color: (t) => t.palette.mode === 'dark' ? '#818CF8' : '#4338CA',
+									border: '1px solid',
+									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(79, 70, 229, 0.2)',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									shrink: 0,
+								}}
+							>
+								<FuseSvgIcon size={14}>heroicons-outline:shield-check</FuseSvgIcon>
+							</Box>
+							<Tooltip title={val} arrow>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+									{val}
+								</Typography>
+							</Tooltip>
+						</Box>
 					);
 				}
 			},
@@ -264,21 +283,34 @@ function RolesView() {
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					return (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{val || '—'}
-						</Typography>
+						<Tooltip title={val || 'No description'} arrow>
+							<Typography
+								sx={{
+									fontSize: 12,
+									color: val ? 'text.secondary' : 'text.disabled',
+									fontStyle: val ? 'normal' : 'italic',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+									maxWidth: 380,
+								}}
+							>
+								{val || 'No description'}
+							</Typography>
+						</Tooltip>
 					);
 				}
 			},
 			{
 				accessorKey: 'scope',
 				header: 'SCOPE',
-				size: 110,
+				size: 120,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+					const val = cell.getValue<string>() || '—';
 					return (
-						<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 uppercase">
-							{val || '—'}
+						<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 uppercase tracking-tight dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+							<FuseSvgIcon size={12} className="text-slate-500">heroicons-outline:adjustments-horizontal</FuseSvgIcon>
+							{val}
 						</span>
 					);
 				}
@@ -291,23 +323,15 @@ function RolesView() {
 		return <AccessDeniedView sectionTitle="Roles" />;
 	}
 
-	if (sectionsLoading) {
-		return (
-			<Box className="flex h-64 items-center justify-center">
-				<CircularProgress />
-			</Box>
-		);
-	}
-
 	const canCreateRole = canCreate('roles');
 	const actionButtons = canCreateRole ? (
 		<button
 			type="button"
 			onClick={openCreate}
-			style={{ height: '32px' }}
-			className="h-8 px-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+			style={{ height: '38px' }}
+			className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
 		>
-			<FuseSvgIcon size={15} className="text-white">
+			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
 			</FuseSvgIcon>
 			<span>Add Role</span>
@@ -355,7 +379,10 @@ function RolesView() {
 							}
 						}}
 						enableRowSelection={false}
-						state={{ isLoading }}
+						state={{
+							isLoading: Boolean(isLoading || sectionsLoading),
+							showSkeletons: Boolean(isLoading || sectionsLoading)
+						}}
 						manualPagination={false}
 						muiTableContainerProps={{
 							sx: {
@@ -372,130 +399,6 @@ function RolesView() {
 									backgroundColor: 'divider',
 									borderRadius: 4,
 									'&:hover': { backgroundColor: 'text.disabled' }
-								}
-							}
-						}}
-						muiBottomToolbarProps={{
-							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
-							sx: {
-								borderTop: '1px solid',
-								borderColor: 'divider',
-								flexShrink: 0,
-								marginTop: 'auto',
-								position: 'sticky',
-								bottom: 0,
-								zIndex: 2,
-								minHeight: '46px !important',
-								height: '46px !important',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'flex-end',
-								'& .MuiTablePagination-root': {
-									overflow: 'visible',
-									width: 'auto',
-									minHeight: '46px !important',
-									height: '46px !important',
-									display: 'flex',
-									alignItems: 'center'
-								},
-								'& .MuiTablePagination-toolbar': {
-									flexWrap: 'nowrap',
-									alignItems: 'center',
-									justifyContent: 'flex-end',
-									gap: { xs: 0.5, sm: 1 },
-									minHeight: '46px !important',
-									height: '46px !important',
-									paddingLeft: { xs: 1, sm: 2 },
-									paddingRight: { xs: 1, sm: 2 },
-									py: '0 !important',
-									my: 'auto'
-								},
-								'& .MuiTablePagination-selectLabel': {
-									fontSize: { xs: '12px', sm: '13px' },
-									margin: '0 !important',
-									lineHeight: '1.2 !important',
-									display: 'inline-flex',
-									alignItems: 'center'
-								},
-								'& .MuiTablePagination-input': {
-									marginRight: { xs: 0.5, sm: 1 },
-									marginLeft: 0.5,
-									display: 'inline-flex',
-									alignItems: 'center',
-									'& .MuiSelect-select': {
-										paddingTop: '3px !important',
-										paddingBottom: '3px !important',
-										fontSize: { xs: '12px', sm: '13px' },
-										display: 'inline-flex',
-										alignItems: 'center'
-									}
-								},
-								'& .MuiTablePagination-actions': {
-									marginLeft: { xs: 0.5, sm: 1 },
-									display: 'inline-flex',
-									alignItems: 'center',
-									'& .MuiIconButton-root': {
-										padding: '4px'
-									}
-								},
-								'& .MuiPagination-root': {
-									display: 'flex',
-									justifyContent: 'center',
-									alignItems: 'center'
-								},
-								'& .MuiPaginationItem-root': {
-									minWidth: { xs: 26, sm: 30 },
-									height: { xs: 26, sm: 30 },
-									fontSize: { xs: 12, sm: 13 },
-									padding: { xs: '0 3px', sm: '0 6px' },
-									margin: '0 1px',
-									display: 'inline-flex',
-									alignItems: 'center',
-									justifyContent: 'center'
-								}
-							}
-						}}
-						muiTableHeadProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadRowProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadCellProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableProps={{
-							sx: {
-								tableLayout: 'auto',
-								minWidth: '100%',
-								'& .MuiTableRow-root:hover': {
-									backgroundColor: 'action.hover',
-									transition: 'background-color 0.15s ease'
-								},
-								'& .MuiTableCell-root': {
-									borderBottom: '1px solid',
-									borderColor: 'divider',
-									padding: '2px 8px',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
-									maxWidth: '100%',
-									height: '37px',
-									boxSizing: 'border-box'
-								},
-								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-									fontWeight: 700,
-									fontSize: 11.5,
-									letterSpacing: 0.3,
-									textTransform: 'uppercase',
-									color: 'text.secondary',
-									borderTop: '1px solid',
-									borderBottom: '1px solid',
-									borderColor: 'rgb(229 231 235)',
-									padding: '6px 8px',
-									maxWidth: '100%',
-									textAlign: 'left'
 								}
 							}
 						}}
@@ -579,9 +482,9 @@ function RolesView() {
 								{/* Role Details Card */}
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role Name <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											required
@@ -603,9 +506,9 @@ function RolesView() {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Description
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="Briefly describe responsibilities and scope for this role..."

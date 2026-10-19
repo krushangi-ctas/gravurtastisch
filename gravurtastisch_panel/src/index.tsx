@@ -16,6 +16,22 @@ import routes from 'src/configs/routesConfig';
 /**
  * The root element of the application.
  */
+// Prevent mouse wheel from accidentally changing values on focused number inputs
+if (typeof window !== 'undefined') {
+	window.addEventListener(
+		'wheel',
+		() => {
+			if (
+				document.activeElement instanceof HTMLInputElement &&
+				document.activeElement.type === 'number'
+			) {
+				document.activeElement.blur();
+			}
+		},
+		{ passive: true }
+	);
+}
+
 const container = document.getElementById('app');
 
 if (!container) {

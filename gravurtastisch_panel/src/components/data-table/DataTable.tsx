@@ -30,11 +30,7 @@ const tableIcons: Partial<MRT_Icons> = {
   DensitySmallIcon: () => (
     <FuseSvgIcon size={20}>heroicons-outline:bars-2</FuseSvgIcon>
   ),
-  DragHandleIcon: () => (
-    <FuseSvgIcon className="rotate-45" size={14}>
-      heroicons-outline:arrows-pointing-out
-    </FuseSvgIcon>
-  ),
+  DragHandleIcon: () => null,
   FilterListIcon: (props) => (
     <FuseSvgIcon size={16} {...props}>
       heroicons-outline:funnel
@@ -87,6 +83,7 @@ function DataTable<TData>({
   tableId,
   initialState = {},
   title,
+  subtitle,
   icon,
   actionButtons,
   onRefresh,
@@ -161,8 +158,13 @@ function DataTable<TData>({
 
         enableFullScreenToggle: false,
         enableColumnFilterModes: true,
-        enableColumnOrdering: true,
-        enableGrouping: true,
+        // enableColumnOrdering: true,
+        enableColumnOrdering: false,
+        enableColumnDragging: false,
+        // enableColumnActions: true,
+        enableColumnActions: false,
+        // enableGrouping: true,
+        enableGrouping: false,
         enableColumnPinning: true,
         enableFacetedValues: true,
         enableRowActions: true,
@@ -174,10 +176,11 @@ function DataTable<TData>({
         manualSorting: false, // Will be overridden if API sorting is needed
         muiBottomToolbarProps: {
           className:
-            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
+            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800',
           sx: {
             borderTop: '1px solid',
-            borderColor: 'divider',
+            borderColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#1e293b' : '#e2e8f0',
             flexShrink: 0,
             minHeight: '46px !important',
             height: '46px !important',
@@ -206,6 +209,9 @@ function DataTable<TData>({
             },
             '& .MuiTablePagination-selectLabel': {
               fontSize: { xs: '12px', sm: '13px' },
+              fontWeight: 500,
+              color: (theme: Theme) =>
+                theme.palette.mode === 'dark' ? '#94a3b8' : '#64748b',
               margin: '0 !important',
               lineHeight: '1.2 !important',
               display: 'inline-flex',
@@ -230,6 +236,7 @@ function DataTable<TData>({
               alignItems: 'center',
               '& .MuiIconButton-root': {
                 padding: '4px',
+                borderRadius: '6px',
               },
             },
             '& .MuiPagination-root': {
@@ -241,11 +248,17 @@ function DataTable<TData>({
               minWidth: { xs: 26, sm: 30 },
               height: { xs: 26, sm: 30 },
               fontSize: { xs: 12, sm: 13 },
+              borderRadius: '6px',
               padding: { xs: '0 3px', sm: '0 6px' },
               margin: '0 1px',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
+              '&.Mui-selected': {
+                backgroundColor: '#0032ab !important',
+                color: '#ffffff !important',
+                fontWeight: 600,
+              },
             },
           },
         },
@@ -280,8 +293,20 @@ function DataTable<TData>({
           labelRowsPerPage: 'Items per page',
         },
         muiSearchTextFieldProps: {
-          placeholder: 'Search',
-          sx: { minWidth: { xs: '160px', sm: '220px', md: '280px' }, minHeight: '32px !important' },
+          placeholder: 'Search...',
+          sx: {
+            minWidth: { xs: '160px', sm: '220px', md: '280px' },
+            minHeight: '32px !important',
+            '& input': {
+              fontStyle: 'italic',
+              fontSize: '13px',
+            },
+            '& input::placeholder': {
+              fontStyle: 'italic',
+              color: '#94a3b8',
+              opacity: 1,
+            },
+          },
           variant: 'outlined',
           size: 'small',
         },
@@ -293,6 +318,16 @@ function DataTable<TData>({
               padding: '0px 8px',
               height: '32px!important',
               minHeight: '32px!important',
+              fontStyle: 'italic',
+            },
+            '& input': {
+              fontStyle: 'italic',
+              fontSize: '12px',
+            },
+            '& input::placeholder': {
+              fontStyle: 'italic',
+              color: '#94a3b8',
+              opacity: 1,
             },
           },
         },
@@ -302,40 +337,73 @@ function DataTable<TData>({
         muiSelectCheckboxProps: {
           className: 'w-14',
         },
+        muiTableProps: {
+          sx: {
+            tableLayout: 'auto',
+            minWidth: '100%',
+            '& .MuiTableCell-root': {
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+            },
+            '& .MuiTableRow-root:hover': {
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                  ? 'rgba(30, 41, 59, 0.4) !important'
+                  : 'rgba(248, 250, 252, 0.8) !important',
+              transition: 'background-color 0.15s ease',
+            },
+          },
+        },
         muiTableBodyRowProps: ({ row, table }) => {
-          const { density } = table.getState();
-
-          if (density === 'compact') {
-            return {
-              sx: {
-                backgroundColor: 'initial',
-                opacity: 1,
-                boxShadow: 'none',
-                height: `${37}px`,
-              },
-            };
-          }
-
           return {
             sx: {
               backgroundColor: 'initial',
               opacity: 1,
               boxShadow: 'none',
-              height: row.getIsPinned()
-                ? `${density === 'comfortable' ? 53 : 69}px`
-                : undefined,
+              minHeight: '40px',
+              borderBottom: '1px solid',
+              borderColor: 'divider',
+              transition: 'background-color 0.15s ease',
+              '&:hover': {
+                backgroundColor: (theme: Theme) =>
+                  theme.palette.mode === 'dark'
+                    ? 'rgba(30, 41, 59, 0.4) !important'
+                    : 'rgba(248, 250, 252, 0.8) !important',
+              },
             },
           };
         },
         muiTableHeadProps: {
-          className: 'bg-gray-100 border-t border-b border-gray-200',
+          className: 'border-b',
+          sx: {
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',
+            borderTop: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+          },
         },
         muiTableHeadRowProps: {
-          className: 'bg-gray-100 border-t border-b border-gray-200',
+          sx: {
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',
+          },
         },
         muiTableHeadCellProps: ({ column }) => ({
-          className: 'bg-gray-100 border-t border-b border-gray-200',
           sx: {
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',
+            borderTop: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            py: 1,
+            px: 1.5,
+            fontWeight: 700,
+            fontSize: '11px',
+            letterSpacing: '0.04em',
+            textTransform: 'uppercase',
+            color: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#94a3b8' : '#64748b',
             '& .Mui-TableHeadCell-Content-Labels': {
               flex: 1,
               justifyContent: 'space-between',
@@ -344,6 +412,15 @@ function DataTable<TData>({
               '& > button': {
                 marginX: '2px',
               },
+            },
+            '& .MRT_TableHeadCellDragHandleButton': {
+              display: 'none !important',
+            },
+            '& .Mui-TableHeadCell-DragHandle-Button': {
+              display: 'none !important',
+            },
+            '& [aria-label*="drag" i]': {
+              display: 'none !important',
             },
             '& .MuiFormHelperText-root': {
               textAlign: 'center',
@@ -354,8 +431,8 @@ function DataTable<TData>({
             ...(column.getIsPinned() && {
               backgroundColor: (theme: Theme) =>
                 theme.palette.mode === 'dark'
-                  ? theme.palette.background.paper
-                  : undefined,
+                  ? '#0f172a'
+                  : '#f8fafc',
             }),
           },
         }),
@@ -367,10 +444,11 @@ function DataTable<TData>({
         }),
         muiTableBodyCellProps: {
           sx: {
-            px: 1,
-            py: 0,
-            height: '37px',
+            px: 1.5,
+            py: '6px',
             boxSizing: 'border-box',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
           },
         },
         muiSkeletonProps: {
@@ -385,6 +463,7 @@ function DataTable<TData>({
           <DataTableTopToolbar
             {..._props}
             title={title}
+            subtitle={subtitle}
             icon={icon}
             actionButtons={actionButtons}
             onRefresh={onRefresh}
@@ -392,7 +471,7 @@ function DataTable<TData>({
         ),
         icons: tableIcons,
       } as Partial<MaterialReactTableProps<TData>>),
-    [rest, columnOrder, density, title, icon, actionButtons, onRefresh]
+    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh]
   );
 
   const tableOptions = useMemo(
@@ -407,6 +486,10 @@ function DataTable<TData>({
         columnOrder,
         density,
         ...rest.state,
+        showSkeletons:
+          rest.state?.showSkeletons !== undefined
+            ? rest.state.showSkeletons
+            : Boolean(rest.state?.isLoading),
       },
 
       onColumnOrderChange: (newOrder) => {

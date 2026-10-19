@@ -188,11 +188,30 @@ function BlogsContent({
 				Cell: ({ cell }) => {
 					const title = cell.getValue<string>() || '';
 					return (
-						<Tooltip title={title} arrow>
-							<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-								{title}
-							</Typography>
-						</Tooltip>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<Box
+								sx={{
+									width: 26,
+									height: 26,
+									borderRadius: '6px',
+									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 50, 171, 0.08)',
+									color: (t) => t.palette.mode === 'dark' ? '#60A5FA' : '#0032ab',
+									border: '1px solid',
+									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0, 50, 171, 0.2)',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									shrink: 0,
+								}}
+							>
+								<FuseSvgIcon size={14}>heroicons-outline:document-text</FuseSvgIcon>
+							</Box>
+							<Tooltip title={title} arrow>
+								<Typography sx={{ fontSize: 12.5, fontWeight: 600, color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+									{title}
+								</Typography>
+							</Tooltip>
+						</Box>
 					);
 				}
 			},
@@ -231,15 +250,13 @@ function BlogsContent({
 					const count = row.original.description_images?.length ?? 0;
 					if (count === 0) {
 						return (
-							<Tooltip title="No images attached" arrow>
-								<Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>
-							</Tooltip>
+							<span className="text-xs text-slate-400 font-medium">—</span>
 						);
 					}
 					return (
 						<Tooltip title={`${count} ${count === 1 ? 'image' : 'images'}`} arrow>
-							<span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-xs font-semibold bg-secondary-50 text-secondary-900 border border-secondary-300">
-								<FuseSvgIcon size={14} className="text-secondary-700">
+							<span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold bg-sky-50 text-sky-700 border border-sky-200/80 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/50">
+								<FuseSvgIcon size={13} className="text-sky-600">
 									heroicons-outline:photo
 								</FuseSvgIcon>
 								<span>{count} {count === 1 ? 'image' : 'images'}</span>
@@ -254,12 +271,20 @@ function BlogsContent({
 				size: 140,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
-					const formatted = val ? moment(val).format('DD MMM YYYY, hh:mm A') : 'N/A';
+					if (!val || !moment(val).isValid()) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+					const m = moment(val);
 					return (
-						<Tooltip title={formatted} arrow>
-							<Typography sx={{ fontSize: 12, color: val ? 'text.secondary' : 'text.disabled' }}>
-								{formatted}
-							</Typography>
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm A')} arrow>
+							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+									{m.format('DD MMM YYYY')}
+								</Typography>
+								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
+									{m.format('hh:mm A')}
+								</Typography>
+							</Box>
 						</Tooltip>
 					);
 				}
@@ -279,17 +304,17 @@ function BlogsContent({
 	const actionButtons = (
 		<div className="flex items-center gap-2">
 			{/* Status Filter */}
-			<FormControl size="small" className="min-w-[115px] bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700" sx={{ height: '32px' }}>
+			<FormControl size="small" className="min-w-[115px] bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700" sx={{ height: '38px' }}>
 				<Select
 					value={statusFilter}
 					onChange={(e) => onStatusChange(e.target.value)}
 					displayEmpty
 					className="text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200"
 					sx={{
-						height: '32px',
+						height: '38px',
 						borderRadius: '8px',
 						'& .MuiOutlinedInput-notchedOutline': { border: 'none' },
-						'& .MuiSelect-select': { py: 0, height: '32px', display: 'flex', alignItems: 'center' }
+						'& .MuiSelect-select': { py: 0, height: '38px', display: 'flex', alignItems: 'center' }
 					}}
 					renderValue={(selected) => {
 						if (!selected) {
@@ -318,10 +343,10 @@ function BlogsContent({
 				<button
 					type="button"
 					onClick={onAddNew}
-					style={{ height: '32px' }}
-					className="h-8 px-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+					style={{ height: '38px' }}
+					className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
 				>
-					<FuseSvgIcon size={15} className="text-white">
+					<FuseSvgIcon size={16} className="text-white">
 						heroicons-outline:plus
 					</FuseSvgIcon>
 					<span>Add Blog</span>
@@ -399,130 +424,6 @@ function BlogsContent({
 								backgroundColor: 'divider',
 								borderRadius: 4,
 								'&:hover': { backgroundColor: 'text.disabled' }
-							}
-						}
-					}}
-					muiBottomToolbarProps={{
-						className:
-							'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
-						sx: {
-							borderTop: '1px solid',
-							borderColor: 'divider',
-							flexShrink: 0,
-							marginTop: 'auto',
-							position: 'sticky',
-							bottom: 0,
-							zIndex: 2,
-							minHeight: '46px !important',
-							height: '46px !important',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'flex-end',
-							'& .MuiTablePagination-root': {
-								overflow: 'visible',
-								width: 'auto',
-								minHeight: '46px !important',
-								height: '46px !important',
-								display: 'flex',
-								alignItems: 'center'
-							},
-							'& .MuiTablePagination-toolbar': {
-								flexWrap: 'nowrap',
-								alignItems: 'center',
-								justifyContent: 'flex-end',
-								gap: { xs: 0.5, sm: 1 },
-								minHeight: '46px !important',
-								height: '46px !important',
-								paddingLeft: { xs: 1, sm: 2 },
-								paddingRight: { xs: 1, sm: 2 },
-								py: '0 !important',
-								my: 'auto'
-							},
-							'& .MuiTablePagination-selectLabel': {
-								fontSize: { xs: '12px', sm: '13px' },
-								margin: '0 !important',
-								lineHeight: '1.2 !important',
-								display: 'inline-flex',
-								alignItems: 'center'
-							},
-							'& .MuiTablePagination-input': {
-								marginRight: { xs: 0.5, sm: 1 },
-								marginLeft: 0.5,
-								display: 'inline-flex',
-								alignItems: 'center',
-								'& .MuiSelect-select': {
-									paddingTop: '3px !important',
-									paddingBottom: '3px !important',
-									fontSize: { xs: '12px', sm: '13px' },
-									display: 'inline-flex',
-									alignItems: 'center'
-								}
-							},
-							'& .MuiTablePagination-actions': {
-								marginLeft: { xs: 0.5, sm: 1 },
-								display: 'inline-flex',
-								alignItems: 'center',
-								'& .MuiIconButton-root': {
-									padding: '4px'
-								}
-							},
-							'& .MuiPagination-root': {
-								display: 'flex',
-								justifyContent: 'center',
-								alignItems: 'center'
-							},
-							'& .MuiPaginationItem-root': {
-								minWidth: { xs: 26, sm: 30 },
-								height: { xs: 26, sm: 30 },
-								fontSize: { xs: 12, sm: 13 },
-								padding: { xs: '0 3px', sm: '0 6px' },
-								margin: '0 1px',
-								display: 'inline-flex',
-								alignItems: 'center',
-								justifyContent: 'center'
-							}
-						}
-					}}
-					muiTableHeadProps={{
-						className: 'bg-gray-100 border-t border-b border-gray-200'
-					}}
-					muiTableHeadRowProps={{
-						className: 'bg-gray-100 border-t border-b border-gray-200'
-					}}
-					muiTableHeadCellProps={{
-						className: 'bg-gray-100 border-t border-b border-gray-200'
-					}}
-					muiTableProps={{
-						sx: {
-							tableLayout: 'auto',
-							minWidth: '100%',
-							'& .MuiTableRow-root:hover': {
-								backgroundColor: 'action.hover',
-								transition: 'background-color 0.15s ease'
-							},
-							'& .MuiTableCell-root': {
-								borderBottom: '1px solid',
-								borderColor: 'divider',
-								padding: '2px 8px',
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap',
-								maxWidth: '100%',
-								height: '37px',
-								boxSizing: 'border-box'
-							},
-							'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-								fontWeight: 700,
-								fontSize: 11.5,
-								letterSpacing: 0.3,
-								textTransform: 'uppercase',
-								color: 'text.secondary',
-								borderTop: '1px solid',
-								borderBottom: '1px solid',
-								borderColor: 'rgb(229 231 235)',
-								padding: '6px 8px',
-								maxWidth: '100%',
-								textAlign: 'left'
 							}
 						}
 					}}
@@ -753,9 +654,21 @@ export default function BlogsView() {
 		}));
 	}, []);
 
+	const handleSortingChange = useCallback((updaterOrValue: any) => {
+		setSorting((prev) => {
+			const newVal = typeof updaterOrValue === 'function' ? updaterOrValue(prev) : updaterOrValue;
+			return newVal;
+		});
+		setPagination((prev) => ({
+			...prev,
+			pageIndex: 0
+		}));
+	}, []);
+
 	const handleRefresh = useCallback(() => {
 		setStatusFilter('');
 		setGlobalFilter('');
+		setSorting([]);
 		setPagination((prev) => ({
 			...prev,
 			pageIndex: 0
@@ -780,7 +693,7 @@ export default function BlogsView() {
 						globalFilter={globalFilter}
 						setGlobalFilter={handleGlobalFilterChange}
 						sorting={sorting}
-						setSorting={setSorting}
+						setSorting={handleSortingChange}
 						totalPages={totalPages}
 						totalResults={totalResults}
 						onRefresh={handleRefresh}

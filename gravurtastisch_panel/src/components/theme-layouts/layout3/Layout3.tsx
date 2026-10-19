@@ -9,7 +9,7 @@ import FooterLayout3 from './components/FooterLayout3';
 import LeftSideLayout3 from './components/LeftSideLayout3';
 import NavbarWrapperLayout3 from './components/NavbarWrapperLayout3';
 import RightSideLayout3 from './components/RightSideLayout3';
-import ToolbarLayout3 from './components/ToolbarLayout3';
+// import ToolbarLayout3 from './components/ToolbarLayout3';
 import { Layout3ConfigDefaultsType } from './Layout3Config';
 
 const Root = styled('div')(({ config }: { config: Layout3ConfigDefaultsType }) => ({
@@ -69,14 +69,14 @@ function Layout3(props: Layout3Props) {
 						/>
 					)}
 
-					{config.toolbar.display && (
+					{/* {config.toolbar.display && (
 						<ToolbarLayout3
 							className={clsx(
 								config.toolbar.style === 'fixed' && 'sticky top-0',
 								config.toolbar.position === 'above' && 'z-40 order-first'
 							)}
 						/>
-					)}
+					)} */}
 
 					<div className="sticky top-0 z-99">
 						<Configurator />

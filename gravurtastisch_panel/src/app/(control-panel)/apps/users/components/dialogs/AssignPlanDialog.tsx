@@ -15,7 +15,7 @@ import {
 	Checkbox,
 	FormControlLabel,
 	Paper,
-	Chip
+	Skeleton
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -121,7 +121,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 
 	// Calculate estimated expiry date
 	const estimatedExpireDate = useMemo(() => {
-		let base = hasOngoingPlan && latestExpireMoment ? moment(latestExpireMoment) : moment();
+		const base = hasOngoingPlan && latestExpireMoment ? moment(latestExpireMoment) : moment();
 
 		if (billingCycle === 2) {
 			return base.add(3, 'months').format('DD MMM YYYY');
@@ -258,11 +258,10 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 								<div>
 									{currentActivePlan ? (
 										<span
-											className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${
-												isCurrentPlanExpired
-													? 'bg-rose-50 text-rose-700 border-rose-200'
-													: 'bg-emerald-50 text-emerald-700 border-emerald-200'
-											}`}
+											className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-semibold border ${isCurrentPlanExpired
+												? 'bg-rose-50 text-rose-700 border-rose-200'
+												: 'bg-emerald-50 text-emerald-700 border-emerald-200'
+												}`}
 										>
 											{isCurrentPlanExpired
 												? `Current: ${currentActivePlan.name} (Expired)`
@@ -287,11 +286,9 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 
 					{/* Plan Selection */}
 					{isLoadingPlans ? (
-						<div className="flex items-center justify-center py-6">
-							<CircularProgress size={24} />
-							<Typography sx={{ ml: 1.5, fontSize: 13, color: 'text.secondary' }}>
-								Loading available plans...
-							</Typography>
+						<div className="space-y-3 py-2">
+							<Skeleton variant="rounded" height={42} className="w-full rounded-lg" />
+							<Skeleton variant="rounded" height={36} className="w-full rounded-lg" />
 						</div>
 					) : plans.length === 0 ? (
 						<Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderColor: 'warning.main' }}>
@@ -341,8 +338,8 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 										const cycleTextColor = isYearly
 											? 'text-blue-600'
 											: isQuarterly
-											? 'text-sky-600'
-											: 'text-slate-500';
+												? 'text-sky-600'
+												: 'text-slate-500';
 
 										return (
 											<div className="flex items-center justify-between w-full pr-1">
@@ -367,8 +364,8 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 										const cycleTextColor = isYearly
 											? 'text-blue-600'
 											: isQuarterly
-											? 'text-sky-600'
-											: 'text-slate-500';
+												? 'text-sky-600'
+												: 'text-slate-500';
 
 										return (
 											<MenuItem

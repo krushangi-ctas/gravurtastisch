@@ -24,7 +24,10 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
 
     // Search logic
     if (filter.search) {
-      const searchValue = { $regex: `.*${filter.search}.*`, $options: 'i' };
+      const escaped = String(filter.search)
+        .trim()
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchValue = { $regex: escaped, $options: 'i' };
       searchData.push({
         $or: [
           { amazonOrderId: searchValue },
@@ -32,6 +35,9 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
           { 'orderItems.sellerSKU': searchValue },
           { 'orderItems.ASIN': searchValue },
           { 'orderItems.title': searchValue },
+          { 'orderItems.orderItemId': searchValue },
+          { 'shippingAddress.city': searchValue },
+          { 'shippingAddress.postalCode': searchValue },
         ],
       });
     }
@@ -40,8 +46,13 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
       options.sortBy !== 'undefined' &&
       options.sortOrder !== 'undefined'
     ) {
-      const [key, order] = [options.sortBy.split(':'), options.sortOrder];
-      order === 'desc' ? (sort = { [key]: -1 }) : (sort = { [key]: 1 });
+      const sortField = options.sortBy.includes(':')
+        ? options.sortBy.split(':')[0]
+        : options.sortBy;
+      const sortDirection =
+        options.sortOrder ||
+        (options.sortBy.includes(':') ? options.sortBy.split(':')[1] : 'desc');
+      sort = { [sortField]: sortDirection === 'asc' ? 1 : -1 };
     }
     //date logic
     if (filter.from && filter.to) {

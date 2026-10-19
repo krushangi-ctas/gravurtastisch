@@ -32,14 +32,19 @@ function SettingsAppHeader(props: SettingsAppHeaderProps) {
 							<FuseSvgIcon size={18}>heroicons-outline:bars-3</FuseSvgIcon>
 						</IconButton>
 					)}
-					<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary">
-						<FuseSvgIcon size={18} className="text-primary">
+					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary">
+						<FuseSvgIcon size={20} className="text-primary">
 							heroicons-outline:cog-6-tooth
 						</FuseSvgIcon>
 					</div>
-					<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white m-0">
-						{currentNavigation?.title || 'Settings'}
-					</h1>
+					<div className="flex flex-col min-w-0">
+						<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight">
+							{currentNavigation?.title || 'Settings'}
+						</h1>
+						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
+							Manage your account settings, security preferences, and profile details.
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>

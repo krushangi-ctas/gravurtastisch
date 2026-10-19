@@ -318,36 +318,35 @@ function OrdersHeader({
     });
     setSearchText('');
     setDateAnchorEl(null);
-    const indiaMarketplace = marketplaces?.find(
+    const defaultMarketplace = marketplaces?.find(
       (item: any) =>
         item.country_code?.toUpperCase() === 'IN' ||
-        item.country?.toLowerCase() === 'india' ||
-        item.marketplace_id === 'A21TJRUUN4KGV'
-    );
-    setSelectedMarketplace([indiaMarketplace?.marketplace_id || 'A21TJRUUN4KGV']);
+        item.country?.toLowerCase() === 'india'
+    ) || marketplaces?.[0];
+    if (defaultMarketplace) {
+      setSelectedMarketplace([defaultMarketplace.marketplace_id]);
+    }
     queryClient.invalidateQueries({ queryKey: ordersQueryKey });
   };
 
   const getMarketplaceLabel = (id: string) => {
     const marketplace = marketplaces?.find(
-      (item: any) => item.marketplace_id === id
+      (item: any) => item.marketplace_id === id || item._id === id || item.id === id
     );
     if (marketplace) {
-      return `${marketplace.country} (${marketplace.country_code})`;
+      const country = marketplace.country || marketplace.country_code;
+      const code = marketplace.country_code ? ` (${marketplace.country_code})` : '';
+      return `${country}${code}`;
     }
-    if (id === 'A21TJRUUN4KGV') return 'India (IN)';
-    if (id === 'A1PA6795UKMFR9') return 'Germany (DE)';
     return id;
   };
 
   const getMarketplaceCountryName = (id: string) => {
     const marketplace = marketplaces?.find(
-      (item: any) => item.marketplace_id === id
+      (item: any) =>
+        item.marketplace_id === id || item._id === id || item.id === id
     );
-    if (marketplace) return marketplace.country;
-    if (id === 'A21TJRUUN4KGV') return 'India';
-    if (id === 'A1PA6795UKMFR9') return 'Germany';
-    return id;
+    return marketplace?.country || marketplace?.country_code || id;
   };
 
   // Generate tooltip text and chip label
@@ -404,14 +403,19 @@ function OrdersHeader({
     <div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800 shadow-xs">
       {/* Left Title & Icon */}
       <div className="flex items-center gap-2.5 w-full lg:w-auto shrink-0">
-        <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary">
-          <FuseSvgIcon size={18} className="text-primary">
+        <div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
+          <FuseSvgIcon size={20} className="text-primary">
             heroicons-outline:shopping-bag
           </FuseSvgIcon>
         </div>
-        <h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white m-0 whitespace-nowrap">
-          Orders
-        </h1>
+        <div className="flex flex-col min-w-0">
+          <h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight">
+            Orders
+          </h1>
+          <p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
+            Manage and track customer orders, shipments, and fulfillment status.
+          </p>
+        </div>
       </div>
 
       {/* Right Controls: Filters, Date, Marketplace, Search, Reload */}
@@ -515,8 +519,8 @@ function OrdersHeader({
           <button
             type="button"
             onClick={(e) => setDateAnchorEl(dateAnchorEl ? null : e.currentTarget)}
-            style={{ height: '32px' }}
-            className="h-8 flex items-center justify-between gap-2 px-3 bg-white text-slate-800 text-xs font-medium rounded-lg border-0 outline-none hover:bg-slate-50 cursor-pointer shadow-xs"
+            style={{ height: '32px', minHeight: '32px', maxHeight: '32px' }}
+            className="h-8 flex items-center justify-between gap-2 px-3 bg-white text-slate-800 text-xs font-medium rounded-lg border border-slate-200 outline-none hover:bg-slate-50 cursor-pointer shadow-xs"
           >
             <div className="flex items-center gap-1.5">
               <FuseSvgIcon size={15} className="text-slate-500">
@@ -562,24 +566,55 @@ function OrdersHeader({
         </div>
 
         {/* Marketplace Selector Dropdown */}
-        <FormControl size="small" className="min-w-[130px] bg-white rounded-lg shadow-xs" sx={{ height: '32px' }}>
+        <FormControl
+          size="small"
+          className="min-w-[130px] bg-white rounded-lg border border-slate-200 shadow-xs table-toolbar-control shrink-0"
+          sx={{
+            height: '32px !important',
+            minHeight: '32px !important',
+            maxHeight: '32px !important',
+            justifyContent: 'center',
+            '& .MuiInputBase-root': {
+              height: '32px !important',
+              minHeight: '32px !important',
+              maxHeight: '32px !important',
+              borderRadius: '8px !important',
+              backgroundColor: 'transparent !important',
+              fontSize: '12px !important',
+            },
+            '& .MuiOutlinedInput-notchedOutline': {
+              border: 'none !important',
+            },
+            '& .MuiSelect-select': {
+              py: '0 !important',
+              height: '32px !important',
+              minHeight: '32px !important',
+              maxHeight: '32px !important',
+              lineHeight: '32px !important',
+              display: 'flex !important',
+              alignItems: 'center !important',
+              fontSize: '12px !important',
+              boxSizing: 'border-box !important',
+            },
+          }}
+        >
           <Select
             value={selectedMarketplace}
             onChange={handleChange}
             displayEmpty
             className="text-xs bg-white font-medium text-slate-700 border-0"
             sx={{
-              height: '32px',
-              borderRadius: '8px',
+              height: '32px !important',
+              borderRadius: '8px !important',
               '& .MuiOutlinedInput-notchedOutline': {
-                border: 'none'
+                border: 'none !important'
               },
               '& .MuiSelect-select': {
-                py: 0,
-                height: '32px',
-                display: 'flex',
-                alignItems: 'center',
-                fontSize: '12px'
+                py: '0 !important',
+                height: '32px !important',
+                display: 'flex !important',
+                alignItems: 'center !important',
+                fontSize: '12px !important'
               }
             }}
             MenuProps={{
@@ -619,45 +654,76 @@ function OrdersHeader({
               );
             }}
           >
-            <MenuItem value="" sx={{ py: 1, px: 1.5 }}>
+            <MenuItem
+              value=""
+              sx={{
+                py: 1.25,
+                px: 2,
+                minHeight: 42,
+                '&:hover': {
+                  bgcolor: (t) =>
+                    t.palette.mode === 'dark'
+                      ? 'rgba(255, 255, 255, 0.06)'
+                      : 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
               <Checkbox
                 checked={
                   selectedMarketplace.length === allMarketplaceIds.length &&
                   allMarketplaceIds.length > 0
                 }
-                size="small"
+                size="medium"
                 sx={{
-                  p: 0.5,
-                  mr: 0.5,
+                  p: 0.75,
+                  mr: 1,
                   color: '#94a3b8',
-                  '& .MuiSvgIcon-root': { fontSize: 18 },
+                  '& .MuiSvgIcon-root': { fontSize: 20 },
                   '&.Mui-checked': { color: 'var(--color-primary-700)' },
                 }}
               />
-              <em className="text-xs font-semibold not-italic">ALL SHOPS</em>
+              <em className="text-sm font-semibold not-italic text-slate-800 dark:text-slate-100">
+                ALL SHOPS
+              </em>
             </MenuItem>
             {marketplaces?.map((item: any) => (
               <MenuItem
                 key={item?.marketplace_id}
                 value={item?.marketplace_id}
-                sx={{ py: 1, px: 1.5 }}
+                sx={{
+                  py: 1.25,
+                  px: 2,
+                  minHeight: 42,
+                  '&:hover': {
+                    bgcolor: (t) =>
+                      t.palette.mode === 'dark'
+                        ? 'rgba(255, 255, 255, 0.06)'
+                        : 'rgba(0, 0, 0, 0.04)',
+                  },
+                }}
               >
                 <Checkbox
                   checked={selectedMarketplace.includes(
                     item.marketplace_id
                   )}
-                  size="small"
+                  size="medium"
                   sx={{
-                    p: 0.5,
-                    mr: 0.5,
+                    p: 0.75,
+                    mr: 1,
                     color: '#94a3b8',
-                    '& .MuiSvgIcon-root': { fontSize: 18 },
+                    '& .MuiSvgIcon-root': { fontSize: 20 },
                     '&.Mui-checked': { color: 'var(--color-primary-700)' },
                   }}
                 />
-                <span className="flex items-center gap-2 text-xs font-medium">
-                  <FlagIcon code={item?.country_code} country={item?.country} className="w-4 h-2.5 shrink-0" />
-                  <span>{item?.country} ({item?.country_code})</span>
+                <span className="flex items-center gap-2.5 text-sm font-medium text-slate-700 dark:text-slate-200">
+                  <FlagIcon
+                    code={item?.country_code}
+                    country={item?.country}
+                    className="w-5 h-3.5 rounded-xs shrink-0 shadow-2xs"
+                  />
+                  <span>
+                    {item?.country} ({item?.country_code})
+                  </span>
                 </span>
               </MenuItem>
             ))}
@@ -674,8 +740,8 @@ function OrdersHeader({
             value={searchText}
             onChange={(e) => setSearchText(e.target.value)}
             placeholder="Search orders..."
-            style={{ height: '32px' }}
-            className="w-full pl-8 pr-3 h-8 text-xs bg-white text-slate-900 placeholder-slate-400 rounded-lg border-0 shadow-xs outline-none focus:ring-2 focus:ring-blue-400"
+            style={{ height: '38px' }}
+            className="w-full pl-8 pr-3 h-[38px] text-xs bg-white text-slate-900 placeholder-slate-400 rounded-lg border-0 shadow-xs outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
@@ -684,10 +750,10 @@ function OrdersHeader({
           <button
             type="button"
             onClick={resetbtn}
-            style={{ height: '32px', width: '32px' }}
-            className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
+            style={{ height: '38px', width: '38px' }}
+            className="h-[38px] w-[38px] flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
           >
-            <FuseSvgIcon size={16} className="text-slate-800">
+            <FuseSvgIcon size={17} className="text-slate-800">
               heroicons-outline:arrow-path
             </FuseSvgIcon>
           </button>
@@ -697,5 +763,258 @@ function OrdersHeader({
   );
 }
 
+export function OrdersFilters({
+  searchDate,
+  setSearchDate,
+  selectedMarketplace,
+  setSelectedMarketplace,
+}: {
+  searchDate: Record<string, Date | null>;
+  setSearchDate: (date: Record<string, Date | null>) => void;
+  selectedMarketplace: string[];
+  setSelectedMarketplace: Dispatch<SetStateAction<string[]>>;
+}) {
+  const { data: marketplaces } = useMarketplace();
+  const [dateAnchorEl, setDateAnchorEl] = useState<null | HTMLElement>(null);
+
+  const allMarketplaceIds =
+    marketplaces?.map((item: any) => item.marketplace_id) || [];
+
+  const handleChange = (event: { target: { value: string | string[] } }) => {
+    const value = event.target.value;
+    const newValue = typeof value === 'string' ? value.split(',') : value;
+
+    if (newValue.includes('')) {
+      if (selectedMarketplace.length === allMarketplaceIds.length) {
+        setSelectedMarketplace([]);
+      } else {
+        setSelectedMarketplace(allMarketplaceIds);
+      }
+    } else {
+      setSelectedMarketplace(newValue.filter((id) => id !== ''));
+    }
+  };
+
+  const handleInlineDateRangeChange = (range: Record<string, Date | null>) => {
+    setSearchDate(range);
+    setDateAnchorEl(null);
+  };
+
+  const formatDateRange = () => {
+    if (!searchDate.from && !searchDate.to) return 'Date Range';
+    if (searchDate.from && searchDate.to) {
+      return `${format(searchDate.from, 'MMM dd')} - ${format(searchDate.to, 'MMM dd')}`;
+    }
+    if (searchDate.from)
+      return `From ${format(searchDate.from, 'MMM dd')}`;
+    if (searchDate.to) return `Until ${format(searchDate.to, 'MMM dd')}`;
+    return 'Date Range';
+  };
+
+  const getMarketplaceCountryName = (id: string) => {
+    const marketplace = marketplaces?.find(
+      (item: any) =>
+        item.marketplace_id === id || item._id === id || item.id === id
+    );
+    return marketplace?.country || marketplace?.country_code || id;
+  };
+
+  return (
+    <div className="flex items-center gap-2">
+      {/* Marketplace Selector Dropdown */}
+      <FormControl
+        size="small"
+        className="min-w-[130px] bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 table-toolbar-control shrink-0"
+        sx={{
+          height: '38px !important',
+          minHeight: '38px !important',
+          maxHeight: '38px !important',
+          justifyContent: 'center',
+          '& .MuiInputBase-root': {
+            height: '38px !important',
+            minHeight: '38px !important',
+            maxHeight: '38px !important',
+            borderRadius: '8px !important',
+            backgroundColor: 'transparent !important',
+            fontSize: '13px !important',
+          },
+          '& .MuiOutlinedInput-notchedOutline': {
+            border: 'none !important',
+          },
+          '& .MuiSelect-select': {
+            py: '0 !important',
+            height: '38px !important',
+            minHeight: '38px !important',
+            maxHeight: '38px !important',
+            lineHeight: '38px !important',
+            display: 'flex !important',
+            alignItems: 'center !important',
+            fontSize: '13px !important',
+            boxSizing: 'border-box !important',
+          },
+        }}
+      >
+        <Select
+          value={selectedMarketplace}
+          onChange={handleChange}
+          displayEmpty
+          className="text-xs font-medium text-slate-700 dark:text-slate-200"
+          sx={{
+            height: '32px !important',
+            borderRadius: '8px !important',
+            '& .MuiOutlinedInput-notchedOutline': { border: 'none !important' },
+            '& .MuiSelect-select': {
+              py: '0 !important',
+              height: '32px !important',
+              display: 'flex !important',
+              alignItems: 'center !important',
+              fontSize: '12px !important',
+            },
+          }}
+          MenuProps={{
+            PaperProps: {
+              sx: {
+                maxHeight: 400,
+                minWidth: 230,
+                borderRadius: '12px',
+                boxShadow:
+                  '0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)',
+                py: 0.5,
+              },
+            },
+          }}
+          multiple
+          renderValue={(selected) => {
+            if (selected.length === 0) {
+              return (
+                <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs font-medium">
+                  <FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:building-storefront</FuseSvgIcon>
+                  All Shops
+                </span>
+              );
+            }
+            return (
+              <span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs font-semibold">
+                <FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:building-storefront</FuseSvgIcon>
+                {Array.isArray(selected)
+                  ? selected.length > 2
+                    ? `${selected.length} Shops`
+                    : selected.map((id) => getMarketplaceCountryName(id)).join(', ')
+                  : 'All Shops'}
+              </span>
+            );
+          }}
+        >
+          <MenuItem
+            value=""
+            sx={{
+              py: 1.25,
+              px: 2,
+              minHeight: 42,
+              '&:hover': {
+                bgcolor: (t) =>
+                  t.palette.mode === 'dark'
+                    ? 'rgba(255, 255, 255, 0.06)'
+                    : 'rgba(0, 0, 0, 0.04)',
+              },
+            }}
+          >
+            <Checkbox
+              checked={
+                selectedMarketplace.length === allMarketplaceIds.length &&
+                allMarketplaceIds.length > 0
+              }
+              size="medium"
+              sx={{
+                p: 0.75,
+                mr: 1,
+                color: '#94a3b8',
+                '& .MuiSvgIcon-root': { fontSize: 20 },
+                '&.Mui-checked': { color: 'var(--color-primary-700)' },
+              }}
+            />
+            <em className="text-sm font-semibold not-italic text-slate-800 dark:text-slate-100">
+              ALL SHOPS
+            </em>
+          </MenuItem>
+          {marketplaces?.map((item: any) => (
+            <MenuItem
+              key={item?.marketplace_id}
+              value={item?.marketplace_id}
+              sx={{
+                py: 1.25,
+                px: 2,
+                minHeight: 42,
+                '&:hover': {
+                  bgcolor: (t) =>
+                    t.palette.mode === 'dark'
+                      ? 'rgba(255, 255, 255, 0.06)'
+                      : 'rgba(0, 0, 0, 0.04)',
+                },
+              }}
+            >
+              <Checkbox
+                checked={selectedMarketplace.includes(item.marketplace_id)}
+                size="medium"
+                sx={{
+                  p: 0.75,
+                  mr: 1,
+                  color: '#94a3b8',
+                  '& .MuiSvgIcon-root': { fontSize: 20 },
+                  '&.Mui-checked': { color: 'var(--color-primary-700)' },
+                }}
+              />
+              <span className="flex items-center gap-2.5 text-sm font-medium text-slate-700 dark:text-slate-200">
+                <FlagIcon
+                  code={item?.country_code}
+                  country={item?.country}
+                  className="w-5 h-3.5 rounded-xs shrink-0 shadow-2xs"
+                />
+                <span>{item?.country} ({item?.country_code})</span>
+              </span>
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      {/* Date Range Picker Trigger */}
+      <button
+        type="button"
+        onClick={(e) => setDateAnchorEl(dateAnchorEl ? null : e.currentTarget)}
+        style={{ height: '38px', minHeight: '38px', maxHeight: '38px' }}
+        className="h-[38px] flex items-center justify-between gap-2 px-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer shadow-2xs shrink-0 box-border"
+      >
+        <FuseSvgIcon size={16} className="text-slate-500">heroicons-outline:calendar</FuseSvgIcon>
+        <span>{formatDateRange()}</span>
+      </button>
+
+      <Popover
+        open={Boolean(dateAnchorEl)}
+        anchorEl={dateAnchorEl}
+        onClose={() => setDateAnchorEl(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        slotProps={{
+          paper: {
+            sx: {
+              mt: 1,
+              boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
+              borderRadius: '12px',
+              overflow: 'hidden',
+            }
+          }
+        }}
+      >
+        <CustomDateRangePicker
+          value={searchDate}
+          onChange={handleInlineDateRangeChange}
+          onClose={() => setDateAnchorEl(null)}
+        />
+      </Popover>
+    </div>
+  );
+}
+
 export default OrdersHeader;
+
 

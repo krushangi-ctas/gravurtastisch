@@ -172,9 +172,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					{/* Plan Name */}
 					<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Plan Name <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
@@ -197,9 +197,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Price ($) */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Price (in USD $) <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
@@ -208,6 +208,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								placeholder="e.g., 250"
 								value={price}
 								onChange={(e) => setPrice(e.target.value)}
+								onWheel={(e) => (e.target as HTMLElement).blur()}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -229,9 +230,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Billing Cycle */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Billing Cycle <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								select
 								fullWidth
@@ -293,9 +294,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Marketplaces Allowed */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Marketplace Accounts Allowed <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
@@ -304,6 +305,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								placeholder="e.g., 5"
 								value={marketplace}
 								onChange={(e) => setMarketplace(e.target.value)}
+								onWheel={(e) => (e.target as HTMLElement).blur()}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -321,9 +323,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Request Quota */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Monthly Request Quota <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
@@ -332,6 +334,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								placeholder="e.g., 2000"
 								value={requestQuota}
 								onChange={(e) => setRequestQuota(e.target.value)}
+								onWheel={(e) => (e.target as HTMLElement).blur()}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -349,9 +352,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Plan Expiry Date (Optional) */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Expire At (Optional)
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								type="date"

@@ -160,3 +160,152 @@ Tables styles
 @import './tables.css';
 
 @import './tiptap.css';
+
+/**
+ * Modern Website-Style Form Inputs & Dialog Fields
+ * Exactly matching gravurtastisch_web RegisterAndContact input styles
+ */
+.MuiDialogContent-root .MuiOutlinedInput-root,
+.form-field .MuiOutlinedInput-root,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root,
+.MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root {
+	border-radius: 12px !important;
+	background-color: #f8fafc !important;
+	min-height: 44px;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+	transition: all 0.2s ease-in-out !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-root,
+.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root,
+.dark .MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root {
+	background-color: #0f172a !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root fieldset,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root fieldset,
+.MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root fieldset {
+	border-color: #e2e8f0 !important;
+	border-width: 1px !important;
+	transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-root fieldset,
+.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root fieldset {
+	border-color: #334155 !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root:hover fieldset,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root:hover fieldset {
+	border-color: #0032ab !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused {
+	background-color: #ffffff !important;
+	box-shadow: 0 0 0 3px rgba(0, 50, 171, 0.15) !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused,
+.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused {
+	background-color: #0f172a !important;
+	box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.25) !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused fieldset,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused fieldset {
+	border-color: #0032ab !important;
+	border-width: 1.5px !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-input,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-input {
+	padding: 10px 14px !important;
+	font-size: 13.5px !important;
+	color: #0f172a !important;
+}
+
+/* Explicit Table Toolbar Controls (Search, Filters, Refresh, Actions) */
+.MRT_TopToolbar .table-toolbar-control,
+.MRT_TopToolbar .MuiFormControl-root,
+.table-toolbar-control {
+	min-height: 38px !important;
+	max-height: 38px !important;
+	height: 38px !important;
+}
+
+.MRT_TopToolbar .table-toolbar-control .MuiOutlinedInput-root,
+.MRT_TopToolbar .MuiFormControl-root .MuiOutlinedInput-root,
+.table-toolbar-control .MuiOutlinedInput-root {
+	min-height: 38px !important;
+	max-height: 38px !important;
+	height: 38px !important;
+	border-radius: 8px !important;
+}
+
+.table-toolbar-control .MuiSelect-select,
+.MRT_TopToolbar .MuiSelect-select {
+	height: 38px !important;
+	min-height: 38px !important;
+	line-height: 38px !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	box-sizing: border-box !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-input,
+.dark form .MuiOutlinedInput-input {
+	color: #f8fafc !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-input::placeholder,
+form .MuiOutlinedInput-input::placeholder {
+	color: #94a3b8 !important;
+	font-style: italic !important;
+	opacity: 1 !important;
+}
+
+/* Number input - disable spin buttons */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+	margin: 0 !important;
+}
+
+input[type=number] {
+	-moz-appearance: textfield !important;
+}
+
+/* Form & Dialog Uppercase Field Labels */
+.field-label,
+.form-label,
+label.MuiFormLabel-root {
+	display: block !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase !important;
+	color: #334155 !important;
+	margin-bottom: 6px !important;
+}
+
+.dark .field-label,
+.dark .form-label,
+.dark label.MuiFormLabel-root {
+	color: #94a3b8 !important;
+}
+
+/* Table grid borders matching Orders table */
+.MuiTable-root .MuiTableCell-root,
+.MuiTable-root .MuiTableRow-root {
+	border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.dark .MuiTable-root .MuiTableCell-root,
+.dark .MuiTable-root .MuiTableRow-root {
+	border-bottom: 1px solid #1e293b !important;
+}
+
+

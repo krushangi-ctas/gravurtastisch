@@ -13,11 +13,9 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogTitle,
 	FormControl,
 	IconButton,
 	InputAdornment,
-	InputLabel,
 	MenuItem,
 	Paper,
 	Select,
@@ -78,6 +76,12 @@ const Root = styled(FusePageCarded)(() => ({
 function roleLabel(user: User) {
 	if (typeof user.role_id === 'object' && user.role_id) {
 		return user.role_id.role_name || '—';
+	}
+	if (typeof user.role_id === 'string' && user.role_id) {
+		return user.role_id;
+	}
+	if (user.userType) {
+		return user.userType === 'seller' ? 'Seller' : user.userType;
 	}
 	return '—';
 }
@@ -210,6 +214,17 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 
 	const handleGlobalFilterChange = useCallback((updaterOrValue: any) => {
 		setGlobalFilter((prev) => {
+			const newVal = typeof updaterOrValue === 'function' ? updaterOrValue(prev) : updaterOrValue;
+			return newVal;
+		});
+		setPagination((prev) => ({
+			...prev,
+			pageIndex: 0
+		}));
+	}, []);
+
+	const handleSortingChange = useCallback((updaterOrValue: any) => {
+		setSorting((prev) => {
 			const newVal = typeof updaterOrValue === 'function' ? updaterOrValue(prev) : updaterOrValue;
 			return newVal;
 		});
@@ -352,6 +367,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 
 	const handleRefresh = useCallback(() => {
 		setGlobalFilter('');
+		setSorting([]);
 		setPagination((prev) => ({
 			...prev,
 			pageIndex: 0
@@ -359,20 +375,74 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		activeQuery.refetch();
 	}, [activeQuery]);
 
+	const getPlanBadgeStyle = (planName?: string | null) => {
+		const name = (planName || '').toLowerCase();
+		if (name.includes('bronze') || name.includes('gold') || name.includes('basic')) {
+			return {
+				bg: (t: any) => (t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.18)' : 'rgba(245, 158, 11, 0.1)'),
+				color: (t: any) => (t.palette.mode === 'dark' ? '#FBBF24' : '#B45309'),
+				border: (t: any) => (t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.35)' : 'rgba(245, 158, 11, 0.28)')
+			};
+		}
+		if (name.includes('growth') || name.includes('pro') || name.includes('vip')) {
+			return {
+				bg: (t: any) => (t.palette.mode === 'dark' ? 'rgba(124, 58, 237, 0.2)' : 'rgba(124, 58, 237, 0.08)'),
+				color: (t: any) => (t.palette.mode === 'dark' ? '#C4B5FD' : '#7C3AED'),
+				border: (t: any) => (t.palette.mode === 'dark' ? 'rgba(124, 58, 237, 0.4)' : 'rgba(124, 58, 237, 0.25)')
+			};
+		}
+		return {
+			bg: (t: any) => (t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.08)'),
+			color: (t: any) => (t.palette.mode === 'dark' ? '#A5B4FC' : '#4F46E5'),
+			border: (t: any) => (t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.25)')
+		};
+	};
+
 	const columns = useMemo<MRT_ColumnDef<User>[]>(() => {
 		const base: MRT_ColumnDef<User>[] = [
 			{
 				accessorKey: 'name',
 				header: 'NAME',
-				size: 150,
-				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+				size: 140,
+				Cell: ({ cell, row }) => {
+					const val = cell.getValue<string>() || '—';
+					const user = row.original;
+					const secondary = user.createdAt
+						? `Joined ${moment(user.createdAt).format('DD MMM YYYY')}`
+						: user.contact_no
+						? user.contact_no
+						: user._id
+						? `ID: ${user._id.slice(-6).toUpperCase()}`
+						: 'Seller Account';
+
 					return (
-						<Tooltip title={val || '—'} arrow>
-							<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-								{val || '—'}
+						<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+							<Tooltip title={val} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 600,
+										color: 'text.primary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{val}
+								</Typography>
+							</Tooltip>
+							<Typography
+								sx={{
+									fontSize: 10.5,
+									color: 'text.secondary',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
+								}}
+							>
+								{secondary}
 							</Typography>
-						</Tooltip>
+						</Box>
 					);
 				}
 			},
@@ -382,64 +452,126 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				size: 180,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
+					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+
 					return (
-						<Tooltip title={val || '—'} arrow>
-							<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-								{val || '—'}
-							</Typography>
-						</Tooltip>
-					);
-				}
-			},
-			{
-				id: 'role',
-				header: 'ROLE',
-				size: 120,
-				Cell: ({ row }) => (
-					<Typography sx={{ fontSize: 12, color: 'text.primary', fontWeight: 500 }}>
-						{roleLabel(row.original)}
-					</Typography>
-				)
-			},
-			{
-				accessorKey: 'status',
-				header: 'STATUS',
-				size: 100,
-				Cell: ({ cell }) => {
-					const status = cell.getValue<number>();
-					const isActive = status === 1;
-					return (
-						<span
-							className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isActive
-								? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-								: 'bg-amber-50 text-amber-700 border-amber-200'
-								}`}
-						>
-							{isActive ? 'Active' : 'Inactive'}
-						</span>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+							<Tooltip title={val} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 500,
+										color: 'text.primary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+										maxWidth: 220
+									}}
+								>
+									{val}
+								</Typography>
+							</Tooltip>
+							<Tooltip title="Copy Email" arrow>
+								<FuseSvgIcon
+									size={12}
+									sx={{
+										color: 'text.disabled',
+										cursor: 'pointer',
+										flexShrink: 0,
+										'&:hover': { color: 'primary.main' }
+									}}
+									onClick={() => navigator.clipboard.writeText(val)}
+								>
+									heroicons-outline:clipboard-document
+								</FuseSvgIcon>
+							</Tooltip>
+						</Box>
 					);
 				}
 			}
 		];
+
+		// Include ROLE column for ALL users (sellers, team, admin-users)
+		base.push({
+			id: 'role',
+			header: 'ROLE',
+			size: 130,
+			Cell: ({ row }) => {
+				const rawLabel = roleLabel(row.original);
+				const label = rawLabel !== '—' ? rawLabel : (isSellersMode ? 'Seller' : '—');
+				return (
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
+						<span
+							className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800/50"
+						>
+							<FuseSvgIcon size={13}>heroicons-outline:shield-check</FuseSvgIcon>
+							{label}
+						</span>
+						<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
+							{isSellersMode ? 'Account Role' : 'Assigned Role'}
+						</Typography>
+					</Box>
+				);
+			}
+		});
+
 		if (isSellersMode) {
 			base.push(
 				{
 					accessorKey: 'businessName',
 					header: 'BRAND',
-					size: 140,
+					size: 160,
+					minSize: 130,
 					Cell: ({ cell }) => {
 						const val = cell.getValue<string>();
+						if (!val) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
 						return (
-							<Typography sx={{ fontSize: 12, color: 'text.primary' }}>
-								{val || '—'}
-							</Typography>
+							<Tooltip title={`Brand: ${val}`} arrow>
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										gap: 0.5,
+										px: 0.9,
+										py: 0.25,
+										borderRadius: '2px',
+										fontSize: 11.5,
+										fontWeight: 600,
+										bgcolor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(51, 65, 85, 0.45)' : 'rgba(226, 232, 240, 0.9)',
+										color: (t) => (t.palette.mode === 'dark' ? '#E2E8F0' : '#1E293B'),
+										border: 'none',
+										boxSizing: 'border-box',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									<FuseSvgIcon
+										size={12}
+										sx={{ color: (t) => (t.palette.mode === 'dark' ? '#CBD5E1' : '#334155'), flexShrink: 0 }}
+									>
+										heroicons-outline:building-storefront
+									</FuseSvgIcon>
+									<Typography
+										component="span"
+										sx={{
+											fontSize: 'inherit',
+											fontWeight: 'inherit',
+											whiteSpace: 'nowrap'
+										}}
+									>
+										{val}
+									</Typography>
+								</Box>
+							</Tooltip>
 						);
 					}
 				},
 				{
 					id: 'currentPlan',
 					header: 'PLAN',
-					size: 210,
+					size: 145,
 					Cell: ({ row }) => {
 						const user = row.original;
 						const activePlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 1) : null;
@@ -452,96 +584,257 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now());
 
 						if (!planName && !queuedPlan) {
-							return (
-								<span className="text-xs text-slate-400 font-medium">
-									—
-								</span>
-							);
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 						}
 
+						const pStyle = getPlanBadgeStyle(planName || queuedPlan?.name);
 						const hasExpiry = Boolean(activePlan?.expireAt);
 
 						return (
-							<div className="flex flex-col">
-								<div className="flex items-center gap-1.5">
-									<span className="font-semibold text-slate-900 text-xs">
+							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
+									<Box
+										sx={{
+											display: 'inline-flex',
+											alignItems: 'center',
+											gap: 0.4,
+											px: 0.85,
+											py: 0.15,
+											borderRadius: '6px',
+											fontSize: 11,
+											fontWeight: 600,
+											bgcolor: pStyle.bg,
+											color: pStyle.color,
+											border: '1px solid',
+											borderColor: pStyle.border,
+											lineHeight: 1.2,
+											whiteSpace: 'nowrap'
+										}}
+									>
+										<FuseSvgIcon size={12}>heroicons-outline:ticket</FuseSvgIcon>
 										{planName || queuedPlan?.name}
-									</span>
+									</Box>
 									{isExpired && (
-										<span className="text-[11px] font-semibold text-rose-600">
-											(Expired)
-										</span>
+										<Box
+											sx={{
+												display: 'inline-flex',
+												alignItems: 'center',
+												px: 0.6,
+												py: 0.1,
+												borderRadius: '4px',
+												fontSize: 9.5,
+												fontWeight: 600,
+												bgcolor: (t) =>
+													t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
+												color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+												border: '1px solid',
+												borderColor: (t) =>
+													t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(239, 68, 68, 0.25)',
+												lineHeight: 1
+											}}
+										>
+											Expired
+										</Box>
 									)}
-								</div>
+								</Box>
 								{(hasExpiry || queuedPlan) && (
-									<div className="flex items-center gap-1.5 text-[11px] leading-tight mt-0.5">
+									<Typography
+										sx={{
+											fontSize: 10,
+											color: 'text.secondary',
+											display: 'flex',
+											alignItems: 'center',
+											gap: 0.5,
+											whiteSpace: 'nowrap'
+										}}
+									>
 										{hasExpiry && (
-											<span className="text-slate-500 font-normal whitespace-nowrap">
-												Exp: {moment(activePlan.expireAt).format('DD MMM YYYY')}
-											</span>
+											<span>Exp: {moment(activePlan.expireAt).format('DD MMM YY')}</span>
 										)}
 										{queuedPlan && (
 											<>
-												{hasExpiry && <span className="text-slate-300">•</span>}
-												<span className="text-blue-600 font-medium whitespace-nowrap">
+												{hasExpiry && <span>·</span>}
+												<span className="text-violet-600 dark:text-violet-400 font-medium">
 													Next: {queuedPlan.name}
 												</span>
 											</>
 										)}
-									</div>
+									</Typography>
 								)}
-							</div>
+							</Box>
 						);
 					}
 				},
 				{
 					id: 'planLimits.maxMarketplaces',
-					header: 'MAX MARKETPLACES',
-					size: 140,
+					header: 'MARKETS',
+					size: 85,
+					minSize: 80,
+					maxSize: 95,
+					muiTableHeadCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important',
+							whiteSpace: 'nowrap !important'
+						}
+					},
+					muiTableBodyCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important'
+						}
+					},
 					accessorFn: (row) => {
 						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
 						return activePlan?.marketplace ?? row.planLimits?.maxMarketplaces ?? null;
 					},
-					Cell: ({ cell }) => (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{cell.getValue<number>() ?? '—'}
-						</Typography>
-					)
+					Cell: ({ cell }) => {
+						const val = cell.getValue<number>();
+						if (val === null || val === undefined) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
+						return (
+							<Tooltip title={`Max Marketplaces: ${val}`} arrow>
+								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+									<FuseSvgIcon size={13} sx={{ color: 'text.secondary', flexShrink: 0 }}>
+										heroicons-outline:globe-alt
+									</FuseSvgIcon>
+									<Typography
+										sx={{
+											fontSize: 12,
+											fontWeight: 600,
+											color: 'text.primary',
+											lineHeight: 1.2
+										}}
+									>
+										{val}
+									</Typography>
+								</Box>
+							</Tooltip>
+						);
+					}
 				},
 				{
 					id: 'planLimits.maxReviewRequestsPerMonth',
-					header: 'MONTHLY QUOTA',
-					size: 140,
+					header: 'QUOTA',
+					size: 85,
+					minSize: 80,
+					maxSize: 95,
+					muiTableHeadCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important',
+							whiteSpace: 'nowrap !important'
+						}
+					},
+					muiTableBodyCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important'
+						}
+					},
 					accessorFn: (row) => {
 						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
 						return activePlan?.request_quota ?? row.planLimits?.maxReviewRequestsPerMonth ?? null;
 					},
-					Cell: ({ cell }) => (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{cell.getValue<number>()?.toLocaleString() ?? '—'}
-						</Typography>
-					)
+					Cell: ({ cell }) => {
+						const val = cell.getValue<number>();
+						if (val === null || val === undefined) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
+						const numericVal = Number(val);
+						return (
+							<Tooltip title={`Monthly Request Quota: ${numericVal.toLocaleString()}`} arrow>
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										px: 0.75,
+										py: 0.15,
+										borderRadius: '4px',
+										bgcolor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)',
+										border: '1px solid',
+										borderColor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.25)'
+									}}
+								>
+									<Typography
+										sx={{
+											fontSize: 11.5,
+											fontWeight: 700,
+											fontFamily: "'Roboto Mono', monospace",
+											color: (t) => (t.palette.mode === 'dark' ? '#FBBF24' : '#B45309'),
+											lineHeight: 1.2
+										}}
+									>
+										{numericVal.toLocaleString()}
+									</Typography>
+								</Box>
+							</Tooltip>
+						);
+					}
 				},
 				{
 					id: 'planLimits.usedReviewRequests',
-					header: 'REQUESTS USED',
-					size: 140,
+					header: 'USED',
+					size: 85,
+					minSize: 80,
+					maxSize: 95,
+					muiTableHeadCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important',
+							whiteSpace: 'nowrap !important'
+						}
+					},
+					muiTableBodyCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important'
+						}
+					},
 					accessorFn: (row) => row.planLimits?.usedReviewRequests ?? (row as any).usedReviewRequests ?? 0,
 					Cell: ({ cell, row }) => {
 						const used = cell.getValue<number>() ?? 0;
 						const activePlan = Array.isArray(row.original.plans) ? row.original.plans.find((p) => p.status === 1) : null;
 						const quota = activePlan?.request_quota ?? row.original.planLimits?.maxReviewRequestsPerMonth ?? 0;
+						const percent = quota > 0 ? Math.min(100, Math.round((used / quota) * 100)) : 0;
+
 						return (
-							<div className="flex items-center gap-1">
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: used > 0 ? '#0F172A' : '#64748B' }}>
-									{used.toLocaleString()}
-								</Typography>
-								{quota > 0 && (
-									<Typography sx={{ fontSize: 11, color: '#94A3B8' }}>
-										/ {quota.toLocaleString()}
-									</Typography>
-								)}
-							</div>
+							<Tooltip
+								title={`Requests Used: ${used.toLocaleString()} / ${quota > 0 ? quota.toLocaleString() : '—'} (${percent}%)`}
+								arrow
+							>
+								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4 }}>
+									<FuseSvgIcon size={12} sx={{ color: 'text.secondary', flexShrink: 0 }}>
+										heroicons-outline:paper-airplane
+									</FuseSvgIcon>
+									<Box sx={{ display: 'inline-flex', alignItems: 'baseline', gap: 0.2 }}>
+										<Typography
+											sx={{
+												fontSize: 12,
+												fontWeight: 600,
+												fontFamily: "'Roboto Mono', monospace",
+												color: 'text.primary',
+												lineHeight: 1.2
+											}}
+										>
+											{used.toLocaleString()}
+										</Typography>
+										<Typography
+											sx={{
+												fontSize: 10.5,
+												fontFamily: "'Roboto Mono', monospace",
+												color: 'text.secondary',
+												lineHeight: 1.2
+											}}
+										>
+											/{quota > 0 ? (quota >= 1000 ? `${Math.round(quota / 1000)}k` : quota) : '—'}
+										</Typography>
+									</Box>
+								</Box>
+							</Tooltip>
 						);
 					}
 				}
@@ -550,13 +843,41 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			base.push({
 				accessorKey: 'contact_no',
 				header: 'PHONE',
-				size: 130,
+				size: 140,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
+					if (!val) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
 					return (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{val || '—'}
+						<Typography sx={{ fontSize: 12, color: 'text.primary', fontWeight: 600 }}>
+							{val}
 						</Typography>
+					);
+				}
+			});
+
+			base.push({
+				accessorKey: 'createdAt',
+				header: 'CREATED AT',
+				size: 140,
+				Cell: ({ cell, row }) => {
+					const val = (cell.getValue?.() as string) || row.original?.createdAt;
+					if (!val || !moment(val).isValid()) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+					const m = moment(val);
+					return (
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm A')} arrow>
+							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+									{m.format('DD MMM YYYY')}
+								</Typography>
+								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
+									{m.format('hh:mm A')}
+								</Typography>
+							</Box>
+						</Tooltip>
 					);
 				}
 			});
@@ -586,10 +907,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				resetCreateForm();
 				setCreateOpen(true);
 			}}
-			style={{ height: '32px' }}
-			className="h-8 px-3 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+			style={{ height: '38px' }}
+			className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
 		>
-			<FuseSvgIcon size={15} className="text-white">
+			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
 			</FuseSvgIcon>
 			<span>Add User</span>
@@ -631,9 +952,21 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
 							'mrt-row-actions': {
-								size: 105,
-								minSize: 95,
-								maxSize: 115
+								size: 95,
+								minSize: 90,
+								maxSize: 105,
+								muiTableHeadCellProps: {
+									sx: {
+										width: '95px !important',
+										maxWidth: '105px !important'
+									}
+								},
+								muiTableBodyCellProps: {
+									sx: {
+										width: '95px !important',
+										maxWidth: '105px !important'
+									}
+								}
 							}
 						}}
 						enableRowSelection={false}
@@ -645,33 +978,73 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						}}
 						onPaginationChange={setPagination}
 						onGlobalFilterChange={handleGlobalFilterChange}
-						onSortingChange={setSorting}
+						onSortingChange={handleSortingChange}
 						manualPagination
 						manualFiltering
 						manualSorting
 						rowCount={totalResults}
 						pageCount={totalPages}
-						muiTableContainerProps={{
+						muiTableProps={{
 							sx: {
-								maxWidth: '100%',
-								flex: '1 1 auto',
-								minHeight: 0,
-								overflow: 'auto',
-								'&::-webkit-scrollbar': { height: 8, width: 8 },
-								'&::-webkit-scrollbar-track': {
-									backgroundColor: 'background.default',
-									borderRadius: 4
+								tableLayout: 'auto',
+								minWidth: '100%',
+								'& .MuiTableRow-root:hover': {
+									backgroundColor: 'action.hover',
+									transition: 'background-color 0.15s ease'
 								},
-								'&::-webkit-scrollbar-thumb': {
-									backgroundColor: 'divider',
-									borderRadius: 4,
-									'&:hover': { backgroundColor: 'text.disabled' }
+								'& .MuiTableCell-root': {
+									borderBottom: '1px solid',
+									borderColor: 'divider',
+									padding: '4px 8px',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+									maxWidth: '100%'
+								},
+								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
+									fontWeight: 700,
+									fontSize: 11.5,
+									letterSpacing: 0.3,
+									textTransform: 'uppercase',
+									color: 'text.secondary',
+									borderTop: '1px solid',
+									borderBottom: '1px solid',
+									borderColor: (t: any) =>
+										t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgb(229 231 235)',
+									whiteSpace: 'nowrap !important',
+									overflow: 'visible !important',
+									textOverflow: 'clip !important',
+									wordBreak: 'normal',
+									padding: '6px 8px',
+									textAlign: 'left',
+									'& .MuiTableSortLabel-root': {
+										overflow: 'visible !important',
+										textOverflow: 'clip !important',
+										whiteSpace: 'nowrap !important'
+									},
+									'& .Mui-TableHeadCell-Content': {
+										overflow: 'visible !important',
+										whiteSpace: 'nowrap !important'
+									},
+									'& .Mui-TableHeadCell-Content-Labels': {
+										overflow: 'visible !important',
+										whiteSpace: 'nowrap !important'
+									}
 								}
 							}
 						}}
+						muiTableHeadProps={{
+							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+						}}
+						muiTableHeadRowProps={{
+							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+						}}
+						muiTableHeadCellProps={{
+							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+						}}
 						muiBottomToolbarProps={{
 							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
+								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-slate-900',
 							sx: {
 								borderTop: '1px solid',
 								borderColor: 'divider',
@@ -750,51 +1123,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								}
 							}
 						}}
-						muiTableHeadProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadRowProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadCellProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableProps={{
+						muiTableContainerProps={{
 							sx: {
-								tableLayout: 'auto',
-								minWidth: '100%',
-								'& .MuiTableRow-root:hover': {
-									backgroundColor: 'action.hover',
-									transition: 'background-color 0.15s ease'
+								maxWidth: '100%',
+								flex: '1 1 auto',
+								minHeight: 0,
+								overflow: 'auto',
+								'&::-webkit-scrollbar': { height: 8, width: 8 },
+								'&::-webkit-scrollbar-track': {
+									backgroundColor: 'background.default',
+									borderRadius: 4
 								},
-								'& .MuiTableCell-root': {
-									borderBottom: '1px solid',
-									borderColor: 'divider',
-									padding: '2px 8px',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
-									maxWidth: '100%',
-									height: '37px',
-									boxSizing: 'border-box'
-								},
-								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-									fontWeight: 700,
-									fontSize: 11.5,
-									letterSpacing: 0.3,
-									textTransform: 'uppercase',
-									color: 'text.secondary',
-									borderTop: '1px solid',
-									borderBottom: '1px solid',
-									borderColor: 'rgb(229 231 235)',
-									padding: '6px 8px',
-									maxWidth: '100%',
-									textAlign: 'left'
+								'&::-webkit-scrollbar-thumb': {
+									backgroundColor: 'divider',
+									borderRadius: 4,
+									'&:hover': { backgroundColor: 'text.disabled' }
 								}
 							}
 						}}
 						renderRowActions={({ row }: { row: MRT_Row<User> }) => (
-							<Box className="flex items-center gap-1">
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
 								{canUpdate(sectionKey) && (
 									<>
 										<Tooltip title={row.original.status === 1 ? 'Click to deactivate user' : 'Click to activate user'} arrow>
@@ -810,18 +1158,6 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 												/>
 											</Box>
 										</Tooltip>
-										<Tooltip title="Edit user" arrow>
-											<IconButton
-												size="small"
-												onClick={(e) => {
-													(e.currentTarget as HTMLElement)?.blur();
-													handleOpenEdit(row.original);
-												}}
-												className="text-slate-600 hover:text-slate-900 p-1"
-											>
-												<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
-											</IconButton>
-										</Tooltip>
 										{isSellersMode && (
 											<Tooltip title="Assign Plan" arrow>
 												<IconButton
@@ -830,25 +1166,59 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 														(e.currentTarget as HTMLElement)?.blur();
 														handleOpenAssignPlan(row.original);
 													}}
-													className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 transition-colors"
+													sx={{
+														p: 0.6,
+														borderRadius: '6px',
+														color: (t) => (t.palette.mode === 'dark' ? '#34D399' : '#059669'),
+														'&:hover': {
+															bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+														}
+													}}
 												>
-													<FuseSvgIcon size={18}>lucide:sparkles</FuseSvgIcon>
+													<FuseSvgIcon size={16}>heroicons-outline:credit-card</FuseSvgIcon>
 												</IconButton>
 											</Tooltip>
 										)}
+										<Tooltip title="Edit user" arrow>
+											<IconButton
+												size="small"
+												onClick={(e) => {
+													(e.currentTarget as HTMLElement)?.blur();
+													handleOpenEdit(row.original);
+												}}
+												sx={{
+													p: 0.6,
+													borderRadius: '6px',
+													color: 'text.secondary',
+													'&:hover': {
+														color: 'text.primary',
+														bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)')
+													}
+												}}
+											>
+												<FuseSvgIcon size={16}>heroicons-outline:pencil-square</FuseSvgIcon>
+											</IconButton>
+										</Tooltip>
 									</>
 								)}
 								{canDelete(sectionKey) && (
 									<Tooltip title="Delete user" arrow>
 										<IconButton
 											size="small"
-											className="text-red-500 hover:text-red-700 p-1"
 											onClick={(e) => {
 												(e.currentTarget as HTMLElement)?.blur();
 												handleOpenDeleteConfirm(row.original);
 											}}
+											sx={{
+												p: 0.6,
+												borderRadius: '6px',
+												color: (t) => t.palette.mode === 'dark' ? '#F87171' : '#DC2626',
+												'&:hover': {
+													bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'
+												}
+											}}
 										>
-											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
+											<FuseSvgIcon size={16}>heroicons-outline:trash</FuseSvgIcon>
 										</IconButton>
 									</Tooltip>
 								)}
@@ -907,9 +1277,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							>
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Full Name <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											required
@@ -931,9 +1301,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Email Address <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											required
@@ -956,9 +1326,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Phone Number
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="e.g., +49 151 2345001"
@@ -979,9 +1349,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<FormControl fullWidth size="small" required>
 											<Select
 												value={formRoleId}
@@ -1115,9 +1485,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							>
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Full Name
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="Full Name"
@@ -1138,9 +1508,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Phone Number
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="Phone Number"
@@ -1161,9 +1531,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role
-										</Typography>
+										</label>
 										<FormControl fullWidth size="small">
 											<Select
 												value={formRoleId}
@@ -1199,9 +1569,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									{isSellersMode && (
 										<>
 											<div>
-												<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+												<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 													Brand Name
-												</Typography>
+												</label>
 												<TextField
 													placeholder="Brand Name"
 													value={editBusinessName}
@@ -1224,9 +1594,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											{(isSuperAdmin || selectedUser?.userType === 'seller') && (
 												<>
 													<div>
-														<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+														<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 															Maximum Active Marketplaces
-														</Typography>
+														</label>
 														<TextField
 															type="number"
 															fullWidth
@@ -1234,6 +1604,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 															size="small"
 															value={maxMarketplaces}
 															onChange={(e) => setMaxMarketplaces(Math.max(1, Number(e.target.value)))}
+															onWheel={(e) => (e.target as HTMLElement).blur()}
 															InputProps={{
 																startAdornment: (
 																	<InputAdornment position="start">
@@ -1247,9 +1618,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 													</div>
 
 													<div>
-														<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+														<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 															Monthly Review Request Quota
-														</Typography>
+														</label>
 														<TextField
 															type="number"
 															fullWidth
@@ -1259,6 +1630,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 															onChange={(e) =>
 																setMaxReviewRequestsPerMonth(Math.max(0, Number(e.target.value)))
 															}
+															onWheel={(e) => (e.target as HTMLElement).blur()}
 															InputProps={{
 																startAdornment: (
 																	<InputAdornment position="start">

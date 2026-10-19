@@ -202,15 +202,20 @@ function SiteConfigurationView() {
 			{/* Top Header Bar */}
 			<div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 z-10">
 				{/* Left Title & Icon */}
-				<div className="flex items-center gap-2.5 w-full sm:w-auto">
-					<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
-						<FuseSvgIcon size={18} className="text-primary">
+				<div className="flex items-center gap-3 w-full sm:w-auto">
+					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
+						<FuseSvgIcon size={20} className="text-primary">
 							heroicons-outline:globe-alt
 						</FuseSvgIcon>
 					</div>
-					<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white m-0">
-						Site Configuration
-					</h1>
+					<div className="flex flex-col min-w-0">
+						<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight">
+							Site Configuration
+						</h1>
+						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
+							Configure website contact details, company profile, and social media links.
+						</p>
+					</div>
 				</div>
 
 				{/* Right Actions: Reload, Discard, Save */}

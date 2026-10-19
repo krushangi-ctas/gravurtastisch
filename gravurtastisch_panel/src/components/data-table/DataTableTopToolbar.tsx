@@ -14,9 +14,22 @@ import {
 } from 'material-react-table';
 import parseFromValuesOrFunc from 'src/components/data-table/utils/parseFromValuesOrFunc';
 
+const defaultTableSubtitles: Record<string, string> = {
+	Orders: 'Manage customer orders, track fulfillment status, and monitor marketplace channels.',
+	Sellers: 'View registered sellers, manage store profiles, subscriptions, and quota limits.',
+	'Admin Users': 'Manage administrative users, access privileges, and staff accounts.',
+	Team: 'Manage internal team members, departmental roles, and access controls.',
+	Roles: 'Configure role definitions, operational permissions, and security policies.',
+	Blogs: 'Create, publish, and manage website articles, categories, and SEO blog posts.',
+	Plans: 'Manage subscription tiers, feature allocations, pricing, and monthly limits.',
+	Support: 'Manage customer inquiries, support requests, and seller communications.',
+	'Support Tickets': 'Manage customer inquiries, support requests, and seller communications.'
+};
+
 export interface DataTableTopToolbarProps<TData extends MRT_RowData> {
 	table: MRT_TableInstance<TData>;
 	title?: React.ReactNode | string;
+	subtitle?: React.ReactNode | string;
 	icon?: string | React.ReactNode;
 	actionButtons?: React.ReactNode;
 	onRefresh?: () => void;
@@ -25,6 +38,7 @@ export interface DataTableTopToolbarProps<TData extends MRT_RowData> {
 function DataTableTopToolbar<TData extends MRT_RowData>({
 	table,
 	title,
+	subtitle,
 	icon,
 	actionButtons,
 	onRefresh
@@ -62,8 +76,21 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 		table
 	};
 
+	const handleRefreshClick = () => {
+		try {
+			table.setGlobalFilter('');
+			table.resetGlobalFilter();
+			table.resetColumnFilters();
+		} catch (_) {
+			// ignore if table doesn't support filter resets
+		}
+		if (onRefresh) {
+			onRefresh();
+		}
+	};
+
 	return (
-		<div className="flex w-full flex-col border-b border-slate-200 dark:border-slate-800 px-3 py-1.5 bg-white dark:bg-slate-900">
+		<div className="flex w-full flex-col border-b border-slate-200 dark:border-slate-800 px-4 py-2 sm:py-2.5 bg-white dark:bg-slate-900">
 			<Box
 				className="flex w-full flex-col items-center"
 				{...toolbarProps}
@@ -105,11 +132,11 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 					{/* Left: Icon & Title + optional custom actions */}
 					<div className="flex items-center gap-2.5 min-w-0 flex-1">
 						{(icon || title) && (
-							<div className="flex items-center gap-2.5 shrink-0 py-0.5">
+							<div className="flex items-center gap-3 shrink-0 py-0.5">
 								{icon && (
-									<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+									<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
 										{typeof icon === 'string' ? (
-											<FuseSvgIcon size={18} className="text-primary">
+											<FuseSvgIcon size={20} className="text-primary">
 												{icon}
 											</FuseSvgIcon>
 										) : (
@@ -118,44 +145,190 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 									</div>
 								)}
 								{title && (
-									<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-slate-100 m-0 whitespace-nowrap">
-										{title}
-									</h1>
+									<div className="flex flex-col min-w-0">
+										<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 m-0 whitespace-nowrap leading-tight">
+											{title}
+										</h1>
+										{(subtitle || (typeof title === 'string' && defaultTableSubtitles[title])) && (
+											<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium whitespace-nowrap leading-tight mt-1">
+												{subtitle || (typeof title === 'string' && defaultTableSubtitles[title])}
+											</p>
+										)}
+									</div>
 								)}
 							</div>
 						)}
 
 						{enableGlobalFilter && positionGlobalFilter === 'left' && (
-							<MRT_GlobalFilterTextField {...globalFilterProps} />
+							<MRT_GlobalFilterTextField
+								{...globalFilterProps}
+								sx={{
+									'& .MuiInputBase-root': {
+										height: '38px !important',
+										minHeight: '38px !important',
+										maxHeight: '38px !important',
+										borderRadius: '8px !important',
+										backgroundColor: (theme) =>
+											theme.palette.mode === 'dark' ? '#1e293b' : '#f8fafc',
+										fontSize: '13px',
+										boxSizing: 'border-box'
+									},
+									'& .MuiOutlinedInput-notchedOutline': {
+										borderColor: (theme) =>
+											theme.palette.mode === 'dark' ? '#334155' : '#e2e8f0',
+										borderWidth: '1px'
+									},
+									'&:hover .MuiOutlinedInput-notchedOutline': {
+										borderColor: '#0032ab'
+									},
+									'&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+										borderColor: '#0032ab',
+										borderWidth: '1.5px'
+									},
+									'& input': {
+										height: '38px !important',
+										padding: '0 10px !important',
+										fontSize: '13px',
+										fontStyle: 'italic',
+										color: (theme) =>
+											theme.palette.mode === 'dark' ? '#cbd5e1' : '#475569',
+										boxSizing: 'border-box'
+									},
+									'& input::placeholder': {
+										fontStyle: 'italic',
+										color: '#94a3b8',
+										opacity: 1
+									},
+									'& .MuiInputAdornment-root': {
+										height: '38px !important',
+										maxHeight: '38px !important'
+									},
+									'& .MuiIconButton-root': {
+										width: '20px !important',
+										height: '20px !important',
+										minWidth: '20px !important',
+										padding: '2px !important',
+										borderRadius: '4px !important',
+										border: 'none !important',
+										backgroundColor: 'transparent !important',
+										color: '#94a3b8 !important',
+										boxShadow: 'none !important',
+										'&:hover': {
+											backgroundColor: (theme) =>
+												theme.palette.mode === 'dark' ? '#334155' : '#e2e8f0',
+											color: (theme) =>
+												theme.palette.mode === 'dark' ? '#ffffff' : '#0f172a'
+										}
+									}
+								}}
+							/>
 						)}
 
-						{renderTopToolbarCustomActions?.({ table }) ?? null}
+						{(renderTopToolbarCustomActions?.({ table }) as React.ReactNode) ?? null}
 					</div>
 
 					{/* Right: Search + Refresh + Action Buttons + MRT internal buttons */}
-					<Box className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap justify-end ml-auto">
+					<Box
+						className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap justify-end ml-auto"
+						sx={{
+							'& > .MuiIconButton-root, & .MRT_ToolbarInternalButtons .MuiIconButton-root': {
+								width: 38,
+								height: 38,
+								minHeight: 38,
+								maxHeight: 38,
+								borderRadius: '8px',
+								border: '1px solid',
+								borderColor: (theme) =>
+									theme.palette.mode === 'dark' ? '#334155' : '#e2e8f0',
+								backgroundColor: (theme) =>
+									theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff',
+								color: (theme) =>
+									theme.palette.mode === 'dark' ? '#cbd5e1' : '#475569',
+								padding: '7px',
+								transition: 'all 0.15s ease-in-out',
+								'&:hover': {
+									backgroundColor: (theme) =>
+										theme.palette.mode === 'dark' ? '#334155' : '#f1f5f9',
+									color: (theme) =>
+										theme.palette.mode === 'dark' ? '#ffffff' : '#0f172a'
+								}
+							}
+						}}
+					>
 						{enableGlobalFilter && positionGlobalFilter === 'right' && (
 							<MRT_GlobalFilterTextField
 								{...globalFilterProps}
 								sx={{
-									'& .MuiOutlinedInput-root': {
-										height: 32,
-										minHeight: 32,
-										paddingX: 1
+									'& .MuiInputBase-root': {
+										height: '38px !important',
+										minHeight: '38px !important',
+										maxHeight: '38px !important',
+										borderRadius: '8px !important',
+										backgroundColor: (theme) =>
+											theme.palette.mode === 'dark' ? '#1e293b' : '#f8fafc',
+										fontSize: '13px',
+										boxSizing: 'border-box'
+									},
+									'& .MuiOutlinedInput-notchedOutline': {
+										borderColor: (theme) =>
+											theme.palette.mode === 'dark' ? '#334155' : '#e2e8f0',
+										borderWidth: '1px'
+									},
+									'&:hover .MuiOutlinedInput-notchedOutline': {
+										borderColor: '#0032ab'
+									},
+									'&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+										borderColor: '#0032ab',
+										borderWidth: '1.5px'
+									},
+									'& input': {
+										height: '38px !important',
+										padding: '0 10px !important',
+										fontSize: '13px',
+										fontStyle: 'italic',
+										color: (theme) =>
+											theme.palette.mode === 'dark' ? '#cbd5e1' : '#475569',
+										boxSizing: 'border-box'
+									},
+									'& input::placeholder': {
+										fontStyle: 'italic',
+										color: '#94a3b8',
+										opacity: 1
+									},
+									'& .MuiInputAdornment-root': {
+										height: '38px !important',
+										maxHeight: '38px !important'
+									},
+									'& .MuiIconButton-root': {
+										width: '22px !important',
+										height: '22px !important',
+										minWidth: '22px !important',
+										padding: '2px !important',
+										borderRadius: '4px !important',
+										border: 'none !important',
+										backgroundColor: 'transparent !important',
+										color: '#94a3b8 !important',
+										boxShadow: 'none !important',
+										'&:hover': {
+											backgroundColor: (theme) =>
+												theme.palette.mode === 'dark' ? '#334155' : '#e2e8f0',
+											color: (theme) =>
+												theme.palette.mode === 'dark' ? '#ffffff' : '#0f172a'
+										}
 									}
 								}}
 							/>
 						)}
 
 						{onRefresh && (
-							<Tooltip title="Refresh list" arrow>
+							<Tooltip title="Refresh & Reset filters" arrow>
 								<button
 									type="button"
-									onClick={onRefresh}
-									style={{ height: '32px', width: '32px' }}
-									className="h-8 w-8 flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-all cursor-pointer shrink-0"
+									onClick={handleRefreshClick}
+									style={{ height: '38px', width: '38px', minHeight: '38px', maxHeight: '38px' }}
+									className="h-[38px] w-[38px] flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-all cursor-pointer shrink-0"
 								>
-									<FuseSvgIcon size={16} className="text-slate-700 dark:text-slate-200">
+									<FuseSvgIcon size={17} className="text-slate-700 dark:text-slate-200">
 										heroicons-outline:arrow-path
 									</FuseSvgIcon>
 								</button>

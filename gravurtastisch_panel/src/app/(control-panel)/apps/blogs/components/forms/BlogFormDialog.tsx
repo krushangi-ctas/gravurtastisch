@@ -9,7 +9,8 @@ import {
 	Typography,
 	IconButton,
 	CircularProgress,
-	Tooltip
+	Tooltip,
+	InputAdornment
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -278,9 +279,9 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 
 						<div className="flex flex-col gap-4">
 							<div>
-								<Typography className="text-xs font-semibold text-gray-700 mb-1">
+								<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 									Blog Title <span className="text-red-500">*</span>
-								</Typography>
+								</label>
 								<TextField
 									fullWidth
 									required
@@ -289,13 +290,22 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 									onChange={(e) => setBlogTitle(e.target.value)}
 									variant="outlined"
 									size="small"
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<FuseSvgIcon size={16} className="text-gray-400">
+													heroicons-outline:newspaper
+												</FuseSvgIcon>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</div>
 
 							<div>
-								<Typography className="text-xs font-semibold text-gray-700 mb-1">
+								<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 									Short Description (Excerpt)
-								</Typography>
+								</label>
 								<TextField
 									fullWidth
 									multiline
@@ -305,6 +315,15 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 									onChange={(e) => setShortDescription(e.target.value)}
 									variant="outlined"
 									size="small"
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: '3px' }}>
+												<FuseSvgIcon size={16} className="text-gray-400">
+													heroicons-outline:document-text
+												</FuseSvgIcon>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</div>
 						</div>

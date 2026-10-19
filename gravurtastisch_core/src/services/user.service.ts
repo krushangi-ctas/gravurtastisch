@@ -188,7 +188,12 @@ const buildUserListQuery = (baseFilter, query = {}) => {
   const limit = Number(query.limit) > 0 ? Number(query.limit) : 20;
   let sort = { createdAt: -1 };
   if (query.sortBy) {
-    const [key, order] = String(query.sortBy).split(':');
+    const [rawKey, order] = String(query.sortBy).split(':');
+    const keyMap = {
+      role: 'role_id',
+      currentPlan: 'currentPlanId',
+    };
+    const key = keyMap[rawKey] || rawKey;
     sort = { [key]: order === 'asc' ? 1 : -1 };
   }
 

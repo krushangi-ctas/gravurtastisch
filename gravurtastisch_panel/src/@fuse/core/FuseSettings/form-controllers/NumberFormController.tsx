@@ -90,6 +90,7 @@ function NumberTextField(props: NumberTextFieldProps) {
 				value={localValue}
 				onChange={handleChange}
 				type="number"
+				onWheel={(e) => (e.target as HTMLElement).blur()}
 				slotProps={{
 					input: {
 						inputProps: { min: item.min, max: item.max }
