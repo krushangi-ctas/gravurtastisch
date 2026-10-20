@@ -40,33 +40,105 @@ const AVAILABLE_MARKETPLACES = [
   { code: "IN", name: "India" },
 ];
 
+const defaultFallbackPlans: PlanItem[] = [
+  {
+    _id: "6abf64e2b7518e2b102d81e2",
+    id: "6abf64e2b7518e2b102d81e2",
+    name: "Starter Plan",
+    price: 29,
+    marketplace: 1,
+    request_quota: 500,
+    billingCycle: 2,
+    status: 1,
+  },
+  {
+    _id: "6abf65aa24470439fd8a172e",
+    id: "6abf65aa24470439fd8a172e",
+    name: "Bronze Plan",
+    price: 49,
+    marketplace: 2,
+    request_quota: 1000,
+    billingCycle: 1,
+    status: 1,
+  },
+  {
+    _id: "6abf64e2b7518e2b102d81e3",
+    id: "6abf64e2b7518e2b102d81e3",
+    name: "Growth Plan",
+    price: 79,
+    marketplace: 3,
+    request_quota: 2500,
+    billingCycle: 2,
+    status: 1,
+  },
+  {
+    _id: "6abf64e2b7518e2b102d81e4",
+    id: "6abf64e2b7518e2b102d81e4",
+    name: "Professional Plan",
+    price: 149,
+    marketplace: 5,
+    request_quota: 5000,
+    billingCycle: 1,
+    status: 1,
+  },
+  {
+    _id: "6abf64e2b7518e2b102d81e5",
+    id: "6abf64e2b7518e2b102d81e5",
+    name: "Scale Plan",
+    price: 299,
+    marketplace: 7,
+    request_quota: 10000,
+    billingCycle: 1,
+    status: 1,
+  },
+  {
+    _id: "6abf64e2b7518e2b102d81e6",
+    id: "6abf64e2b7518e2b102d81e6",
+    name: "Enterprise Plus",
+    price: 799,
+    marketplace: 15,
+    request_quota: 25000,
+    billingCycle: 3,
+    status: 1,
+  },
+];
+
 function RegisterSection() {
   const { t } = useTranslation();
-  const [plans, setPlans] = useState<PlanItem[]>([]);
-  const [plansLoading, setPlansLoading] = useState(true);
-  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
+  const [plans, setPlans] = useState<PlanItem[]>(defaultFallbackPlans);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("6abf64e2b7518e2b102d81e2");
   const [sent, setSent] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const planParam = searchParams.get("plan");
+      if (planParam) {
+        setSelectedPlanId(planParam);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
-    getPublicPlans({ status: 1 })
+    getPublicPlans({ status: 1, limit: 20 })
       .then((res) => {
         if (!isMounted) return;
         const activePlans = res?.data || [];
-        setPlans(activePlans);
         if (activePlans.length > 0) {
-          const defaultPlan = activePlans[0];
-          const planId = (defaultPlan._id || defaultPlan.id || "") as string;
-          setSelectedPlanId(planId);
+          setPlans(activePlans);
+          setSelectedPlanId((prev) => {
+            const exists = activePlans.some(
+              (p) => (p._id && p._id === prev) || (p.id && p.id === prev)
+            );
+            return exists ? prev : ((activePlans[0]._id || activePlans[0].id || "") as string);
+          });
         }
       })
       .catch((err) => {
-        console.warn("Failed to fetch public plans:", err);
-      })
-      .finally(() => {
-        if (isMounted) setPlansLoading(false);
+        console.warn("Failed to fetch public plans, keeping defaults:", err);
       });
 
     return () => {
@@ -185,89 +257,81 @@ function RegisterSection() {
                     </span>
                   )}
                 </div>
-                {plansLoading ? (
-                  <div className="h-12 rounded-xl bg-slate-50 border border-border animate-pulse flex items-center px-4 text-xs text-muted-foreground">
-                    Loading available plans...
-                  </div>
-                ) : plans.length > 0 ? (
-                  <Select
-                    value={selectedPlanId}
-                    onValueChange={(val) => {
-                      setSelectedPlanId(val);
-                      setError("");
-                    }}
+                <Select
+                  value={selectedPlanId}
+                  onValueChange={(val) => {
+                    setSelectedPlanId(val);
+                    setError("");
+                  }}
+                >
+                  <SelectTrigger
+                    id="plan"
+                    className="h-12 w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-foreground shadow-xs hover:border-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition [&>svg]:text-brand cursor-pointer"
                   >
-                    <SelectTrigger
-                      id="plan"
-                      className="h-12 w-full rounded-xl bg-white border border-border px-4 py-3 text-sm text-foreground shadow-xs hover:border-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 focus:border-brand transition [&>svg]:text-brand cursor-pointer"
-                    >
-                      <SelectValue placeholder="Select a subscription plan">
-                        {currentPlan && (
-                          <div className="flex items-center justify-between w-full pr-2 text-left truncate">
-                            <span className="font-semibold text-foreground truncate">
-                              {currentPlan.name}{" "}
-                              <span className="text-brand font-bold">
-                                — ${currentPlan.price}
-                                {currentPlan.billingCycle === 3
-                                  ? "/yr"
-                                  : currentPlan.billingCycle === 2
-                                  ? "/qtr"
-                                  : "/mo"}
+                    <SelectValue placeholder="Select a subscription plan">
+                      {currentPlan && (
+                        <div className="flex items-center justify-between w-full pr-2 text-left truncate">
+                          <span className="font-semibold text-foreground truncate">
+                            {currentPlan.name}{" "}
+                            <span className="text-brand font-bold">
+                              — ${currentPlan.price}
+                              {currentPlan.billingCycle === 3
+                                ? "/yr"
+                                : currentPlan.billingCycle === 2
+                                ? "/qtr"
+                                : "/mo"}
+                            </span>
+                          </span>
+                          <span className="hidden sm:inline-block text-xs text-muted-foreground font-mono ml-3 shrink-0">
+                            {currentPlan.marketplace}{" "}
+                            {currentPlan.marketplace === 1
+                              ? "marketplace"
+                              : "marketplaces"}
+                            , {currentPlan.request_quota.toLocaleString()} requests/mo
+                          </span>
+                        </div>
+                      )}
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent
+                    className="bg-white border border-border text-foreground shadow-2xl rounded-2xl p-1.5 z-50 min-w-[var(--radix-select-trigger-width)]"
+                  >
+                    {plans.map((p) => {
+                      const planId = (p._id || p.id) as string;
+                      const cycleShort =
+                        p.billingCycle === 3
+                          ? "/yr"
+                          : p.billingCycle === 2
+                          ? "/qtr"
+                          : "/mo";
+                      return (
+                        <SelectItem
+                          key={planId}
+                          value={planId}
+                          className="rounded-xl px-3.5 py-3 text-sm text-foreground hover:bg-slate-100 focus:bg-slate-100 cursor-pointer transition-colors data-[state=checked]:bg-brand/10 data-[state=checked]:text-brand [&_svg]:text-brand my-0.5"
+                        >
+                          <div className="flex items-center justify-between w-full gap-4 pr-3">
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-foreground">
+                                {p.name}
                               </span>
-                            </span>
-                            <span className="hidden sm:inline-block text-xs text-muted-foreground font-mono ml-3 shrink-0">
-                              {currentPlan.marketplace}{" "}
-                              {currentPlan.marketplace === 1
-                                ? "marketplace"
-                                : "marketplaces"}
-                              , {currentPlan.request_quota.toLocaleString()} requests/mo
-                            </span>
-                          </div>
-                        )}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent
-                      className="bg-white border border-border text-foreground shadow-2xl rounded-2xl p-1.5 z-50 min-w-[var(--radix-select-trigger-width)]"
-                    >
-                      {plans.map((p) => {
-                        const planId = (p._id || p.id) as string;
-                        const cycleShort =
-                          p.billingCycle === 3
-                            ? "/yr"
-                            : p.billingCycle === 2
-                            ? "/qtr"
-                            : "/mo";
-                        return (
-                          <SelectItem
-                            key={planId}
-                            value={planId}
-                            className="rounded-xl px-3.5 py-3 text-sm text-foreground hover:bg-slate-100 focus:bg-slate-100 cursor-pointer transition-colors data-[state=checked]:bg-brand/10 data-[state=checked]:text-brand [&_svg]:text-brand my-0.5"
-                          >
-                            <div className="flex items-center justify-between w-full gap-4 pr-3">
-                              <div className="flex items-center gap-2">
-                                <span className="font-bold text-foreground">
-                                  {p.name}
-                                </span>
-                                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
-                                  ${p.price}{cycleShort}
-                                </span>
-                              </div>
-                              <span className="text-xs text-muted-foreground font-mono">
-                                {p.marketplace}{" "}
-                                {p.marketplace === 1
-                                  ? "marketplace"
-                                  : "marketplaces"}
-                                , {p.request_quota.toLocaleString()} req/mo
+                              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
+                                ${p.price}{cycleShort}
                               </span>
                             </div>
-                          </SelectItem>
-                        );
-                      })}
-                    </SelectContent>
-                  </Select>
-                ) : (
-                  <div className="text-xs text-muted-foreground">Standard plan (5 marketplaces, 1000 requests/mo)</div>
-                )}
+                            <span className="text-xs text-muted-foreground font-mono">
+                              {p.marketplace}{" "}
+                              {p.marketplace === 1
+                                ? "marketplace"
+                                : "marketplaces"}
+                              , {p.request_quota.toLocaleString()} req/mo
+                            </span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
               </div>
 
               {/* Supported Marketplaces (View Purpose Only) */}
@@ -313,7 +377,14 @@ function RegisterSection() {
                   <span className="!text-white">{currentPlan && currentPlan.price > 0 ? "Redirecting to checkout..." : t('register.submitSending')}</span>
                 ) : currentPlan && currentPlan.price > 0 ? (
                   <>
-                    <span className="!text-white">Continue to Payment (${currentPlan.price}/mo)</span>
+                    <span className="!text-white">
+                      Continue to Payment (${currentPlan.price}
+                      {currentPlan.billingCycle === 3
+                        ? "/yr"
+                        : currentPlan.billingCycle === 2
+                        ? "/qtr"
+                        : "/mo"})
+                    </span>
                     <Sparkles className="w-4 h-4 text-white" />
                   </>
                 ) : (

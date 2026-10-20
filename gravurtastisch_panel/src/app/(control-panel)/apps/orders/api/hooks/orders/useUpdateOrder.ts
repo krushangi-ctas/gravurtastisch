@@ -12,6 +12,8 @@ export const useUpdateOrder = () => {
 		mutationFn: sendFeedback,
 		onSuccess: (response: any) => {
 			queryClient.invalidateQueries({ queryKey: ordersQueryKey, exact: false });
+			queryClient.invalidateQueries({ queryKey: ['users-sellers'], exact: false });
+			queryClient.invalidateQueries({ queryKey: ['ecommerce'], exact: false });
 
 			// Since fetchWithAuth resolves HTTP errors rather than throwing, check the status here
 			if (response?.status === 200 || response?.status === true) {

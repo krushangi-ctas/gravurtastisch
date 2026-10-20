@@ -226,21 +226,25 @@ const paginateUserList = async (baseFilter, query, okMessage) => {
         try {
           const usedCount = await ordermodel.countDocuments({
             userId: u._id,
-            isSent: true,
-            updatedAt: { $gte: startOfMonth },
+            $or: [{ isSent: true }, { isNeedToSend: true }],
           });
+          const effectiveUsed = Math.max(
+            usedCount,
+            u.usedReviewRequests || 0,
+            u.planLimits?.usedReviewRequests || 0
+          );
 
           if (!u.planLimits) {
             u.planLimits = {};
           }
-          u.planLimits.usedReviewRequests = usedCount;
-          u.usedReviewRequests = usedCount;
+          u.planLimits.usedReviewRequests = effectiveUsed;
+          u.usedReviewRequests = effectiveUsed;
         } catch (_) {
           if (!u.planLimits) {
             u.planLimits = {};
           }
-          u.planLimits.usedReviewRequests = 0;
-          u.usedReviewRequests = 0;
+          u.planLimits.usedReviewRequests = u.usedReviewRequests || 0;
+          u.usedReviewRequests = u.usedReviewRequests || 0;
         }
       })
     );

@@ -12,6 +12,24 @@ const getBaseUrl = (): string => {
     ""
   ).trim();
 
+  if (typeof window !== "undefined") {
+    const host = window.location.hostname;
+    if (host === "localhost" || host === "127.0.0.1") {
+      if (envUrl) {
+        const clean = envUrl.replace(/\/+$/, "");
+        return clean.endsWith("/v1") ? clean.slice(0, -3) : clean;
+      }
+      return "http://localhost:7051";
+    }
+
+    if (
+      /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host) ||
+      host.endsWith(".local")
+    ) {
+      return `http://${host}:7051`;
+    }
+  }
+
   if (envUrl) {
     const clean = envUrl.replace(/\/+$/, "");
     return clean.endsWith("/v1") ? clean.slice(0, -3) : clean;
@@ -269,6 +287,8 @@ export interface PaymentSessionStatus {
     paidAt?: string | null;
     stripeSessionId?: string;
     siteUrl?: string;
+    sellerPanelUrl?: string;
+    billingCycle?: number;
   };
 }
 
@@ -280,4 +300,17 @@ export async function getPaymentSession(
     `/v1/payments/session/${encodeURIComponent(sessionId)}`
   );
 }
+
+/** POST /v1/payments/cancel — mark checkout session canceled and persist inactive seller */
+export async function cancelPaymentSession(data: {
+  sessionId?: string;
+  planId?: string;
+  email?: string;
+}): Promise<any> {
+  return apiFetch<any>("/v1/payments/cancel", {
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
 

@@ -278,7 +278,7 @@ const registerSeller = catchAsync(async (req, res) => {
       existingUser.currentPlanId = selectedPlan._id;
       existingUser.planLimits = planLimits;
       existingUser.plans = plansArray;
-      existingUser.status = 1; // Active status on registration
+      existingUser.status = isPaidPlan ? 0 : 1; // Inactive (0) until payment succeeds
       await existingUser.save();
 
       try {
@@ -333,7 +333,7 @@ const registerSeller = catchAsync(async (req, res) => {
     name: seller,
     businessName: business,
     contact_no: phone,
-    status: 1, // Active user status on registration
+    status: isPaidPlan ? 0 : 1, // Inactive (0) if paid plan until payment succeeds, Active (1) if free plan
     userType: 'seller',
     isSellerAdmin: true,
     isSuperAdmin: false,

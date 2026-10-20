@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const httpStatus = require('http-status');
 const Stripe = require('stripe');
 const config = require('../config/config');
@@ -77,8 +78,13 @@ const createCheckoutSession = async ({ planId, email, name, userId }: any) => {
   const successUrl =
     config.stripe.successUrl ||
     `${frontend}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
-  const cancelUrl =
-    config.stripe.cancelUrl || `${frontend}/payment/cancel?plan=${plan._id}`;
+  let cancelUrl = config.stripe.cancelUrl;
+  if (!cancelUrl) {
+    cancelUrl = `${frontend}/payment/cancel?session_id={CHECKOUT_SESSION_ID}&plan=${plan._id}`;
+  } else if (!cancelUrl.includes('{CHECKOUT_SESSION_ID}')) {
+    const separator = cancelUrl.includes('?') ? '&' : '?';
+    cancelUrl = `${cancelUrl}${separator}session_id={CHECKOUT_SESSION_ID}&plan=${plan._id}`;
+  }
 
   const stripe = getStripe();
   const session = await stripe.checkout.sessions.create({
@@ -199,6 +205,11 @@ const getSessionStatus = async (sessionId) => {
             sellerPanelUrl: sellerPanelSignInUrl,
           },
         };
+      } else if (session.status === 'expired' || session.status === 'canceled') {
+        await handleCancelPayment({
+          sessionId,
+          eventId: `session-poll-cancel:${sessionId}`,
+        });
       }
     } catch (err) {
       logger.warn(`Stripe session poll failed: ${err.message}`);
@@ -401,11 +412,11 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
       const customerSubject = `Payment Confirmed — Welcome to Gravurtastisch (${planName})`;
       const customerContent = `
         <div style="text-align:center; padding:0 0 16px;">
-          <div style="display:inline-block; width:44px; height:44px; line-height:44px; border-radius:50%; background-color:#ECFDF5; border:2px solid #10B981; text-align:center; margin-bottom:8px;">
-            <span style="font-size:22px; color:#10B981; line-height:44px; font-weight:bold;">&#10003;</span>
+          <div style="display:inline-block; width:46px; height:46px; line-height:46px; border-radius:50%; background-color:#ECFDF5; border:2px solid #10B981; text-align:center; margin-bottom:8px;">
+            <span style="font-size:22px; color:#10B981; line-height:46px; font-weight:bold;">&#10003;</span>
           </div>
-          <h1 style="margin:0 0 6px; font-size:21px; font-weight:800; color:#1E1E1E; font-family:'Montserrat','Inter',Arial,sans-serif;">Payment Successful!</h1>
-          <p style="margin:0 auto; max-width:540px; font-size:13.5px; line-height:1.5; color:#4A4A48; font-family:'Inter',Arial,sans-serif;">
+          <h1 style="margin:0 0 6px; font-size:22px; font-weight:800; color:#0B132B; font-family:'Montserrat','Inter',Arial,sans-serif;">Payment Successful!</h1>
+          <p style="margin:0 auto; max-width:540px; font-size:13.5px; line-height:1.55; color:#334155; font-family:'Inter',Arial,sans-serif;">
             Hi <strong>${payment.name || payment.email}</strong>, thank you for subscribing to <strong>Gravurtastisch</strong>. Your payment has been received and your seller account is now fully active.
           </p>
         </div>
@@ -415,43 +426,43 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
           <tr>
             <!-- LEFT PART: Plan Details -->
             <td class="stack-col" width="53%" style="vertical-align:top; padding-right:8px; padding-bottom:10px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#FAF9F6; border:1px solid #E5E0D5; border-radius:10px; border-collapse:separate; height:100%;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; border-collapse:separate; height:100%;">
                 <tr>
                   <td style="padding:14px 16px;">
-                    <div style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:12px; font-weight:800; color:#1E1E1E; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #EBDCC8; padding-bottom:5px;">
+                    <div style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:12px; font-weight:800; color:#0B132B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; border-bottom:1px solid #E2E8F0; padding-bottom:6px;">
                       Subscription Details
                     </div>
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Subscribed Plan</td>
-                        <td style="padding:4px 0; color:#1E1E1E; font-size:12.5px; font-weight:700; text-align:right; font-family:'Inter',Arial,sans-serif;">${planName}</td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Subscribed Plan</td>
+                        <td style="padding:4px 0; color:#0B132B; font-size:12.5px; font-weight:700; text-align:right; font-family:'Inter',Arial,sans-serif;">${planName}</td>
                       </tr>
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Billing Frequency</td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Billing Frequency</td>
                         <td style="padding:4px 0; text-align:right;">
-                          <span style="display:inline-block; background-color:#FAF5EE; color:#9A6F33; border:1px solid #EBDCC8; font-size:11px; font-weight:700; padding:1px 8px; border-radius:9999px;">${cycleName}</span>
+                          <span style="display:inline-block; background-color:#EFF6FF; color:#0032AB; border:1px solid #BFDBFE; font-size:11px; font-weight:700; padding:1px 8px; border-radius:9999px;">${cycleName}</span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Amount Paid</td>
-                        <td style="padding:4px 0; color:#282828; font-size:13.5px; font-weight:800; text-align:right; font-family:'Inter',Arial,sans-serif;">$${amountFormatted} ${currencyUpper} <span style="font-size:11px; color:#78716C; font-weight:normal;">(${cycleSuffix})</span></td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Amount Paid</td>
+                        <td style="padding:4px 0; color:#0032AB; font-size:13.5px; font-weight:800; text-align:right; font-family:'Inter',Arial,sans-serif;">$${amountFormatted} ${currencyUpper} <span style="font-size:11px; color:#64748B; font-weight:normal;">(${cycleSuffix})</span></td>
                       </tr>
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Monthly Quota</td>
-                        <td style="padding:4px 0; color:#1E1E1E; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif;">${quotaText}</td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Monthly Quota</td>
+                        <td style="padding:4px 0; color:#0B132B; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif;">${quotaText}</td>
                       </tr>
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Channels</td>
-                        <td style="padding:4px 0; color:#1E1E1E; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif;">${marketplaceText}</td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Channels</td>
+                        <td style="padding:4px 0; color:#0B132B; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif;">${marketplaceText}</td>
                       </tr>
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Registered Email</td>
-                        <td style="padding:4px 0; color:#1E1E1E; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif; word-break:break-all;">${payment.email}</td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Registered Email</td>
+                        <td style="padding:4px 0; color:#0B132B; font-size:11.5px; text-align:right; font-family:'Inter',Arial,sans-serif; word-break:break-all;">${payment.email}</td>
                       </tr>
                       <tr>
-                        <td style="padding:4px 0; color:#78716C; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Status</td>
+                        <td style="padding:4px 0; color:#64748B; font-size:12px; font-weight:600; font-family:'Inter',Arial,sans-serif;">Status</td>
                         <td style="padding:4px 0; text-align:right;">
-                          <span style="display:inline-block; background-color:#D1FAE5; color:#065F46; font-size:11px; font-weight:700; padding:1px 8px; border-radius:9999px;">Active</span>
+                          <span style="display:inline-block; background-color:#DCFCE7; color:#15803D; border:1px solid #BBF7D0; font-size:11px; font-weight:700; padding:1px 8px; border-radius:9999px;">Active</span>
                         </td>
                       </tr>
                     </table>
@@ -462,34 +473,34 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
 
             <!-- RIGHT PART: Direct Access & Action -->
             <td class="stack-col" width="47%" style="vertical-align:top; padding-left:8px; padding-bottom:10px;">
-              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#FAF9F6; border:1px solid #E5E0D5; border-radius:10px; border-collapse:separate; height:100%;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; border-collapse:separate; height:100%;">
                 <tr>
                   <td style="padding:14px 16px; text-align:center;">
-                    <div style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:12px; font-weight:800; color:#1E1E1E; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; border-bottom:1px solid #EBDCC8; padding-bottom:5px; text-align:left;">
+                    <div style="font-family:'Montserrat','Inter',Arial,sans-serif; font-size:12px; font-weight:800; color:#0B132B; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:10px; border-bottom:1px solid #E2E8F0; padding-bottom:6px; text-align:left;">
                       Seller Panel Access
                     </div>
 
-                    <!-- Direct CTA Button -->
+                    <!-- Direct CTA Button (Royal Blue Branding) -->
                     <table role="presentation" cellpadding="0" cellspacing="0" style="margin:12px auto 10px;">
                       <tr>
-                        <td style="border-radius:50px; background-color:#B8966C; text-align:center; box-shadow:0 3px 10px rgba(184,150,108,0.3);">
+                        <td style="border-radius:50px; background-color:#0032AB; text-align:center; box-shadow:0 4px 14px rgba(0,50,171,0.35);">
                           <a href="${sellerPanelSignInUrl}"
                              style="display:inline-block; padding:11px 24px; font-family:'Inter',Arial,sans-serif;
-                                    font-size:13.5px; font-weight:800; color:#1E1E1E; text-decoration:none; border-radius:50px; letter-spacing:0.3px; white-space:nowrap;">
+                                    font-size:13.5px; font-weight:700; color:#ffffff; text-decoration:none; border-radius:50px; letter-spacing:0.3px; white-space:nowrap;">
                             Go to Seller Panel &rarr;
                           </a>
                         </td>
                       </tr>
                     </table>
 
-                    <p style="margin:0 0 10px; font-size:11px; color:#78716C; font-family:'Inter',Arial,sans-serif; line-height:1.4;">
+                    <p style="margin:0 0 10px; font-size:11px; color:#64748B; font-family:'Inter',Arial,sans-serif; line-height:1.4;">
                       Access anytime at:<br/>
-                      <a href="${sellerPanelSignInUrl}" style="color:#282828; font-weight:600; text-decoration:underline; word-break:break-all;">${sellerPanelSignInUrl}</a>
+                      <a href="${sellerPanelSignInUrl}" style="color:#0032AB; font-weight:600; text-decoration:underline; word-break:break-all;">${sellerPanelSignInUrl}</a>
                     </p>
 
                     <!-- Guidance Note -->
-                    <div style="background-color:#ffffff; border-left:3px solid #B8966C; border-radius:0 6px 6px 0; padding:8px 10px; text-align:left; border-top:1px solid #EAE7E0; border-right:1px solid #EAE7E0; border-bottom:1px solid #EAE7E0;">
-                      <p style="margin:0; font-size:11px; line-height:1.45; color:#57534E; font-family:'Inter',Arial,sans-serif;">
+                    <div style="background-color:#ffffff; border-left:3px solid #0032AB; border-radius:0 8px 8px 0; padding:9px 11px; text-align:left; border-top:1px solid #E2E8F0; border-right:1px solid #E2E8F0; border-bottom:1px solid #E2E8F0;">
+                      <p style="margin:0; font-size:11px; line-height:1.45; color:#334155; font-family:'Inter',Arial,sans-serif;">
                         <strong>Sign-in:</strong> Use <strong>${payment.email}</strong> to sign in and connect your store.
                       </p>
                     </div>
@@ -500,8 +511,8 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
           </tr>
         </table>
 
-        <p style="margin:4px 0 0; font-size:11.5px; line-height:1.4; color:#78716C; text-align:center; font-family:'Inter',Arial,sans-serif;">
-          Questions? Reply to this email or contact support at <a href="mailto:info@ctasis.com" style="color:#282828; font-weight:600;">info@ctasis.com</a>.
+        <p style="margin:4px 0 0; font-size:11.5px; line-height:1.4; color:#64748B; text-align:center; font-family:'Inter',Arial,sans-serif;">
+          Questions? Reply to this email or contact support at <a href="mailto:info@ctasis.com" style="color:#0032AB; font-weight:600;">info@ctasis.com</a>.
         </p>
       `;
 
@@ -542,11 +553,201 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
   }
 };
 
-/**
- * Verify Stripe signature and process payment lifecycle events.
- */
+const handleCancelPayment = async ({
+  sessionId,
+  planId,
+  email,
+  stripeSubscriptionId,
+  stripePaymentIntentId,
+  eventId,
+}: any = {}) => {
+  logger.info(
+    `Handling payment cancellation: session=${sessionId || 'none'}, planId=${planId || 'none'}, email=${email || 'none'}`
+  );
+
+  let payment: any = null;
+  if (sessionId) {
+    payment = await PaymentModel.findOne({ stripeSessionId: sessionId });
+  }
+  if (!payment && stripeSubscriptionId) {
+    payment = await PaymentModel.findOne({ stripeSubscriptionId });
+  }
+  if (!payment && stripePaymentIntentId) {
+    payment = await PaymentModel.findOne({
+      $or: [
+        { stripePaymentIntentId },
+        { 'metadata.paymentIntentId': stripePaymentIntentId },
+      ],
+    });
+  }
+  if (!payment && email) {
+    payment = await PaymentModel.findOne({
+      email: String(email).trim().toLowerCase(),
+    }).sort({ createdAt: -1 });
+  }
+  if (!payment && planId && mongoose.Types.ObjectId.isValid(planId)) {
+    payment = await PaymentModel.findOne({ planId }).sort({ createdAt: -1 });
+  }
+
+  // Retrieve Stripe session details if available to get email/name
+  let stripeSessionObj: any = null;
+  if (sessionId && String(sessionId).startsWith('cs_') && config.stripe.secretKey) {
+    try {
+      const stripe = getStripe();
+      stripeSessionObj = await stripe.checkout.sessions.retrieve(sessionId).catch(() => null);
+    } catch (e: any) {
+      logger.warn(`Could not retrieve Stripe session during cancel: ${e.message}`);
+    }
+  }
+
+  const effectiveEmail = (
+    payment?.email ||
+    stripeSessionObj?.customer_details?.email ||
+    stripeSessionObj?.customer_email ||
+    stripeSessionObj?.metadata?.email ||
+    email ||
+    ''
+  )
+    .trim()
+    .toLowerCase();
+
+  const effectiveName = (
+    payment?.name ||
+    stripeSessionObj?.customer_details?.name ||
+    stripeSessionObj?.metadata?.name ||
+    ''
+  ).trim();
+
+  const effectivePlanId =
+    payment?.planId ||
+    stripeSessionObj?.metadata?.planId ||
+    (planId && mongoose.Types.ObjectId.isValid(planId) ? planId : null);
+
+  if (payment) {
+    payment.status = 'canceled';
+    if (eventId && !payment.processedEventIds.includes(eventId)) {
+      payment.processedEventIds = [...(payment.processedEventIds || []), eventId];
+    }
+    await payment.save();
+  }
+
+  const plan = effectivePlanId ? await PlanModel.findById(effectivePlanId) : null;
+
+  // Locate existing seller user or create a new inactive seller
+  let user: any = null;
+  if (payment?.userId) {
+    user = await User.findById(payment.userId);
+  }
+  if (!user && effectiveEmail) {
+    user = await User.findOne({ email: effectiveEmail, status: { $ne: 2 } });
+  }
+
+  if (user) {
+    user.status = 0; // Inactive
+    user.subscriptionStatus = 3; // 3: canceled
+
+    if (Array.isArray(user.plans) && user.plans.length > 0) {
+      const matchedIdx = user.plans.findIndex(
+        (p: any) =>
+          (payment?.stripeSessionId && p.stripeSessionId === payment.stripeSessionId) ||
+          (effectivePlanId && String(p.planId) === String(effectivePlanId))
+      );
+      if (matchedIdx !== -1) {
+        user.plans[matchedIdx].status = 0; // inactive / pending
+        user.plans[matchedIdx].paymentStatus = 2; // failed / canceled
+      } else {
+        user.plans[0].status = 0;
+        user.plans[0].paymentStatus = 2;
+      }
+    } else if (plan) {
+      user.plans = [
+        {
+          planId: plan._id,
+          name: plan.name,
+          price: Number(plan.price) || 0,
+          marketplace: Number(plan.marketplace) || 1,
+          request_quota: Number(plan.request_quota) || 1000,
+          billingCycle: Number(plan.billingCycle) || 1,
+          status: 0,
+          paymentStatus: 2,
+          stripeSessionId: sessionId || payment?.stripeSessionId || null,
+          selectedAt: new Date(),
+        },
+      ];
+    }
+
+    if (plan && !user.currentPlanId) {
+      user.currentPlanId = plan._id;
+    }
+
+    await user.save();
+    if (payment && !payment.userId) {
+      payment.userId = user._id;
+      await payment.save();
+    }
+  } else if (effectiveEmail) {
+    // Seller was not registered yet — create new seller record with inactive status
+    const cycle = Number(plan?.billingCycle) || 1;
+    const displayName = effectiveName || effectiveEmail.split('@')[0];
+
+    const newUser = await User.create({
+      email: effectiveEmail,
+      name: displayName,
+      businessName: effectiveName || '',
+      status: 0, // INACTIVE
+      userType: 'seller',
+      isSellerAdmin: true,
+      isSuperAdmin: false,
+      parentId: null,
+      role_id: null,
+      currentPlanId: plan ? plan._id : null,
+      planLimits: plan
+        ? {
+            maxMarketplaces: Number(plan.marketplace) || 1,
+            maxReviewRequestsPerMonth: Number(plan.request_quota) || 1000,
+          }
+        : {
+            maxMarketplaces: 1,
+            maxReviewRequestsPerMonth: 1000,
+          },
+      plans: plan
+        ? [
+            {
+              planId: plan._id,
+              name: plan.name,
+              price: Number(plan.price) || 0,
+              marketplace: Number(plan.marketplace) || 1,
+              request_quota: Number(plan.request_quota) || 1000,
+              billingCycle: cycle,
+              status: 0, // inactive
+              paymentStatus: 2, // failed / canceled
+              stripeSessionId: sessionId || payment?.stripeSessionId || null,
+              selectedAt: new Date(),
+            },
+          ]
+        : [],
+      subscriptionStatus: 3, // 3: canceled
+    });
+
+    if (payment) {
+      payment.userId = newUser._id;
+      await payment.save();
+    }
+    user = newUser;
+  }
+
+  return {
+    status: httpStatus.OK,
+    message: 'Payment canceled and seller status set to inactive.',
+    data: {
+      payment,
+      user,
+    },
+  };
+};
+
 const handleWebhook = async (rawBody, signature) => {
-  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
+  const webhookSecret = config.stripe.webhookSecret;
   if (!webhookSecret) {
     throw new ApiError(
       httpStatus.SERVICE_UNAVAILABLE,
@@ -611,27 +812,27 @@ const handleWebhook = async (rawBody, signature) => {
     }
     case 'customer.subscription.deleted': {
       const sub = event.data.object;
-      const payment = await PaymentModel.findOne({ stripeSubscriptionId: sub.id });
-      if (payment && !payment.processedEventIds.includes(event.id)) {
-        payment.status = 'canceled';
-        payment.processedEventIds = [...(payment.processedEventIds || []), event.id];
-        await payment.save();
-        if (payment.userId) {
-          await User.findByIdAndUpdate(payment.userId, {
-            subscriptionStatus: 3, // 3: canceled
-          });
-        }
-      }
+      await handleCancelPayment({
+        stripeSubscriptionId: sub.id,
+        eventId: event.id,
+      });
       break;
     }
     case 'checkout.session.expired': {
       const session = event.data.object;
-      const payment = await PaymentModel.findOne({ stripeSessionId: session.id });
-      if (payment && payment.status === 'pending' && !payment.processedEventIds.includes(event.id)) {
-        payment.status = 'canceled';
-        payment.processedEventIds = [...(payment.processedEventIds || []), event.id];
-        await payment.save();
-      }
+      await handleCancelPayment({
+        sessionId: session.id,
+        eventId: event.id,
+      });
+      break;
+    }
+    case 'payment_intent.canceled':
+    case 'payment_intent.payment_failed': {
+      const pi = event.data.object;
+      await handleCancelPayment({
+        stripePaymentIntentId: pi.id,
+        eventId: event.id,
+      });
       break;
     }
     default:
@@ -644,6 +845,7 @@ const handleWebhook = async (rawBody, signature) => {
 module.exports = {
   createCheckoutSession,
   getSessionStatus,
+  handleCancelPayment,
   handleWebhook,
   markPaymentPaid,
 };

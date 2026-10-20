@@ -22,6 +22,7 @@ import { Order } from '../../../api/types';
 import { useUpdateOrder } from '../../../api/hooks/orders/useUpdateOrder';
 import { useOrders, useMarketplace, ordersQueryKey } from '../../../api/hooks/orders/useOrders';
 import { OrdersFilters } from './OrdersHeader';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 
 // Extended type for flattened orders
@@ -63,6 +64,7 @@ function OrdersTable({
   setSelectedMarketplace?: React.Dispatch<React.SetStateAction<string[]>>;
   canUpdateOrders?: boolean;
 }) {
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
   const queryClient = useQueryClient();
@@ -191,6 +193,14 @@ function OrdersTable({
   }, [searchDate?.from, searchDate?.to, searchText, sortKey, sortOrder]);
 
   const { mutate: sendFeedback } = useUpdateOrder();
+
+  const planLimits = (ordersResponse as any)?.planLimits;
+  const isQuotaExceeded = Boolean(
+    planLimits &&
+      (planLimits.isLimitReached ||
+        planLimits.remainingReviewRequests <= 0 ||
+        planLimits.usedReviewRequests >= planLimits.maxReviewRequestsPerMonth)
+  );
 
   // Extract orders data from the response and flatten orderItems
   const orders = ordersResponse?.data || [];
@@ -405,7 +415,16 @@ function OrdersTable({
               <Button
                 key="feedback"
                 size="small"
-                onClick={() => sendFeedback([row.original._id])}
+                onClick={() => {
+                  if (isQuotaExceeded) {
+                    enqueueSnackbar(
+                      `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
+                      { variant: 'error', autoHideDuration: 5000 }
+                    );
+                    return;
+                  }
+                  sendFeedback([row.original._id]);
+                }}
                 startIcon={<FuseSvgIcon size={13}>lucide:send</FuseSvgIcon>}
                 sx={{
                   borderRadius: '6px',
@@ -1085,6 +1104,13 @@ function OrdersTable({
               key="feedback"
               disabled={disabled}
               onClick={() => {
+                if (isQuotaExceeded) {
+                  enqueueSnackbar(
+                    `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
+                    { variant: 'error', autoHideDuration: 5000 }
+                  );
+                  return;
+                }
                 if (!disabled) {
                   sendFeedback([row.original._id]);
                   closeMenu();

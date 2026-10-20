@@ -41,6 +41,7 @@ import {
 import { User } from '../../api/services/usersApiService';
 import { getErrorMessage } from '@/utils/errorMessage';
 import AssignPlanDialog from '../dialogs/AssignPlanDialog';
+import { generateSellerInvoicePDF } from '../../utils/generateSellerInvoicePDF';
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -407,6 +408,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				Cell: ({ cell, row }) => {
 					const val = cell.getValue<string>() || '—';
 					const user = row.original;
+					const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
 					const secondary = user.createdAt
 						? `Joined ${moment(user.createdAt).format('DD MMM YYYY')}`
 						: user.contact_no
@@ -431,17 +433,35 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									{val}
 								</Typography>
 							</Tooltip>
-							<Typography
-								sx={{
-									fontSize: 10.5,
-									color: 'text.secondary',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap'
-								}}
-							>
-								{secondary}
-							</Typography>
+							{isPaymentCancelled && isSellersMode ? (
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										gap: 0.4,
+										color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+										fontSize: 10.5,
+										fontWeight: 600
+									}}
+								>
+									<FuseSvgIcon size={12} sx={{ color: 'inherit', flexShrink: 0 }}>
+										heroicons-outline:x-circle
+									</FuseSvgIcon>
+									<span>Payment Cancelled</span>
+								</Box>
+							) : (
+								<Typography
+									sx={{
+										fontSize: 10.5,
+										color: 'text.secondary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{secondary}
+								</Typography>
+							)}
 						</Box>
 					);
 				}
@@ -574,21 +594,25 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					size: 145,
 					Cell: ({ row }) => {
 						const user = row.original;
+						const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
 						const activePlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 1) : null;
 						const queuedPlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 4) : null;
+						const cancelledPlan = Array.isArray(user.plans) ? user.plans[0] : null;
 						const planName =
 							activePlan?.name ||
-							(typeof user.currentPlanId === 'object' ? user.currentPlanId?.name : null);
+							(typeof user.currentPlanId === 'object' ? user.currentPlanId?.name : null) ||
+							(isPaymentCancelled ? (cancelledPlan?.name || 'Cancelled Plan') : null);
 						const isExpired =
-							user.subscriptionStatus === 2 ||
-							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now());
+							!isPaymentCancelled &&
+							(user.subscriptionStatus === 2 ||
+							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now()));
 
-						if (!planName && !queuedPlan) {
+						if (!planName && !queuedPlan && !isPaymentCancelled) {
 							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 						}
 
 						const pStyle = getPlanBadgeStyle(planName || queuedPlan?.name);
-						const hasExpiry = Boolean(activePlan?.expireAt);
+						const hasExpiry = Boolean(activePlan?.expireAt) && !isPaymentCancelled;
 
 						return (
 							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
@@ -603,18 +627,54 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											borderRadius: '6px',
 											fontSize: 11,
 											fontWeight: 600,
-											bgcolor: pStyle.bg,
-											color: pStyle.color,
+											bgcolor: isPaymentCancelled
+												? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(254, 226, 226, 0.8)')
+												: pStyle.bg,
+											color: isPaymentCancelled
+												? (t) => (t.palette.mode === 'dark' ? '#FCA5A5' : '#B91C1C')
+												: pStyle.color,
 											border: '1px solid',
-											borderColor: pStyle.border,
+											borderColor: isPaymentCancelled
+												? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(252, 165, 165, 0.6)')
+												: pStyle.border,
 											lineHeight: 1.2,
 											whiteSpace: 'nowrap'
 										}}
 									>
-										<FuseSvgIcon size={12}>heroicons-outline:ticket</FuseSvgIcon>
-										{planName || queuedPlan?.name}
+										<FuseSvgIcon size={12}>
+											{isPaymentCancelled ? 'heroicons-outline:x-circle' : 'heroicons-outline:ticket'}
+										</FuseSvgIcon>
+										{planName || queuedPlan?.name || 'Cancelled'}
 									</Box>
-									{isExpired && (
+									{isPaymentCancelled ? (
+										<Tooltip title="Stripe checkout was cancelled. Seller is inactive." arrow>
+											<Box
+												sx={{
+													display: 'inline-flex',
+													alignItems: 'center',
+													gap: 0.3,
+													px: 0.6,
+													py: 0.1,
+													borderRadius: '4px',
+													fontSize: 9.5,
+													fontWeight: 700,
+													bgcolor: (t) =>
+														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.28)' : '#FEE2E2',
+													color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+													border: '1px solid',
+													borderColor: (t) =>
+														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.45)' : 'rgba(239, 68, 68, 0.3)',
+													lineHeight: 1,
+													whiteSpace: 'nowrap'
+												}}
+											>
+												<FuseSvgIcon size={10} sx={{ color: 'inherit' }}>
+													heroicons-outline:x-circle
+												</FuseSvgIcon>
+												Cancelled
+											</Box>
+										</Tooltip>
+									) : isExpired ? (
 										<Box
 											sx={{
 												display: 'inline-flex',
@@ -635,7 +695,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										>
 											Expired
 										</Box>
-									)}
+									) : null}
 								</Box>
 								{(hasExpiry || queuedPlan) && (
 									<Typography
@@ -952,19 +1012,19 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
 							'mrt-row-actions': {
-								size: 95,
-								minSize: 90,
-								maxSize: 105,
+								size: isSellersMode ? 135 : 95,
+								minSize: isSellersMode ? 125 : 90,
+								maxSize: isSellersMode ? 150 : 105,
 								muiTableHeadCellProps: {
 									sx: {
-										width: '95px !important',
-										maxWidth: '105px !important'
+										width: isSellersMode ? '135px !important' : '95px !important',
+										maxWidth: isSellersMode ? '150px !important' : '105px !important'
 									}
 								},
 								muiTableBodyCellProps: {
 									sx: {
-										width: '95px !important',
-										maxWidth: '105px !important'
+										width: isSellersMode ? '135px !important' : '95px !important',
+										maxWidth: isSellersMode ? '150px !important' : '105px !important'
 									}
 								}
 							}
@@ -984,6 +1044,38 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						manualSorting
 						rowCount={totalResults}
 						pageCount={totalPages}
+						muiTableBodyRowProps={({ row }: any) => {
+							const user = row.original;
+							const isPaymentCancelled = user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0;
+
+							if (isSellersMode && isPaymentCancelled) {
+								return {
+									sx: {
+										backgroundColor: (theme: any) =>
+											theme.palette.mode === 'dark'
+												? 'rgba(239, 68, 68, 0.16) !important'
+												: '#FEF2F2 !important',
+										'& td': {
+											backgroundColor: (theme: any) =>
+												theme.palette.mode === 'dark'
+													? 'rgba(239, 68, 68, 0.16) !important'
+													: '#FEF2F2 !important',
+											borderColor: (theme: any) =>
+												theme.palette.mode === 'dark'
+													? 'rgba(239, 68, 68, 0.3) !important'
+													: '#FECACA !important'
+										},
+										'&:hover, &:hover td': {
+											backgroundColor: (theme: any) =>
+												theme.palette.mode === 'dark'
+													? 'rgba(239, 68, 68, 0.25) !important'
+													: '#FEE2E2 !important'
+										}
+									}
+								};
+							}
+							return {};
+						}}
 						muiTableProps={{
 							sx: {
 								tableLayout: 'auto',
@@ -1141,23 +1233,83 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								}
 							}
 						}}
-						renderRowActions={({ row }: { row: MRT_Row<User> }) => (
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+						renderRowActions={({ row }: { row: MRT_Row<User> }) => {
+							const user = row.original;
+							const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
+							const hasSuccessPayment =
+								!isPaymentCancelled &&
+								(user.subscriptionStatus === 1 ||
+									(Array.isArray(user.plans) &&
+										user.plans.some(
+											(p: any) =>
+												p.paymentStatus === 1 ||
+												(p.status === 1 && Number(p.price) > 0)
+										)));
+
+							return (
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
 								{canUpdate(sectionKey) && (
 									<>
-										<Tooltip title={row.original.status === 1 ? 'Click to deactivate user' : 'Click to activate user'} arrow>
+										<Tooltip
+											title={
+												isPaymentCancelled
+													? 'Payment Cancelled (Inactive Seller)'
+													: row.original.status === 1
+													? 'Click to deactivate user'
+													: 'Click to activate user'
+											}
+											arrow
+										>
 											<Box
-												onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
-												className="cursor-pointer inline-flex items-center p-0.5"
+												onClick={() => {
+													if (isPaymentCancelled) return;
+													handleOpenStatusConfirm(row.original, row.original.status);
+												}}
+												className={`${isPaymentCancelled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} inline-flex items-center p-0.5`}
 												sx={{ lineHeight: 0 }}
 											>
 												<CustomStatusSwitch
 													size="small"
-													checked={row.original.status === 1}
+													checked={!isPaymentCancelled && row.original.status === 1}
 													sx={{ pointerEvents: 'none' }}
 												/>
 											</Box>
 										</Tooltip>
+										{isSellersMode && (
+											<Tooltip
+												title={hasSuccessPayment ? 'Download Payment Invoice (PDF)' : ''}
+												arrow
+												disableHoverListener={!hasSuccessPayment}
+											>
+												<Box sx={{ display: 'inline-flex' }}>
+													<IconButton
+														size="small"
+														disabled={!hasSuccessPayment}
+														onClick={(e) => {
+															if (!hasSuccessPayment) return;
+															(e.currentTarget as HTMLElement)?.blur();
+															generateSellerInvoicePDF(row.original);
+														}}
+														sx={{
+															p: 0.6,
+															borderRadius: '6px',
+															color: 'text.secondary',
+															visibility: hasSuccessPayment ? 'visible' : 'hidden',
+															pointerEvents: hasSuccessPayment ? 'auto' : 'none',
+															'&:hover': {
+																color: 'text.primary',
+																bgcolor: (t) =>
+																	t.palette.mode === 'dark'
+																		? 'rgba(255, 255, 255, 0.08)'
+																		: 'rgba(0, 0, 0, 0.04)'
+															}
+														}}
+													>
+														<FuseSvgIcon size={16}>heroicons-outline:document-text</FuseSvgIcon>
+													</IconButton>
+												</Box>
+											</Tooltip>
+										)}
 										{isSellersMode && (
 											<Tooltip title="Assign Plan" arrow>
 												<IconButton
@@ -1223,7 +1375,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</Tooltip>
 								)}
 							</Box>
-						)}
+						);
+					}}
 					/>
 
 					{/* Create User Dialog */}
