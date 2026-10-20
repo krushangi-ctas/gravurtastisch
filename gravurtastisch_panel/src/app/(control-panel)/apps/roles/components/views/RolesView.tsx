@@ -13,8 +13,6 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogTitle,
-	FormControlLabel,
 	IconButton,
 	InputAdornment,
 	Paper,
@@ -80,61 +78,6 @@ const emptyFlags = () => ({
 	canDelete: false
 });
 
-function RolesHeader({
-	canCreateRole,
-	onCreateClick,
-	onRefresh
-}: {
-	canCreateRole: boolean;
-	onCreateClick: () => void;
-	onRefresh: () => void;
-}) {
-	return (
-		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
-			{/* Left Title & Icon */}
-			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
-					<FuseSvgIcon size={18} className="text-slate-900">
-						heroicons-outline:shield-check
-					</FuseSvgIcon>
-				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-					Roles
-				</h1>
-			</div>
-
-			{/* Right Controls: Refresh + Add Role */}
-			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-				<Tooltip title="Refresh list" arrow>
-					<button
-						type="button"
-						onClick={onRefresh}
-						style={{ height: '32px', width: '32px' }}
-						className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
-					>
-						<FuseSvgIcon size={16} className="text-slate-800">
-							heroicons-outline:arrow-path
-						</FuseSvgIcon>
-					</button>
-				</Tooltip>
-
-				{canCreateRole && (
-					<button
-						type="button"
-						onClick={onCreateClick}
-						style={{ height: '32px' }}
-						className="h-8 px-3 bg-primary-800 hover:bg-primary-900 text-white text-xs sm:text-sm font-semibold rounded-lg border border-white/80 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0"
-					>
-						<FuseSvgIcon size={15} className="text-white">
-							heroicons-outline:plus
-						</FuseSvgIcon>
-						<span>Add Role</span>
-					</button>
-				)}
-			</div>
-		</div>
-	);
-}
 
 function RolesView() {
 	const { canView, canCreate, canUpdate, canDelete, scope } = usePermissions();
@@ -162,6 +105,11 @@ function RolesView() {
 	const [roleName, setRoleName] = useState('');
 	const [description, setDescription] = useState('');
 	const [matrix, setMatrix] = useState<Record<string, ReturnType<typeof emptyFlags>>>({});
+	const [roleErrors, setRoleErrors] = useState<{
+		roleName?: string;
+		description?: string;
+		permissions?: string;
+	}>({});
 
 	// Delete confirmation state
 	const [confirmDeleteState, setConfirmDeleteState] = useState<{
@@ -172,6 +120,36 @@ function RolesView() {
 		role: null
 	});
 	const [isActionLoading, setIsActionLoading] = useState(false);
+
+	const validateRole = (
+		nameVal: string,
+		descVal: string,
+		matrixVal: Record<string, ReturnType<typeof emptyFlags>>
+	) => {
+		const errs: { roleName?: string; description?: string; permissions?: string } = {};
+
+		const trimmedName = nameVal.trim();
+		if (!trimmedName) {
+			errs.roleName = 'Role name is required.';
+		} else if (trimmedName.length < 2) {
+			errs.roleName = 'Role name must be at least 2 characters.';
+		} else if (trimmedName.length > 60) {
+			errs.roleName = 'Role name cannot exceed 60 characters.';
+		}
+
+		if (descVal.length > 255) {
+			errs.description = 'Description cannot exceed 255 characters.';
+		}
+
+		const hasAnyPermission = Object.values(matrixVal).some(
+			(flags) => flags.canView || flags.canCreate || flags.canUpdate || flags.canDelete
+		);
+		if (!hasAnyPermission) {
+			errs.permissions = 'Please select at least one permission for this role.';
+		}
+
+		return errs;
+	};
 
 	useEffect(() => {
 		if (!sections.length) return;
@@ -186,6 +164,7 @@ function RolesView() {
 		setEditing(null);
 		setRoleName('');
 		setDescription('');
+		setRoleErrors({});
 		const next: Record<string, ReturnType<typeof emptyFlags>> = {};
 		sections.forEach((section) => {
 			next[section.key] = emptyFlags();
@@ -198,6 +177,7 @@ function RolesView() {
 		setEditing(role);
 		setRoleName(role.role_name);
 		setDescription(role.description || '');
+		setRoleErrors({});
 		const next: Record<string, ReturnType<typeof emptyFlags>> = {};
 		sections.forEach((section) => {
 			const found = role.permissions?.find((p) => p.section === section.key);
@@ -229,10 +209,14 @@ function RolesView() {
 		}));
 
 	const handleSave = async () => {
-		if (!roleName.trim()) {
-			enqueueSnackbar('Role name is required.', { variant: 'error' });
+		const errs = validateRole(roleName, description, matrix);
+		setRoleErrors(errs);
+		if (Object.keys(errs).length > 0) {
+			const firstErr = Object.values(errs)[0];
+			enqueueSnackbar(firstErr, { variant: 'error' });
 			return;
 		}
+
 		try {
 			if (editing) {
 				const roleId = editing.id || editing._id;
@@ -241,7 +225,7 @@ function RolesView() {
 					roleId,
 					payload: {
 						role_name: roleName.trim(),
-						description,
+						description: description.trim(),
 						permissions: buildPermissions()
 					}
 				});
@@ -249,13 +233,14 @@ function RolesView() {
 			} else {
 				await createMutation.mutateAsync({
 					role_name: roleName.trim(),
-					description,
+					description: description.trim(),
 					scope,
 					permissions: buildPermissions()
 				});
 				enqueueSnackbar('Role created.', { variant: 'success' });
 			}
 			setDialogOpen(false);
+			setRoleErrors({});
 		} catch (err: unknown) {
 			const errMsg = getErrorMessage(err, 'Failed to save role.');
 			enqueueSnackbar(errMsg, {
@@ -303,13 +288,34 @@ function RolesView() {
 			{
 				accessorKey: 'role_name',
 				header: 'ROLE',
-				size: 160,
+				size: 170,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+					const val = cell.getValue<string>() || '—';
 					return (
-						<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-							{val || '—'}
-						</Typography>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+							<Box
+								sx={{
+									width: 26,
+									height: 26,
+									borderRadius: '6px',
+									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.08)',
+									color: (t) => t.palette.mode === 'dark' ? '#818CF8' : '#4338CA',
+									border: '1px solid',
+									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(79, 70, 229, 0.2)',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									shrink: 0,
+								}}
+							>
+								<FuseSvgIcon size={14}>heroicons-outline:shield-check</FuseSvgIcon>
+							</Box>
+							<Tooltip title={val} arrow>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+									{val}
+								</Typography>
+							</Tooltip>
+						</Box>
 					);
 				}
 			},
@@ -319,21 +325,34 @@ function RolesView() {
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					return (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{val || '—'}
-						</Typography>
+						<Tooltip title={val || 'No description'} arrow>
+							<Typography
+								sx={{
+									fontSize: 12,
+									color: val ? 'text.secondary' : 'text.disabled',
+									fontStyle: val ? 'normal' : 'italic',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+									maxWidth: 380,
+								}}
+							>
+								{val || 'No description'}
+							</Typography>
+						</Tooltip>
 					);
 				}
 			},
 			{
 				accessorKey: 'scope',
 				header: 'SCOPE',
-				size: 110,
+				size: 120,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+					const val = cell.getValue<string>() || '—';
 					return (
-						<span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 uppercase">
-							{val || '—'}
+						<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 uppercase tracking-tight dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
+							<FuseSvgIcon size={12} className="text-slate-500">heroicons-outline:adjustments-horizontal</FuseSvgIcon>
+							{val}
 						</span>
 					);
 				}
@@ -346,23 +365,23 @@ function RolesView() {
 		return <AccessDeniedView sectionTitle="Roles" />;
 	}
 
-	if (sectionsLoading) {
-		return (
-			<Box className="flex h-64 items-center justify-center">
-				<CircularProgress />
-			</Box>
-		);
-	}
+	const canCreateRole = canCreate('roles');
+	const actionButtons = canCreateRole ? (
+		<button
+			type="button"
+			onClick={openCreate}
+			style={{ height: '38px' }}
+			className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+		>
+			<FuseSvgIcon size={16} className="text-white">
+				heroicons-outline:plus
+			</FuseSvgIcon>
+			<span>Add Role</span>
+		</button>
+	) : null;
 
 	return (
 		<Root
-			header={
-				<RolesHeader
-					canCreateRole={canCreate('roles')}
-					onCreateClick={openCreate}
-					onRefresh={handleRefresh}
-				/>
-			}
 			content={
 				<Paper
 					ref={autoScrollRef}
@@ -388,6 +407,10 @@ function RolesView() {
 						columns={columns}
 						data={roles}
 						tableId="roles-management-table"
+						title="Roles"
+						icon="heroicons-outline:shield-check"
+						actionButtons={actionButtons}
+						onRefresh={handleRefresh}
 						enableRowActions
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
@@ -398,7 +421,10 @@ function RolesView() {
 							}
 						}}
 						enableRowSelection={false}
-						state={{ isLoading }}
+						state={{
+							isLoading: Boolean(isLoading || sectionsLoading),
+							showSkeletons: Boolean(isLoading || sectionsLoading)
+						}}
 						manualPagination={false}
 						muiTableContainerProps={{
 							sx: {
@@ -415,130 +441,6 @@ function RolesView() {
 									backgroundColor: 'divider',
 									borderRadius: 4,
 									'&:hover': { backgroundColor: 'text.disabled' }
-								}
-							}
-						}}
-						muiBottomToolbarProps={{
-							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
-							sx: {
-								borderTop: '1px solid',
-								borderColor: 'divider',
-								flexShrink: 0,
-								marginTop: 'auto',
-								position: 'sticky',
-								bottom: 0,
-								zIndex: 2,
-								minHeight: '46px !important',
-								height: '46px !important',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'flex-end',
-								'& .MuiTablePagination-root': {
-									overflow: 'visible',
-									width: 'auto',
-									minHeight: '46px !important',
-									height: '46px !important',
-									display: 'flex',
-									alignItems: 'center'
-								},
-								'& .MuiTablePagination-toolbar': {
-									flexWrap: 'nowrap',
-									alignItems: 'center',
-									justifyContent: 'flex-end',
-									gap: { xs: 0.5, sm: 1 },
-									minHeight: '46px !important',
-									height: '46px !important',
-									paddingLeft: { xs: 1, sm: 2 },
-									paddingRight: { xs: 1, sm: 2 },
-									py: '0 !important',
-									my: 'auto'
-								},
-								'& .MuiTablePagination-selectLabel': {
-									fontSize: { xs: '12px', sm: '13px' },
-									margin: '0 !important',
-									lineHeight: '1.2 !important',
-									display: 'inline-flex',
-									alignItems: 'center'
-								},
-								'& .MuiTablePagination-input': {
-									marginRight: { xs: 0.5, sm: 1 },
-									marginLeft: 0.5,
-									display: 'inline-flex',
-									alignItems: 'center',
-									'& .MuiSelect-select': {
-										paddingTop: '3px !important',
-										paddingBottom: '3px !important',
-										fontSize: { xs: '12px', sm: '13px' },
-										display: 'inline-flex',
-										alignItems: 'center'
-									}
-								},
-								'& .MuiTablePagination-actions': {
-									marginLeft: { xs: 0.5, sm: 1 },
-									display: 'inline-flex',
-									alignItems: 'center',
-									'& .MuiIconButton-root': {
-										padding: '4px'
-									}
-								},
-								'& .MuiPagination-root': {
-									display: 'flex',
-									justifyContent: 'center',
-									alignItems: 'center'
-								},
-								'& .MuiPaginationItem-root': {
-									minWidth: { xs: 26, sm: 30 },
-									height: { xs: 26, sm: 30 },
-									fontSize: { xs: 12, sm: 13 },
-									padding: { xs: '0 3px', sm: '0 6px' },
-									margin: '0 1px',
-									display: 'inline-flex',
-									alignItems: 'center',
-									justifyContent: 'center'
-								}
-							}
-						}}
-						muiTableHeadProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadRowProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadCellProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableProps={{
-							sx: {
-								tableLayout: 'auto',
-								minWidth: '100%',
-								'& .MuiTableRow-root:hover': {
-									backgroundColor: 'action.hover',
-									transition: 'background-color 0.15s ease'
-								},
-								'& .MuiTableCell-root': {
-									borderBottom: '1px solid',
-									borderColor: 'divider',
-									padding: '2px 8px',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
-									maxWidth: '100%',
-									height: '37px',
-									boxSizing: 'border-box'
-								},
-								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-									fontWeight: 700,
-									fontSize: 11.5,
-									letterSpacing: 0.3,
-									textTransform: 'uppercase',
-									color: 'text.secondary',
-									borderTop: '1px solid',
-									borderBottom: '1px solid',
-									borderColor: 'rgb(229 231 235)',
-									padding: '6px 8px',
-									maxWidth: '100%',
-									textAlign: 'left'
 								}
 							}
 						}}
@@ -589,25 +491,25 @@ function RolesView() {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-										<FuseSvgIcon size={18} className="text-slate-900">
+									<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+										<FuseSvgIcon size={18} className="text-primary">
 											heroicons-outline:shield-check
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 										{editing ? 'Edit Role' : 'Create Role'}
-									</h1>
+									</h2>
 								</div>
 
 								<IconButton
 									size="small"
 									onClick={() => setDialogOpen(false)}
-									className="text-slate-900 hover:bg-black/10 transition-colors"
+									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
-									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
 							</div>
 
@@ -622,17 +524,23 @@ function RolesView() {
 								{/* Role Details Card */}
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role Name <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											required
 											placeholder="e.g., Production Lead, Support Specialist"
 											value={roleName}
-											onChange={(e) => setRoleName(e.target.value)}
+											onChange={(e) => {
+												setRoleName(e.target.value);
+												if (roleErrors.roleName) setRoleErrors((prev) => ({ ...prev, roleName: undefined }));
+											}}
+											error={!!roleErrors.roleName}
+											helperText={roleErrors.roleName}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 60 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -646,18 +554,24 @@ function RolesView() {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Description
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="Briefly describe responsibilities and scope for this role..."
 											value={description}
-											onChange={(e) => setDescription(e.target.value)}
+											onChange={(e) => {
+												setDescription(e.target.value);
+												if (roleErrors.description) setRoleErrors((prev) => ({ ...prev, description: undefined }));
+											}}
+											error={!!roleErrors.description}
+											helperText={roleErrors.description}
 											variant="outlined"
 											size="small"
 											multiline
 											minRows={2}
+											inputProps={{ maxLength: 255 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: '3px' }}>
@@ -730,6 +644,11 @@ function RolesView() {
 											</TableBody>
 										</Table>
 									</div>
+									{roleErrors.permissions && (
+										<Typography variant="caption" color="error" className="font-semibold px-2 block">
+											{roleErrors.permissions}
+										</Typography>
+									)}
 								</div>
 							</DialogContent>
 

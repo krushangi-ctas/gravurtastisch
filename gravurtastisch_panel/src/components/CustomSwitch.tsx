@@ -53,15 +53,15 @@ const StyledSwitch = styled((props: SwitchProps) => (
 			transform: 'translate(19px, -50%)',
 			color: '#fff',
 			'& .MuiSwitch-thumb': {
-				backgroundColor: '#282828', // Primary brand thumb when active
+				backgroundColor: theme.palette.primary.main || '#0032ab', // Primary brand thumb when active
 				backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2 6.8-7.5'></path></svg>")`,
 				backgroundRepeat: 'no-repeat',
 				backgroundPosition: 'center center',
 				backgroundSize: '12px 12px',
-				boxShadow: '0 2px 4px 0 rgba(40, 40, 40, 0.3)'
+				boxShadow: '0 2px 5px 0 rgba(0, 50, 171, 0.4)'
 			},
 			'& + .MuiSwitch-track': {
-				backgroundColor: '#e2e8f0', // Slim soft slate track when active
+				backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 50, 171, 0.35)' : '#bfdbfe', // Soft primary blue track when active
 				opacity: 1,
 				border: 0
 			}
@@ -104,15 +104,15 @@ const StyledSwitch = styled((props: SwitchProps) => (
 			'&.Mui-checked': {
 				transform: 'translate(15px, -50%)',
 				'& .MuiSwitch-thumb': {
-					backgroundColor: '#282828',
+					backgroundColor: theme.palette.primary.main || '#0032ab',
 					backgroundImage: `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width='16' height='16' fill='none' stroke='white' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'><path d='M3 8.5l3.2 3.2 6.8-7.5'></path></svg>")`,
 					backgroundRepeat: 'no-repeat',
 					backgroundPosition: 'center center',
 					backgroundSize: '11px 11px',
-					boxShadow: '0 2px 4px 0 rgba(40, 40, 40, 0.3)'
+					boxShadow: '0 2px 5px 0 rgba(0, 50, 171, 0.4)'
 				},
 				'& + .MuiSwitch-track': {
-					backgroundColor: '#e2e8f0'
+					backgroundColor: theme.palette.mode === 'dark' ? 'rgba(0, 50, 171, 0.35)' : '#bfdbfe'
 				}
 			}
 		},

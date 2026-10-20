@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import OrdersHeader from '../../ui/orders/OrdersHeader';
 import OrdersTable from '../../ui/orders/OrdersTable';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import { styled } from '@mui/material/styles';
@@ -38,8 +37,6 @@ const Root = styled(FusePageCarded)(() => ({
   },
 }));
 
-const INDIA_MARKETPLACE_ID = 'A21TJRUUN4KGV';
-
 /**
  * The orders page.
  */
@@ -51,9 +48,7 @@ function Orders() {
     to: null,
   });
   const [searchText, setSearchText] = useState('');
-  const [selectedMarketplace, setSelectedMarketplace] = useState([
-    INDIA_MARKETPLACE_ID,
-  ]);
+  const [selectedMarketplace, setSelectedMarketplace] = useState<string[]>([]);
 
   useEffect(() => {
     if (marketplaces && marketplaces.length > 0 && selectedMarketplace.length === 0) {
@@ -61,8 +56,7 @@ function Orders() {
         marketplaces.find(
           (item: any) =>
             item.country_code?.toUpperCase() === 'IN' ||
-            item.country?.toLowerCase() === 'india' ||
-            item.marketplace_id === INDIA_MARKETPLACE_ID
+            item.country?.toLowerCase() === 'india'
         ) || marketplaces[0];
       if (defaultMarketplace) {
         setSelectedMarketplace([defaultMarketplace.marketplace_id]);
@@ -76,21 +70,14 @@ function Orders() {
 
   return (
     <Root
-      header={
-        <OrdersHeader
+      content={
+        <OrdersTable
           searchDate={searchDate}
           setSearchDate={setSearchDate}
           searchText={searchText}
           setSearchText={setSearchText}
           selectedMarketplace={selectedMarketplace}
           setSelectedMarketplace={setSelectedMarketplace}
-        />
-      }
-      content={
-        <OrdersTable
-          searchDate={searchDate}
-          searchText={searchText}
-          selectedMarketplace={selectedMarketplace}
           canUpdateOrders={canUpdate('orders')}
         />
       }

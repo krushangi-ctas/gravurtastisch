@@ -21,7 +21,16 @@ const getSession = {
   }),
 };
 
+const cancelPayment = {
+  body: Joi.object().keys({
+    sessionId: Joi.string().allow('', null).trim(),
+    planId: Joi.string().allow('', null).trim(),
+    email: Joi.string().allow('', null).email().trim().lowercase(),
+  }),
+};
+
 module.exports = {
   createCheckout,
   getSession,
+  cancelPayment,
 };

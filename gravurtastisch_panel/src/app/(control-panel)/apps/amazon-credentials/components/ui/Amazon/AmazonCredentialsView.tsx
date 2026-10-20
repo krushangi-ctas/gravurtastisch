@@ -23,11 +23,13 @@ import {
   IconButton,
 } from '@mui/material';
 import {
-  Controller,
+  Controller as HookFormController,
   FormProvider,
   useForm,
   useFormContext,
 } from 'react-hook-form';
+
+const Controller = HookFormController as React.ComponentType<any>;
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import FlagIcon from '@/components/ui/FlagIcon';
 import { useState, useEffect } from 'react';
@@ -47,10 +49,43 @@ import { useGeneralSettingMutation } from '@/app/(control-panel)/apps/settings/a
 
 // Validation schema for Amazon Credentials
 const amazonCredentialsSchema = z.object({
-  client_id: z.string().nonempty('You must enter a client ID'),
-  client_secret: z.string().nonempty('You must enter a client secret'),
-  refresh_token: z.string().nonempty('You must enter a refresh token'),
-  seller_id: z.string().nonempty('You must enter a seller ID'),
+  client_id: z
+    .string()
+    .trim()
+    .min(1, 'You must enter a Client ID')
+    .min(50, 'Client ID must be at least 50 characters (typically 60-75 characters)')
+    .max(90, 'Client ID cannot exceed 90 characters')
+    .regex(
+      /^amzn1\.[a-zA-Z0-9.\-_]+$/,
+      "Client ID must start with 'amzn1.' (e.g. amzn1.application-oa2-client...)"
+    ),
+  client_secret: z
+    .string()
+    .trim()
+    .min(1, 'You must enter a Client Secret')
+    .min(64, 'Client Secret must be at least 64 characters (standard is 78 characters)')
+    .max(85, 'Client Secret cannot exceed 85 characters')
+    .regex(/^\S+$/, 'Client Secret cannot contain spaces'),
+  refresh_token: z
+    .string()
+    .trim()
+    .min(1, 'You must enter a Refresh Token (LWA)')
+    .min(250, 'Refresh Token must be at least 250 characters')
+    .max(1200, 'Refresh Token cannot exceed 1200 characters')
+    .regex(
+      /^At[zn]r\|\S+$/,
+      "Refresh Token must start with 'Atzr|' without spaces"
+    ),
+  seller_id: z
+    .string()
+    .trim()
+    .min(1, 'You must enter a Seller ID (Merchant Token)')
+    .min(13, 'Seller ID is typically 14 characters (13-18 characters)')
+    .max(18, 'Seller ID cannot exceed 18 characters')
+    .regex(
+      /^[a-zA-Z0-9]+$/,
+      'Seller ID must only contain alphanumeric characters (e.g. A39Q604UXIR8Y9)'
+    ),
   marketplace_ids: z
     .array(z.string().nonempty())
     .min(1, 'You must select at least one marketplace'),
@@ -82,7 +117,7 @@ function AmazonCredentialsFormContent({
   canMutate?: boolean;
 }) {
   const { enqueueSnackbar } = useSnackbar();
-  const { control, formState, handleSubmit, setError, setValue, watch } =
+  const { control, formState, handleSubmit, setError, setValue, watch, trigger } =
     useFormContext<AmazonCredentialsFormType>();
   const { errors, isValid, dirtyFields } = formState;
   const { data: marketplaceOptions } = useMarketplace();
@@ -265,10 +300,10 @@ function AmazonCredentialsFormContent({
     }
     if (activeStep === 1) {
       return (
-        clientId?.trim() !== '' &&
-        clientSecret?.trim() !== '' &&
-        refreshToken?.trim() !== '' &&
-        sellerId?.trim() !== '' &&
+        Boolean(clientId?.trim()) &&
+        Boolean(clientSecret?.trim()) &&
+        Boolean(refreshToken?.trim()) &&
+        Boolean(sellerId?.trim()) &&
         !errors.client_id &&
         !errors.client_secret &&
         !errors.refresh_token &&
@@ -278,9 +313,22 @@ function AmazonCredentialsFormContent({
     return true;
   };
 
-  const handleNext = () => {
-    if (isStepValid() && activeStep < steps.length - 1) {
-      setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  const handleNext = async () => {
+    if (activeStep === 0) {
+      const valid = await trigger('marketplace_ids');
+      if (valid && activeStep < steps.length - 1) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
+    } else if (activeStep === 1) {
+      const valid = await trigger([
+        'client_id',
+        'client_secret',
+        'seller_id',
+        'refresh_token',
+      ]);
+      if (valid && activeStep < steps.length - 1) {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+      }
     }
   };
 
@@ -564,6 +612,9 @@ function AmazonCredentialsFormContent({
                           helperText={errors?.client_id?.message as string}
                           placeholder="amzn1.application-oa2-client..."
                           slotProps={{
+                            htmlInput: {
+                              maxLength: 90,
+                            },
                             input: {
                               className:
                                 'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl h-11 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
@@ -605,6 +656,9 @@ function AmazonCredentialsFormContent({
                           helperText={errors?.client_secret?.message as string}
                           placeholder="Enter your client secret key"
                           slotProps={{
+                            htmlInput: {
+                              maxLength: 85,
+                            },
                             input: {
                               className:
                                 'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl h-11 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
@@ -656,6 +710,9 @@ function AmazonCredentialsFormContent({
                           helperText={errors?.seller_id?.message as string}
                           placeholder="A1B2C3D4E5F6G7"
                           slotProps={{
+                            htmlInput: {
+                              maxLength: 18,
+                            },
                             input: {
                               className:
                                 'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl h-11 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
@@ -711,6 +768,9 @@ function AmazonCredentialsFormContent({
                           helperText={errors?.refresh_token?.message as string}
                           placeholder="Atzr|IwEBIA..."
                           slotProps={{
+                            htmlInput: {
+                              maxLength: 1200,
+                            },
                             input: {
                               className:
                                 'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors font-mono',

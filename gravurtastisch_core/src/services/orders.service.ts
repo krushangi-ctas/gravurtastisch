@@ -24,7 +24,10 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
 
     // Search logic
     if (filter.search) {
-      const searchValue = { $regex: `.*${filter.search}.*`, $options: 'i' };
+      const escaped = String(filter.search)
+        .trim()
+        .replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const searchValue = { $regex: escaped, $options: 'i' };
       searchData.push({
         $or: [
           { amazonOrderId: searchValue },
@@ -32,6 +35,9 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
           { 'orderItems.sellerSKU': searchValue },
           { 'orderItems.ASIN': searchValue },
           { 'orderItems.title': searchValue },
+          { 'orderItems.orderItemId': searchValue },
+          { 'shippingAddress.city': searchValue },
+          { 'shippingAddress.postalCode': searchValue },
         ],
       });
     }
@@ -40,8 +46,13 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
       options.sortBy !== 'undefined' &&
       options.sortOrder !== 'undefined'
     ) {
-      const [key, order] = [options.sortBy.split(':'), options.sortOrder];
-      order === 'desc' ? (sort = { [key]: -1 }) : (sort = { [key]: 1 });
+      const sortField = options.sortBy.includes(':')
+        ? options.sortBy.split(':')[0]
+        : options.sortBy;
+      const sortDirection =
+        options.sortOrder ||
+        (options.sortBy.includes(':') ? options.sortBy.split(':')[1] : 'desc');
+      sort = { [sortField]: sortDirection === 'asc' ? 1 : -1 };
     }
     //date logic
     if (filter.from && filter.to) {
@@ -149,6 +160,37 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
     const totalResults = countResult[0]?.count || 0;
     const totalPages = Math.ceil(totalResults / limit);
 
+    // Attach accurate plan quota and used limits for this seller
+    let planLimits = null;
+    try {
+      const user = await User.findById(userId);
+      if (user) {
+        const rawLimits = await getEffectivePlanLimits(user);
+        const usedOrders = await ordermodel.countDocuments({
+          userId,
+          $or: [{ isSent: true }, { isNeedToSend: true }],
+        });
+        const effectiveUsed = Math.max(
+          usedOrders,
+          user.usedReviewRequests || 0,
+          user.planLimits?.usedReviewRequests || 0
+        );
+        const maxQuota = rawLimits?.maxReviewRequestsPerMonth ?? 1000;
+        const remaining = Math.max(0, maxQuota - effectiveUsed);
+        const isLimitReached = effectiveUsed >= maxQuota;
+
+        planLimits = {
+          ...rawLimits,
+          maxReviewRequestsPerMonth: maxQuota,
+          usedReviewRequests: effectiveUsed,
+          remainingReviewRequests: remaining,
+          isLimitReached,
+        };
+      }
+    } catch (err) {
+      console.error('Error attaching planLimits in getOrderList:', err.message);
+    }
+
     return {
       pagination: {
         length: totalResults,
@@ -156,6 +198,7 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
         page,
         lastPage: totalPages,
       },
+      planLimits,
       data,
       status: httpStatus.OK,
     };
@@ -191,7 +234,8 @@ const updateFeedback = async (refIds, userId) => {
     if (planLimits?.isExpired) {
       return {
         status: httpStatus.FORBIDDEN,
-        message: 'Your subscription plan has expired. Please renew your subscription plan to send review requests.',
+        message:
+          'Your subscription plan has expired. Please renew your subscription plan to send review requests.',
       };
     }
 
@@ -241,34 +285,49 @@ const updateFeedback = async (refIds, userId) => {
 
     const maxReviewRequestsPerMonth =
       planLimits?.maxReviewRequestsPerMonth ?? 1000;
-    const startOfMonth = moment().startOf('month').toDate();
-    const sentCount = await ordermodel.countDocuments({
-      userId,
-      isSent: true,
-      updatedAt: { $gte: startOfMonth },
-    });
 
-    const remaining = maxReviewRequestsPerMonth - sentCount;
+    // Check currently used review requests (both already sent and currently queued/pending)
+    const currentUsedOrders = await ordermodel.countDocuments({
+      userId,
+      $or: [{ isSent: true }, { isNeedToSend: true }],
+    });
+    const effectiveUsed = Math.max(
+      currentUsedOrders,
+      user.usedReviewRequests || 0,
+      user.planLimits?.usedReviewRequests || 0
+    );
+
+    const remaining = maxReviewRequestsPerMonth - effectiveUsed;
     if (remaining <= 0) {
       return {
         status: httpStatus.BAD_REQUEST,
-        message: `Monthly quota exceeded. You have already sent ${sentCount} requests this month out of your plan limit of ${maxReviewRequestsPerMonth}.`,
+        message: `Plan limit reached! You have already used all ${maxReviewRequestsPerMonth} review requests for your plan (${effectiveUsed}/${maxReviewRequestsPerMonth} used). Please upgrade your plan to send more requests.`,
       };
     }
 
-    const requestedCount = allowedOrders.filter(
-      (order) => !order.isSent
-    ).length;
-    if (requestedCount > remaining) {
+    // Only count orders that have NOT yet been scheduled or sent
+    const newOrdersToQueue = allowedOrders.filter(
+      (order) => !order.isSent && !order.isNeedToSend
+    );
+
+    if (newOrdersToQueue.length === 0) {
       return {
         status: httpStatus.BAD_REQUEST,
-        message: `Cannot send ${requestedCount} requests. You only have ${remaining} remaining requests left in your monthly quota (${sentCount}/${maxReviewRequestsPerMonth} used).`,
+        message:
+          'The selected order request has already been sent or is currently pending.',
       };
     }
 
-    const allowedIds = allowedOrders.map((o) => o._id);
+    if (newOrdersToQueue.length > remaining) {
+      return {
+        status: httpStatus.BAD_REQUEST,
+        message: `Cannot send ${newOrdersToQueue.length} requests. You only have ${remaining} remaining requests left in your monthly plan quota (${effectiveUsed}/${maxReviewRequestsPerMonth} used).`,
+      };
+    }
 
-    // Use aggregation pipeline update with $set and $cond to only set isNeedToSend to true if isSent is false
+    const allowedIds = newOrdersToQueue.map((o) => o._id);
+
+    // Update orders to isNeedToSend: true
     const data = await ordermodel.updateMany({ _id: { $in: allowedIds } }, [
       {
         $set: {
@@ -279,16 +338,42 @@ const updateFeedback = async (refIds, userId) => {
       },
     ]);
 
+    // Recalculate and synchronize seller's usedReviewRequests count in user model
+    const newTotalUsed = await ordermodel.countDocuments({
+      userId,
+      $or: [{ isSent: true }, { isNeedToSend: true }],
+    });
+
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          'planLimits.usedReviewRequests': newTotalUsed,
+          usedReviewRequests: newTotalUsed,
+        },
+      }
+    ).catch((err) => {
+      console.error('Failed to sync user usedReviewRequests:', err.message);
+    });
+
     let warningMessage = '';
-    if (allowedIds.length < parsedRefIds.length) {
+    if (allowedOrders.length < parsedRefIds.length) {
       warningMessage = ` (${
-        parsedRefIds.length - allowedIds.length
+        parsedRefIds.length - allowedOrders.length
       } orders were skipped because they belong to inactive marketplaces).`;
     }
 
     return {
       data,
-      message: `Successfully scheduled ${allowedIds.length} review requests${warningMessage}.`,
+      usedReviewRequests: newTotalUsed,
+      maxReviewRequestsPerMonth,
+      remainingReviewRequests: Math.max(
+        0,
+        maxReviewRequestsPerMonth - newTotalUsed
+      ),
+      message: `Successfully scheduled review request${
+        allowedIds.length > 1 ? 's' : ''
+      }${warningMessage}.`,
       status: 200,
     };
   } catch (error) {

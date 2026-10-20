@@ -18,4 +18,5 @@ overrides:
 
 # Lifecycle scripts must be explicitly approved (pnpm 12 / strictDepBuilds)
 allowBuilds:
+  core-js: set this to true or false
   esbuild: true

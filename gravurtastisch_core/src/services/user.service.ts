@@ -188,7 +188,12 @@ const buildUserListQuery = (baseFilter, query = {}) => {
   const limit = Number(query.limit) > 0 ? Number(query.limit) : 20;
   let sort = { createdAt: -1 };
   if (query.sortBy) {
-    const [key, order] = String(query.sortBy).split(':');
+    const [rawKey, order] = String(query.sortBy).split(':');
+    const keyMap = {
+      role: 'role_id',
+      currentPlan: 'currentPlanId',
+    };
+    const key = keyMap[rawKey] || rawKey;
     sort = { [key]: order === 'asc' ? 1 : -1 };
   }
 
@@ -221,21 +226,25 @@ const paginateUserList = async (baseFilter, query, okMessage) => {
         try {
           const usedCount = await ordermodel.countDocuments({
             userId: u._id,
-            isSent: true,
-            updatedAt: { $gte: startOfMonth },
+            $or: [{ isSent: true }, { isNeedToSend: true }],
           });
+          const effectiveUsed = Math.max(
+            usedCount,
+            u.usedReviewRequests || 0,
+            u.planLimits?.usedReviewRequests || 0
+          );
 
           if (!u.planLimits) {
             u.planLimits = {};
           }
-          u.planLimits.usedReviewRequests = usedCount;
-          u.usedReviewRequests = usedCount;
+          u.planLimits.usedReviewRequests = effectiveUsed;
+          u.usedReviewRequests = effectiveUsed;
         } catch (_) {
           if (!u.planLimits) {
             u.planLimits = {};
           }
-          u.planLimits.usedReviewRequests = 0;
-          u.usedReviewRequests = 0;
+          u.planLimits.usedReviewRequests = u.usedReviewRequests || 0;
+          u.usedReviewRequests = u.usedReviewRequests || 0;
         }
       })
     );

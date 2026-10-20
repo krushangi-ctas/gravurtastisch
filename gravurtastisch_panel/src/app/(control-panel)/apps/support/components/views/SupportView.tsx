@@ -56,101 +56,6 @@ const Root = styled(FusePageCarded)(() => ({
 	}
 }));
 
-function SupportHeader({
-	statusFilter,
-	onStatusChange,
-	onRefresh
-}: {
-	statusFilter: string;
-	onStatusChange: (val: string) => void;
-	onRefresh: () => void;
-}) {
-	return (
-		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
-			{/* Left Title & Icon */}
-			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
-					<FuseSvgIcon size={18} className="text-slate-900">
-						heroicons-outline:chat-bubble-left-right
-					</FuseSvgIcon>
-				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-					Support
-				</h1>
-			</div>
-
-			{/* Right Controls: Status, Reload */}
-			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-				{/* Status Filter */}
-				<FormControl size="small" className="min-w-[115px] bg-white rounded-lg shadow-xs" sx={{ height: '32px' }}>
-					<Select
-						value={statusFilter}
-						onChange={(e) => onStatusChange(e.target.value)}
-						displayEmpty
-						className="text-xs sm:text-sm bg-white font-medium text-slate-700"
-						sx={{
-							height: '32px',
-							borderRadius: '8px',
-							'& .MuiOutlinedInput-notchedOutline': {
-								border: 'none'
-							},
-							'& .MuiSelect-select': {
-								py: 0,
-								height: '32px',
-								display: 'flex',
-								alignItems: 'center'
-							}
-						}}
-						renderValue={(selected) => {
-							if (!selected) {
-								return (
-									<span className="flex items-center gap-1.5 text-slate-600 text-xs sm:text-sm font-medium">
-										<FuseSvgIcon size={15} className="text-slate-500">
-											heroicons-outline:funnel
-										</FuseSvgIcon>
-										Status
-									</span>
-								);
-							}
-							return (
-								<span className="flex items-center gap-1.5 text-slate-800 text-xs sm:text-sm font-semibold">
-									<FuseSvgIcon size={15} className="text-slate-600">
-										heroicons-outline:funnel
-									</FuseSvgIcon>
-									{selected === 'resolved' ? 'Resolved' : selected === 'pending' ? 'Pending' : 'All Status'}
-								</span>
-							);
-						}}
-					>
-						<MenuItem value="">
-							<span className="text-xs sm:text-sm">All Status</span>
-						</MenuItem>
-						<MenuItem value="pending">
-							<span className="text-xs sm:text-sm">Pending</span>
-						</MenuItem>
-						<MenuItem value="resolved">
-							<span className="text-xs sm:text-sm">Resolved</span>
-						</MenuItem>
-					</Select>
-				</FormControl>
-
-				{/* Refresh Button (White Card Style) */}
-				<Tooltip title="Refresh list" arrow>
-					<button
-						type="button"
-						onClick={onRefresh}
-						style={{ height: '32px', width: '32px' }}
-						className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
-					>
-						<FuseSvgIcon size={16} className="text-slate-800">
-							heroicons-outline:arrow-path
-						</FuseSvgIcon>
-					</button>
-				</Tooltip>
-			</div>
-		</div>
-	);
-}
 
 function SupportContent({
 	supportRequests,
@@ -166,6 +71,8 @@ function SupportContent({
 	totalResults,
 	onRefresh,
 	canUpdate,
+	statusFilter,
+	onStatusChange,
 }: {
 	supportRequests: SupportRequest[];
 	isLoading: boolean;
@@ -180,6 +87,8 @@ function SupportContent({
 	totalResults: number;
 	onRefresh: () => void;
 	canUpdate: boolean;
+	statusFilter: string;
+	onStatusChange: (val: string) => void;
 }) {
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 	const updateMutation = useUpdateSupportStatus();
@@ -240,17 +149,39 @@ function SupportContent({
 			{
 				accessorKey: 'name',
 				header: 'NAME',
-				size: 130,
-				minSize: 100,
-				maxSize: 160,
+				size: 150,
+				minSize: 120,
+				maxSize: 180,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+					const val = cell.getValue<string>() || 'N/A';
+					const initials = val !== 'N/A' ? val.slice(0, 2).toUpperCase() : 'U';
 					return (
-						<Tooltip title={val || 'N/A'} arrow>
-							<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-								{val || 'N/A'}
-							</Typography>
-						</Tooltip>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+							<Box
+								sx={{
+									width: 28,
+									height: 28,
+									borderRadius: '6px',
+									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 50, 171, 0.08)',
+									color: (t) => t.palette.mode === 'dark' ? '#60A5FA' : '#0032ab',
+									border: '1px solid',
+									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0, 50, 171, 0.2)',
+									display: 'flex',
+									alignItems: 'center',
+									justifyContent: 'center',
+									fontSize: '11px',
+									fontWeight: 700,
+									shrink: 0,
+								}}
+							>
+								{initials}
+							</Box>
+							<Tooltip title={val} arrow>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+									{val}
+								</Typography>
+							</Tooltip>
+						</Box>
 					);
 				}
 			},
@@ -269,8 +200,11 @@ function SupportContent({
 								<Typography
 									sx={{
 										fontSize: 12,
-										fontWeight: 500,
-										color: (t) => (t.palette.mode === 'dark' ? '#E5E5E0' : '#282828')
+										color: 'text.secondary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+										maxWidth: 180,
 									}}
 								>
 									{val}
@@ -282,7 +216,7 @@ function SupportContent({
 									sx={{ color: 'text.disabled', cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
 									onClick={() => handleCopyText(val, 'Email')}
 								>
-									heroicons-outline:document-duplicate
+									heroicons-outline:clipboard-document
 								</FuseSvgIcon>
 							</Tooltip>
 						</Box>
@@ -292,8 +226,8 @@ function SupportContent({
 			{
 				accessorKey: 'message',
 				header: 'MESSAGE',
-				size: 500,
-				minSize: 350,
+				size: 450,
+				minSize: 300,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					return val ? (
@@ -323,24 +257,46 @@ function SupportContent({
 			{
 				accessorKey: 'status',
 				header: 'STATUS',
-				size: 110,
-				minSize: 95,
+				size: 115,
+				minSize: 100,
 				maxSize: 130,
 				Cell: ({ row }) => {
 					const isResolved = row.original.status === 'resolved';
 					return (
 						<Tooltip title={isResolved ? 'Status: Resolved' : 'Status: Pending'} arrow>
-							<span
-								className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isResolved
-									? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-									: 'bg-secondary-50 text-secondary-900 border-secondary-300'
-									}`}
+							<Box
+								sx={{
+									display: 'inline-flex',
+									alignItems: 'center',
+									gap: 0.5,
+									px: 1.25,
+									py: 0.3,
+									borderRadius: '6px',
+									fontSize: 11.5,
+									fontWeight: 600,
+									height: 24,
+									boxSizing: 'border-box',
+									bgcolor: (t) =>
+										isResolved
+											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)'
+											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)',
+									color: (t) =>
+										isResolved
+											? t.palette.mode === 'dark' ? '#4ADE80' : '#16A34A'
+											: t.palette.mode === 'dark' ? '#FBBF24' : '#D97706',
+									border: '1px solid',
+									borderColor: (t) =>
+										isResolved
+											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.25)'
+											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.25)',
+									lineHeight: 1,
+								}}
 							>
-								<FuseSvgIcon size={14} className={isResolved ? 'text-emerald-600' : 'text-secondary-700'}>
+								<FuseSvgIcon size={13}>
 									{isResolved ? 'heroicons-outline:check-circle' : 'lucide:clock'}
 								</FuseSvgIcon>
 								<span>{isResolved ? 'Resolved' : 'Pending'}</span>
-							</span>
+							</Box>
 						</Tooltip>
 					);
 				}
@@ -348,19 +304,26 @@ function SupportContent({
 			{
 				accessorKey: 'createdAt',
 				header: 'SUBMITTED AT',
-				size: 160,
-				minSize: 140,
-				maxSize: 180,
+				size: 150,
+				minSize: 130,
+				maxSize: 170,
 				Cell: ({ cell }) => {
 					const dateVal = cell.getValue<string>();
-					return dateVal ? (
-						<Tooltip title={new Date(dateVal).toLocaleString()} arrow>
-							<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-								{new Date(dateVal).toLocaleString()}
-							</Typography>
+					if (!dateVal) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>N/A</Typography>;
+					const d = new Date(dateVal);
+					const dateStr = d.toLocaleDateString('en-GB');
+					const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+					return (
+						<Tooltip title={`${dateStr} ${timeStr}`} arrow>
+							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+									{dateStr}
+								</Typography>
+								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
+									{timeStr}
+								</Typography>
+							</Box>
 						</Tooltip>
-					) : (
-						<Typography sx={{ fontSize: 12, color: 'text.disabled' }}>N/A</Typography>
 					);
 				}
 			}
@@ -375,6 +338,81 @@ function SupportContent({
 			</Box>
 		);
 	}
+
+	const actionButtons = (
+		<div className="flex items-center gap-2">
+			{/* Status Filter */}
+			<FormControl
+				size="small"
+				className="min-w-[120px] bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 table-toolbar-control shrink-0"
+				sx={{
+					height: '38px !important',
+					minHeight: '38px !important',
+					maxHeight: '38px !important',
+					justifyContent: 'center',
+					'& .MuiInputBase-root': {
+						height: '38px !important',
+						minHeight: '38px !important',
+						maxHeight: '38px !important',
+						borderRadius: '8px !important',
+						backgroundColor: 'transparent !important',
+						fontSize: '13px !important',
+					},
+					'& .MuiOutlinedInput-notchedOutline': { border: 'none !important' },
+					'& .MuiSelect-select': {
+						py: '0 !important',
+						height: '38px !important',
+						minHeight: '38px !important',
+						maxHeight: '38px !important',
+						lineHeight: '38px !important',
+						display: 'flex !important',
+						alignItems: 'center !important',
+						fontSize: '13px !important',
+						boxSizing: 'border-box !important',
+					},
+				}}
+			>
+				<Select
+					value={statusFilter}
+					onChange={(e) => onStatusChange(e.target.value)}
+					displayEmpty
+					className="text-xs font-medium text-slate-700 dark:text-slate-200"
+					sx={{
+						height: '32px !important',
+						borderRadius: '8px !important',
+						'& .MuiOutlinedInput-notchedOutline': { border: 'none !important' },
+						'& .MuiSelect-select': {
+							py: '0 !important',
+							height: '32px !important',
+							display: 'flex !important',
+							alignItems: 'center !important',
+							fontSize: '12px !important',
+						},
+					}}
+					renderValue={(selected) => {
+						if (!selected) {
+							return (
+								<span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs sm:text-sm font-medium">
+									<FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:funnel</FuseSvgIcon>
+									Status
+								</span>
+							);
+						}
+						return (
+							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-semibold">
+								<FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:funnel</FuseSvgIcon>
+								{selected === 'resolved' ? 'Resolved' : selected === 'pending' ? 'Pending' : 'All Status'}
+							</span>
+						);
+					}}
+				>
+					<MenuItem value=""><span className="text-xs sm:text-sm">All Status</span></MenuItem>
+					<MenuItem value="pending"><span className="text-xs sm:text-sm">Pending</span></MenuItem>
+					<MenuItem value="resolved"><span className="text-xs sm:text-sm">Resolved</span></MenuItem>
+				</Select>
+			</FormControl>
+		</div>
+	);
 
 	return (
 		<>
@@ -402,6 +440,10 @@ function SupportContent({
 					columns={columns}
 					data={supportRequests}
 					tableId="support-management-table"
+					title="Support"
+					icon="heroicons-outline:chat-bubble-left-right"
+					actionButtons={actionButtons}
+					onRefresh={onRefresh}
 					enableRowActions
 					positionActionsColumn="last"
 					displayColumnDefOptions={{
@@ -441,130 +483,6 @@ function SupportContent({
 								backgroundColor: 'divider',
 								borderRadius: 4,
 								'&:hover': { backgroundColor: 'text.disabled' }
-							}
-						}
-					}}
-					muiBottomToolbarProps={{
-						className:
-							'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
-						sx: {
-							borderTop: '1px solid',
-							borderColor: 'divider',
-							flexShrink: 0,
-							marginTop: 'auto',
-							position: 'sticky',
-							bottom: 0,
-							zIndex: 2,
-							minHeight: '46px !important',
-							height: '46px !important',
-							display: 'flex',
-							alignItems: 'center',
-							justifyContent: 'flex-end',
-							'& .MuiTablePagination-root': {
-								overflow: 'visible',
-								width: 'auto',
-								minHeight: '46px !important',
-								height: '46px !important',
-								display: 'flex',
-								alignItems: 'center'
-							},
-							'& .MuiTablePagination-toolbar': {
-								flexWrap: 'nowrap',
-								alignItems: 'center',
-								justifyContent: 'flex-end',
-								gap: { xs: 0.5, sm: 1 },
-								minHeight: '46px !important',
-								height: '46px !important',
-								paddingLeft: { xs: 1, sm: 2 },
-								paddingRight: { xs: 1, sm: 2 },
-								py: '0 !important',
-								my: 'auto'
-							},
-							'& .MuiTablePagination-selectLabel': {
-								fontSize: { xs: '12px', sm: '13px' },
-								margin: '0 !important',
-								lineHeight: '1.2 !important',
-								display: 'inline-flex',
-								alignItems: 'center'
-							},
-							'& .MuiTablePagination-input': {
-								marginRight: { xs: 0.5, sm: 1 },
-								marginLeft: 0.5,
-								display: 'inline-flex',
-								alignItems: 'center',
-								'& .MuiSelect-select': {
-									paddingTop: '3px !important',
-									paddingBottom: '3px !important',
-									fontSize: { xs: '12px', sm: '13px' },
-									display: 'inline-flex',
-									alignItems: 'center'
-								}
-							},
-							'& .MuiTablePagination-actions': {
-								marginLeft: { xs: 0.5, sm: 1 },
-								display: 'inline-flex',
-								alignItems: 'center',
-								'& .MuiIconButton-root': {
-									padding: '4px'
-								}
-							},
-							'& .MuiPagination-root': {
-								display: 'flex',
-								justifyContent: 'center',
-								alignItems: 'center'
-							},
-							'& .MuiPaginationItem-root': {
-								minWidth: { xs: 26, sm: 30 },
-								height: { xs: 26, sm: 30 },
-								fontSize: { xs: 12, sm: 13 },
-								padding: { xs: '0 3px', sm: '0 6px' },
-								margin: '0 1px',
-								display: 'inline-flex',
-								alignItems: 'center',
-								justifyContent: 'center'
-							}
-						}
-					}}
-					muiTableHeadProps={{
-						className: 'bg-gray-100 border-t border-b border-gray-200'
-					}}
-					muiTableHeadRowProps={{
-						className: 'bg-gray-100 border-t border-b border-gray-200'
-					}}
-					muiTableHeadCellProps={{
-						className: 'bg-gray-100 border-t border-b border-gray-200'
-					}}
-					muiTableProps={{
-						sx: {
-							tableLayout: 'auto',
-							minWidth: '100%',
-							'& .MuiTableRow-root:hover': {
-								backgroundColor: 'action.hover',
-								transition: 'background-color 0.15s ease'
-							},
-							'& .MuiTableCell-root': {
-								borderBottom: '1px solid',
-								borderColor: 'divider',
-								padding: '2px 8px',
-								overflow: 'hidden',
-								textOverflow: 'ellipsis',
-								whiteSpace: 'nowrap',
-								maxWidth: '100%',
-								height: '37px',
-								boxSizing: 'border-box'
-							},
-							'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-								fontWeight: 700,
-								fontSize: 11.5,
-								letterSpacing: 0.3,
-								textTransform: 'uppercase',
-								color: 'text.secondary',
-								borderTop: '1px solid',
-								borderBottom: '1px solid',
-								borderColor: 'rgb(229 231 235)',
-								padding: '6px 8px',
-								maxWidth: '100%',
-								textAlign: 'left'
 							}
 						}
 					}}
@@ -746,9 +664,21 @@ function SupportView() {
 		}));
 	}, []);
 
+	const handleSortingChange = useCallback((updaterOrValue: any) => {
+		setSorting((prev) => {
+			const newVal = typeof updaterOrValue === 'function' ? updaterOrValue(prev) : updaterOrValue;
+			return newVal;
+		});
+		setPagination((prev) => ({
+			...prev,
+			pageIndex: 0
+		}));
+	}, []);
+
 	const handleRefresh = useCallback(() => {
 		setStatusFilter('');
 		setGlobalFilter('');
+		setSorting([]);
 		setPagination((prev) => ({
 			...prev,
 			pageIndex: 0
@@ -762,13 +692,6 @@ function SupportView() {
 
 	return (
 		<Root
-			header={
-				<SupportHeader
-					statusFilter={statusFilter}
-					onStatusChange={handleStatusChange}
-					onRefresh={handleRefresh}
-				/>
-			}
 			content={
 				<SupportContent
 					supportRequests={supportRequests}
@@ -779,11 +702,13 @@ function SupportView() {
 					globalFilter={globalFilter}
 					setGlobalFilter={handleGlobalFilterChange}
 					sorting={sorting}
-					setSorting={setSorting}
+					setSorting={handleSortingChange}
 					totalPages={totalPages}
 					totalResults={totalResults}
 					onRefresh={handleRefresh}
 					canUpdate={canUpdate('support')}
+					statusFilter={statusFilter}
+					onStatusChange={handleStatusChange}
 				/>
 			}
 			scroll="content"

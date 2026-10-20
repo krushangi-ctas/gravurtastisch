@@ -40,10 +40,17 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 	const [expireAt, setExpireAt] = useState('');
 	const [status, setStatus] = useState<number>(1);
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [errors, setErrors] = useState<{
+		name?: string;
+		price?: string;
+		marketplace?: string;
+		requestQuota?: string;
+	}>({});
 
 	// Populate form state when editing or resetting
 	useEffect(() => {
 		if (open) {
+			setErrors({});
 			if (plan) {
 				setName(plan.name || '');
 				setPrice(plan.price !== undefined ? plan.price : '');
@@ -64,26 +71,56 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 		}
 	}, [open, plan]);
 
+	const validateForm = () => {
+		const newErrors: {
+			name?: string;
+			price?: string;
+			marketplace?: string;
+			requestQuota?: string;
+		} = {};
+
+		const trimmedName = name.trim();
+		if (!trimmedName) {
+			newErrors.name = 'Plan name is required';
+		} else if (trimmedName.length < 2) {
+			newErrors.name = 'Plan name must be at least 2 characters';
+		} else if (trimmedName.length > 60) {
+			newErrors.name = 'Plan name must not exceed 60 characters';
+		}
+
+		if (price === '' || price === null || price === undefined) {
+			newErrors.price = 'Price is required';
+		} else if (isNaN(Number(price)) || Number(price) < 0) {
+			newErrors.price = 'Please enter a valid price (minimum 0)';
+		} else if (Number(price) > 999999) {
+			newErrors.price = 'Price cannot exceed $999,999';
+		}
+
+		if (marketplace === '' || marketplace === null || marketplace === undefined) {
+			newErrors.marketplace = 'Marketplace count is required';
+		} else if (isNaN(Number(marketplace)) || Number(marketplace) < 0 || !Number.isInteger(Number(marketplace))) {
+			newErrors.marketplace = 'Please enter a valid whole number (minimum 0)';
+		} else if (Number(marketplace) > 100) {
+			newErrors.marketplace = 'Marketplaces allowed cannot exceed 100';
+		}
+
+		if (requestQuota === '' || requestQuota === null || requestQuota === undefined) {
+			newErrors.requestQuota = 'Request quota is required';
+		} else if (isNaN(Number(requestQuota)) || Number(requestQuota) < 0 || !Number.isInteger(Number(requestQuota))) {
+			newErrors.requestQuota = 'Please enter a valid whole number (minimum 0)';
+		} else if (Number(requestQuota) > 10000000) {
+			newErrors.requestQuota = 'Request quota cannot exceed 10,000,000';
+		}
+
+		setErrors(newErrors);
+		return Object.keys(newErrors).length === 0;
+	};
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (!name.trim()) {
-			enqueueSnackbar('Plan name is required', { variant: 'error' });
-			return;
-		}
-
-		if (price === '' || isNaN(Number(price)) || Number(price) < 0) {
-			enqueueSnackbar('Please enter a valid price (minimum 0)', { variant: 'error' });
-			return;
-		}
-
-		if (marketplace === '' || isNaN(Number(marketplace)) || Number(marketplace) < 0) {
-			enqueueSnackbar('Please enter a valid number of marketplaces (minimum 0)', { variant: 'error' });
-			return;
-		}
-
-		if (requestQuota === '' || isNaN(Number(requestQuota)) || Number(requestQuota) < 0) {
-			enqueueSnackbar('Please enter a valid monthly request quota (minimum 0)', { variant: 'error' });
+		if (!validateForm()) {
+			enqueueSnackbar('Please correct the highlighted errors in the form', { variant: 'error' });
 			return;
 		}
 
@@ -138,26 +175,26 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 			}}
 		>
 			<form onSubmit={handleSubmit} className="flex flex-col h-full min-h-0 overflow-hidden">
-				{/* Top Tan Banner Header */}
-				<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+				{/* Top Header */}
+				<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 					<div className="flex items-center gap-2.5">
-						<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-							<FuseSvgIcon size={18} className="text-slate-900">
+						<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+							<FuseSvgIcon size={18} className="text-primary">
 								heroicons-outline:cube
 							</FuseSvgIcon>
 						</div>
-						<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+						<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 							{isEdit ? 'Edit Plan' : 'Add New Plan'}
-						</h1>
+						</h2>
 					</div>
 
 					<IconButton
 						size="small"
 						onClick={onClose}
-						className="text-slate-900 hover:bg-black/10 transition-colors"
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 						aria-label="Close"
 					>
-						<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>
 				</div>
 
@@ -172,15 +209,21 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					{/* Plan Name */}
 					<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Plan Name <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
 								placeholder="e.g., Basic, Professional, Enterprise"
 								value={name}
-								onChange={(e) => setName(e.target.value)}
+								onChange={(e) => {
+									setName(e.target.value);
+									if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
+								}}
+								inputProps={{ maxLength: 60 }}
+								error={Boolean(errors.name)}
+								helperText={errors.name}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -197,17 +240,22 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Price ($) */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Price (in USD $) <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 0, step: 'any' }}
+								inputProps={{ min: 0, max: 999999, step: 'any' }}
 								placeholder="e.g., 250"
 								value={price}
-								onChange={(e) => setPrice(e.target.value)}
+								onChange={(e) => {
+									setPrice(e.target.value);
+									if (errors.price) setErrors((prev) => ({ ...prev, price: undefined }));
+								}}
+								onWheel={(e) => (e.target as HTMLElement).blur()}
+								error={Boolean(errors.price)}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -218,20 +266,21 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 									)
 								}}
 								helperText={
-									billingCycle === 3
+									errors.price ||
+									(billingCycle === 3
 										? 'Total billed annually in USD ($) — set full yearly price'
 										: billingCycle === 2
 										? 'Total billed quarterly in USD ($) — set full 3-month price'
-										: 'Billed monthly in USD ($)'
+										: 'Billed monthly in USD ($)')
 								}
 							/>
 						</div>
 
 						{/* Billing Cycle */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Billing Cycle <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								select
 								fullWidth
@@ -293,17 +342,22 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Marketplaces Allowed */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Marketplace Accounts Allowed <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 0, step: 1 }}
+								inputProps={{ min: 0, max: 100, step: 1 }}
 								placeholder="e.g., 5"
 								value={marketplace}
-								onChange={(e) => setMarketplace(e.target.value)}
+								onChange={(e) => {
+									setMarketplace(e.target.value);
+									if (errors.marketplace) setErrors((prev) => ({ ...prev, marketplace: undefined }));
+								}}
+								onWheel={(e) => (e.target as HTMLElement).blur()}
+								error={Boolean(errors.marketplace)}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -315,23 +369,28 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText="Maximum connected marketplaces supported under this plan"
+								helperText={errors.marketplace || 'Maximum connected marketplaces supported under this plan (0-100)'}
 							/>
 						</div>
 
 						{/* Request Quota */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Monthly Request Quota <span className="text-red-500">*</span>
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 0, step: 1 }}
+								inputProps={{ min: 0, max: 10000000, step: 1 }}
 								placeholder="e.g., 2000"
 								value={requestQuota}
-								onChange={(e) => setRequestQuota(e.target.value)}
+								onChange={(e) => {
+									setRequestQuota(e.target.value);
+									if (errors.requestQuota) setErrors((prev) => ({ ...prev, requestQuota: undefined }));
+								}}
+								onWheel={(e) => (e.target as HTMLElement).blur()}
+								error={Boolean(errors.requestQuota)}
 								variant="outlined"
 								size="small"
 								InputProps={{
@@ -343,15 +402,15 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText="Allowed monthly solicitation / review requests quota (e.g. 2000 requests/month)"
+								helperText={errors.requestQuota || 'Allowed monthly solicitation / review requests quota (e.g. 2000 requests/month)'}
 							/>
 						</div>
 
 						{/* Plan Expiry Date (Optional) */}
 						<div>
-							<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 								Expire At (Optional)
-							</Typography>
+							</label>
 							<TextField
 								fullWidth
 								type="date"

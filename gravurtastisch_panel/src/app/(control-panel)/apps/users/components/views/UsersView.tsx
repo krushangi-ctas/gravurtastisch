@@ -13,11 +13,9 @@ import {
 	Dialog,
 	DialogActions,
 	DialogContent,
-	DialogTitle,
 	FormControl,
 	IconButton,
 	InputAdornment,
-	InputLabel,
 	MenuItem,
 	Paper,
 	Select,
@@ -43,6 +41,11 @@ import {
 import { User } from '../../api/services/usersApiService';
 import { getErrorMessage } from '@/utils/errorMessage';
 import AssignPlanDialog from '../dialogs/AssignPlanDialog';
+import { generateSellerInvoicePDF } from '../../utils/generateSellerInvoicePDF';
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
+const PHONE_CHARS_REGEX = /^[+0-9\s\-()]+$/;
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -79,77 +82,17 @@ function roleLabel(user: User) {
 	if (typeof user.role_id === 'object' && user.role_id) {
 		return user.role_id.role_name || '—';
 	}
+	if (typeof user.role_id === 'string' && user.role_id) {
+		return user.role_id;
+	}
+	if (user.userType) {
+		return user.userType === 'seller' ? 'Seller' : user.userType;
+	}
 	return '—';
 }
 
 export type UsersViewVariant = 'sellers' | 'admin-users' | 'team';
 
-function UsersHeader({
-	variant,
-	canCreateUser,
-	onCreateClick,
-	onRefresh
-}: {
-	variant: UsersViewVariant;
-	canCreateUser: boolean;
-	onCreateClick: () => void;
-	onRefresh: () => void;
-}) {
-	const isSellersMode = variant === 'sellers';
-	const isTeamMode = variant === 'team';
-	const title = isSellersMode ? 'Sellers' : isTeamMode ? 'Team' : 'Admin Users';
-	const icon = isSellersMode
-		? 'lucide:store'
-		: isTeamMode
-			? 'lucide:users'
-			: 'lucide:user-cog';
-
-	return (
-		<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex sm:flex-row items-center justify-between gap-2.5 shadow-md">
-			{/* Left Title & Icon */}
-			<div className="flex items-center gap-2.5 w-full sm:w-auto">
-				<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900">
-					<FuseSvgIcon size={18} className="text-slate-900">
-						{icon}
-					</FuseSvgIcon>
-				</div>
-				<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-					{title}
-				</h1>
-			</div>
-
-			{/* Right Controls: Refresh + Add User */}
-			<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
-				<Tooltip title="Refresh list" arrow>
-					<button
-						type="button"
-						onClick={onRefresh}
-						style={{ height: '32px', width: '32px' }}
-						className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0"
-					>
-						<FuseSvgIcon size={16} className="text-slate-800">
-							heroicons-outline:arrow-path
-						</FuseSvgIcon>
-					</button>
-				</Tooltip>
-
-				{!isSellersMode && canCreateUser && (
-					<button
-						type="button"
-						onClick={onCreateClick}
-						style={{ height: '32px' }}
-						className="h-8 px-3 bg-primary-800 hover:bg-primary-900 text-white text-xs sm:text-sm font-semibold rounded-lg border border-white/80 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0"
-					>
-						<FuseSvgIcon size={15} className="text-white">
-							heroicons-outline:plus
-						</FuseSvgIcon>
-						<span>Add User</span>
-					</button>
-				)}
-			</div>
-		</div>
-	);
-}
 
 function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const {
@@ -242,6 +185,104 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const [maxReviewRequestsPerMonth, setMaxReviewRequestsPerMonth] = useState(1000);
 	const [editBusinessName, setEditBusinessName] = useState('');
 
+	const [createErrors, setCreateErrors] = useState<{
+		name?: string;
+		email?: string;
+		phone?: string;
+		roleId?: string;
+	}>({});
+
+	const [editErrors, setEditErrors] = useState<{
+		name?: string;
+		phone?: string;
+		roleId?: string;
+		businessName?: string;
+	}>({});
+
+	const validateCreateUser = (
+		nameVal: string,
+		emailVal: string,
+		phoneVal: string,
+		roleVal: string
+	) => {
+		const errs: { name?: string; email?: string; phone?: string; roleId?: string } = {};
+
+		const trimmedName = nameVal.trim();
+		if (!trimmedName) {
+			errs.name = 'Full name is required.';
+		} else if (trimmedName.length < 2) {
+			errs.name = 'Full name must be at least 2 characters.';
+		} else if (trimmedName.length > 60) {
+			errs.name = 'Full name cannot exceed 60 characters.';
+		} else if (!NAME_REGEX.test(trimmedName)) {
+			errs.name = 'Full name can only contain letters, spaces, hyphens, and apostrophes.';
+		}
+
+		const trimmedEmail = emailVal.trim();
+		if (!trimmedEmail) {
+			errs.email = 'Email address is required.';
+		} else if (trimmedEmail.length > 100) {
+			errs.email = 'Email address cannot exceed 100 characters.';
+		} else if (!EMAIL_REGEX.test(trimmedEmail)) {
+			errs.email = 'Please enter a valid email address.';
+		}
+
+		const trimmedPhone = phoneVal.trim();
+		if (trimmedPhone) {
+			const digitsOnly = trimmedPhone.replace(/\D/g, '');
+			if (trimmedPhone.length > 20) {
+				errs.phone = 'Phone number cannot exceed 20 characters.';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
+				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			}
+		}
+
+		if (!roleVal) {
+			errs.roleId = 'Please select a role.';
+		}
+
+		return errs;
+	};
+
+	const validateEditUser = (
+		nameVal: string,
+		phoneVal: string,
+		roleVal: string,
+		businessVal?: string
+	) => {
+		const errs: { name?: string; phone?: string; roleId?: string; businessName?: string } = {};
+
+		const trimmedName = nameVal.trim();
+		if (!trimmedName) {
+			errs.name = 'Full name is required.';
+		} else if (trimmedName.length < 2) {
+			errs.name = 'Full name must be at least 2 characters.';
+		} else if (trimmedName.length > 60) {
+			errs.name = 'Full name cannot exceed 60 characters.';
+		} else if (!NAME_REGEX.test(trimmedName)) {
+			errs.name = 'Full name can only contain letters, spaces, hyphens, and apostrophes.';
+		}
+
+		const trimmedPhone = phoneVal.trim();
+		if (trimmedPhone) {
+			const digitsOnly = trimmedPhone.replace(/\D/g, '');
+			if (trimmedPhone.length > 20) {
+				errs.phone = 'Phone number cannot exceed 20 characters.';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
+				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			}
+		}
+
+		if (isSellersMode && businessVal !== undefined) {
+			const trimmedBiz = businessVal.trim();
+			if (trimmedBiz.length > 100) {
+				errs.businessName = 'Brand name cannot exceed 100 characters.';
+			}
+		}
+
+		return errs;
+	};
+
 	useEffect(() => {
 		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 	}, [variant]);
@@ -285,23 +326,39 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		}));
 	}, []);
 
+	const handleSortingChange = useCallback((updaterOrValue: any) => {
+		setSorting((prev) => {
+			const newVal = typeof updaterOrValue === 'function' ? updaterOrValue(prev) : updaterOrValue;
+			return newVal;
+		});
+		setPagination((prev) => ({
+			...prev,
+			pageIndex: 0
+		}));
+	}, []);
+
 	const resetCreateForm = () => {
 		setFormName('');
 		setFormEmail('');
 		setFormPhone('');
 		setFormRoleId('');
+		setCreateErrors({});
 	};
 
 	const handleCreate = async () => {
-		if (!formName.trim() || !formEmail.trim() || !formRoleId) {
-			enqueueSnackbar('Name, email, and role are required.', { variant: 'error' });
+		const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+		setCreateErrors(errs);
+		if (Object.keys(errs).length > 0) {
+			const firstError = Object.values(errs)[0];
+			enqueueSnackbar(firstError, { variant: 'error' });
 			return;
 		}
+
 		try {
 			const payload = {
 				name: formName.trim(),
 				email: formEmail.trim(),
-				contact_no: formPhone,
+				contact_no: formPhone.trim(),
 				role_id: formRoleId
 			};
 			if (isTeamMode) {
@@ -390,14 +447,28 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		if (!selectedUser) return;
 		const userId = selectedUser._id ?? selectedUser.id;
 		if (!userId) return;
+
+		const errs = validateEditUser(
+			formName,
+			formPhone,
+			formRoleId,
+			isSellersMode ? editBusinessName : undefined
+		);
+		setEditErrors(errs);
+		if (Object.keys(errs).length > 0) {
+			const firstError = Object.values(errs)[0];
+			enqueueSnackbar(firstError, { variant: 'error' });
+			return;
+		}
+
 		try {
 			await updateMutation.mutateAsync({
 				userId,
 				payload: {
-					name: formName,
-					contact_no: formPhone,
+					name: formName.trim(),
+					contact_no: formPhone.trim(),
 					role_id: formRoleId || undefined,
-					businessName: isSellersMode ? editBusinessName : undefined,
+					businessName: isSellersMode ? editBusinessName.trim() : undefined,
 					planLimits: isSellersMode
 						? {
 							maxMarketplaces,
@@ -408,6 +479,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			});
 			enqueueSnackbar('User updated.', { variant: 'success' });
 			setEditOpen(false);
+			setEditErrors({});
 		} catch (err: unknown) {
 			const errMsg = getErrorMessage(err, 'Failed to update user.');
 			enqueueSnackbar(errMsg, {
@@ -418,6 +490,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 
 	const handleRefresh = useCallback(() => {
 		setGlobalFilter('');
+		setSorting([]);
 		setPagination((prev) => ({
 			...prev,
 			pageIndex: 0
@@ -425,20 +498,93 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		activeQuery.refetch();
 	}, [activeQuery]);
 
+	const getPlanBadgeStyle = (planName?: string | null) => {
+		const name = (planName || '').toLowerCase();
+		if (name.includes('bronze') || name.includes('gold') || name.includes('basic')) {
+			return {
+				bg: (t: any) => (t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.18)' : 'rgba(245, 158, 11, 0.1)'),
+				color: (t: any) => (t.palette.mode === 'dark' ? '#FBBF24' : '#B45309'),
+				border: (t: any) => (t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.35)' : 'rgba(245, 158, 11, 0.28)')
+			};
+		}
+		if (name.includes('growth') || name.includes('pro') || name.includes('vip')) {
+			return {
+				bg: (t: any) => (t.palette.mode === 'dark' ? 'rgba(124, 58, 237, 0.2)' : 'rgba(124, 58, 237, 0.08)'),
+				color: (t: any) => (t.palette.mode === 'dark' ? '#C4B5FD' : '#7C3AED'),
+				border: (t: any) => (t.palette.mode === 'dark' ? 'rgba(124, 58, 237, 0.4)' : 'rgba(124, 58, 237, 0.25)')
+			};
+		}
+		return {
+			bg: (t: any) => (t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.2)' : 'rgba(99, 102, 241, 0.08)'),
+			color: (t: any) => (t.palette.mode === 'dark' ? '#A5B4FC' : '#4F46E5'),
+			border: (t: any) => (t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.4)' : 'rgba(99, 102, 241, 0.25)')
+		};
+	};
+
 	const columns = useMemo<MRT_ColumnDef<User>[]>(() => {
 		const base: MRT_ColumnDef<User>[] = [
 			{
 				accessorKey: 'name',
 				header: 'NAME',
-				size: 150,
-				Cell: ({ cell }) => {
-					const val = cell.getValue<string>();
+				size: 140,
+				Cell: ({ cell, row }) => {
+					const val = cell.getValue<string>() || '—';
+					const user = row.original;
+					const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
+					const secondary = user.createdAt
+						? `Joined ${moment(user.createdAt).format('DD MMM YYYY')}`
+						: user.contact_no
+						? user.contact_no
+						: user._id
+						? `ID: ${user._id.slice(-6).toUpperCase()}`
+						: 'Seller Account';
+
 					return (
-						<Tooltip title={val || '—'} arrow>
-							<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-								{val || '—'}
-							</Typography>
-						</Tooltip>
+						<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+							<Tooltip title={val} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 600,
+										color: 'text.primary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{val}
+								</Typography>
+							</Tooltip>
+							{isPaymentCancelled && isSellersMode ? (
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										gap: 0.4,
+										color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+										fontSize: 10.5,
+										fontWeight: 600
+									}}
+								>
+									<FuseSvgIcon size={12} sx={{ color: 'inherit', flexShrink: 0 }}>
+										heroicons-outline:x-circle
+									</FuseSvgIcon>
+									<span>Payment Cancelled</span>
+								</Box>
+							) : (
+								<Typography
+									sx={{
+										fontSize: 10.5,
+										color: 'text.secondary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{secondary}
+								</Typography>
+							)}
+						</Box>
 					);
 				}
 			},
@@ -448,166 +594,429 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				size: 180,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
+					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+
 					return (
-						<Tooltip title={val || '—'} arrow>
-							<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-								{val || '—'}
-							</Typography>
-						</Tooltip>
-					);
-				}
-			},
-			{
-				id: 'role',
-				header: 'ROLE',
-				size: 120,
-				Cell: ({ row }) => (
-					<Typography sx={{ fontSize: 12, color: 'text.primary', fontWeight: 500 }}>
-						{roleLabel(row.original)}
-					</Typography>
-				)
-			},
-			{
-				accessorKey: 'status',
-				header: 'STATUS',
-				size: 100,
-				Cell: ({ cell }) => {
-					const status = cell.getValue<number>();
-					const isActive = status === 1;
-					return (
-						<span
-							className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border ${isActive
-								? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-								: 'bg-amber-50 text-amber-700 border-amber-200'
-								}`}
-						>
-							{isActive ? 'Active' : 'Inactive'}
-						</span>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+							<Tooltip title={val} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 500,
+										color: 'text.primary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap',
+										maxWidth: 220
+									}}
+								>
+									{val}
+								</Typography>
+							</Tooltip>
+							<Tooltip title="Copy Email" arrow>
+								<FuseSvgIcon
+									size={12}
+									sx={{
+										color: 'text.disabled',
+										cursor: 'pointer',
+										flexShrink: 0,
+										'&:hover': { color: 'primary.main' }
+									}}
+									onClick={() => navigator.clipboard.writeText(val)}
+								>
+									heroicons-outline:clipboard-document
+								</FuseSvgIcon>
+							</Tooltip>
+						</Box>
 					);
 				}
 			}
 		];
+
+		// Include ROLE column for ALL users (sellers, team, admin-users)
+		base.push({
+			id: 'role',
+			header: 'ROLE',
+			size: 130,
+			Cell: ({ row }) => {
+				const rawLabel = roleLabel(row.original);
+				const label = rawLabel !== '—' ? rawLabel : (isSellersMode ? 'Seller' : '—');
+				return (
+					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
+						<span
+							className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800/50"
+						>
+							<FuseSvgIcon size={13}>heroicons-outline:shield-check</FuseSvgIcon>
+							{label}
+						</span>
+						<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
+							{isSellersMode ? 'Account Role' : 'Assigned Role'}
+						</Typography>
+					</Box>
+				);
+			}
+		});
+
 		if (isSellersMode) {
 			base.push(
 				{
 					accessorKey: 'businessName',
 					header: 'BRAND',
-					size: 140,
+					size: 160,
+					minSize: 130,
 					Cell: ({ cell }) => {
 						const val = cell.getValue<string>();
+						if (!val) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
 						return (
-							<Typography sx={{ fontSize: 12, color: 'text.primary' }}>
-								{val || '—'}
-							</Typography>
+							<Tooltip title={`Brand: ${val}`} arrow>
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										gap: 0.5,
+										px: 0.9,
+										py: 0.25,
+										borderRadius: '2px',
+										fontSize: 11.5,
+										fontWeight: 600,
+										bgcolor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(51, 65, 85, 0.45)' : 'rgba(226, 232, 240, 0.9)',
+										color: (t) => (t.palette.mode === 'dark' ? '#E2E8F0' : '#1E293B'),
+										border: 'none',
+										boxSizing: 'border-box',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									<FuseSvgIcon
+										size={12}
+										sx={{ color: (t) => (t.palette.mode === 'dark' ? '#CBD5E1' : '#334155'), flexShrink: 0 }}
+									>
+										heroicons-outline:building-storefront
+									</FuseSvgIcon>
+									<Typography
+										component="span"
+										sx={{
+											fontSize: 'inherit',
+											fontWeight: 'inherit',
+											whiteSpace: 'nowrap'
+										}}
+									>
+										{val}
+									</Typography>
+								</Box>
+							</Tooltip>
 						);
 					}
 				},
 				{
 					id: 'currentPlan',
 					header: 'PLAN',
-					size: 210,
+					size: 145,
 					Cell: ({ row }) => {
 						const user = row.original;
+						const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
 						const activePlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 1) : null;
 						const queuedPlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 4) : null;
+						const cancelledPlan = Array.isArray(user.plans) ? user.plans[0] : null;
 						const planName =
 							activePlan?.name ||
-							(typeof user.currentPlanId === 'object' ? user.currentPlanId?.name : null);
+							(typeof user.currentPlanId === 'object' ? user.currentPlanId?.name : null) ||
+							(isPaymentCancelled ? (cancelledPlan?.name || 'Cancelled Plan') : null);
 						const isExpired =
-							user.subscriptionStatus === 2 ||
-							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now());
+							!isPaymentCancelled &&
+							(user.subscriptionStatus === 2 ||
+							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now()));
 
-						if (!planName && !queuedPlan) {
-							return (
-								<span className="text-xs text-slate-400 font-medium">
-									—
-								</span>
-							);
+						if (!planName && !queuedPlan && !isPaymentCancelled) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 						}
 
-						const hasExpiry = Boolean(activePlan?.expireAt);
+						const pStyle = getPlanBadgeStyle(planName || queuedPlan?.name);
+						const hasExpiry = Boolean(activePlan?.expireAt) && !isPaymentCancelled;
 
 						return (
-							<div className="flex flex-col">
-								<div className="flex items-center gap-1.5">
-									<span className="font-semibold text-slate-900 text-xs">
-										{planName || queuedPlan?.name}
-									</span>
-									{isExpired && (
-										<span className="text-[11px] font-semibold text-rose-600">
-											(Expired)
-										</span>
-									)}
-								</div>
+							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
+									<Box
+										sx={{
+											display: 'inline-flex',
+											alignItems: 'center',
+											gap: 0.4,
+											px: 0.85,
+											py: 0.15,
+											borderRadius: '6px',
+											fontSize: 11,
+											fontWeight: 600,
+											bgcolor: isPaymentCancelled
+												? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(254, 226, 226, 0.8)')
+												: pStyle.bg,
+											color: isPaymentCancelled
+												? (t) => (t.palette.mode === 'dark' ? '#FCA5A5' : '#B91C1C')
+												: pStyle.color,
+											border: '1px solid',
+											borderColor: isPaymentCancelled
+												? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(252, 165, 165, 0.6)')
+												: pStyle.border,
+											lineHeight: 1.2,
+											whiteSpace: 'nowrap'
+										}}
+									>
+										<FuseSvgIcon size={12}>
+											{isPaymentCancelled ? 'heroicons-outline:x-circle' : 'heroicons-outline:ticket'}
+										</FuseSvgIcon>
+										{planName || queuedPlan?.name || 'Cancelled'}
+									</Box>
+									{isPaymentCancelled ? (
+										<Tooltip title="Stripe checkout was cancelled. Seller is inactive." arrow>
+											<Box
+												sx={{
+													display: 'inline-flex',
+													alignItems: 'center',
+													gap: 0.3,
+													px: 0.6,
+													py: 0.1,
+													borderRadius: '4px',
+													fontSize: 9.5,
+													fontWeight: 700,
+													bgcolor: (t) =>
+														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.28)' : '#FEE2E2',
+													color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+													border: '1px solid',
+													borderColor: (t) =>
+														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.45)' : 'rgba(239, 68, 68, 0.3)',
+													lineHeight: 1,
+													whiteSpace: 'nowrap'
+												}}
+											>
+												<FuseSvgIcon size={10} sx={{ color: 'inherit' }}>
+													heroicons-outline:x-circle
+												</FuseSvgIcon>
+												Cancelled
+											</Box>
+										</Tooltip>
+									) : isExpired ? (
+										<Box
+											sx={{
+												display: 'inline-flex',
+												alignItems: 'center',
+												px: 0.6,
+												py: 0.1,
+												borderRadius: '4px',
+												fontSize: 9.5,
+												fontWeight: 600,
+												bgcolor: (t) =>
+													t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
+												color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+												border: '1px solid',
+												borderColor: (t) =>
+													t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(239, 68, 68, 0.25)',
+												lineHeight: 1
+											}}
+										>
+											Expired
+										</Box>
+									) : null}
+								</Box>
 								{(hasExpiry || queuedPlan) && (
-									<div className="flex items-center gap-1.5 text-[11px] leading-tight mt-0.5">
+									<Typography
+										sx={{
+											fontSize: 10,
+											color: 'text.secondary',
+											display: 'flex',
+											alignItems: 'center',
+											gap: 0.5,
+											whiteSpace: 'nowrap'
+										}}
+									>
 										{hasExpiry && (
-											<span className="text-slate-500 font-normal whitespace-nowrap">
-												Exp: {moment(activePlan.expireAt).format('DD MMM YYYY')}
-											</span>
+											<span>Exp: {moment(activePlan.expireAt).format('DD MMM YY')}</span>
 										)}
 										{queuedPlan && (
 											<>
-												{hasExpiry && <span className="text-slate-300">•</span>}
-												<span className="text-blue-600 font-medium whitespace-nowrap">
+												{hasExpiry && <span>·</span>}
+												<span className="text-violet-600 dark:text-violet-400 font-medium">
 													Next: {queuedPlan.name}
 												</span>
 											</>
 										)}
-									</div>
+									</Typography>
 								)}
-							</div>
+							</Box>
 						);
 					}
 				},
 				{
 					id: 'planLimits.maxMarketplaces',
-					header: 'MAX MARKETPLACES',
-					size: 140,
+					header: 'MARKETS',
+					size: 85,
+					minSize: 80,
+					maxSize: 95,
+					muiTableHeadCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important',
+							whiteSpace: 'nowrap !important'
+						}
+					},
+					muiTableBodyCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important'
+						}
+					},
 					accessorFn: (row) => {
 						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
 						return activePlan?.marketplace ?? row.planLimits?.maxMarketplaces ?? null;
 					},
-					Cell: ({ cell }) => (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{cell.getValue<number>() ?? '—'}
-						</Typography>
-					)
+					Cell: ({ cell }) => {
+						const val = cell.getValue<number>();
+						if (val === null || val === undefined) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
+						return (
+							<Tooltip title={`Max Marketplaces: ${val}`} arrow>
+								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+									<FuseSvgIcon size={13} sx={{ color: 'text.secondary', flexShrink: 0 }}>
+										heroicons-outline:globe-alt
+									</FuseSvgIcon>
+									<Typography
+										sx={{
+											fontSize: 12,
+											fontWeight: 600,
+											color: 'text.primary',
+											lineHeight: 1.2
+										}}
+									>
+										{val}
+									</Typography>
+								</Box>
+							</Tooltip>
+						);
+					}
 				},
 				{
 					id: 'planLimits.maxReviewRequestsPerMonth',
-					header: 'MONTHLY QUOTA',
-					size: 140,
+					header: 'QUOTA',
+					size: 85,
+					minSize: 80,
+					maxSize: 95,
+					muiTableHeadCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important',
+							whiteSpace: 'nowrap !important'
+						}
+					},
+					muiTableBodyCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important'
+						}
+					},
 					accessorFn: (row) => {
 						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
 						return activePlan?.request_quota ?? row.planLimits?.maxReviewRequestsPerMonth ?? null;
 					},
-					Cell: ({ cell }) => (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{cell.getValue<number>()?.toLocaleString() ?? '—'}
-						</Typography>
-					)
+					Cell: ({ cell }) => {
+						const val = cell.getValue<number>();
+						if (val === null || val === undefined) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
+						const numericVal = Number(val);
+						return (
+							<Tooltip title={`Monthly Request Quota: ${numericVal.toLocaleString()}`} arrow>
+								<Box
+									sx={{
+										display: 'inline-flex',
+										alignItems: 'center',
+										px: 0.75,
+										py: 0.15,
+										borderRadius: '4px',
+										bgcolor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)',
+										border: '1px solid',
+										borderColor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.25)'
+									}}
+								>
+									<Typography
+										sx={{
+											fontSize: 11.5,
+											fontWeight: 700,
+											fontFamily: "'Roboto Mono', monospace",
+											color: (t) => (t.palette.mode === 'dark' ? '#FBBF24' : '#B45309'),
+											lineHeight: 1.2
+										}}
+									>
+										{numericVal.toLocaleString()}
+									</Typography>
+								</Box>
+							</Tooltip>
+						);
+					}
 				},
 				{
 					id: 'planLimits.usedReviewRequests',
-					header: 'REQUESTS USED',
-					size: 140,
+					header: 'USED',
+					size: 85,
+					minSize: 80,
+					maxSize: 95,
+					muiTableHeadCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important',
+							whiteSpace: 'nowrap !important'
+						}
+					},
+					muiTableBodyCellProps: {
+						sx: {
+							width: '85px !important',
+							maxWidth: '95px !important'
+						}
+					},
 					accessorFn: (row) => row.planLimits?.usedReviewRequests ?? (row as any).usedReviewRequests ?? 0,
 					Cell: ({ cell, row }) => {
 						const used = cell.getValue<number>() ?? 0;
 						const activePlan = Array.isArray(row.original.plans) ? row.original.plans.find((p) => p.status === 1) : null;
 						const quota = activePlan?.request_quota ?? row.original.planLimits?.maxReviewRequestsPerMonth ?? 0;
+						const percent = quota > 0 ? Math.min(100, Math.round((used / quota) * 100)) : 0;
+
 						return (
-							<div className="flex items-center gap-1">
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: used > 0 ? '#0F172A' : '#64748B' }}>
-									{used.toLocaleString()}
-								</Typography>
-								{quota > 0 && (
-									<Typography sx={{ fontSize: 11, color: '#94A3B8' }}>
-										/ {quota.toLocaleString()}
-									</Typography>
-								)}
-							</div>
+							<Tooltip
+								title={`Requests Used: ${used.toLocaleString()} / ${quota > 0 ? quota.toLocaleString() : '—'} (${percent}%)`}
+								arrow
+							>
+								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4 }}>
+									<FuseSvgIcon size={12} sx={{ color: 'text.secondary', flexShrink: 0 }}>
+										heroicons-outline:paper-airplane
+									</FuseSvgIcon>
+									<Box sx={{ display: 'inline-flex', alignItems: 'baseline', gap: 0.2 }}>
+										<Typography
+											sx={{
+												fontSize: 12,
+												fontWeight: 600,
+												fontFamily: "'Roboto Mono', monospace",
+												color: 'text.primary',
+												lineHeight: 1.2
+											}}
+										>
+											{used.toLocaleString()}
+										</Typography>
+										<Typography
+											sx={{
+												fontSize: 10.5,
+												fontFamily: "'Roboto Mono', monospace",
+												color: 'text.secondary',
+												lineHeight: 1.2
+											}}
+										>
+											/{quota > 0 ? (quota >= 1000 ? `${Math.round(quota / 1000)}k` : quota) : '—'}
+										</Typography>
+									</Box>
+								</Box>
+							</Tooltip>
 						);
 					}
 				}
@@ -616,13 +1025,41 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			base.push({
 				accessorKey: 'contact_no',
 				header: 'PHONE',
-				size: 130,
+				size: 140,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
+					if (!val) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
 					return (
-						<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-							{val || '—'}
+						<Typography sx={{ fontSize: 12, color: 'text.primary', fontWeight: 600 }}>
+							{val}
 						</Typography>
+					);
+				}
+			});
+
+			base.push({
+				accessorKey: 'createdAt',
+				header: 'CREATED AT',
+				size: 140,
+				Cell: ({ cell, row }) => {
+					const val = (cell.getValue?.() as string) || row.original?.createdAt;
+					if (!val || !moment(val).isValid()) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+					const m = moment(val);
+					return (
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm A')} arrow>
+							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+									{m.format('DD MMM YYYY')}
+								</Typography>
+								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
+									{m.format('hh:mm A')}
+								</Typography>
+							</Box>
+						</Tooltip>
 					);
 				}
 			});
@@ -638,19 +1075,32 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		);
 	}
 
+	const title = isSellersMode ? 'Sellers' : isTeamMode ? 'Team' : 'Admin Users';
+	const icon = isSellersMode
+		? 'lucide:store'
+		: isTeamMode
+			? 'lucide:users'
+			: 'lucide:user-cog';
+
+	const actionButtons = !isSellersMode && canCreate(sectionKey) ? (
+		<button
+			type="button"
+			onClick={() => {
+				resetCreateForm();
+				setCreateOpen(true);
+			}}
+			style={{ height: '38px' }}
+			className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+		>
+			<FuseSvgIcon size={16} className="text-white">
+				heroicons-outline:plus
+			</FuseSvgIcon>
+			<span>Add User</span>
+		</button>
+	) : null;
+
 	return (
 		<Root
-			header={
-				<UsersHeader
-					variant={variant}
-					canCreateUser={canCreate(sectionKey)}
-					onCreateClick={() => {
-						resetCreateForm();
-						setCreateOpen(true);
-					}}
-					onRefresh={handleRefresh}
-				/>
-			}
 			content={
 				<Paper
 					ref={autoScrollRef}
@@ -676,13 +1126,29 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						columns={columns}
 						data={users}
 						tableId={isSellersMode ? 'sellers-table' : isTeamMode ? 'team-table' : 'admin-users-table'}
+						title={title}
+						icon={icon}
+						actionButtons={actionButtons}
+						onRefresh={handleRefresh}
 						enableRowActions
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
 							'mrt-row-actions': {
-								size: 105,
-								minSize: 95,
-								maxSize: 115
+								size: isSellersMode ? 135 : 95,
+								minSize: isSellersMode ? 125 : 90,
+								maxSize: isSellersMode ? 150 : 105,
+								muiTableHeadCellProps: {
+									sx: {
+										width: isSellersMode ? '135px !important' : '95px !important',
+										maxWidth: isSellersMode ? '150px !important' : '105px !important'
+									}
+								},
+								muiTableBodyCellProps: {
+									sx: {
+										width: isSellersMode ? '135px !important' : '95px !important',
+										maxWidth: isSellersMode ? '150px !important' : '105px !important'
+									}
+								}
 							}
 						}}
 						enableRowSelection={false}
@@ -694,33 +1160,105 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						}}
 						onPaginationChange={setPagination}
 						onGlobalFilterChange={handleGlobalFilterChange}
-						onSortingChange={setSorting}
+						onSortingChange={handleSortingChange}
 						manualPagination
 						manualFiltering
 						manualSorting
 						rowCount={totalResults}
 						pageCount={totalPages}
-						muiTableContainerProps={{
+						muiTableBodyRowProps={({ row }: any) => {
+							const user = row.original;
+							const isPaymentCancelled = user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0;
+
+							if (isSellersMode && isPaymentCancelled) {
+								return {
+									sx: {
+										backgroundColor: (theme: any) =>
+											theme.palette.mode === 'dark'
+												? 'rgba(239, 68, 68, 0.16) !important'
+												: '#FEF2F2 !important',
+										'& td': {
+											backgroundColor: (theme: any) =>
+												theme.palette.mode === 'dark'
+													? 'rgba(239, 68, 68, 0.16) !important'
+													: '#FEF2F2 !important',
+											borderColor: (theme: any) =>
+												theme.palette.mode === 'dark'
+													? 'rgba(239, 68, 68, 0.3) !important'
+													: '#FECACA !important'
+										},
+										'&:hover, &:hover td': {
+											backgroundColor: (theme: any) =>
+												theme.palette.mode === 'dark'
+													? 'rgba(239, 68, 68, 0.25) !important'
+													: '#FEE2E2 !important'
+										}
+									}
+								};
+							}
+							return {};
+						}}
+						muiTableProps={{
 							sx: {
-								maxWidth: '100%',
-								flex: '1 1 auto',
-								minHeight: 0,
-								overflow: 'auto',
-								'&::-webkit-scrollbar': { height: 8, width: 8 },
-								'&::-webkit-scrollbar-track': {
-									backgroundColor: 'background.default',
-									borderRadius: 4
+								tableLayout: 'auto',
+								minWidth: '100%',
+								'& .MuiTableRow-root:hover': {
+									backgroundColor: 'action.hover',
+									transition: 'background-color 0.15s ease'
 								},
-								'&::-webkit-scrollbar-thumb': {
-									backgroundColor: 'divider',
-									borderRadius: 4,
-									'&:hover': { backgroundColor: 'text.disabled' }
+								'& .MuiTableCell-root': {
+									borderBottom: '1px solid',
+									borderColor: 'divider',
+									padding: '4px 8px',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap',
+									maxWidth: '100%'
+								},
+								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
+									fontWeight: 700,
+									fontSize: 11.5,
+									letterSpacing: 0.3,
+									textTransform: 'uppercase',
+									color: 'text.secondary',
+									borderTop: '1px solid',
+									borderBottom: '1px solid',
+									borderColor: (t: any) =>
+										t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgb(229 231 235)',
+									whiteSpace: 'nowrap !important',
+									overflow: 'visible !important',
+									textOverflow: 'clip !important',
+									wordBreak: 'normal',
+									padding: '6px 8px',
+									textAlign: 'left',
+									'& .MuiTableSortLabel-root': {
+										overflow: 'visible !important',
+										textOverflow: 'clip !important',
+										whiteSpace: 'nowrap !important'
+									},
+									'& .Mui-TableHeadCell-Content': {
+										overflow: 'visible !important',
+										whiteSpace: 'nowrap !important'
+									},
+									'& .Mui-TableHeadCell-Content-Labels': {
+										overflow: 'visible !important',
+										whiteSpace: 'nowrap !important'
+									}
 								}
 							}
 						}}
+						muiTableHeadProps={{
+							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+						}}
+						muiTableHeadRowProps={{
+							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+						}}
+						muiTableHeadCellProps={{
+							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+						}}
 						muiBottomToolbarProps={{
 							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
+								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-slate-900',
 							sx: {
 								borderTop: '1px solid',
 								borderColor: 'divider',
@@ -799,78 +1337,101 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								}
 							}
 						}}
-						muiTableHeadProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadRowProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableHeadCellProps={{
-							className: 'bg-gray-100 border-t border-b border-gray-200'
-						}}
-						muiTableProps={{
+						muiTableContainerProps={{
 							sx: {
-								tableLayout: 'auto',
-								minWidth: '100%',
-								'& .MuiTableRow-root:hover': {
-									backgroundColor: 'action.hover',
-									transition: 'background-color 0.15s ease'
+								maxWidth: '100%',
+								flex: '1 1 auto',
+								minHeight: 0,
+								overflow: 'auto',
+								'&::-webkit-scrollbar': { height: 8, width: 8 },
+								'&::-webkit-scrollbar-track': {
+									backgroundColor: 'background.default',
+									borderRadius: 4
 								},
-								'& .MuiTableCell-root': {
-									borderBottom: '1px solid',
-									borderColor: 'divider',
-									padding: '2px 8px',
-									overflow: 'hidden',
-									textOverflow: 'ellipsis',
-									whiteSpace: 'nowrap',
-									maxWidth: '100%',
-									height: '37px',
-									boxSizing: 'border-box'
-								},
-								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-									fontWeight: 700,
-									fontSize: 11.5,
-									letterSpacing: 0.3,
-									textTransform: 'uppercase',
-									color: 'text.secondary',
-									borderTop: '1px solid',
-									borderBottom: '1px solid',
-									borderColor: 'rgb(229 231 235)',
-									padding: '6px 8px',
-									maxWidth: '100%',
-									textAlign: 'left'
+								'&::-webkit-scrollbar-thumb': {
+									backgroundColor: 'divider',
+									borderRadius: 4,
+									'&:hover': { backgroundColor: 'text.disabled' }
 								}
 							}
 						}}
-						renderRowActions={({ row }: { row: MRT_Row<User> }) => (
-							<Box className="flex items-center gap-1">
+						renderRowActions={({ row }: { row: MRT_Row<User> }) => {
+							const user = row.original;
+							const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
+							const hasSuccessPayment =
+								!isPaymentCancelled &&
+								(user.subscriptionStatus === 1 ||
+									(Array.isArray(user.plans) &&
+										user.plans.some(
+											(p: any) =>
+												p.paymentStatus === 1 ||
+												(p.status === 1 && Number(p.price) > 0)
+										)));
+
+							return (
+							<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
 								{canUpdate(sectionKey) && (
 									<>
-										<Tooltip title={row.original.status === 1 ? 'Click to deactivate user' : 'Click to activate user'} arrow>
+										<Tooltip
+											title={
+												isPaymentCancelled
+													? 'Payment Cancelled (Inactive Seller)'
+													: row.original.status === 1
+													? 'Click to deactivate user'
+													: 'Click to activate user'
+											}
+											arrow
+										>
 											<Box
-												onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
-												className="cursor-pointer inline-flex items-center p-0.5"
+												onClick={() => {
+													if (isPaymentCancelled) return;
+													handleOpenStatusConfirm(row.original, row.original.status);
+												}}
+												className={`${isPaymentCancelled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} inline-flex items-center p-0.5`}
 												sx={{ lineHeight: 0 }}
 											>
 												<CustomStatusSwitch
 													size="small"
-													checked={row.original.status === 1}
+													checked={!isPaymentCancelled && row.original.status === 1}
 													sx={{ pointerEvents: 'none' }}
 												/>
 											</Box>
 										</Tooltip>
-										<Tooltip title="Edit user" arrow>
-											<IconButton
-												size="small"
-												onClick={(e) => {
-													(e.currentTarget as HTMLElement)?.blur();
-													handleOpenEdit(row.original);
-												}}
-												className="text-slate-600 hover:text-slate-900 p-1"
+										{isSellersMode && (
+											<Tooltip
+												title={hasSuccessPayment ? 'Download Payment Invoice (PDF)' : ''}
+												arrow
+												disableHoverListener={!hasSuccessPayment}
 											>
-												<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
-											</IconButton>
-										</Tooltip>
+												<Box sx={{ display: 'inline-flex' }}>
+													<IconButton
+														size="small"
+														disabled={!hasSuccessPayment}
+														onClick={(e) => {
+															if (!hasSuccessPayment) return;
+															(e.currentTarget as HTMLElement)?.blur();
+															generateSellerInvoicePDF(row.original);
+														}}
+														sx={{
+															p: 0.6,
+															borderRadius: '6px',
+															color: 'text.secondary',
+															visibility: hasSuccessPayment ? 'visible' : 'hidden',
+															pointerEvents: hasSuccessPayment ? 'auto' : 'none',
+															'&:hover': {
+																color: 'text.primary',
+																bgcolor: (t) =>
+																	t.palette.mode === 'dark'
+																		? 'rgba(255, 255, 255, 0.08)'
+																		: 'rgba(0, 0, 0, 0.04)'
+															}
+														}}
+													>
+														<FuseSvgIcon size={16}>heroicons-outline:document-text</FuseSvgIcon>
+													</IconButton>
+												</Box>
+											</Tooltip>
+										)}
 										{isSellersMode && (
 											<Tooltip title="Assign Plan" arrow>
 												<IconButton
@@ -879,30 +1440,65 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 														(e.currentTarget as HTMLElement)?.blur();
 														handleOpenAssignPlan(row.original);
 													}}
-													className="text-blue-600 hover:text-blue-800 hover:bg-blue-50 p-1 transition-colors"
+													sx={{
+														p: 0.6,
+														borderRadius: '6px',
+														color: (t) => (t.palette.mode === 'dark' ? '#34D399' : '#059669'),
+														'&:hover': {
+															bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+														}
+													}}
 												>
-													<FuseSvgIcon size={18}>lucide:sparkles</FuseSvgIcon>
+													<FuseSvgIcon size={16}>heroicons-outline:credit-card</FuseSvgIcon>
 												</IconButton>
 											</Tooltip>
 										)}
+										<Tooltip title="Edit user" arrow>
+											<IconButton
+												size="small"
+												onClick={(e) => {
+													(e.currentTarget as HTMLElement)?.blur();
+													handleOpenEdit(row.original);
+												}}
+												sx={{
+													p: 0.6,
+													borderRadius: '6px',
+													color: 'text.secondary',
+													'&:hover': {
+														color: 'text.primary',
+														bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)')
+													}
+												}}
+											>
+												<FuseSvgIcon size={16}>heroicons-outline:pencil-square</FuseSvgIcon>
+											</IconButton>
+										</Tooltip>
 									</>
 								)}
 								{canDelete(sectionKey) && (
 									<Tooltip title="Delete user" arrow>
 										<IconButton
 											size="small"
-											className="text-red-500 hover:text-red-700 p-1"
 											onClick={(e) => {
 												(e.currentTarget as HTMLElement)?.blur();
 												handleOpenDeleteConfirm(row.original);
 											}}
+											sx={{
+												p: 0.6,
+												borderRadius: '6px',
+												color: (t) => t.palette.mode === 'dark' ? '#F87171' : '#DC2626',
+												'&:hover': {
+													bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'
+												}
+											}}
 										>
-											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
+											<FuseSvgIcon size={16}>heroicons-outline:trash</FuseSvgIcon>
 										</IconButton>
 									</Tooltip>
 								)}
 							</Box>
-						)}
+						);
+					}}
 					/>
 
 					{/* Create User Dialog */}
@@ -924,25 +1520,25 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-										<FuseSvgIcon size={18} className="text-slate-900">
+									<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+										<FuseSvgIcon size={18} className="text-primary">
 											{isTeamMode ? 'heroicons-outline:user-group' : 'heroicons-outline:user-plus'}
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 										{isTeamMode ? 'Create Team Member' : 'Create Admin User'}
-									</h1>
+									</h2>
 								</div>
 
 								<IconButton
 									size="small"
 									onClick={() => setCreateOpen(false)}
-									className="text-slate-900 hover:bg-black/10 transition-colors"
+									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
-									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
 							</div>
 
@@ -956,17 +1552,27 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							>
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Full Name <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											required
 											placeholder="e.g., Alex Wright"
 											value={formName}
-											onChange={(e) => setFormName(e.target.value)}
+											onChange={(e) => {
+												setFormName(e.target.value);
+												if (createErrors.name) setCreateErrors((prev) => ({ ...prev, name: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+												setCreateErrors((prev) => ({ ...prev, name: errs.name }));
+											}}
+											error={!!createErrors.name}
+											helperText={createErrors.name}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 60 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -980,18 +1586,28 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Email Address <span className="text-red-500">*</span>
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											required
 											type="email"
 											placeholder="e.g., alex@gravurtastisch.de"
 											value={formEmail}
-											onChange={(e) => setFormEmail(e.target.value)}
+											onChange={(e) => {
+												setFormEmail(e.target.value);
+												if (createErrors.email) setCreateErrors((prev) => ({ ...prev, email: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+												setCreateErrors((prev) => ({ ...prev, email: errs.email }));
+											}}
+											error={!!createErrors.email}
+											helperText={createErrors.email}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 100 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1005,16 +1621,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Phone Number
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="e.g., +49 151 2345001"
 											value={formPhone}
-											onChange={(e) => setFormPhone(e.target.value)}
+											onChange={(e) => {
+												setFormPhone(e.target.value);
+												if (createErrors.phone) setCreateErrors((prev) => ({ ...prev, phone: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+												setCreateErrors((prev) => ({ ...prev, phone: errs.phone }));
+											}}
+											error={!!createErrors.phone}
+											helperText={createErrors.phone}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 20 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1028,13 +1654,16 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role <span className="text-red-500">*</span>
-										</Typography>
-										<FormControl fullWidth size="small" required>
+										</label>
+										<FormControl fullWidth size="small" required error={!!createErrors.roleId}>
 											<Select
 												value={formRoleId}
-												onChange={(e) => setFormRoleId(String(e.target.value))}
+												onChange={(e) => {
+													setFormRoleId(String(e.target.value));
+													if (createErrors.roleId) setCreateErrors((prev) => ({ ...prev, roleId: undefined }));
+												}}
 												displayEmpty
 												renderValue={(selected) => {
 													if (!selected) {
@@ -1060,6 +1689,11 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 													);
 												})}
 											</Select>
+											{createErrors.roleId && (
+												<Typography variant="caption" color="error" className="mt-1">
+													{createErrors.roleId}
+												</Typography>
+											)}
 										</FormControl>
 										{!roles.length && (
 											<Typography variant="body2" className="text-amber-600 text-xs mt-1.5 flex items-center gap-1">
@@ -1132,25 +1766,25 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					>
 						<div className="flex flex-col h-full min-h-0 overflow-hidden">
 							{/* Top Banner Header */}
-							<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+							<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 								<div className="flex items-center gap-2.5">
-									<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-										<FuseSvgIcon size={18} className="text-slate-900">
+									<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+										<FuseSvgIcon size={18} className="text-primary">
 											heroicons-outline:pencil-square
 										</FuseSvgIcon>
 									</div>
-									<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 										Edit User
-									</h1>
+									</h2>
 								</div>
 
 								<IconButton
 									size="small"
 									onClick={() => setEditOpen(false)}
-									className="text-slate-900 hover:bg-black/10 transition-colors"
+									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
-									<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
 							</div>
 
@@ -1164,16 +1798,23 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							>
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
-											Full Name
-										</Typography>
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+											Full Name <span className="text-red-500">*</span>
+										</label>
 										<TextField
 											fullWidth
+											required
 											placeholder="Full Name"
 											value={formName}
-											onChange={(e) => setFormName(e.target.value)}
+											onChange={(e) => {
+												setFormName(e.target.value);
+												if (editErrors.name) setEditErrors((prev) => ({ ...prev, name: undefined }));
+											}}
+											error={!!editErrors.name}
+											helperText={editErrors.name}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 60 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1187,16 +1828,22 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Phone Number
-										</Typography>
+										</label>
 										<TextField
 											fullWidth
 											placeholder="Phone Number"
 											value={formPhone}
-											onChange={(e) => setFormPhone(e.target.value)}
+											onChange={(e) => {
+												setFormPhone(e.target.value);
+												if (editErrors.phone) setEditErrors((prev) => ({ ...prev, phone: undefined }));
+											}}
+											error={!!editErrors.phone}
+											helperText={editErrors.phone}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 20 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1210,13 +1857,16 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									</div>
 
 									<div>
-										<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role
-										</Typography>
+										</label>
 										<FormControl fullWidth size="small">
 											<Select
 												value={formRoleId}
-												onChange={(e) => setFormRoleId(String(e.target.value))}
+												onChange={(e) => {
+													setFormRoleId(String(e.target.value));
+													if (editErrors.roleId) setEditErrors((prev) => ({ ...prev, roleId: undefined }));
+												}}
 												displayEmpty
 												renderValue={(selected) => {
 													if (!selected) {
@@ -1248,16 +1898,22 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									{isSellersMode && (
 										<>
 											<div>
-												<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+												<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 													Brand Name
-												</Typography>
+												</label>
 												<TextField
 													placeholder="Brand Name"
 													value={editBusinessName}
-													onChange={(e) => setEditBusinessName(e.target.value)}
+													onChange={(e) => {
+														setEditBusinessName(e.target.value);
+														if (editErrors.businessName) setEditErrors((prev) => ({ ...prev, businessName: undefined }));
+													}}
+													error={!!editErrors.businessName}
+													helperText={editErrors.businessName}
 													fullWidth
 													variant="outlined"
 													size="small"
+													inputProps={{ maxLength: 100 }}
 													InputProps={{
 														startAdornment: (
 															<InputAdornment position="start">
@@ -1273,9 +1929,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											{(isSuperAdmin || selectedUser?.userType === 'seller') && (
 												<>
 													<div>
-														<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+														<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 															Maximum Active Marketplaces
-														</Typography>
+														</label>
 														<TextField
 															type="number"
 															fullWidth
@@ -1283,6 +1939,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 															size="small"
 															value={maxMarketplaces}
 															onChange={(e) => setMaxMarketplaces(Math.max(1, Number(e.target.value)))}
+															onWheel={(e) => (e.target as HTMLElement).blur()}
 															InputProps={{
 																startAdornment: (
 																	<InputAdornment position="start">
@@ -1296,9 +1953,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 													</div>
 
 													<div>
-														<Typography className="text-xs font-semibold text-gray-700 mb-1.5">
+														<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 															Monthly Review Request Quota
-														</Typography>
+														</label>
 														<TextField
 															type="number"
 															fullWidth
@@ -1308,6 +1965,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 															onChange={(e) =>
 																setMaxReviewRequestsPerMonth(Math.max(0, Number(e.target.value)))
 															}
+															onWheel={(e) => (e.target as HTMLElement).blur()}
 															InputProps={{
 																startAdornment: (
 																	<InputAdornment position="start">

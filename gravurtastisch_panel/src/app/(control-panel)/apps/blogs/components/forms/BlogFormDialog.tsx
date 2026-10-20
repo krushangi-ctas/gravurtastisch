@@ -9,7 +9,8 @@ import {
 	Typography,
 	IconButton,
 	CircularProgress,
-	Tooltip
+	Tooltip,
+	InputAdornment
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -46,11 +47,13 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [previewModalUrl, setPreviewModalUrl] = useState<string | null>(null);
 	const [previewModalTitle, setPreviewModalTitle] = useState<string>('');
+	const [errors, setErrors] = useState<{ blogTitle?: string; shortDescription?: string }>({});
 	const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
 	// Populate form state when editing or resetting
 	useEffect(() => {
 		if (open) {
+			setErrors({});
 			if (blog) {
 				setBlogTitle(blog.blog_title || '');
 				setShortDescription(blog.short_description || '');
@@ -167,8 +170,26 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (!blogTitle.trim()) {
-			enqueueSnackbar('Blog title is required', { variant: 'error' });
+		const trimmedTitle = blogTitle.trim();
+		const trimmedShortDesc = shortDescription.trim();
+
+		const newErrors: { blogTitle?: string; shortDescription?: string } = {};
+
+		if (!trimmedTitle) {
+			newErrors.blogTitle = 'Blog title is required';
+		} else if (trimmedTitle.length < 3) {
+			newErrors.blogTitle = 'Blog title must be at least 3 characters';
+		} else if (trimmedTitle.length > 200) {
+			newErrors.blogTitle = 'Blog title must not exceed 200 characters';
+		}
+
+		if (trimmedShortDesc.length > 500) {
+			newErrors.shortDescription = 'Short description must not exceed 500 characters';
+		}
+
+		if (Object.keys(newErrors).length > 0) {
+			setErrors(newErrors);
+			enqueueSnackbar('Please correct the highlighted errors in the form', { variant: 'error' });
 			return;
 		}
 
@@ -184,8 +205,8 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				await updateMutation.mutateAsync({
 					blogId,
 					payload: {
-						blog_title: blogTitle.trim(),
-						short_description: shortDescription.trim(),
+						blog_title: trimmedTitle,
+						short_description: trimmedShortDesc,
 						description: descriptionJson,
 						description_images: relativeImagePaths
 					}
@@ -193,8 +214,8 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				enqueueSnackbar('Blog updated successfully', { variant: 'success', autoHideDuration: 2000 });
 			} else {
 				await createMutation.mutateAsync({
-					blog_title: blogTitle.trim(),
-					short_description: shortDescription.trim(),
+					blog_title: trimmedTitle,
+					short_description: trimmedShortDesc,
 					description: descriptionJson,
 					description_images: relativeImagePaths,
 					status: 1
@@ -235,26 +256,26 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				className="flex flex-col h-full min-h-0 overflow-hidden"
 				style={{ display: 'flex', flexDirection: 'column', height: '100%', minHeight: 0, overflow: 'hidden' }}
 			>
-				{/* Top Tan Banner Header */}
-				<div className="bg-secondary-500 text-slate-900 px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shadow-md shrink-0">
+				{/* Top Header */}
+				<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-5 py-3 sm:py-3.5 flex items-center justify-between shrink-0">
 					<div className="flex items-center gap-2.5">
-						<div className="flex items-center justify-center w-7 h-7 rounded bg-black/10 shrink-0">
-							<FuseSvgIcon size={18} className="text-slate-900">
+						<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+							<FuseSvgIcon size={18} className="text-primary">
 								heroicons-outline:newspaper
 							</FuseSvgIcon>
 						</div>
-						<h1 className="text-base sm:text-lg font-bold text-slate-900 m-0 truncate">
+						<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
 							{isEdit ? 'Edit Blog' : 'Create Blog'}
-						</h1>
+						</h2>
 					</div>
 
 					<IconButton
 						size="small"
 						onClick={onClose}
-						className="text-slate-900 hover:bg-black/10 transition-colors"
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 						aria-label="Close"
 					>
-						<FuseSvgIcon size={20} className="text-slate-900">heroicons-outline:x-mark</FuseSvgIcon>
+						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>
 				</div>
 
@@ -278,33 +299,63 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 
 						<div className="flex flex-col gap-4">
 							<div>
-								<Typography className="text-xs font-semibold text-gray-700 mb-1">
+								<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 									Blog Title <span className="text-red-500">*</span>
-								</Typography>
+								</label>
 								<TextField
 									fullWidth
 									required
 									placeholder="Enter compelling blog headline..."
 									value={blogTitle}
-									onChange={(e) => setBlogTitle(e.target.value)}
+									onChange={(e) => {
+										setBlogTitle(e.target.value);
+										if (errors.blogTitle) setErrors((prev) => ({ ...prev, blogTitle: undefined }));
+									}}
+									inputProps={{ maxLength: 200 }}
+									error={Boolean(errors.blogTitle)}
+									helperText={errors.blogTitle}
 									variant="outlined"
 									size="small"
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start">
+												<FuseSvgIcon size={16} className="text-gray-400">
+													heroicons-outline:newspaper
+												</FuseSvgIcon>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</div>
 
 							<div>
-								<Typography className="text-xs font-semibold text-gray-700 mb-1">
+								<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 									Short Description (Excerpt)
-								</Typography>
+								</label>
 								<TextField
 									fullWidth
 									multiline
 									rows={2}
 									placeholder="Brief summary for blog cards and preview lists..."
 									value={shortDescription}
-									onChange={(e) => setShortDescription(e.target.value)}
+									onChange={(e) => {
+										setShortDescription(e.target.value);
+										if (errors.shortDescription) setErrors((prev) => ({ ...prev, shortDescription: undefined }));
+									}}
+									inputProps={{ maxLength: 500 }}
+									error={Boolean(errors.shortDescription)}
+									helperText={errors.shortDescription}
 									variant="outlined"
 									size="small"
+									InputProps={{
+										startAdornment: (
+											<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: '3px' }}>
+												<FuseSvgIcon size={16} className="text-gray-400">
+													heroicons-outline:document-text
+												</FuseSvgIcon>
+											</InputAdornment>
+										)
+									}}
 								/>
 							</div>
 						</div>
@@ -523,19 +574,21 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 					}
 				}}
 			>
-				<Box className="flex items-center justify-between px-5 py-3.5 bg-secondary-500 text-slate-900">
+				<Box className="flex items-center justify-between px-5 py-3.5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white">
 					<div className="flex items-center gap-2.5 max-w-[80%]">
-						<FuseSvgIcon size={18} className="text-slate-900">
-							heroicons-outline:photo
-						</FuseSvgIcon>
-						<Typography className="text-sm font-bold text-slate-900 truncate">
+						<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 text-primary shrink-0">
+							<FuseSvgIcon size={18} className="text-primary">
+								heroicons-outline:photo
+							</FuseSvgIcon>
+						</div>
+						<Typography className="text-sm font-bold text-slate-900 dark:text-white truncate">
 							{previewModalTitle || 'Image Preview'}
 						</Typography>
 					</div>
 					<IconButton
 						size="small"
 						onClick={() => setPreviewModalUrl(null)}
-						className="text-slate-900 hover:bg-black/10"
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800"
 					>
 						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 					</IconButton>

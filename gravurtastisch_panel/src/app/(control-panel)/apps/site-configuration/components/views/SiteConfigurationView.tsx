@@ -1,7 +1,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller as HookFormController } from 'react-hook-form';
+
+const Controller = HookFormController as React.ComponentType<any>;
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -22,36 +24,154 @@ import {
 	useUpdateWebsiteConfiguration
 } from '../../api/hooks/useSiteConfiguration';
 
+const isValidUrl = (val?: string) => {
+	if (!val || !val.trim()) return true;
+	try {
+		const parsed = new URL(val.trim());
+		return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+	} catch {
+		return false;
+	}
+};
+
+const isValidEmail = (val?: string) => {
+	if (!val || !val.trim()) return true;
+	return /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val.trim());
+};
+
+const isValidPhone = (val?: string) => {
+	if (!val || !val.trim()) return true;
+	const trimmed = val.trim();
+	const allowedChars = /^[+0-9\s\-()]{7,20}$/.test(trimmed);
+	const digitCount = trimmed.replace(/\D/g, '').length;
+	return allowedChars && digitCount >= 7 && digitCount <= 15;
+};
+
+const isValidPostalCode = (val?: string) => {
+	if (!val || !val.trim()) return true;
+	return /^[A-Za-z0-9\s\-]{3,20}$/.test(val.trim());
+};
+
 const siteConfigSchema = z.object({
 	company: z.object({
-		name: z.string().min(1, 'Company name is required'),
-		website: z.string().optional().or(z.literal('')),
-		tagline: z.string().optional().or(z.literal('')),
-		about: z.string().optional().or(z.literal('')),
-		copyright_text: z.string().optional().or(z.literal(''))
+		name: z
+			.string({ required_error: 'Company name is required' })
+			.trim()
+			.min(2, 'Company name must be at least 2 characters')
+			.max(100, 'Company name must not exceed 100 characters'),
+		website: z
+			.string()
+			.max(150, 'Website URL must not exceed 150 characters')
+			.refine(isValidUrl, {
+				message: 'Please enter a valid website URL (e.g. https://example.com)'
+			})
+			.optional()
+			.or(z.literal('')),
+		tagline: z
+			.string()
+			.max(150, 'Tagline must not exceed 150 characters')
+			.optional()
+			.or(z.literal('')),
+		about: z
+			.string()
+			.max(1000, 'About description must not exceed 1000 characters')
+			.optional()
+			.or(z.literal('')),
+		copyright_text: z
+			.string()
+			.max(150, 'Copyright text must not exceed 150 characters')
+			.optional()
+			.or(z.literal(''))
 	}),
 	contact: z.object({
 		email: z
 			.string()
-			.refine((val) => !val || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val), {
-				message: 'Invalid email address'
+			.max(100, 'Email address must not exceed 100 characters')
+			.refine(isValidEmail, {
+				message: 'Please enter a valid email address (e.g. info@example.com)'
 			})
 			.optional()
 			.or(z.literal('')),
-		phone: z.string().optional().or(z.literal('')),
-		address: z.string().optional().or(z.literal('')),
-		city: z.string().optional().or(z.literal('')),
-		state: z.string().optional().or(z.literal('')),
-		country: z.string().optional().or(z.literal('')),
-		postal_code: z.string().optional().or(z.literal('')),
-		working_hours: z.string().optional().or(z.literal('')),
-		timezone: z.string().optional().or(z.literal(''))
+		phone: z
+			.string()
+			.max(20, 'Phone number must not exceed 20 characters')
+			.refine(isValidPhone, {
+				message: 'Please enter a valid phone number (7-15 digits, +, spaces, hyphens only)'
+			})
+			.optional()
+			.or(z.literal('')),
+		address: z
+			.string()
+			.max(255, 'Street address must not exceed 255 characters')
+			.optional()
+			.or(z.literal('')),
+		city: z
+			.string()
+			.max(100, 'City must not exceed 100 characters')
+			.optional()
+			.or(z.literal('')),
+		state: z
+			.string()
+			.max(100, 'State/Province must not exceed 100 characters')
+			.optional()
+			.or(z.literal('')),
+		country: z
+			.string()
+			.max(100, 'Country must not exceed 100 characters')
+			.optional()
+			.or(z.literal('')),
+		postal_code: z
+			.string()
+			.max(20, 'Postal code must not exceed 20 characters')
+			.refine(isValidPostalCode, {
+				message: 'Please enter a valid postal/ZIP code (3-20 letters/numbers)'
+			})
+			.optional()
+			.or(z.literal('')),
+		working_hours: z
+			.string()
+			.max(100, 'Working hours must not exceed 100 characters')
+			.optional()
+			.or(z.literal('')),
+		timezone: z
+			.string()
+			.max(60, 'Timezone must not exceed 60 characters')
+			.optional()
+			.or(z.literal(''))
 	}),
 	social_links: z.object({
-		facebook: z.string().optional().or(z.literal('')),
-		instagram: z.string().optional().or(z.literal('')),
-		linkedin: z.string().optional().or(z.literal('')),
-		youtube: z.string().optional().or(z.literal(''))
+		facebook: z
+			.string()
+			.max(200, 'Facebook URL must not exceed 200 characters')
+			.refine(isValidUrl, {
+				message: 'Please enter a valid Facebook URL (e.g. https://facebook.com/page)'
+			})
+			.optional()
+			.or(z.literal('')),
+		instagram: z
+			.string()
+			.max(200, 'Instagram URL must not exceed 200 characters')
+			.refine(isValidUrl, {
+				message: 'Please enter a valid Instagram URL (e.g. https://instagram.com/profile)'
+			})
+			.optional()
+			.or(z.literal('')),
+		linkedin: z
+			.string()
+			.max(200, 'LinkedIn URL must not exceed 200 characters')
+			.refine(isValidUrl, {
+				message: 'Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/profile)'
+			})
+			.optional()
+			.or(z.literal('')),
+		youtube: z
+			.string()
+			.max(200, 'YouTube URL must not exceed 200 characters')
+			.refine(isValidUrl, {
+				message: 'Please enter a valid YouTube URL (e.g. https://youtube.com/@channel)'
+			})
+			.optional()
+			.or(z.literal(''))
 	})
 });
 
@@ -200,32 +320,37 @@ function SiteConfigurationView() {
 	return (
 		<div className="w-full h-full flex flex-col min-h-0 bg-slate-50/50 dark:bg-slate-950/50 overflow-hidden">
 			{/* Top Header Bar */}
-			<div className="w-full bg-secondary-500 text-slate-900 px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 shadow-md shrink-0 z-10">
+			<div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 z-10">
 				{/* Left Title & Icon */}
-				<div className="flex items-center gap-2.5 w-full sm:w-auto">
-					<div className="flex items-center justify-center w-7 h-7 rounded-lg bg-black/10 text-slate-900 shrink-0">
-						<FuseSvgIcon size={18} className="text-slate-900">
+				<div className="flex items-center gap-3 w-full sm:w-auto">
+					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
+						<FuseSvgIcon size={20} className="text-primary">
 							heroicons-outline:globe-alt
 						</FuseSvgIcon>
 					</div>
-					<h1 className="text-base sm:text-lg font-bold tracking-tight text-slate-900 m-0">
-						Site Configuration
-					</h1>
+					<div className="flex flex-col min-w-0">
+						<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight">
+							Site Configuration
+						</h1>
+						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
+							Configure website contact details, company profile, and social media links.
+						</p>
+					</div>
 				</div>
 
 				{/* Right Actions: Reload, Discard, Save */}
-				<div className="flex items-center gap-2 w-full sm:w-auto">
+				<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
 					<Tooltip title="Reload configuration" arrow>
 						<button
 							type="button"
 							onClick={() => refetch()}
 							disabled={isRefetching}
 							style={{ height: '32px', width: '32px' }}
-							className="h-8 w-8 flex items-center justify-center rounded-lg bg-white text-slate-800 hover:bg-slate-100 transition-all shadow-xs cursor-pointer border-0 shrink-0 disabled:opacity-50"
+							className="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-xs cursor-pointer border border-slate-200 dark:border-slate-700 shrink-0 disabled:opacity-50"
 						>
 							<FuseSvgIcon
 								size={16}
-								className={`text-slate-800 ${isRefetching ? 'animate-spin' : ''}`}
+								className={`text-slate-700 dark:text-slate-200 ${isRefetching ? 'animate-spin' : ''}`}
 							>
 								heroicons-outline:arrow-path
 							</FuseSvgIcon>
@@ -237,7 +362,7 @@ function SiteConfigurationView() {
 						onClick={handleReset}
 						disabled={!canMutate || !isDirty || updateMutation.isPending}
 						style={{ height: '32px' }}
-						className="h-8 px-3 bg-black/10 hover:bg-black/20 text-slate-900 text-xs sm:text-sm font-semibold rounded-lg border border-black/15 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+						className="h-8 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
 					>
 						<span>Discard Changes</span>
 					</button>
@@ -247,7 +372,7 @@ function SiteConfigurationView() {
 						onClick={handleSubmit(onSubmit)}
 						disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
 						style={{ height: '32px' }}
-						className="h-8 px-3.5 bg-primary-800 hover:bg-primary-900 text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+						className="h-8 px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						{updateMutation.isPending ? (
 							<CircularProgress size={14} color="inherit" />
@@ -279,6 +404,9 @@ function SiteConfigurationView() {
 							>
 								<FuseSvgIcon size={15}>lucide:briefcase</FuseSvgIcon>
 								<span>Company Details</span>
+								{Boolean(errors.company && Object.keys(errors.company).length > 0) && (
+									<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+								)}
 							</button>
 
 							<button
@@ -291,6 +419,9 @@ function SiteConfigurationView() {
 							>
 								<FuseSvgIcon size={15}>lucide:map-pin</FuseSvgIcon>
 								<span>Contact & Location</span>
+								{Boolean(errors.contact && Object.keys(errors.contact).length > 0) && (
+									<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+								)}
 							</button>
 
 							<button
@@ -303,6 +434,9 @@ function SiteConfigurationView() {
 							>
 								<FuseSvgIcon size={15}>lucide:share-2</FuseSvgIcon>
 								<span>Social Media Links</span>
+								{Boolean(errors.social_links && Object.keys(errors.social_links).length > 0) && (
+									<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+								)}
 							</button>
 						</div>
 
@@ -341,6 +475,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. Gravurtastisch"
+													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.company?.name)}
 													helperText={errors.company?.name?.message}
 													InputProps={{
@@ -372,7 +507,8 @@ function SiteConfigurationView() {
 													{...field}
 													fullWidth
 													size="small"
-													placeholder="e.g. https://gravurstastich.com/"
+													placeholder="e.g. https://gravurtastisch.com"
+													inputProps={{ maxLength: 150 }}
 													error={Boolean(errors.company?.website)}
 													helperText={errors.company?.website?.message}
 													InputProps={{
@@ -405,6 +541,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. Automated Amazon buyer review requests built on official SP-API"
+													inputProps={{ maxLength: 150 }}
 													error={Boolean(errors.company?.tagline)}
 													helperText={errors.company?.tagline?.message}
 													InputProps={{
@@ -438,6 +575,7 @@ function SiteConfigurationView() {
 													multiline
 													rows={3}
 													placeholder="Write a short summary about the company and its services..."
+													inputProps={{ maxLength: 1000 }}
 													error={Boolean(errors.company?.about)}
 													helperText={errors.company?.about?.message}
 													InputProps={{
@@ -463,6 +601,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. © 2026 Gravurtastisch. All rights reserved."
+													inputProps={{ maxLength: 150 }}
 													error={Boolean(errors.company?.copyright_text)}
 													helperText={errors.company?.copyright_text?.message}
 													InputProps={{
@@ -519,6 +658,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. info@ctasis.com"
+													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.contact?.email)}
 													helperText={errors.contact?.email?.message}
 													InputProps={{
@@ -551,6 +691,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. +91 79487893409"
+													inputProps={{ maxLength: 20 }}
 													error={Boolean(errors.contact?.phone)}
 													helperText={errors.contact?.phone?.message}
 													InputProps={{
@@ -583,6 +724,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. A-869, Jagatpur Road, Sarkhej - Gandhinagar Hwy, near BSNL Office, Gota"
+													inputProps={{ maxLength: 255 }}
 													error={Boolean(errors.contact?.address)}
 													helperText={errors.contact?.address?.message}
 													InputProps={{
@@ -615,6 +757,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. Ahmedabad"
+													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.contact?.city)}
 													helperText={errors.contact?.city?.message}
 													InputProps={{
@@ -640,6 +783,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. Gujarat"
+													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.contact?.state)}
 													helperText={errors.contact?.state?.message}
 													InputProps={{
@@ -665,6 +809,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. India"
+													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.contact?.country)}
 													helperText={errors.contact?.country?.message}
 													InputProps={{
@@ -690,6 +835,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. 382470"
+													inputProps={{ maxLength: 20 }}
 													error={Boolean(errors.contact?.postal_code)}
 													helperText={errors.contact?.postal_code?.message}
 													InputProps={{
@@ -715,6 +861,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. Mon–Fri, 10:30 AM – 8:30 PM IST"
+													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.contact?.working_hours)}
 													helperText={errors.contact?.working_hours?.message}
 													InputProps={{
@@ -747,6 +894,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. Asia/Kolkata"
+													inputProps={{ maxLength: 60 }}
 													error={Boolean(errors.contact?.timezone)}
 													helperText={errors.contact?.timezone?.message}
 													InputProps={{
@@ -803,6 +951,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. https://www.facebook.com/ctasinfoservices"
+													inputProps={{ maxLength: 200 }}
 													error={Boolean(errors.social_links?.facebook)}
 													helperText={errors.social_links?.facebook?.message}
 													InputProps={{
@@ -835,6 +984,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. https://instagram.com/ctasinfoservices/"
+													inputProps={{ maxLength: 200 }}
 													error={Boolean(errors.social_links?.instagram)}
 													helperText={errors.social_links?.instagram?.message}
 													InputProps={{
@@ -867,6 +1017,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. https://linkedin.com/company/ctas-info-services"
+													inputProps={{ maxLength: 200 }}
 													error={Boolean(errors.social_links?.linkedin)}
 													helperText={errors.social_links?.linkedin?.message}
 													InputProps={{
@@ -899,6 +1050,7 @@ function SiteConfigurationView() {
 													fullWidth
 													size="small"
 													placeholder="e.g. https://www.youtube.com/@ctasinfoservicesllp7030"
+													inputProps={{ maxLength: 200 }}
 													error={Boolean(errors.social_links?.youtube)}
 													helperText={errors.social_links?.youtube?.message}
 													InputProps={{

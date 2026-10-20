@@ -254,6 +254,22 @@ const syncUserSubscriptionPlans = async (userDocOrLean: any) => {
     }
   }
 
+  // 4. If user has no active paid plan and payment is unpaid/pending or canceled:
+  if (
+    !activePlan &&
+    (userDocOrLean.subscriptionStatus === 0 ||
+      userDocOrLean.subscriptionStatus === 3 ||
+      userDocOrLean.subscriptionStatus === 'pending_payment' ||
+      userDocOrLean.subscriptionStatus === 'canceled' ||
+      !userDocOrLean.subscriptionStatus)
+  ) {
+    if (userDocOrLean.status !== 0 || userDocOrLean.subscriptionStatus !== 3) {
+      userDocOrLean.status = 0; // Inactive
+      userDocOrLean.subscriptionStatus = 3; // 3: canceled
+      hasPlanUpdated = true;
+    }
+  }
+
   if (hasPlanUpdated) {
     if (!activePlan && (userDocOrLean.subscriptionStatus === 1 || userDocOrLean.subscriptionStatus === 'active')) {
       userDocOrLean.subscriptionStatus = 2; // 2: expired / past_due
@@ -273,6 +289,7 @@ const syncUserSubscriptionPlans = async (userDocOrLean: any) => {
             currentPlanId: userDocOrLean.currentPlanId,
             planLimits: userDocOrLean.planLimits,
             subscriptionStatus: userDocOrLean.subscriptionStatus,
+            status: userDocOrLean.status,
           },
         }
       ).catch((err: any) => {
@@ -353,14 +370,35 @@ const getEffectivePlanLimits = async (userOrId) => {
     if (parent) user = parent;
   }
 
+  const ordermodel = require('../models/order.model');
+  let usedReviewRequests = 0;
+  try {
+    const targetUserId = user._id || user.id;
+    if (targetUserId) {
+      const orderCount = await ordermodel.countDocuments({
+        userId: targetUserId,
+        $or: [{ isSent: true }, { isNeedToSend: true }],
+      });
+      usedReviewRequests = Math.max(
+        orderCount,
+        user.usedReviewRequests || 0,
+        user.planLimits?.usedReviewRequests || 0
+      );
+    }
+  } catch (_) {}
+
   // Check plans in user.plans array
   if (Array.isArray(user.plans) && user.plans.length > 0) {
     const { activePlan } = await syncUserSubscriptionPlans(user);
 
     if (activePlan) {
+      const maxQuota = Number(activePlan.request_quota) || user.planLimits?.maxReviewRequestsPerMonth || 1000;
       return {
         maxMarketplaces: Number(activePlan.marketplace) || user.planLimits?.maxMarketplaces || 5,
-        maxReviewRequestsPerMonth: Number(activePlan.request_quota) || user.planLimits?.maxReviewRequestsPerMonth || 1000,
+        maxReviewRequestsPerMonth: maxQuota,
+        usedReviewRequests,
+        remainingReviewRequests: Math.max(0, maxQuota - usedReviewRequests),
+        isLimitReached: usedReviewRequests >= maxQuota,
         planName: activePlan.name || '',
         planId: activePlan.planId || null,
         billingCycle: activePlan.billingCycle || 1,
@@ -383,9 +421,13 @@ const getEffectivePlanLimits = async (userOrId) => {
       user.subscriptionStatus === 'past_due';
 
     if (isLatestExpired) {
+      const maxQuota = Number(latestPlan.request_quota) || 1000;
       return {
         maxMarketplaces: Number(latestPlan.marketplace) || 5,
-        maxReviewRequestsPerMonth: Number(latestPlan.request_quota) || 1000,
+        maxReviewRequestsPerMonth: maxQuota,
+        usedReviewRequests,
+        remainingReviewRequests: Math.max(0, maxQuota - usedReviewRequests),
+        isLimitReached: true,
         planName: latestPlan.name || '',
         planId: latestPlan.planId || null,
         billingCycle: latestPlan.billingCycle || 1,
@@ -399,9 +441,13 @@ const getEffectivePlanLimits = async (userOrId) => {
   }
 
   // Fallback to legacy planLimits (e.g. for superadmin or un-planned users)
+  const legacyQuota = user.planLimits?.maxReviewRequestsPerMonth ?? 1000;
   return {
     maxMarketplaces: user.planLimits?.maxMarketplaces ?? 5,
-    maxReviewRequestsPerMonth: user.planLimits?.maxReviewRequestsPerMonth ?? 1000,
+    maxReviewRequestsPerMonth: legacyQuota,
+    usedReviewRequests,
+    remainingReviewRequests: Math.max(0, legacyQuota - usedReviewRequests),
+    isLimitReached: usedReviewRequests >= legacyQuota,
     planName: '',
     planId: user.currentPlanId || null,
     isExpired: false,

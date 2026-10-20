@@ -16,6 +16,15 @@ const getSession = catchAsync(async (req, res) => {
   res.status(result.status).send(result);
 });
 
+const cancelPayment = catchAsync(async (req, res) => {
+  const result = await paymentService.handleCancelPayment({
+    sessionId: req.body.sessionId,
+    planId: req.body.planId,
+    email: req.body.email,
+  });
+  res.status(result.status || httpStatus.OK).send(result);
+});
+
 /**
  * Stripe webhook — req.body must be the raw Buffer (see app.js).
  */
@@ -28,5 +37,6 @@ const stripeWebhook = catchAsync(async (req, res) => {
 module.exports = {
   createCheckout,
   getSession,
+  cancelPayment,
   stripeWebhook,
 };

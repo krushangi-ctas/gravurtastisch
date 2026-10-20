@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   type MRT_ColumnDef,
   type MRT_SortingState,
@@ -17,9 +17,12 @@ import {
   useTheme,
 } from '@mui/material';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { useQueryClient } from '@tanstack/react-query';
 import { Order } from '../../../api/types';
 import { useUpdateOrder } from '../../../api/hooks/orders/useUpdateOrder';
-import { useOrders } from '../../../api/hooks/orders/useOrders';
+import { useOrders, useMarketplace, ordersQueryKey } from '../../../api/hooks/orders/useOrders';
+import { OrdersFilters } from './OrdersHeader';
+import { useSnackbar } from 'notistack';
 import React from 'react';
 
 // Extended type for flattened orders
@@ -46,17 +49,51 @@ type FlattenedOrder = Order & {
 
 function OrdersTable({
   searchDate,
+  setSearchDate,
   searchText,
+  setSearchText,
   selectedMarketplace,
+  setSelectedMarketplace,
   canUpdateOrders = true,
 }: {
   searchDate: Record<string, Date | null>;
+  setSearchDate?: (date: Record<string, Date | null>) => void;
   searchText: string;
+  setSearchText?: (text: string) => void;
   selectedMarketplace: string[];
+  setSelectedMarketplace?: React.Dispatch<React.SetStateAction<string[]>>;
   canUpdateOrders?: boolean;
 }) {
+  const { enqueueSnackbar } = useSnackbar();
   const theme = useTheme();
   const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
+  const queryClient = useQueryClient();
+  const { data: marketplaces } = useMarketplace();
+
+  const handleReset = () => {
+    if (setSearchDate) setSearchDate({ from: null, to: null });
+    if (setSearchText) setSearchText('');
+    setPagination({ pageIndex: 0, pageSize: pagination.pageSize || 20 });
+    setSorting([{ id: 'purchaseDate', desc: true }]);
+    const defaultMarketplace = marketplaces?.find(
+      (item: any) =>
+        item.country_code?.toUpperCase() === 'IN' ||
+        item.country?.toLowerCase() === 'india'
+    ) || marketplaces?.[0];
+    if (setSelectedMarketplace && defaultMarketplace) {
+      setSelectedMarketplace([defaultMarketplace.marketplace_id]);
+    }
+    queryClient.invalidateQueries({ queryKey: ordersQueryKey });
+  };
+
+  const actionButtons = setSearchDate && setSelectedMarketplace ? (
+    <OrdersFilters
+      searchDate={searchDate}
+      setSearchDate={setSearchDate}
+      selectedMarketplace={selectedMarketplace}
+      setSelectedMarketplace={setSelectedMarketplace}
+    />
+  ) : null;
   // ---------------------------------------------------------------------
   // Shared, theme-driven style tokens.
   // Keeping every cell's look-and-feel in one place means the whole table
@@ -98,7 +135,6 @@ function OrdersTable({
   });
 
 
-  const debounceRef = useRef<boolean>(false);
 
   // State for sorting
   const [sorting, setSorting] = useState<MRT_SortingState>([
@@ -106,7 +142,19 @@ function OrdersTable({
   ]);
 
   // Derive sortKey and sortOrder from sorting state
-  const sortKey = sorting[0]?.id || 'purchaseDate';
+  const rawSortKey = sorting[0]?.id || 'purchaseDate';
+  const sortKeyMapping: Record<string, string> = {
+    purchaseDate: 'purchaseDate',
+    orderInfo: 'amazonOrderId',
+    amazonOrderId: 'amazonOrderId',
+    delivery: 'earliestDeliveryDate',
+    earliestDeliveryDate: 'earliestDeliveryDate',
+    totalAmount: 'orderTotal.amount',
+    city: 'shippingAddress.city',
+    title: 'orderItems.title',
+    ASIN: 'orderItems.ASIN',
+  };
+  const sortKey = sortKeyMapping[rawSortKey] || rawSortKey;
   const sortOrder = sorting[0]?.desc ? 'desc' : 'asc';
 
   // Call your API with the search value, pagination, and sorting
@@ -145,6 +193,14 @@ function OrdersTable({
   }, [searchDate?.from, searchDate?.to, searchText, sortKey, sortOrder]);
 
   const { mutate: sendFeedback } = useUpdateOrder();
+
+  const planLimits = (ordersResponse as any)?.planLimits;
+  const isQuotaExceeded = Boolean(
+    planLimits &&
+      (planLimits.isLimitReached ||
+        planLimits.remainingReviewRequests <= 0 ||
+        planLimits.usedReviewRequests >= planLimits.maxReviewRequestsPerMonth)
+  );
 
   // Extract orders data from the response and flatten orderItems
   const orders = ordersResponse?.data || [];
@@ -188,12 +244,16 @@ function OrdersTable({
         header: 'Order Date',
         size: 90,
         Cell: ({ row }) => {
+          if (!row.original || !row.original.purchaseDate) {
+            return null;
+          }
           if (!row.original.isFirstRow) {
             return <Box sx={{ height: 16 }} />; // Empty space for non-first rows
           }
 
           const purchaseDate = row.original.purchaseDate;
           const date = new Date(purchaseDate);
+          if (isNaN(date.getTime())) return null;
           const dateString = date.toLocaleDateString('en-GB');
           const timeString = date.toLocaleTimeString([], {
             hour: '2-digit',
@@ -220,6 +280,9 @@ function OrdersTable({
         size: 160,
         accessorKey: 'amazonOrderId',
         Cell: ({ row }) => {
+          if (!row.original || !row.original.amazonOrderId) {
+            return null;
+          }
           if (!row.original.isFirstRow) {
             return <Box sx={{ height: 16 }} />; // Empty space for non-first rows
           }
@@ -269,6 +332,9 @@ function OrdersTable({
         enableColumnFilter: false,
         enableSorting: false,
         Cell: ({ row }) => {
+          if (!row.original || !Array.isArray(row.original.orderItems)) {
+            return null;
+          }
           const indexOfOrder = row.original.orderItems.findIndex(
             (orderItem) =>
               orderItem?.orderItemId === row.original.orderItem?.orderItemId
@@ -349,7 +415,16 @@ function OrdersTable({
               <Button
                 key="feedback"
                 size="small"
-                onClick={() => sendFeedback([row.original._id])}
+                onClick={() => {
+                  if (isQuotaExceeded) {
+                    enqueueSnackbar(
+                      `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
+                      { variant: 'error', autoHideDuration: 5000 }
+                    );
+                    return;
+                  }
+                  sendFeedback([row.original._id]);
+                }}
                 startIcon={<FuseSvgIcon size={13}>lucide:send</FuseSvgIcon>}
                 sx={{
                   borderRadius: '6px',
@@ -534,6 +609,7 @@ function OrdersTable({
         enableHiding: false,
         enablePinning: false,
         enableResizing: false,
+        enableSorting: false,
         Cell: ({ row }) => {
           const orderItem = row.original.orderItem;
           if (!orderItem)
@@ -588,9 +664,13 @@ function OrdersTable({
         id: 'channelInfo',
         header: 'Channel',
         size: 125,
+        enableSorting: false,
         Cell: ({ row }) => {
-          const fulfillment = row.original.fulfillmentChannel;
-          const sales = row.original.salesChannel;
+          const fulfillment = row.original?.fulfillmentChannel;
+          const sales = row.original?.salesChannel;
+          if (!fulfillment && !sales) {
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+          }
           const isAFN = fulfillment === 'AFN' || fulfillment === 'FBA';
 
           return (
@@ -645,11 +725,14 @@ function OrdersTable({
         size: 105,
         accessorKey: 'earliestDeliveryDate',
         Cell: ({ row }) => {
-          const edd = row.original.earliestDeliveryDate;
+          const edd = row.original?.earliestDeliveryDate;
+          if (!edd) {
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+          }
           const daysDiff =
-            row.original.daysDifference ??
-            row.original.deliveryDays ??
-            row.original.daysToDelivery ??
+            row.original?.daysDifference ??
+            row.original?.deliveryDays ??
+            row.original?.daysToDelivery ??
             null;
 
           return (
@@ -805,13 +888,20 @@ function OrdersTable({
       }}
     >
       <DataTable
+        title="Orders"
+        icon="heroicons-outline:shopping-bag"
+        actionButtons={actionButtons}
+        onRefresh={handleReset}
         enableRowActions={false}
         enableRowSelection={false}
         data={flattenedOrders}
         columns={columns}
-        enableGlobalFilter={false}
+        enableGlobalFilter={true}
+        onGlobalFilterChange={setSearchText}
         state={{
+          globalFilter: searchText,
           isLoading,
+          showSkeletons: isLoading,
           pagination,
           sorting,
         }}
@@ -819,26 +909,13 @@ function OrdersTable({
           setPagination((prev) => {
             const newPagination =
               typeof updater === 'function' ? updater(prev) : updater;
-            if (
-              prev.pageIndex !== newPagination.pageIndex ||
-              prev.pageSize !== newPagination.pageSize
-            ) {
-              if (!debounceRef.current) {
-                debounceRef.current = true;
-                setTimeout(() => {
-                  debounceRef.current = false;
-                }, 1000);
-                return newPagination;
-              } else {
-                return prev;
-              }
-            }
-            return prev;
+            return newPagination;
           });
         }}
         onSortingChange={setSorting}
         manualPagination={true}
         manualSorting={true}
+        manualFiltering={true}
         pageCount={mappedPaginationInfo.totalPages}
         rowCount={mappedPaginationInfo.totalItems}
         enablePagination={true}
@@ -1027,6 +1104,13 @@ function OrdersTable({
               key="feedback"
               disabled={disabled}
               onClick={() => {
+                if (isQuotaExceeded) {
+                  enqueueSnackbar(
+                    `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
+                    { variant: 'error', autoHideDuration: 5000 }
+                  );
+                  return;
+                }
                 if (!disabled) {
                   sendFeedback([row.original._id]);
                   closeMenu();

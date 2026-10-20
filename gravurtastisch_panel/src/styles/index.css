@@ -40,35 +40,35 @@ Custom variants
 Theme variables
 */
 @theme {
-    --color-primary-50: #f6f6f5;
-    --color-primary-100: #ebebea;
-    --color-primary-200: #d5d5d3;
-    --color-primary-300: #b4b4b1;
-    --color-primary-400: #787875;
-    --color-primary-500: #484848;
-    --color-primary-600: #383838;
-    --color-primary-700: #282828;
-    --color-primary-800: #1f1f1f;
-    --color-primary-900: #181818;
-    --color-primary-950: #101010;
-    --color-primary: #282828;
-    --color-primary-light: #4A4A4A;
-    --color-primary-dark: #181818;
+    --color-primary-50: #eff6ff;
+    --color-primary-100: #dbeafe;
+    --color-primary-200: #bfdbfe;
+    --color-primary-300: #93c5fd;
+    --color-primary-400: #60a5fa;
+    --color-primary-500: #0032ab;
+    --color-primary-600: #002a94;
+    --color-primary-700: #00227a;
+    --color-primary-800: #001b63;
+    --color-primary-900: #00144d;
+    --color-primary-950: #0b132b;
+    --color-primary: #0032ab;
+    --color-primary-light: #2563eb;
+    --color-primary-dark: #00227a;
 
-    --color-secondary-50: #FAF8F5;
-    --color-secondary-100: #F5EFE6;
-    --color-secondary-200: #EADDCB;
-    --color-secondary-300: #DFCBB0;
-    --color-secondary-400: #D8BF9E;
-    --color-secondary-500: #D2B48C;
-    --color-secondary-600: #C49F73;
-    --color-secondary-700: #B38B5B;
-    --color-secondary-800: #8E6B40;
-    --color-secondary-900: #684D29;
-    --color-secondary-950: #3E2B14;
-    --color-secondary: #D2B48C;
-    --color-secondary-light: #DECAA8;
-    --color-secondary-dark: #B8966C;
+    --color-secondary-50: #eff6ff;
+    --color-secondary-100: #dbeafe;
+    --color-secondary-200: #bfdbfe;
+    --color-secondary-300: #93c5fd;
+    --color-secondary-400: #60a5fa;
+    --color-secondary-500: #155dfc;
+    --color-secondary-600: #2563eb;
+    --color-secondary-700: #1d4ed8;
+    --color-secondary-800: #1e40af;
+    --color-secondary-900: #1e3a8a;
+    --color-secondary-950: #172554;
+    --color-secondary: #155dfc;
+    --color-secondary-light: #3080ff;
+    --color-secondary-dark: #0032ab;
 
     --breakpoint-xs: 0px;
     --breakpoint-sm: 37.5rem; /* 600px */
@@ -160,3 +160,152 @@ Tables styles
 @import './tables.css';
 
 @import './tiptap.css';
+
+/**
+ * Modern Website-Style Form Inputs & Dialog Fields
+ * Exactly matching gravurtastisch_web RegisterAndContact input styles
+ */
+.MuiDialogContent-root .MuiOutlinedInput-root,
+.form-field .MuiOutlinedInput-root,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root,
+.MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root {
+	border-radius: 12px !important;
+	background-color: #f8fafc !important;
+	min-height: 44px;
+	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
+	transition: all 0.2s ease-in-out !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-root,
+.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root,
+.dark .MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root {
+	background-color: #0f172a !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root fieldset,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root fieldset,
+.MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root fieldset {
+	border-color: #e2e8f0 !important;
+	border-width: 1px !important;
+	transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-root fieldset,
+.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root fieldset {
+	border-color: #334155 !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root:hover fieldset,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root:hover fieldset {
+	border-color: #0032ab !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused {
+	background-color: #ffffff !important;
+	box-shadow: 0 0 0 3px rgba(0, 50, 171, 0.15) !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused,
+.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused {
+	background-color: #0f172a !important;
+	box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.25) !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused fieldset,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused fieldset {
+	border-color: #0032ab !important;
+	border-width: 1.5px !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-input,
+form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-input {
+	padding: 10px 14px !important;
+	font-size: 13.5px !important;
+	color: #0f172a !important;
+}
+
+/* Explicit Table Toolbar Controls (Search, Filters, Refresh, Actions) */
+.MRT_TopToolbar .table-toolbar-control,
+.MRT_TopToolbar .MuiFormControl-root,
+.table-toolbar-control {
+	min-height: 38px !important;
+	max-height: 38px !important;
+	height: 38px !important;
+}
+
+.MRT_TopToolbar .table-toolbar-control .MuiOutlinedInput-root,
+.MRT_TopToolbar .MuiFormControl-root .MuiOutlinedInput-root,
+.table-toolbar-control .MuiOutlinedInput-root {
+	min-height: 38px !important;
+	max-height: 38px !important;
+	height: 38px !important;
+	border-radius: 8px !important;
+}
+
+.table-toolbar-control .MuiSelect-select,
+.MRT_TopToolbar .MuiSelect-select {
+	height: 38px !important;
+	min-height: 38px !important;
+	line-height: 38px !important;
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	display: flex !important;
+	align-items: center !important;
+	box-sizing: border-box !important;
+}
+
+.dark .MuiDialogContent-root .MuiOutlinedInput-input,
+.dark form .MuiOutlinedInput-input {
+	color: #f8fafc !important;
+}
+
+.MuiDialogContent-root .MuiOutlinedInput-input::placeholder,
+form .MuiOutlinedInput-input::placeholder {
+	color: #94a3b8 !important;
+	font-style: italic !important;
+	opacity: 1 !important;
+}
+
+/* Number input - disable spin buttons */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button {
+	-webkit-appearance: none !important;
+	margin: 0 !important;
+}
+
+input[type=number] {
+	-moz-appearance: textfield !important;
+}
+
+/* Form & Dialog Uppercase Field Labels */
+.field-label,
+.form-label,
+label.MuiFormLabel-root {
+	display: block !important;
+	font-size: 11px !important;
+	font-weight: 700 !important;
+	letter-spacing: 0.08em !important;
+	text-transform: uppercase !important;
+	color: #334155 !important;
+	margin-bottom: 6px !important;
+}
+
+.dark .field-label,
+.dark .form-label,
+.dark label.MuiFormLabel-root {
+	color: #94a3b8 !important;
+}
+
+/* Table grid borders matching Orders table */
+.MuiTable-root .MuiTableCell-root,
+.MuiTable-root .MuiTableRow-root {
+	border-bottom: 1px solid #e2e8f0 !important;
+}
+
+.dark .MuiTable-root .MuiTableCell-root,
+.dark .MuiTable-root .MuiTableRow-root {
+	border-bottom: 1px solid #1e293b !important;
+}
+
+

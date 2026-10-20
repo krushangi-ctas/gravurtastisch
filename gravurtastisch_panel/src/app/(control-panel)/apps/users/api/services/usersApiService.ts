@@ -43,6 +43,7 @@ export interface User {
 	currentPlanId?: string | any;
 	plans?: UserPlanItem[];
 	subscriptionStatus?: number;
+	createdAt?: string;
 }
 
 export interface AssignPlanPayload {

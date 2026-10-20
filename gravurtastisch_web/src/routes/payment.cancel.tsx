@@ -1,25 +1,56 @@
+import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { XCircle } from "lucide-react";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/site/Container";
+import { cancelPaymentSession } from "@/lib/api";
+
+type PaymentCancelSearch = {
+  session_id?: string;
+  plan?: string;
+  email?: string;
+};
 
 export const Route = createFileRoute("/payment/cancel")({
+  validateSearch: (search: Record<string, unknown>): PaymentCancelSearch => ({
+    session_id: typeof search.session_id === "string" ? search.session_id : undefined,
+    plan: typeof search.plan === "string" ? search.plan : undefined,
+    email: typeof search.email === "string" ? search.email : undefined,
+  }),
   component: PaymentCancelPage,
 });
 
 function PaymentCancelPage() {
+  const { session_id, plan, email } = Route.useSearch();
+
+  useEffect(() => {
+    if (session_id || plan || email) {
+      cancelPaymentSession({
+        sessionId: session_id,
+        planId: plan,
+        email,
+      }).catch((err) => {
+        console.warn("Payment cancellation sync error:", err);
+      });
+    }
+  }, [session_id, plan, email]);
+
   return (
     <div className="min-h-screen bg-surface text-navy-deep flex flex-col">
       <Nav />
       <main className="flex-1 pt-28 pb-16">
         <Container className="max-w-xl">
-          <div className="rounded-3xl border border-border bg-white p-8 sm:p-10 shadow-sm text-center">
-            <XCircle className="mx-auto h-14 w-14 text-rose-500" />
-            <h1 className="mt-6 text-2xl font-extrabold">Checkout canceled</h1>
+          <div className="rounded-3xl border border-rose-100 bg-white p-8 sm:p-10 shadow-sm text-center">
+            <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-rose-50 text-rose-500">
+              <XCircle className="h-10 w-10 text-rose-500" />
+            </div>
+            <h1 className="mt-5 text-2xl font-extrabold text-navy-deep">
+              Checkout canceled
+            </h1>
             <p className="mt-2 text-slate-body text-sm leading-relaxed">
-              No charge was made. You can pick a plan again whenever you are ready - payment goes
-              through Stripe Checkout securely.
+              No charge was made. Your registration has been saved as inactive.
+              You can complete your subscription anytime whenever you are ready.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link

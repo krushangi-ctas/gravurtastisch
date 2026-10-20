@@ -26,6 +26,16 @@ router.get(
 );
 
 /**
+ * Public: handle cancelled Stripe Checkout and register seller as inactive.
+ * POST /v1/payments/cancel
+ */
+router.post(
+  '/cancel',
+  validate(paymentValidation.cancelPayment),
+  paymentController.cancelPayment
+);
+
+/**
  * Stripe webhook is mounted in app.js with express.raw (signature verification).
  * Kept here only as documentation — do not mount JSON-parsed webhook on this router.
  */

@@ -7,9 +7,9 @@ const FEATURES = [
 		icon: 'heroicons-solid:photo',
 		label: 'Photo Cups & Mugs',
 		description: 'Full-wrap prints and heat-changing cups',
-		accentColor: '#D2B48C',
-		badgeBg: 'rgba(210, 180, 140, 0.14)',
-		borderColor: 'rgba(210, 180, 140, 0.35)'
+		accentColor: '#60A5FA',
+		badgeBg: 'rgba(96, 165, 250, 0.14)',
+		borderColor: 'rgba(96, 165, 250, 0.35)'
 	},
 	{
 		icon: 'heroicons-solid:sparkles',
