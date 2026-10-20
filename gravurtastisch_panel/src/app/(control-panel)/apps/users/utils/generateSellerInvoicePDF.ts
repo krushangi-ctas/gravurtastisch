@@ -1,6 +1,6 @@
 import { jsPDF } from 'jspdf';
 import moment from 'moment';
-import { User } from '../api/types';
+import { User } from '../api/services/usersApiService';
 
 export function generateSellerInvoicePDF(user: User): void {
 	const doc = new jsPDF({

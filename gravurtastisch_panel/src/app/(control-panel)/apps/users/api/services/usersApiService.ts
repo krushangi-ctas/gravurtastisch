@@ -43,6 +43,7 @@ export interface User {
 	currentPlanId?: string | any;
 	plans?: UserPlanItem[];
 	subscriptionStatus?: number;
+	stripeSubscriptionId?: string;
 	createdAt?: string;
 }
 
