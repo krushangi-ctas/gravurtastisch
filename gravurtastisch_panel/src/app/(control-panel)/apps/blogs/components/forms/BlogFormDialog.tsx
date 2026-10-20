@@ -47,11 +47,13 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [previewModalUrl, setPreviewModalUrl] = useState<string | null>(null);
 	const [previewModalTitle, setPreviewModalTitle] = useState<string>('');
+	const [errors, setErrors] = useState<{ blogTitle?: string; shortDescription?: string }>({});
 	const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
 	// Populate form state when editing or resetting
 	useEffect(() => {
 		if (open) {
+			setErrors({});
 			if (blog) {
 				setBlogTitle(blog.blog_title || '');
 				setShortDescription(blog.short_description || '');
@@ -168,8 +170,26 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 
-		if (!blogTitle.trim()) {
-			enqueueSnackbar('Blog title is required', { variant: 'error' });
+		const trimmedTitle = blogTitle.trim();
+		const trimmedShortDesc = shortDescription.trim();
+
+		const newErrors: { blogTitle?: string; shortDescription?: string } = {};
+
+		if (!trimmedTitle) {
+			newErrors.blogTitle = 'Blog title is required';
+		} else if (trimmedTitle.length < 3) {
+			newErrors.blogTitle = 'Blog title must be at least 3 characters';
+		} else if (trimmedTitle.length > 200) {
+			newErrors.blogTitle = 'Blog title must not exceed 200 characters';
+		}
+
+		if (trimmedShortDesc.length > 500) {
+			newErrors.shortDescription = 'Short description must not exceed 500 characters';
+		}
+
+		if (Object.keys(newErrors).length > 0) {
+			setErrors(newErrors);
+			enqueueSnackbar('Please correct the highlighted errors in the form', { variant: 'error' });
 			return;
 		}
 
@@ -185,8 +205,8 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				await updateMutation.mutateAsync({
 					blogId,
 					payload: {
-						blog_title: blogTitle.trim(),
-						short_description: shortDescription.trim(),
+						blog_title: trimmedTitle,
+						short_description: trimmedShortDesc,
 						description: descriptionJson,
 						description_images: relativeImagePaths
 					}
@@ -194,8 +214,8 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				enqueueSnackbar('Blog updated successfully', { variant: 'success', autoHideDuration: 2000 });
 			} else {
 				await createMutation.mutateAsync({
-					blog_title: blogTitle.trim(),
-					short_description: shortDescription.trim(),
+					blog_title: trimmedTitle,
+					short_description: trimmedShortDesc,
 					description: descriptionJson,
 					description_images: relativeImagePaths,
 					status: 1
@@ -287,7 +307,13 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 									required
 									placeholder="Enter compelling blog headline..."
 									value={blogTitle}
-									onChange={(e) => setBlogTitle(e.target.value)}
+									onChange={(e) => {
+										setBlogTitle(e.target.value);
+										if (errors.blogTitle) setErrors((prev) => ({ ...prev, blogTitle: undefined }));
+									}}
+									inputProps={{ maxLength: 200 }}
+									error={Boolean(errors.blogTitle)}
+									helperText={errors.blogTitle}
 									variant="outlined"
 									size="small"
 									InputProps={{
@@ -312,7 +338,13 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 									rows={2}
 									placeholder="Brief summary for blog cards and preview lists..."
 									value={shortDescription}
-									onChange={(e) => setShortDescription(e.target.value)}
+									onChange={(e) => {
+										setShortDescription(e.target.value);
+										if (errors.shortDescription) setErrors((prev) => ({ ...prev, shortDescription: undefined }));
+									}}
+									inputProps={{ maxLength: 500 }}
+									error={Boolean(errors.shortDescription)}
+									helperText={errors.shortDescription}
 									variant="outlined"
 									size="small"
 									InputProps={{

@@ -105,6 +105,11 @@ function RolesView() {
 	const [roleName, setRoleName] = useState('');
 	const [description, setDescription] = useState('');
 	const [matrix, setMatrix] = useState<Record<string, ReturnType<typeof emptyFlags>>>({});
+	const [roleErrors, setRoleErrors] = useState<{
+		roleName?: string;
+		description?: string;
+		permissions?: string;
+	}>({});
 
 	// Delete confirmation state
 	const [confirmDeleteState, setConfirmDeleteState] = useState<{
@@ -115,6 +120,36 @@ function RolesView() {
 		role: null
 	});
 	const [isActionLoading, setIsActionLoading] = useState(false);
+
+	const validateRole = (
+		nameVal: string,
+		descVal: string,
+		matrixVal: Record<string, ReturnType<typeof emptyFlags>>
+	) => {
+		const errs: { roleName?: string; description?: string; permissions?: string } = {};
+
+		const trimmedName = nameVal.trim();
+		if (!trimmedName) {
+			errs.roleName = 'Role name is required.';
+		} else if (trimmedName.length < 2) {
+			errs.roleName = 'Role name must be at least 2 characters.';
+		} else if (trimmedName.length > 60) {
+			errs.roleName = 'Role name cannot exceed 60 characters.';
+		}
+
+		if (descVal.length > 255) {
+			errs.description = 'Description cannot exceed 255 characters.';
+		}
+
+		const hasAnyPermission = Object.values(matrixVal).some(
+			(flags) => flags.canView || flags.canCreate || flags.canUpdate || flags.canDelete
+		);
+		if (!hasAnyPermission) {
+			errs.permissions = 'Please select at least one permission for this role.';
+		}
+
+		return errs;
+	};
 
 	useEffect(() => {
 		if (!sections.length) return;
@@ -129,6 +164,7 @@ function RolesView() {
 		setEditing(null);
 		setRoleName('');
 		setDescription('');
+		setRoleErrors({});
 		const next: Record<string, ReturnType<typeof emptyFlags>> = {};
 		sections.forEach((section) => {
 			next[section.key] = emptyFlags();
@@ -141,6 +177,7 @@ function RolesView() {
 		setEditing(role);
 		setRoleName(role.role_name);
 		setDescription(role.description || '');
+		setRoleErrors({});
 		const next: Record<string, ReturnType<typeof emptyFlags>> = {};
 		sections.forEach((section) => {
 			const found = role.permissions?.find((p) => p.section === section.key);
@@ -172,10 +209,14 @@ function RolesView() {
 		}));
 
 	const handleSave = async () => {
-		if (!roleName.trim()) {
-			enqueueSnackbar('Role name is required.', { variant: 'error' });
+		const errs = validateRole(roleName, description, matrix);
+		setRoleErrors(errs);
+		if (Object.keys(errs).length > 0) {
+			const firstErr = Object.values(errs)[0];
+			enqueueSnackbar(firstErr, { variant: 'error' });
 			return;
 		}
+
 		try {
 			if (editing) {
 				const roleId = editing.id || editing._id;
@@ -184,7 +225,7 @@ function RolesView() {
 					roleId,
 					payload: {
 						role_name: roleName.trim(),
-						description,
+						description: description.trim(),
 						permissions: buildPermissions()
 					}
 				});
@@ -192,13 +233,14 @@ function RolesView() {
 			} else {
 				await createMutation.mutateAsync({
 					role_name: roleName.trim(),
-					description,
+					description: description.trim(),
 					scope,
 					permissions: buildPermissions()
 				});
 				enqueueSnackbar('Role created.', { variant: 'success' });
 			}
 			setDialogOpen(false);
+			setRoleErrors({});
 		} catch (err: unknown) {
 			const errMsg = getErrorMessage(err, 'Failed to save role.');
 			enqueueSnackbar(errMsg, {
@@ -490,9 +532,15 @@ function RolesView() {
 											required
 											placeholder="e.g., Production Lead, Support Specialist"
 											value={roleName}
-											onChange={(e) => setRoleName(e.target.value)}
+											onChange={(e) => {
+												setRoleName(e.target.value);
+												if (roleErrors.roleName) setRoleErrors((prev) => ({ ...prev, roleName: undefined }));
+											}}
+											error={!!roleErrors.roleName}
+											helperText={roleErrors.roleName}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 60 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -513,11 +561,17 @@ function RolesView() {
 											fullWidth
 											placeholder="Briefly describe responsibilities and scope for this role..."
 											value={description}
-											onChange={(e) => setDescription(e.target.value)}
+											onChange={(e) => {
+												setDescription(e.target.value);
+												if (roleErrors.description) setRoleErrors((prev) => ({ ...prev, description: undefined }));
+											}}
+											error={!!roleErrors.description}
+											helperText={roleErrors.description}
 											variant="outlined"
 											size="small"
 											multiline
 											minRows={2}
+											inputProps={{ maxLength: 255 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start" sx={{ alignSelf: 'flex-start', mt: '3px' }}>
@@ -590,6 +644,11 @@ function RolesView() {
 											</TableBody>
 										</Table>
 									</div>
+									{roleErrors.permissions && (
+										<Typography variant="caption" color="error" className="font-semibold px-2 block">
+											{roleErrors.permissions}
+										</Typography>
+									)}
 								</div>
 							</DialogContent>
 

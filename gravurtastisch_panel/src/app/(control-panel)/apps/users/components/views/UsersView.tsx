@@ -43,6 +43,10 @@ import { getErrorMessage } from '@/utils/errorMessage';
 import AssignPlanDialog from '../dialogs/AssignPlanDialog';
 import { generateSellerInvoicePDF } from '../../utils/generateSellerInvoicePDF';
 
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
+const PHONE_CHARS_REGEX = /^[+0-9\s\-()]+$/;
+
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
 	'& .container': {
@@ -181,6 +185,104 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const [maxReviewRequestsPerMonth, setMaxReviewRequestsPerMonth] = useState(1000);
 	const [editBusinessName, setEditBusinessName] = useState('');
 
+	const [createErrors, setCreateErrors] = useState<{
+		name?: string;
+		email?: string;
+		phone?: string;
+		roleId?: string;
+	}>({});
+
+	const [editErrors, setEditErrors] = useState<{
+		name?: string;
+		phone?: string;
+		roleId?: string;
+		businessName?: string;
+	}>({});
+
+	const validateCreateUser = (
+		nameVal: string,
+		emailVal: string,
+		phoneVal: string,
+		roleVal: string
+	) => {
+		const errs: { name?: string; email?: string; phone?: string; roleId?: string } = {};
+
+		const trimmedName = nameVal.trim();
+		if (!trimmedName) {
+			errs.name = 'Full name is required.';
+		} else if (trimmedName.length < 2) {
+			errs.name = 'Full name must be at least 2 characters.';
+		} else if (trimmedName.length > 60) {
+			errs.name = 'Full name cannot exceed 60 characters.';
+		} else if (!NAME_REGEX.test(trimmedName)) {
+			errs.name = 'Full name can only contain letters, spaces, hyphens, and apostrophes.';
+		}
+
+		const trimmedEmail = emailVal.trim();
+		if (!trimmedEmail) {
+			errs.email = 'Email address is required.';
+		} else if (trimmedEmail.length > 100) {
+			errs.email = 'Email address cannot exceed 100 characters.';
+		} else if (!EMAIL_REGEX.test(trimmedEmail)) {
+			errs.email = 'Please enter a valid email address.';
+		}
+
+		const trimmedPhone = phoneVal.trim();
+		if (trimmedPhone) {
+			const digitsOnly = trimmedPhone.replace(/\D/g, '');
+			if (trimmedPhone.length > 20) {
+				errs.phone = 'Phone number cannot exceed 20 characters.';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
+				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			}
+		}
+
+		if (!roleVal) {
+			errs.roleId = 'Please select a role.';
+		}
+
+		return errs;
+	};
+
+	const validateEditUser = (
+		nameVal: string,
+		phoneVal: string,
+		roleVal: string,
+		businessVal?: string
+	) => {
+		const errs: { name?: string; phone?: string; roleId?: string; businessName?: string } = {};
+
+		const trimmedName = nameVal.trim();
+		if (!trimmedName) {
+			errs.name = 'Full name is required.';
+		} else if (trimmedName.length < 2) {
+			errs.name = 'Full name must be at least 2 characters.';
+		} else if (trimmedName.length > 60) {
+			errs.name = 'Full name cannot exceed 60 characters.';
+		} else if (!NAME_REGEX.test(trimmedName)) {
+			errs.name = 'Full name can only contain letters, spaces, hyphens, and apostrophes.';
+		}
+
+		const trimmedPhone = phoneVal.trim();
+		if (trimmedPhone) {
+			const digitsOnly = trimmedPhone.replace(/\D/g, '');
+			if (trimmedPhone.length > 20) {
+				errs.phone = 'Phone number cannot exceed 20 characters.';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
+				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			}
+		}
+
+		if (isSellersMode && businessVal !== undefined) {
+			const trimmedBiz = businessVal.trim();
+			if (trimmedBiz.length > 100) {
+				errs.businessName = 'Brand name cannot exceed 100 characters.';
+			}
+		}
+
+		return errs;
+	};
+
 	useEffect(() => {
 		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
 	}, [variant]);
@@ -240,18 +342,23 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		setFormEmail('');
 		setFormPhone('');
 		setFormRoleId('');
+		setCreateErrors({});
 	};
 
 	const handleCreate = async () => {
-		if (!formName.trim() || !formEmail.trim() || !formRoleId) {
-			enqueueSnackbar('Name, email, and role are required.', { variant: 'error' });
+		const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+		setCreateErrors(errs);
+		if (Object.keys(errs).length > 0) {
+			const firstError = Object.values(errs)[0];
+			enqueueSnackbar(firstError, { variant: 'error' });
 			return;
 		}
+
 		try {
 			const payload = {
 				name: formName.trim(),
 				email: formEmail.trim(),
-				contact_no: formPhone,
+				contact_no: formPhone.trim(),
 				role_id: formRoleId
 			};
 			if (isTeamMode) {
@@ -340,14 +447,28 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		if (!selectedUser) return;
 		const userId = selectedUser._id ?? selectedUser.id;
 		if (!userId) return;
+
+		const errs = validateEditUser(
+			formName,
+			formPhone,
+			formRoleId,
+			isSellersMode ? editBusinessName : undefined
+		);
+		setEditErrors(errs);
+		if (Object.keys(errs).length > 0) {
+			const firstError = Object.values(errs)[0];
+			enqueueSnackbar(firstError, { variant: 'error' });
+			return;
+		}
+
 		try {
 			await updateMutation.mutateAsync({
 				userId,
 				payload: {
-					name: formName,
-					contact_no: formPhone,
+					name: formName.trim(),
+					contact_no: formPhone.trim(),
 					role_id: formRoleId || undefined,
-					businessName: isSellersMode ? editBusinessName : undefined,
+					businessName: isSellersMode ? editBusinessName.trim() : undefined,
 					planLimits: isSellersMode
 						? {
 							maxMarketplaces,
@@ -358,6 +479,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			});
 			enqueueSnackbar('User updated.', { variant: 'success' });
 			setEditOpen(false);
+			setEditErrors({});
 		} catch (err: unknown) {
 			const errMsg = getErrorMessage(err, 'Failed to update user.');
 			enqueueSnackbar(errMsg, {
@@ -1438,9 +1560,19 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											required
 											placeholder="e.g., Alex Wright"
 											value={formName}
-											onChange={(e) => setFormName(e.target.value)}
+											onChange={(e) => {
+												setFormName(e.target.value);
+												if (createErrors.name) setCreateErrors((prev) => ({ ...prev, name: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+												setCreateErrors((prev) => ({ ...prev, name: errs.name }));
+											}}
+											error={!!createErrors.name}
+											helperText={createErrors.name}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 60 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1463,9 +1595,19 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											type="email"
 											placeholder="e.g., alex@gravurtastisch.de"
 											value={formEmail}
-											onChange={(e) => setFormEmail(e.target.value)}
+											onChange={(e) => {
+												setFormEmail(e.target.value);
+												if (createErrors.email) setCreateErrors((prev) => ({ ...prev, email: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+												setCreateErrors((prev) => ({ ...prev, email: errs.email }));
+											}}
+											error={!!createErrors.email}
+											helperText={createErrors.email}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 100 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1486,9 +1628,19 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											fullWidth
 											placeholder="e.g., +49 151 2345001"
 											value={formPhone}
-											onChange={(e) => setFormPhone(e.target.value)}
+											onChange={(e) => {
+												setFormPhone(e.target.value);
+												if (createErrors.phone) setCreateErrors((prev) => ({ ...prev, phone: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
+												setCreateErrors((prev) => ({ ...prev, phone: errs.phone }));
+											}}
+											error={!!createErrors.phone}
+											helperText={createErrors.phone}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 20 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1505,10 +1657,13 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
 											Role <span className="text-red-500">*</span>
 										</label>
-										<FormControl fullWidth size="small" required>
+										<FormControl fullWidth size="small" required error={!!createErrors.roleId}>
 											<Select
 												value={formRoleId}
-												onChange={(e) => setFormRoleId(String(e.target.value))}
+												onChange={(e) => {
+													setFormRoleId(String(e.target.value));
+													if (createErrors.roleId) setCreateErrors((prev) => ({ ...prev, roleId: undefined }));
+												}}
 												displayEmpty
 												renderValue={(selected) => {
 													if (!selected) {
@@ -1534,6 +1689,11 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 													);
 												})}
 											</Select>
+											{createErrors.roleId && (
+												<Typography variant="caption" color="error" className="mt-1">
+													{createErrors.roleId}
+												</Typography>
+											)}
 										</FormControl>
 										{!roles.length && (
 											<Typography variant="body2" className="text-amber-600 text-xs mt-1.5 flex items-center gap-1">
@@ -1639,15 +1799,22 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
 										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
-											Full Name
+											Full Name <span className="text-red-500">*</span>
 										</label>
 										<TextField
 											fullWidth
+											required
 											placeholder="Full Name"
 											value={formName}
-											onChange={(e) => setFormName(e.target.value)}
+											onChange={(e) => {
+												setFormName(e.target.value);
+												if (editErrors.name) setEditErrors((prev) => ({ ...prev, name: undefined }));
+											}}
+											error={!!editErrors.name}
+											helperText={editErrors.name}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 60 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1668,9 +1835,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											fullWidth
 											placeholder="Phone Number"
 											value={formPhone}
-											onChange={(e) => setFormPhone(e.target.value)}
+											onChange={(e) => {
+												setFormPhone(e.target.value);
+												if (editErrors.phone) setEditErrors((prev) => ({ ...prev, phone: undefined }));
+											}}
+											error={!!editErrors.phone}
+											helperText={editErrors.phone}
 											variant="outlined"
 											size="small"
+											inputProps={{ maxLength: 20 }}
 											InputProps={{
 												startAdornment: (
 													<InputAdornment position="start">
@@ -1690,7 +1863,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										<FormControl fullWidth size="small">
 											<Select
 												value={formRoleId}
-												onChange={(e) => setFormRoleId(String(e.target.value))}
+												onChange={(e) => {
+													setFormRoleId(String(e.target.value));
+													if (editErrors.roleId) setEditErrors((prev) => ({ ...prev, roleId: undefined }));
+												}}
 												displayEmpty
 												renderValue={(selected) => {
 													if (!selected) {
@@ -1728,10 +1904,16 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 												<TextField
 													placeholder="Brand Name"
 													value={editBusinessName}
-													onChange={(e) => setEditBusinessName(e.target.value)}
+													onChange={(e) => {
+														setEditBusinessName(e.target.value);
+														if (editErrors.businessName) setEditErrors((prev) => ({ ...prev, businessName: undefined }));
+													}}
+													error={!!editErrors.businessName}
+													helperText={editErrors.businessName}
 													fullWidth
 													variant="outlined"
 													size="small"
+													inputProps={{ maxLength: 100 }}
 													InputProps={{
 														startAdornment: (
 															<InputAdornment position="start">

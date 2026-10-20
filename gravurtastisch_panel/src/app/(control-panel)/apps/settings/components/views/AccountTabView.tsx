@@ -3,7 +3,9 @@
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { z } from 'zod';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller as HookFormController, useForm } from 'react-hook-form';
+
+const Controller = HookFormController as React.ComponentType<any>;
 import { zodResolver } from '@hookform/resolvers/zod';
 import TextField from '@mui/material/TextField';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -23,23 +25,27 @@ const defaultValues: FormType = {
   // phone: "",
 };
 
+const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
+
 /**
  * Form Validation Schema
  */
 const schema = z.object({
   name: z
     .string()
-    .nonempty('You must enter your name')
-    .max(40, 'Name must be at most 40 characters'),
+    .trim()
+    .min(1, 'Full name is required')
+    .min(2, 'Name must be at least 2 characters')
+    .max(60, 'Name must be at most 60 characters')
+    .regex(
+      NAME_REGEX,
+      'Name can only contain letters, spaces, hyphens, and apostrophes'
+    ),
   email: z
     .string()
-    .email('You must enter a valid email')
-    .nonempty('Email is required'),
-  // phone: z
-  //   .string()
-  //   .nonempty("You must enter your phone number")
-  //   .max(20, "Phone number must be at most 20 characters")
-  //   .regex(/^\d+$/, "Phone number must contain only numbers"),
+    .trim()
+    .email('You must enter a valid email address')
+    .min(1, 'Email is required'),
 });
 
 type FormType = z.infer<typeof schema>;
@@ -157,7 +163,7 @@ function AccountTabView() {
                         helperText={errors?.name?.message}
                         required
                         fullWidth
-                        inputProps={{ maxLength: 40 }}
+                        inputProps={{ maxLength: 60 }}
                         slotProps={{
                           input: {
                             className:
