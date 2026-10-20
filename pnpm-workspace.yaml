@@ -7,6 +7,7 @@ packages:
 engineStrict: false
 autoInstallPeers: true
 strictPeerDependencies: false
+strictDepBuilds: false
 
 # node-xlsx pulls xlsx from a CDN tarball; pin to the registry package instead
 overrides:
@@ -18,5 +19,5 @@ overrides:
 
 # Lifecycle scripts must be explicitly approved (pnpm 12 / strictDepBuilds)
 allowBuilds:
-  core-js: set this to true or false
+  core-js: true
   esbuild: true
