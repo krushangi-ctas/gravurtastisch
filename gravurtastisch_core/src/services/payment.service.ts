@@ -38,7 +38,7 @@ const getSellerPanelSignInUrl = () => {
 /**
  * Create a Stripe Checkout Session for a plan and persist a pending payment row.
  */
-const createCheckoutSession = async ({ planId, email, name, userId }: any) => {
+const createCheckoutSession = async ({ planId, email, name, userId, currency: requestedCurrency }: any) => {
   const plan = await PlanModel.findById(planId);
   if (!plan || plan.status !== 1) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Plan not found or inactive.');
@@ -46,11 +46,15 @@ const createCheckoutSession = async ({ planId, email, name, userId }: any) => {
 
   const normalizedEmail = String(email).trim().toLowerCase();
   const displayName = (name || '').trim();
+  const rawCurrency = (requestedCurrency || plan.currency || 'eur').toString().toLowerCase().trim();
+  const currency = ['eur', 'inr'].includes(rawCurrency) ? rawCurrency : 'eur';
+  const currencySymbol = currency === 'inr' ? '₹' : '€';
+
   const amountCents = Math.round(Number(plan.price) * 100);
   if (!Number.isFinite(amountCents) || amountCents < 50) {
     throw new ApiError(
       httpStatus.BAD_REQUEST,
-      'Plan price must be at least $0.50 for Stripe Checkout.'
+      `Plan price must be at least ${currencySymbol}0.50 for Stripe Checkout.`
     );
   }
 
@@ -64,7 +68,7 @@ const createCheckoutSession = async ({ planId, email, name, userId }: any) => {
     planId: plan._id,
     planName: plan.name,
     amount: Number(plan.price),
-    currency: 'usd',
+    currency: currency,
     mode: 'subscription',
     billingCycle: Number(plan.billingCycle) || 1,
     status: 'pending',
@@ -111,7 +115,7 @@ const createCheckoutSession = async ({ planId, email, name, userId }: any) => {
       {
         quantity: 1,
         price_data: {
-          currency: 'usd',
+          currency: currency,
           unit_amount: amountCents,
           recurring:
             Number(plan.billingCycle) === 3
@@ -396,7 +400,7 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
   const cycleName = cycle === 3 ? 'Annual' : cycle === 2 ? 'Quarterly' : 'Monthly';
   const cycleSuffix = cycle === 3 ? '/yr' : cycle === 2 ? '/qtr' : '/mo';
   const amountFormatted = Number(payment.amount || plan?.price || 0).toFixed(2);
-  const currencyUpper = String(payment.currency || 'usd').toUpperCase();
+  const currencyUpper = String(payment.currency || 'eur').toUpperCase();
   const quotaText = plan?.request_quota
     ? `${Number(plan.request_quota).toLocaleString()} custom units / month`
     : 'Unlimited custom units / month';

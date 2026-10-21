@@ -13,7 +13,7 @@ const logger = require('../config/logger');
 const { systemLog } = require('../utils/system-log');
 const { uploadFile, deleteFile } = require('../utils/file-uploader');
 const { createResponse } = require('../services/common.service');
-const { syncUserSubscriptionPlans } = require('./plan.service');
+const { syncUserSubscriptionPlans, syncUserMonthlyUsage } = require('./plan.service');
 
 /**
  * Create a user
@@ -222,30 +222,7 @@ const paginateUserList = async (baseFilter, query, okMessage) => {
         if (Array.isArray(u.plans) && u.plans.length > 0) {
           await syncUserSubscriptionPlans(u);
         }
-
-        try {
-          const usedCount = await ordermodel.countDocuments({
-            userId: u._id,
-            $or: [{ isSent: true }, { isNeedToSend: true }],
-          });
-          const effectiveUsed = Math.max(
-            usedCount,
-            u.usedReviewRequests || 0,
-            u.planLimits?.usedReviewRequests || 0
-          );
-
-          if (!u.planLimits) {
-            u.planLimits = {};
-          }
-          u.planLimits.usedReviewRequests = effectiveUsed;
-          u.usedReviewRequests = effectiveUsed;
-        } catch (_) {
-          if (!u.planLimits) {
-            u.planLimits = {};
-          }
-          u.planLimits.usedReviewRequests = u.usedReviewRequests || 0;
-          u.usedReviewRequests = u.usedReviewRequests || 0;
-        }
+        await syncUserMonthlyUsage(u);
       })
     );
   }
@@ -512,7 +489,11 @@ const getUserDetailById = async (id) => {
 
 const getUserById = async (id) => {
   try {
-    return User.findById(id).populate('currentPlanId');
+    const user = await User.findById(id).populate('currentPlanId');
+    if (user) {
+      await syncUserMonthlyUsage(user).catch(() => {});
+    }
+    return user;
   } catch (error) {
     errorHandler.errorM({
       action_type: 'find-user-by-id',
@@ -1120,7 +1101,7 @@ const assignPlanManuallyToUser = async (actor, userId, data = {}) => {
       planId: plan._id,
       planName: plan.name,
       amount: Number(plan.price) || 0,
-      currency: 'usd',
+      currency: plan.currency || 'eur',
       status: 'paid',
       paidAt: now,
       email: user.email,
@@ -1172,6 +1153,71 @@ const assignPlanManuallyToUser = async (actor, userId, data = {}) => {
   }
 };
 
+/**
+ * Cancel the current and queued subscription plan for a seller.
+ */
+const cancelPlanForUser = async (userId, actor) => {
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      return createResponse(httpStatus.NOT_FOUND, 'User not found');
+    }
+
+    const now = new Date();
+    if (Array.isArray(user.plans)) {
+      user.plans.forEach((p) => {
+        if (p.status === 1 || p.status === 4 || p.status === 'active' || p.status === 'queued') {
+          p.status = 3; // 3: canceled
+          p.canceledAt = now;
+        }
+      });
+    }
+
+    user.subscriptionStatus = 3; // 3: canceled
+    user.currentPlanId = null;
+    user.planLimits = {
+      maxMarketplaces: 0,
+      maxReviewRequestsPerMonth: 0,
+      usedReviewRequests: user.planLimits?.usedReviewRequests || 0,
+      usageMonth: user.planLimits?.usageMonth || null,
+    };
+
+    await user.save();
+
+    // If an active Stripe subscription exists, cancel it in Stripe
+    try {
+      const payment = await PaymentModel.findOne({
+        userId: user._id,
+        stripeSubscriptionId: { $ne: null },
+        status: { $in: ['paid', 'active'] },
+      }).sort({ createdAt: -1 });
+
+      if (payment?.stripeSubscriptionId) {
+        const { getStripe } = require('./payment.service');
+        const stripe = getStripe();
+        if (stripe) {
+          await stripe.subscriptions.cancel(payment.stripeSubscriptionId).catch((err) => {
+            logger.warn(`Stripe subscription cancel failed: ${err.message}`);
+          });
+        }
+        payment.status = 'canceled';
+        await payment.save();
+      }
+    } catch (stripeErr) {
+      logger.warn(`Error cancelling Stripe subscription: ${stripeErr.message}`);
+    }
+
+    return createResponse(
+      httpStatus.OK,
+      `Subscription plan for "${user.name || user.email}" has been cancelled successfully.`,
+      { user }
+    );
+  } catch (error) {
+    errorHandler.errorM({ action_type: 'cancel-plan-by-admin', error_data: error });
+    return createResponse(httpStatus.INTERNAL_SERVER_ERROR, error.message);
+  }
+};
+
 module.exports = {
   createUser,
   createManagedUser,
@@ -1189,4 +1235,5 @@ module.exports = {
   getUserDetailById,
   getChatUserList,
   assignPlanManuallyToUser,
+  cancelPlanForUser,
 };

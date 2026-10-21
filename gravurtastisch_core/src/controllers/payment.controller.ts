@@ -7,6 +7,7 @@ const createCheckout = catchAsync(async (req, res) => {
     planId: req.body.planId,
     email: req.body.email,
     name: req.body.name,
+    currency: req.body.currency,
   });
   res.status(result.status).send(result);
 });

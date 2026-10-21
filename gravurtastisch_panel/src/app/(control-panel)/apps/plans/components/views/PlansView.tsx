@@ -214,13 +214,15 @@ function PlansContent({
 			},
 			{
 				accessorKey: 'price',
-				header: 'PRICE ($)',
+				header: 'PRICE (€)',
 				size: 140,
 				Cell: ({ cell, row }: { cell: any; row: MRT_Row<Plan> }) => {
 					const val = cell.getValue() as number;
 					const cycle = row.original?.billingCycle;
 					const cycleText = cycle === 3 ? '/ yr' : cycle === 2 ? '/ qtr' : '/ mo';
-					const formattedPrice = val !== undefined && val !== null ? `$${Number(val).toLocaleString()}` : '$0';
+					const isINR = row.original?.currency === 'inr';
+					const symbol = isINR ? '₹' : '€';
+					const formattedPrice = val !== undefined && val !== null ? `${symbol}${Number(val).toLocaleString()}` : `${symbol}0`;
 					return (
 						<div className="flex items-baseline gap-1">
 							<span className="font-bold text-[13px] text-primary-700 dark:text-primary-300">

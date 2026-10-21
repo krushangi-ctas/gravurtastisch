@@ -220,7 +220,7 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.text('SUBSCRIPTION PLAN', colPlanX, tableTop + 5.8);
 	doc.text('CHANNELS & QUOTA', colAllowanceX, tableTop + 5.8);
 	doc.text('BILLING PERIOD', colPeriodX, tableTop + 5.8);
-	doc.text('TOTAL (USD)', colAmountX, tableTop + 5.8, { align: 'right' });
+	doc.text('TOTAL (EUR)', colAmountX, tableTop + 5.8, { align: 'right' });
 
 	// Item Row
 	const rowHeight = 10;
@@ -246,7 +246,7 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9.5);
 	doc.setTextColor(15, 23, 42);
-	doc.text(`$${price.toFixed(2)}`, colAmountX, textY, { align: 'right' });
+	doc.text(`€${price.toFixed(2)}`, colAmountX, textY, { align: 'right' });
 
 	// Row bottom line
 	const rowBottomY = rowY + rowHeight;
@@ -264,12 +264,12 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setTextColor(80, 80, 80);
 	doc.text('Subtotal:', sumColLabel, summaryY);
 	doc.setTextColor(20, 20, 20);
-	doc.text(`$${price.toFixed(2)} USD`, sumColVal, summaryY, { align: 'right' });
+	doc.text(`€${price.toFixed(2)} EUR`, sumColVal, summaryY, { align: 'right' });
 
 	doc.setTextColor(80, 80, 80);
 	doc.text('Tax / VAT (0%):', sumColLabel, summaryY + 5.5);
 	doc.setTextColor(20, 20, 20);
-	doc.text('$0.00 USD', sumColVal, summaryY + 5.5, { align: 'right' });
+	doc.text('€0.00 EUR', sumColVal, summaryY + 5.5, { align: 'right' });
 
 	// Total Box
 	const totalBoxY = summaryY + 10;
@@ -282,7 +282,7 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFontSize(10);
 	doc.setTextColor(15, 23, 42);
 	doc.text('TOTAL PAID:', sumColLabel, totalBoxY + 6.5);
-	doc.text(`$${price.toFixed(2)} USD`, sumColVal, totalBoxY + 6.5, { align: 'right' });
+	doc.text(`€${price.toFixed(2)} EUR`, sumColVal, totalBoxY + 6.5, { align: 'right' });
 
 	// === 5. NOTES & TERMS ===
 	const notesY = rowBottomY + 12;

@@ -73,6 +73,13 @@ const upsertAmazonCredentials = async (credentialsData, userId) => {
     const planLimits = await getEffectivePlanLimits(userId);
     console.log('--- [upsertAmazonCredentials] userId:', userId, 'planLimits:', planLimits);
 
+    if (planLimits?.isCanceled) {
+      return {
+        status: 403,
+        message: 'Your subscription plan has been cancelled. Please subscribe to an active plan to manage Amazon credentials and marketplaces.',
+      };
+    }
+
     if (planLimits?.isExpired) {
       return {
         status: 403,

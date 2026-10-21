@@ -1101,7 +1101,7 @@ function SmartSchedulingHeroSvg() {
           <g transform="translate(14, 48)">
             <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
             <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇺🇸 New York (EDT)
+              🇫🇷 Paris (CEST)
             </text>
             <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Postal Code Mapped
@@ -1443,7 +1443,7 @@ function SmartSchedulingFaqSvg() {
         <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
         <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
         <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
-          🇺🇸 18:30 EDT
+          🇫🇷 18:30 CEST
         </text>
       </g>
 

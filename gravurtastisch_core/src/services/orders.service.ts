@@ -5,7 +5,7 @@ const ordermodel = require('../models/order.model');
 const User = require('../models/user.model');
 const GeneralSettingModel = require('../models/generalSetting.model');
 const moment = require('moment');
-const { getEffectivePlanLimits } = require('./plan.service');
+const { getEffectivePlanLimits, syncUserMonthlyUsage } = require('./plan.service');
 
 const getOrderList = async (filter = {}, options = {}, userId) => {
   try {
@@ -160,32 +160,12 @@ const getOrderList = async (filter = {}, options = {}, userId) => {
     const totalResults = countResult[0]?.count || 0;
     const totalPages = Math.ceil(totalResults / limit);
 
-    // Attach accurate plan quota and used limits for this seller
+    // Attach accurate plan quota and used limits for this seller (current month)
     let planLimits = null;
     try {
       const user = await User.findById(userId);
       if (user) {
-        const rawLimits = await getEffectivePlanLimits(user);
-        const usedOrders = await ordermodel.countDocuments({
-          userId,
-          $or: [{ isSent: true }, { isNeedToSend: true }],
-        });
-        const effectiveUsed = Math.max(
-          usedOrders,
-          user.usedReviewRequests || 0,
-          user.planLimits?.usedReviewRequests || 0
-        );
-        const maxQuota = rawLimits?.maxReviewRequestsPerMonth ?? 1000;
-        const remaining = Math.max(0, maxQuota - effectiveUsed);
-        const isLimitReached = effectiveUsed >= maxQuota;
-
-        planLimits = {
-          ...rawLimits,
-          maxReviewRequestsPerMonth: maxQuota,
-          usedReviewRequests: effectiveUsed,
-          remainingReviewRequests: remaining,
-          isLimitReached,
-        };
+        planLimits = await getEffectivePlanLimits(user);
       }
     } catch (err) {
       console.error('Error attaching planLimits in getOrderList:', err.message);
@@ -229,8 +209,15 @@ const updateFeedback = async (refIds, userId) => {
       };
     }
 
-    // Plan limit & expiration check
+    // Plan limit & expiration / cancellation check
     const planLimits = await getEffectivePlanLimits(user);
+    if (planLimits?.isCanceled || user.subscriptionStatus === 3) {
+      return {
+        status: httpStatus.FORBIDDEN,
+        message:
+          'Your subscription plan has been cancelled. Please subscribe to an active plan to send review requests.',
+      };
+    }
     if (planLimits?.isExpired) {
       return {
         status: httpStatus.FORBIDDEN,
@@ -286,16 +273,11 @@ const updateFeedback = async (refIds, userId) => {
     const maxReviewRequestsPerMonth =
       planLimits?.maxReviewRequestsPerMonth ?? 1000;
 
-    // Check currently used review requests (both already sent and currently queued/pending)
-    const currentUsedOrders = await ordermodel.countDocuments({
-      userId,
-      $or: [{ isSent: true }, { isNeedToSend: true }],
-    });
-    const effectiveUsed = Math.max(
-      currentUsedOrders,
-      user.usedReviewRequests || 0,
-      user.planLimits?.usedReviewRequests || 0
-    );
+    // Check currently used review requests for the current month
+    const effectiveUsed =
+      planLimits?.usedReviewRequests !== undefined
+        ? Number(planLimits.usedReviewRequests)
+        : await syncUserMonthlyUsage(user);
 
     const remaining = maxReviewRequestsPerMonth - effectiveUsed;
     if (remaining <= 0) {
@@ -338,23 +320,8 @@ const updateFeedback = async (refIds, userId) => {
       },
     ]);
 
-    // Recalculate and synchronize seller's usedReviewRequests count in user model
-    const newTotalUsed = await ordermodel.countDocuments({
-      userId,
-      $or: [{ isSent: true }, { isNeedToSend: true }],
-    });
-
-    await User.updateOne(
-      { _id: userId },
-      {
-        $set: {
-          'planLimits.usedReviewRequests': newTotalUsed,
-          usedReviewRequests: newTotalUsed,
-        },
-      }
-    ).catch((err) => {
-      console.error('Failed to sync user usedReviewRequests:', err.message);
-    });
+    // Recalculate and synchronize seller's usedReviewRequests count in user model (current month)
+    const newTotalUsed = await syncUserMonthlyUsage(user);
 
     let warningMessage = '';
     if (allowedOrders.length < parsedRefIds.length) {

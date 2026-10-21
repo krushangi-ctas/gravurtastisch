@@ -161,5 +161,16 @@ export const assignPlanToUser = async ({
 	});
 };
 
+export const cancelPlanForUser = async ({
+	userId
+}: {
+	userId: string;
+}): Promise<{ status: number; message: string; data: any }> => {
+	return fetchWithAuth(`${usersUrl}/${userId}/cancel-plan`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' }
+	});
+};
+
 /** @deprecated Legacy sellers table; prefer getAdminSellers. */
 export const getAllUsers = getAdminSellers;

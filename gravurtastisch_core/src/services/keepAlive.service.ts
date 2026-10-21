@@ -66,9 +66,15 @@ const startKeepAlive = () => {
       logger.warn(`[Keep-Alive] Initial ping error: ${err.message}`);
     });
     try {
-      const { autoPromoteAllExpiredUserPlans } = require('./plan.service');
+      const {
+        autoPromoteAllExpiredUserPlans,
+        resetMonthlyUsageForAllUsers,
+      } = require('./plan.service');
       autoPromoteAllExpiredUserPlans().catch((err) => {
         logger.warn(`[Plan-Sync] Initial plan sync error: ${err.message}`);
+      });
+      resetMonthlyUsageForAllUsers().catch((err) => {
+        logger.warn(`[Usage-Sync] Initial monthly usage sync error: ${err.message}`);
       });
     } catch (_) {}
   }, 10000);
@@ -79,9 +85,15 @@ const startKeepAlive = () => {
       logger.warn(`[Keep-Alive] Scheduled ping error: ${err.message}`);
     });
     try {
-      const { autoPromoteAllExpiredUserPlans } = require('./plan.service');
+      const {
+        autoPromoteAllExpiredUserPlans,
+        resetMonthlyUsageForAllUsers,
+      } = require('./plan.service');
       autoPromoteAllExpiredUserPlans().catch((err) => {
         logger.warn(`[Plan-Sync] Scheduled plan sync error: ${err.message}`);
+      });
+      resetMonthlyUsageForAllUsers().catch((err) => {
+        logger.warn(`[Usage-Sync] Scheduled monthly usage sync error: ${err.message}`);
       });
     } catch (_) {}
   });

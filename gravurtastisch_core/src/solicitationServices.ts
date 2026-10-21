@@ -5,7 +5,10 @@ const ordermodel = require('./models/order.model');
 const AmazonCredentialsModel = require('./models/amazon-credentials.model');
 const UserModel = require('./models/user.model');
 const GeneralSettingModel = require('./models/generalSetting.model');
-const { getEffectivePlanLimits } = require('./services/plan.service');
+const {
+  getEffectivePlanLimits,
+  syncUserMonthlyUsage,
+} = require('./services/plan.service');
 
 const CronErrorModel = require('./models/cron-error.model');
 
@@ -160,9 +163,9 @@ async function runSolicitationProcess() {
       }
 
       const planLimits = await getEffectivePlanLimits(user);
-      if (planLimits?.isExpired) {
+      if (planLimits?.isExpired || planLimits?.isCanceled || user.subscriptionStatus === 3) {
         console.log(
-          `User ${userId} subscription plan has expired. Skipping automated solicitation.`
+          `User ${userId} subscription plan has expired or been cancelled. Skipping automated solicitation.`
         );
         continue;
       }
@@ -328,16 +331,11 @@ async function runSolicitationProcess() {
               { $set: { isNeedToSend: false, isSent: true } }
             );
 
-            // Increment seller's usedReviewRequests count
-            await User.updateOne(
-              { _id: userId },
-              {
-                $inc: {
-                  'planLimits.usedReviewRequests': 1,
-                  usedReviewRequests: 1,
-                },
-              }
-            ).catch(() => {});
+            // Synchronize seller's usedReviewRequests count for current month
+            try {
+
+              await syncUserMonthlyUsage({ _id: userId });
+            } catch (_) { }
 
             success = true;
           } catch (err) {

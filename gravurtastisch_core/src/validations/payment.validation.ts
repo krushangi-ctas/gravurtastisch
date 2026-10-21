@@ -12,6 +12,7 @@ const createCheckout = {
     planId: Joi.string().required().custom(objectIdValidator),
     email: Joi.string().required().email().trim().lowercase(),
     name: Joi.string().allow('', null).trim().max(120),
+    currency: Joi.string().allow('', null).trim().lowercase(),
   }),
 };
 

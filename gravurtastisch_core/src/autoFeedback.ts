@@ -35,9 +35,9 @@ async function autoFeedbackRequest() {
 
       // Check remaining quota limits
       const planLimits = await getEffectivePlanLimits(user);
-      if (planLimits?.isExpired) {
+      if (planLimits?.isExpired || planLimits?.isCanceled || user.subscriptionStatus === 3) {
         console.log(
-          `User ${setting.userId} subscription plan has expired. Skipping auto-feedback scheduling.`
+          `User ${setting.userId} subscription plan has expired or been cancelled. Skipping auto-feedback scheduling.`
         );
         continue;
       }

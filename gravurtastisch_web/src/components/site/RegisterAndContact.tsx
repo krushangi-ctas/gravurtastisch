@@ -27,17 +27,17 @@ export function RegisterAndContact() {
 }
 
 const AVAILABLE_MARKETPLACES = [
-  { code: "US", name: "United States" },
-  { code: "CA", name: "Canada" },
-  { code: "MX", name: "Mexico" },
-  { code: "UK", name: "United Kingdom" },
   { code: "DE", name: "Germany" },
+  { code: "UK", name: "United Kingdom" },
   { code: "FR", name: "France" },
   { code: "IT", name: "Italy" },
   { code: "ES", name: "Spain" },
-  { code: "JP", name: "Japan" },
-  { code: "AE", name: "UAE" },
-  { code: "IN", name: "India" },
+  { code: "NL", name: "Netherlands" },
+  { code: "PL", name: "Poland" },
+  { code: "SE", name: "Sweden" },
+  { code: "BE", name: "Belgium" },
+  { code: "AT", name: "Austria" },
+  { code: "CH", name: "Switzerland" },
 ];
 
 const defaultFallbackPlans: PlanItem[] = [
@@ -378,7 +378,7 @@ function RegisterSection() {
                   </Label>
                   {currentPlan && (
                     <span className="text-xs font-semibold text-brand">
-                      ${currentPlan.price}
+                      €{currentPlan.price}
                       {currentPlan.billingCycle === 3
                         ? "/yr"
                         : currentPlan.billingCycle === 2
@@ -411,7 +411,7 @@ function RegisterSection() {
                           <span className="font-semibold text-foreground truncate">
                             {currentPlan.name}{" "}
                             <span className="text-brand font-bold">
-                              — ${currentPlan.price}
+                              — €{currentPlan.price}
                               {currentPlan.billingCycle === 3
                                 ? "/yr"
                                 : currentPlan.billingCycle === 2
@@ -453,7 +453,7 @@ function RegisterSection() {
                                 {p.name}
                               </span>
                               <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-brand/10 text-brand border border-brand/20">
-                                ${p.price}{cycleShort}
+                                €{p.price}{cycleShort}
                               </span>
                             </div>
                             <span className="text-xs text-muted-foreground font-mono">
@@ -526,7 +526,7 @@ function RegisterSection() {
                 ) : currentPlan && currentPlan.price > 0 ? (
                   <>
                     <span className="!text-white">
-                      Continue to Payment (${currentPlan.price}
+                      Continue to Payment (€{currentPlan.price}
                       {currentPlan.billingCycle === 3
                         ? "/yr"
                         : currentPlan.billingCycle === 2

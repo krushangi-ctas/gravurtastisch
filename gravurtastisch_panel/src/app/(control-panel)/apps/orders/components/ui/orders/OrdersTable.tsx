@@ -195,12 +195,37 @@ function OrdersTable({
   const { mutate: sendFeedback } = useUpdateOrder();
 
   const planLimits = (ordersResponse as any)?.planLimits;
+  const isPlanCanceled = Boolean(planLimits && (planLimits.isCanceled || planLimits.status === 3));
+  const isPlanExpired = Boolean(planLimits && (planLimits.isExpired || planLimits.status === 2));
   const isQuotaExceeded = Boolean(
     planLimits &&
-    (planLimits.isLimitReached ||
+    (isPlanCanceled ||
+      isPlanExpired ||
+      planLimits.isLimitReached ||
       planLimits.remainingReviewRequests <= 0 ||
       planLimits.usedReviewRequests >= planLimits.maxReviewRequestsPerMonth)
   );
+
+  const showQuotaMessage = () => {
+    if (isPlanCanceled) {
+      enqueueSnackbar(
+        'Your subscription plan has been cancelled. Please subscribe to an active plan to send review requests.',
+        { variant: 'error', autoHideDuration: 5000 }
+      );
+      return;
+    }
+    if (isPlanExpired) {
+      enqueueSnackbar(
+        'Your subscription plan has expired. Please renew your subscription plan to send review requests.',
+        { variant: 'error', autoHideDuration: 5000 }
+      );
+      return;
+    }
+    enqueueSnackbar(
+      `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
+      { variant: 'error', autoHideDuration: 5000 }
+    );
+  };
 
   // Extract orders data from the response and flatten orderItems
   const orders = ordersResponse?.data || [];
@@ -417,10 +442,7 @@ function OrdersTable({
                 size="small"
                 onClick={() => {
                   if (isQuotaExceeded) {
-                    enqueueSnackbar(
-                      `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
-                      { variant: 'error', autoHideDuration: 5000 }
-                    );
+                    showQuotaMessage();
                     return;
                   }
                   sendFeedback([row.original._id]);
@@ -1113,10 +1135,7 @@ function OrdersTable({
               disabled={disabled}
               onClick={() => {
                 if (isQuotaExceeded) {
-                  enqueueSnackbar(
-                    `Plan limit reached! Your monthly quota is exhausted (${planLimits?.usedReviewRequests?.toLocaleString() ?? 0}/${planLimits?.maxReviewRequestsPerMonth?.toLocaleString() ?? 1000} used). Please upgrade your plan.`,
-                    { variant: 'error', autoHideDuration: 5000 }
-                  );
+                  showQuotaMessage();
                   return;
                 }
                 if (!disabled) {

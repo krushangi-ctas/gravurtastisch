@@ -77,6 +77,45 @@ export function FlagIT({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
+export function FlagNL({ className = "w-4 h-3" }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="60" height="12" y="0" fill="#AE1C28" />
+      <rect width="60" height="12" y="12" fill="#FFFFFF" />
+      <rect width="60" height="12" y="24" fill="#21468B" />
+    </svg>
+  );
+}
+
+export function FlagPL({ className = "w-4 h-3" }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="60" height="18" y="0" fill="#FFFFFF" />
+      <rect width="60" height="18" y="18" fill="#DC143C" />
+    </svg>
+  );
+}
+
+export function FlagSE({ className = "w-4 h-3" }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="60" height="36" fill="#006AA7" />
+      <rect width="8" height="36" x="18" fill="#FECC00" />
+      <rect width="60" height="8" y="14" fill="#FECC00" />
+    </svg>
+  );
+}
+
+export function FlagBE({ className = "w-4 h-3" }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="20" height="36" x="0" fill="#000000" />
+      <rect width="20" height="36" x="20" fill="#FDDA24" />
+      <rect width="20" height="36" x="40" fill="#EF3340" />
+    </svg>
+  );
+}
+
 export function FlagUS({ className = "w-4 h-3" }: FlagProps) {
   return (
     <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
@@ -206,6 +245,14 @@ export function FlagIcon({ code, className = "w-4 h-3" }: { code: string; classN
       return <FlagES className={className} />;
     case "it":
       return <FlagIT className={className} />;
+    case "nl":
+      return <FlagNL className={className} />;
+    case "pl":
+      return <FlagPL className={className} />;
+    case "se":
+      return <FlagSE className={className} />;
+    case "be":
+      return <FlagBE className={className} />;
     case "us":
     case "com":
       return <FlagUS className={className} />;

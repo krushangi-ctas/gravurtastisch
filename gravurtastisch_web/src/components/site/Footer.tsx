@@ -21,14 +21,14 @@ import {
 } from "lucide-react";
 
 const marketplaces = [
-  { name: "amazon.com", code: "us" },
-  { name: "amazon.in", code: "in" },
-  { name: "amazon.co.uk", code: "gb" },
   { name: "amazon.de", code: "de" },
-  { name: "amazon.ae", code: "ae" },
-  { name: "amazon.ca", code: "ca" },
-  { name: "amazon.com.au", code: "au" },
-  { name: "amazon.co.jp", code: "jp" },
+  { name: "amazon.co.uk", code: "gb" },
+  { name: "amazon.fr", code: "fr" },
+  { name: "amazon.it", code: "it" },
+  { name: "amazon.es", code: "es" },
+  { name: "amazon.nl", code: "nl" },
+  { name: "amazon.pl", code: "pl" },
+  { name: "amazon.se", code: "se" },
 ];
 
 export function Footer() {

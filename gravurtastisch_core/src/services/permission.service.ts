@@ -91,6 +91,10 @@ const can = (permissions, section, action) => {
  */
 const enrichUserWithPermissions = async (userDoc) => {
   if (!userDoc) return null;
+  try {
+    const { syncUserMonthlyUsage } = require('./plan.service');
+    await syncUserMonthlyUsage(userDoc);
+  } catch (_) {}
   const user =
     typeof userDoc.toJSON === 'function' ? userDoc.toJSON() : { ...userDoc };
   const { permissions, role } = await getPermissionsForUser(userDoc);

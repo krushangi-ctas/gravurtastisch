@@ -7,6 +7,7 @@ export interface Plan {
 	id?: string;
 	name: string;
 	price: number;
+	currency?: string;
 	marketplace: number;
 	request_quota: number;
 	expireAt?: string | null;
@@ -21,6 +22,7 @@ export interface Plan {
 export interface PlanFormPayload {
 	name: string;
 	price: number;
+	currency?: string;
 	marketplace: number;
 	request_quota: number;
 	expireAt?: string | null;
