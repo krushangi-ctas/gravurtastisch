@@ -176,7 +176,7 @@ function DataTable<TData>({
         manualSorting: false, // Will be overridden if API sorting is needed
         muiBottomToolbarProps: {
           className:
-            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800',
+            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 overflow-x-auto',
           sx: {
             borderTop: '1px solid',
             borderColor: (theme: Theme) =>
@@ -186,7 +186,7 @@ function DataTable<TData>({
             height: '46px !important',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-end',
+            justifyContent: { xs: 'center', sm: 'flex-end' },
             '& .MuiTablePagination-root': {
               overflow: 'visible',
               width: 'auto',
@@ -198,7 +198,7 @@ function DataTable<TData>({
             '& .MuiTablePagination-toolbar': {
               flexWrap: 'nowrap',
               alignItems: 'center',
-              justifyContent: 'flex-end',
+              justifyContent: { xs: 'center', sm: 'flex-end' },
               gap: { xs: 0.5, sm: 1 },
               minHeight: '46px !important',
               height: '46px !important',
@@ -208,7 +208,7 @@ function DataTable<TData>({
               my: 'auto',
             },
             '& .MuiTablePagination-selectLabel': {
-              fontSize: { xs: '12px', sm: '13px' },
+              fontSize: { xs: '11px', sm: '13px' },
               fontWeight: 500,
               color: (theme: Theme) =>
                 theme.palette.mode === 'dark' ? '#94a3b8' : '#64748b',
@@ -216,6 +216,10 @@ function DataTable<TData>({
               lineHeight: '1.2 !important',
               display: 'inline-flex',
               alignItems: 'center',
+            },
+            '& .MuiTablePagination-displayedRows': {
+              fontSize: { xs: '11px', sm: '13px' },
+              margin: '0 !important',
             },
             '& .MuiTablePagination-input': {
               marginRight: { xs: 0.5, sm: 1 },
@@ -225,7 +229,7 @@ function DataTable<TData>({
               '& .MuiSelect-select': {
                 paddingTop: '3px !important',
                 paddingBottom: '3px !important',
-                fontSize: { xs: '12px', sm: '13px' },
+                fontSize: { xs: '11px', sm: '13px' },
                 display: 'inline-flex',
                 alignItems: 'center',
               },
@@ -272,7 +276,15 @@ function DataTable<TData>({
           },
         },
         muiTableContainerProps: {
-          className: 'flex-auto',
+          className: 'flex-auto custom-table-scrollbar',
+          sx: {
+            maxWidth: '100%',
+            width: '100%',
+            flex: '1 1 auto',
+            minHeight: 0,
+            overflowX: 'auto',
+            WebkitOverflowScrolling: 'touch',
+          },
         },
         enableStickyHeader: true,
         paginationDisplayMode: 'pages',
@@ -340,7 +352,7 @@ function DataTable<TData>({
         muiTableProps: {
           sx: {
             tableLayout: 'auto',
-            minWidth: '100%',
+            minWidth: { xs: '800px', lg: '100%' },
             '& .MuiTableCell-root': {
               borderBottom: '1px solid',
               borderColor: 'divider',

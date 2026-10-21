@@ -13,7 +13,7 @@ const generalSettingSchema = new mongoose.Schema(
       ref: 'tbl_amazon_credentials',
     },
     activeMarketplaces: {
-      type: [String],
+      type: [{ type: String, trim: true }],
       default: [],
     },
     activeMarketplacesLastUpdated: {

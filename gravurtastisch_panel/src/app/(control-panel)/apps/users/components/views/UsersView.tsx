@@ -232,8 +232,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			const digitsOnly = trimmedPhone.replace(/\D/g, '');
 			if (trimmedPhone.length > 20) {
 				errs.phone = 'Phone number cannot exceed 20 characters.';
-			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
-				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
+				errs.phone = 'Please enter a valid phone number (between 10 and 20 digits).';
 			}
 		}
 
@@ -268,8 +268,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			const digitsOnly = trimmedPhone.replace(/\D/g, '');
 			if (trimmedPhone.length > 20) {
 				errs.phone = 'Phone number cannot exceed 20 characters.';
-			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
-				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
+				errs.phone = 'Please enter a valid phone number (between 10 and 20 digits).';
 			}
 		}
 
@@ -768,35 +768,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										</FuseSvgIcon>
 										{planName || queuedPlan?.name || 'Cancelled'}
 									</Box>
-									{isPaymentCancelled ? (
-										<Tooltip title="Stripe checkout was cancelled. Seller is inactive." arrow>
-											<Box
-												sx={{
-													display: 'inline-flex',
-													alignItems: 'center',
-													gap: 0.3,
-													px: 0.6,
-													py: 0.1,
-													borderRadius: '4px',
-													fontSize: 9.5,
-													fontWeight: 700,
-													bgcolor: (t) =>
-														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.28)' : '#FEE2E2',
-													color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
-													border: '1px solid',
-													borderColor: (t) =>
-														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.45)' : 'rgba(239, 68, 68, 0.3)',
-													lineHeight: 1,
-													whiteSpace: 'nowrap'
-												}}
-											>
-												<FuseSvgIcon size={10} sx={{ color: 'inherit' }}>
-													heroicons-outline:x-circle
-												</FuseSvgIcon>
-												Cancelled
-											</Box>
-										</Tooltip>
-									) : isExpired ? (
+									{isExpired ? (
 										<Box
 											sx={{
 												display: 'inline-flex',
@@ -1090,7 +1062,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				setCreateOpen(true);
 			}}
 			style={{ height: '38px' }}
-			className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+			className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
 		>
 			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
@@ -1201,7 +1173,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						muiTableProps={{
 							sx: {
 								tableLayout: 'auto',
-								minWidth: '100%',
+								minWidth: { xs: isSellersMode ? '1080px' : '880px', lg: '100%' },
 								'& .MuiTableRow-root:hover': {
 									backgroundColor: 'action.hover',
 									transition: 'background-color 0.15s ease'
@@ -1258,7 +1230,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						}}
 						muiBottomToolbarProps={{
 							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-slate-900',
+								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 overflow-x-auto',
 							sx: {
 								borderTop: '1px solid',
 								borderColor: 'divider',
@@ -1271,7 +1243,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								height: '46px !important',
 								display: 'flex',
 								alignItems: 'center',
-								justifyContent: 'flex-end',
+								justifyContent: { xs: 'center', sm: 'flex-end' },
 								'& .MuiTablePagination-root': {
 									overflow: 'visible',
 									width: 'auto',
@@ -1283,7 +1255,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								'& .MuiTablePagination-toolbar': {
 									flexWrap: 'nowrap',
 									alignItems: 'center',
-									justifyContent: 'flex-end',
+									justifyContent: { xs: 'center', sm: 'flex-end' },
 									gap: { xs: 0.5, sm: 1 },
 									minHeight: '46px !important',
 									height: '46px !important',
@@ -1293,11 +1265,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									my: 'auto'
 								},
 								'& .MuiTablePagination-selectLabel': {
-									fontSize: { xs: '12px', sm: '13px' },
+									fontSize: { xs: '11px', sm: '13px' },
 									margin: '0 !important',
 									lineHeight: '1.2 !important',
 									display: 'inline-flex',
 									alignItems: 'center'
+								},
+								'& .MuiTablePagination-displayedRows': {
+									fontSize: { xs: '11px', sm: '13px' },
+									margin: '0 !important'
 								},
 								'& .MuiTablePagination-input': {
 									marginRight: { xs: 0.5, sm: 1 },
@@ -1307,7 +1283,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									'& .MuiSelect-select': {
 										paddingTop: '3px !important',
 										paddingBottom: '3px !important',
-										fontSize: { xs: '12px', sm: '13px' },
+										fontSize: { xs: '11px', sm: '13px' },
 										display: 'inline-flex',
 										alignItems: 'center'
 									}
@@ -1338,11 +1314,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							}
 						}}
 						muiTableContainerProps={{
+							className: 'flex-auto custom-table-scrollbar',
 							sx: {
 								maxWidth: '100%',
+								width: '100%',
 								flex: '1 1 auto',
 								minHeight: 0,
-								overflow: 'auto',
+								overflowX: 'auto',
+								overflowY: 'auto',
+								WebkitOverflowScrolling: 'touch',
 								'&::-webkit-scrollbar': { height: 8, width: 8 },
 								'&::-webkit-scrollbar-track': {
 									backgroundColor: 'background.default',
@@ -1838,6 +1818,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											onChange={(e) => {
 												setFormPhone(e.target.value);
 												if (editErrors.phone) setEditErrors((prev) => ({ ...prev, phone: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateEditUser(
+													formName,
+													formPhone,
+													formRoleId,
+													isSellersMode ? editBusinessName : undefined
+												);
+												setEditErrors((prev) => ({ ...prev, phone: errs.phone }));
 											}}
 											error={!!editErrors.phone}
 											helperText={editErrors.phone}

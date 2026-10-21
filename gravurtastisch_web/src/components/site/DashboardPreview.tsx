@@ -40,7 +40,7 @@ export function DashboardPreview() {
               </span>
             </div>
 
-            <div className="mt-4 overflow-x-auto w-full max-w-full">
+            <div className="mt-4 overflow-x-auto w-full max-w-full custom-table-scrollbar">
               <table className="w-full text-sm min-w-[420px] sm:min-w-[460px]">
                 <thead>
                   <tr className="text-xs uppercase tracking-wider bg-gradient-to-r from-[#0032ab] to-[#155dfc] text-white">

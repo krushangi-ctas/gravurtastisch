@@ -392,31 +392,35 @@ function AmazonSpApiPage() {
               </div>
             </Reveal>
 
-            <Reveal delay={100} className="min-w-0">
-              <div className="overflow-x-auto rounded-[2rem] liquid-glass border border-[#0032ab]/15 shadow-[0_12px_40px_rgba(0,50,171,0.08)] bg-white">
-                <table className="w-full text-left text-sm min-w-[620px]">
-                  <thead className="bg-[#e2e8f0] border-b border-slate-300 text-navy-deep text-xs uppercase tracking-wider font-mono">
-                    <tr>
-                      <th className="p-4 sm:p-5 font-bold text-navy-deep">{t('amazonSpApi.compColFeature') || "Quality Feature"}</th>
-                      <th className="p-4 sm:p-5 text-brand font-black bg-[#0032ab]/10 border-x border-[#0032ab]/20">{t('amazonSpApi.compColGravurtastisch') || "Gravurtastisch Hub"}</th>
-                      <th className="p-4 sm:p-5 text-slate-700 font-bold">{t('amazonSpApi.compColScraping') || "Manual Email / Freelancers"}</th>
-                      <th className="p-4 sm:p-5 text-slate-700 font-bold">{t('amazonSpApi.compColSmtp') || "Generic Print Dropship"}</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100">
-                    {comparisonRows.map((row, idx) => (
-                      <tr key={row.feature} className={`hover:bg-blue-50/40 transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-slate-50/60"}`}>
-                        <td className="p-4 sm:p-5 font-bold text-navy-deep text-sm">{row.feature}</td>
-                        <td className="p-4 sm:p-5 text-brand font-bold bg-[#0032ab]/[0.04] border-x border-[#0032ab]/12 flex items-center gap-2">
-                          <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
-                          {row.reviewSnapp}
-                        </td>
-                        <td className="p-4 sm:p-5 text-slate-500 font-medium text-xs sm:text-sm">{row.scraping}</td>
-                        <td className="p-4 sm:p-5 text-slate-500 font-medium text-xs sm:text-sm">{row.smtp}</td>
+            <Reveal delay={100} className="w-full max-w-full min-w-0">
+              <div className="w-full max-w-full rounded-2xl sm:rounded-[2rem] liquid-glass border border-[#0032ab]/15 shadow-[0_12px_40px_rgba(0,50,171,0.08)] bg-white overflow-hidden">
+                <div className="w-full max-w-full overflow-x-auto custom-table-scrollbar">
+                  <table className="w-full text-left text-sm min-w-[700px]">
+                    <thead className="bg-[#e2e8f0] border-b border-slate-300 text-navy-deep text-xs uppercase tracking-wider font-mono">
+                      <tr>
+                        <th className="p-4 sm:p-5 font-bold text-navy-deep whitespace-nowrap min-w-[170px]">{t('amazonSpApi.compColFeature') || "Quality Feature"}</th>
+                        <th className="p-4 sm:p-5 text-brand font-black bg-[#0032ab]/10 border-x border-[#0032ab]/20 whitespace-nowrap min-w-[200px]">{t('amazonSpApi.compColGravurtastisch') || "Gravurtastisch Hub"}</th>
+                        <th className="p-4 sm:p-5 text-slate-700 font-bold whitespace-nowrap min-w-[170px]">{t('amazonSpApi.compColScraping') || "Manual Email / Freelancers"}</th>
+                        <th className="p-4 sm:p-5 text-slate-700 font-bold whitespace-nowrap min-w-[170px]">{t('amazonSpApi.compColSmtp') || "Generic Print Dropship"}</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="divide-y divide-slate-100">
+                      {comparisonRows.map((row, idx) => (
+                        <tr key={row.feature} className={`hover:bg-blue-50/40 transition-colors ${idx % 2 === 0 ? "bg-white" : "bg-slate-50/60"}`}>
+                          <td className="p-4 sm:p-5 font-bold text-navy-deep text-sm whitespace-nowrap">{row.feature}</td>
+                          <td className="p-4 sm:p-5 text-brand font-bold bg-[#0032ab]/[0.04] border-x border-[#0032ab]/12 whitespace-nowrap">
+                            <div className="flex items-center gap-2">
+                              <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
+                              <span>{row.reviewSnapp}</span>
+                            </div>
+                          </td>
+                          <td className="p-4 sm:p-5 text-slate-600 font-medium text-xs sm:text-sm whitespace-nowrap">{row.scraping}</td>
+                          <td className="p-4 sm:p-5 text-slate-600 font-medium text-xs sm:text-sm whitespace-nowrap">{row.smtp}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </Reveal>
           </Container>

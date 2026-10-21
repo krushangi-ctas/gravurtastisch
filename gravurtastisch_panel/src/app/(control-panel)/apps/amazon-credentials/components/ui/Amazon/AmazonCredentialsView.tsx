@@ -144,44 +144,79 @@ function AmazonCredentialsFormContent({
     string[] | null
   >(null);
 
+  const marketplaceIds = watch('marketplace_ids') || [];
+
   useEffect(() => {
     if (
       generalSettings?.activeMarketplaces &&
       savedActiveMarketplaces === null
     ) {
-      setActiveMarketplaces(generalSettings.activeMarketplaces);
-      setSavedActiveMarketplaces(generalSettings.activeMarketplaces);
+      const rawActive = Array.isArray(generalSettings.activeMarketplaces)
+        ? generalSettings.activeMarketplaces
+        : [];
+      const validMarketplaces =
+        marketplaceIds.length > 0
+          ? rawActive.filter((id: string) => marketplaceIds.includes(id))
+          : rawActive;
+      setActiveMarketplaces(validMarketplaces);
+      setSavedActiveMarketplaces(validMarketplaces);
     }
-  }, [generalSettings, savedActiveMarketplaces]);
+  }, [generalSettings, savedActiveMarketplaces, marketplaceIds]);
+
+  // Ensure activeMarketplaces only ever contains stores that are currently linked in marketplaceIds
+  useEffect(() => {
+    if (marketplaceIds.length > 0) {
+      setActiveMarketplaces((prev) => {
+        const filtered = prev.filter((id) => marketplaceIds.includes(id));
+        if (filtered.length !== prev.length) {
+          return filtered;
+        }
+        return prev;
+      });
+    } else if (marketplaceIds.length === 0 && activeMarketplaces.length > 0) {
+      setActiveMarketplaces([]);
+    }
+  }, [marketplaceIds]);
 
   const maxAllowed = (currentUser?.planLimits as any)?.maxMarketplaces ?? 5;
 
   const handleToggleActiveMarketplace = (id: string) => {
+    if (!marketplaceIds.includes(id)) return;
+
     setActiveMarketplaces((prev) => {
-      const isAlreadyActive = prev.includes(id);
+      const validPrev = prev.filter((item) => marketplaceIds.includes(item));
+      const isAlreadyActive = validPrev.includes(id);
       if (isAlreadyActive) {
-        return prev.filter((item) => item !== id);
+        return validPrev.filter((item) => item !== id);
       } else {
-        if (prev.length >= maxAllowed) {
+        if (validPrev.length >= maxAllowed) {
           enqueueSnackbar(
             `Active marketplaces limit reached (${maxAllowed}/${maxAllowed}). Please upgrade your plan for more active marketplaces or unselect an existing marketplace first.`,
             {
               variant: 'warning',
             }
           );
-          return prev;
+          return validPrev;
         }
-        return [...prev, id];
+        return [...validPrev, id];
       }
     });
     setUserChangedActiveMarketplaces(true);
   };
 
   const onSubmit = async (data: AmazonCredentialsFormType) => {
+    const currentMarketplaceIds = data.marketplace_ids || [];
+    const sanitizedActive = activeMarketplaces.filter((id) =>
+      currentMarketplaceIds.includes(id)
+    );
+
     const baseline =
       savedActiveMarketplaces ?? generalSettings?.activeMarketplaces ?? [];
-    const sortedBaseline = [...baseline].sort();
-    const sortedNew = [...activeMarketplaces].sort();
+    const validBaseline = Array.isArray(baseline)
+      ? baseline.filter((id: string) => currentMarketplaceIds.includes(id))
+      : [];
+    const sortedBaseline = [...validBaseline].sort();
+    const sortedNew = [...sanitizedActive].sort();
     const activeMarketplacesChanged =
       userChangedActiveMarketplaces &&
       (sortedBaseline.length !== sortedNew.length ||
@@ -195,6 +230,12 @@ function AmazonCredentialsFormContent({
         const response = await updateCredentialsMutation.mutateAsync({
           ...data,
         });
+        await updateGeneralSettingMutation.mutateAsync({
+          data: {
+            activeMarketplaces: sanitizedActive,
+          },
+        });
+        setSavedActiveMarketplaces([...sanitizedActive]);
         enqueueSnackbar(
           response?.message || 'Credentials updated successfully!',
           {
@@ -232,17 +273,21 @@ function AmazonCredentialsFormContent({
         ...pendingFormData,
       });
 
+      const sanitizedActive = activeMarketplaces.filter((id) =>
+        (pendingFormData.marketplace_ids || []).includes(id)
+      );
+
       // 2. Update activeMarketplaces general settings
       await updateGeneralSettingMutation.mutateAsync({
         data: {
-          activeMarketplaces: activeMarketplaces,
+          activeMarketplaces: sanitizedActive,
         },
       });
 
       // Reset the "user changed" flag and snapshot the saved state so
       // re-entering the page won't trigger the popup again.
       setUserChangedActiveMarketplaces(false);
-      setSavedActiveMarketplaces([...activeMarketplaces]);
+      setSavedActiveMarketplaces([...sanitizedActive]);
 
       enqueueSnackbar(
         'Amazon credentials and active marketplaces updated successfully!',
@@ -288,7 +333,6 @@ function AmazonCredentialsFormContent({
     }
   }, [credentials, setValue]);
 
-  const marketplaceIds = watch('marketplace_ids') || [];
   const clientId = watch('client_id');
   const clientSecret = watch('client_secret');
   const refreshToken = watch('refresh_token');
@@ -518,6 +562,12 @@ function AmazonCredentialsFormContent({
                                   )
                                   : [...currentVal, item?.marketplace_id];
                                 field.onChange(newValue);
+                                if (isSelected) {
+                                  setActiveMarketplaces((prev) =>
+                                    prev.filter((id) => id !== item?.marketplace_id)
+                                  );
+                                  setUserChangedActiveMarketplaces(true);
+                                }
                               }}
                               className={`p-2.5 px-3 rounded-xl border-2 cursor-pointer transition-all select-none flex items-center gap-2.5 ${isSelected
                                 ? 'bg-primary-50/70 dark:bg-primary-950/40 border-primary-600 dark:border-primary-500 shadow-2xs ring-1 ring-primary-500/20 text-primary-950 dark:text-primary-100'
@@ -918,46 +968,56 @@ function AmazonCredentialsFormContent({
                 </div>
 
                 {/* Compact Active Marketplaces Limit Banner */}
-                <div
-                  className={`p-2.5 px-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-all ${activeMarketplaces.length >= maxAllowed
-                    ? 'bg-amber-50/90 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:border-amber-500/30 dark:text-amber-100'
-                    : 'bg-primary-50/80 border-primary-200 text-primary-950 dark:bg-primary-950/40 dark:border-primary-500/30 dark:text-primary-100'
-                    }`}
-                >
-                  <div className="flex items-center gap-2.5">
+                {(() => {
+                  const validActive = activeMarketplaces.filter((id) =>
+                    marketplaceIds.includes(id)
+                  );
+                  const activeCount = validActive.length;
+                  const isLimitReached = activeCount >= maxAllowed;
+
+                  return (
                     <div
-                      className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-white shadow-2xs ${activeMarketplaces.length >= maxAllowed
-                        ? 'bg-amber-500'
-                        : 'bg-primary-700'
+                      className={`p-2.5 px-3.5 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 transition-all ${isLimitReached
+                        ? 'bg-amber-50/90 border-amber-300 text-amber-950 dark:bg-amber-950/40 dark:border-amber-500/30 dark:text-amber-100'
+                        : 'bg-primary-50/80 border-primary-200 text-primary-950 dark:bg-primary-950/40 dark:border-primary-500/30 dark:text-primary-100'
                         }`}
                     >
-                      <FuseSvgIcon size={15}>
-                        {activeMarketplaces.length >= maxAllowed
-                          ? 'heroicons-outline:exclamation-triangle'
-                          : 'heroicons-outline:information-circle'}
-                      </FuseSvgIcon>
-                    </div>
-                    <div>
-                      <span className="text-[12px] font-bold leading-tight block">
-                        Active Marketplaces: {activeMarketplaces.length} / {maxAllowed} Activated
-                      </span>
-                      <span className="text-[11px] opacity-80 block">
-                        {activeMarketplaces.length >= maxAllowed
-                          ? `Maximum active limit reached (${maxAllowed}/${maxAllowed}). Unselect one to activate another.`
-                          : `Activate up to ${maxAllowed} stores for live sync (${maxAllowed - activeMarketplaces.length} remaining).`}
-                      </span>
-                    </div>
-                  </div>
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-white shadow-2xs ${isLimitReached
+                            ? 'bg-amber-500'
+                            : 'bg-primary-700'
+                            }`}
+                        >
+                          <FuseSvgIcon size={15}>
+                            {isLimitReached
+                              ? 'heroicons-outline:exclamation-triangle'
+                              : 'heroicons-outline:information-circle'}
+                          </FuseSvgIcon>
+                        </div>
+                        <div>
+                          <span className="text-[12px] font-bold leading-tight block">
+                            Active Marketplaces: {activeCount} / {maxAllowed} Activated
+                          </span>
+                          <span className="text-[11px] opacity-80 block">
+                            {isLimitReached
+                              ? `Maximum active limit reached (${maxAllowed}/${maxAllowed}). Unselect one to activate another.`
+                              : `Activate up to ${maxAllowed} stores for live sync (${maxAllowed - activeCount} remaining).`}
+                          </span>
+                        </div>
+                      </div>
 
-                  <Chip
-                    label={`${activeMarketplaces.length} / ${maxAllowed} Active`}
-                    size="small"
-                    className={`self-start sm:self-center font-bold px-2 py-0 text-[11px] border h-6 ${activeMarketplaces.length >= maxAllowed
-                      ? 'bg-amber-100 text-amber-900 border-amber-300'
-                      : 'bg-primary-100 text-primary-900 border-primary-300'
-                      }`}
-                  />
-                </div>
+                      <Chip
+                        label={`${activeCount} / ${maxAllowed} Active`}
+                        size="small"
+                        className={`self-start sm:self-center font-bold px-2 py-0 text-[11px] border h-6 ${isLimitReached
+                          ? 'bg-amber-100 text-amber-900 border-amber-300'
+                          : 'bg-primary-100 text-primary-900 border-primary-300'
+                          }`}
+                      />
+                    </div>
+                  );
+                })()}
 
                 {/* 4 in a row Compact Active Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
@@ -965,9 +1025,12 @@ function AmazonCredentialsFormContent({
                     const mp = marketplaceOptions?.find(
                       (item: any) => item?.marketplace_id === id
                     );
-                    const isActive = activeMarketplaces.includes(id);
+                    const validActive = activeMarketplaces.filter((mId) =>
+                      marketplaceIds.includes(mId)
+                    );
+                    const isActive = validActive.includes(id);
                     const isLimitReached =
-                      !isActive && activeMarketplaces.length >= maxAllowed;
+                      !isActive && validActive.length >= maxAllowed;
 
                     return (
                       <div

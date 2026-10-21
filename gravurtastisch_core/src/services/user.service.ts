@@ -512,7 +512,7 @@ const getUserDetailById = async (id) => {
 
 const getUserById = async (id) => {
   try {
-    return User.findById(id);
+    return User.findById(id).populate('currentPlanId');
   } catch (error) {
     errorHandler.errorM({
       action_type: 'find-user-by-id',
@@ -582,13 +582,21 @@ const updateUserById = async (updateBody) => {
       }
     }
 
-    // Remove confirm_password from updateBody if it exists
-    const { email: _email, ...updateData } = updateBody;
+    // Omit immutable _id, email, and confirm_password from updateData
+    const { _id, email: _email, confirm_password, ...updateData } = updateBody;
+
+    // Normalize phone / contact input to contact_no if passed under alternative keys
+    if (updateBody.phone !== undefined && updateData.contact_no === undefined) {
+      updateData.contact_no = updateBody.phone;
+    }
+    if (updateBody.contact !== undefined && updateData.contact_no === undefined) {
+      updateData.contact_no = updateBody.contact;
+    }
 
     // Update user and get the updated document
     const result = await User.findByIdAndUpdate(
       new mongoose.Types.ObjectId(userId),
-      updateData,
+      { $set: updateData },
       {
         new: true,
         runValidators: true,

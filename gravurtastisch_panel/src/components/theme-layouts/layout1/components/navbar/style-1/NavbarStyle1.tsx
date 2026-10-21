@@ -67,9 +67,9 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
 
 const StyledNavBarMobile = styled(SwipeableDrawer)(() => ({
   '& .MuiDrawer-paper': {
-    minWidth: navbarWidth,
-    width: navbarWidth,
-    maxWidth: navbarWidth,
+    minWidth: 280,
+    width: 280,
+    maxWidth: '85vw',
   },
 }));
 

@@ -35,6 +35,7 @@ const roleSchema = mongoose.Schema(
       enum: ['admin', 'seller'],
       required: true,
       index: true,
+      trim: true,
     },
     /**
      * Seller-scoped custom roles belong to a sellerAdmin account.

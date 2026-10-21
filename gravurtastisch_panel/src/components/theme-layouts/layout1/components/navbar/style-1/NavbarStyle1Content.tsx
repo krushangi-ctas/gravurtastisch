@@ -2,9 +2,13 @@ import FuseScrollbars from '@fuse/core/FuseScrollbars';
 import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
 import { memo } from 'react';
+import IconButton from '@mui/material/IconButton';
+import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import Logo from 'src/components/theme-layouts/components/Logo';
 import Navigation from 'src/components/theme-layouts/components/navigation/Navigation';
 import UserMenu from 'src/components/theme-layouts/components/UserMenu';
+import { useNavbarContext } from '@/components/theme-layouts/components/navbar/contexts/NavbarContext/useNavbarContext';
 
 const Root = styled('div')(({ theme }) => ({
   backgroundColor: theme.vars.palette.background.default,
@@ -42,6 +46,8 @@ type NavbarStyle1ContentProps = {
  */
 function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
   const { className = '' } = props;
+  const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
+  const { closeMobileNavbar } = useNavbarContext();
 
   return (
     <Root
@@ -50,8 +56,23 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         className
       )}
     >
-      <div className="flex h-20 shrink-0 items-center justify-center px-4 border-b border-black/5">
+      <div
+        className={clsx(
+          'flex h-20 shrink-0 items-center px-4 border-b border-black/5',
+          isMobile ? 'justify-between' : 'justify-center'
+        )}
+      >
         <Logo />
+        {isMobile && (
+          <IconButton
+            onClick={() => closeMobileNavbar()}
+            aria-label="close navigation"
+            size="small"
+            className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+          >
+            <FuseSvgIcon size={20}>lucide:x</FuseSvgIcon>
+          </IconButton>
+        )}
       </div>
 
       <StyledContent

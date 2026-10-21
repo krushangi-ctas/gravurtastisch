@@ -2,7 +2,42 @@ import { jsPDF } from 'jspdf';
 import moment from 'moment';
 import { User } from '../api/services/usersApiService';
 
-export function generateSellerInvoicePDF(user: User): void {
+function loadLogoImage(): Promise<string | null> {
+	return new Promise((resolve) => {
+		if (typeof window === 'undefined') {
+			resolve(null);
+			return;
+		}
+
+		const img = new Image();
+		img.crossOrigin = 'anonymous';
+
+		img.onload = () => {
+			try {
+				const canvas = document.createElement('canvas');
+				canvas.width = img.naturalWidth || img.width || 420;
+				canvas.height = img.naturalHeight || img.height || 139;
+				const ctx = canvas.getContext('2d');
+				if (ctx) {
+					ctx.drawImage(img, 0, 0);
+					resolve(canvas.toDataURL('image/png'));
+					return;
+				}
+			} catch {
+				// Canvas tainted or context unavailable
+			}
+			resolve(null);
+		};
+
+		img.onerror = () => {
+			resolve(null);
+		};
+
+		img.src = '/gravurtastich.png';
+	});
+}
+
+export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	const doc = new jsPDF({
 		orientation: 'portrait',
 		unit: 'mm',
@@ -38,17 +73,31 @@ export function generateSellerInvoicePDF(user: User): void {
 	const pageWidth = rightMargin - leftMargin;
 
 	// === 1. TOP HEADER ===
-	// Brand Title
-	doc.setFont('helvetica', 'bold');
-	doc.setFontSize(22);
-	doc.setTextColor(15, 23, 42); // Deep Charcoal / Black
-	doc.text('GRAVURTASTISCH', leftMargin, 22);
+	const logoDataUrl = await loadLogoImage();
 
-	// Tagline
-	doc.setFont('helvetica', 'normal');
-	doc.setFontSize(8.5);
-	doc.setTextColor(80, 80, 80);
-	doc.text('Personalized Product Proofing & Fulfillment Platform', leftMargin, 28);
+	if (logoDataUrl) {
+		// 420x139 aspect ratio is ~ 3.02:1
+		// Width: 52mm, Height: 17.2mm
+		doc.addImage(logoDataUrl, 'PNG', leftMargin, 16, 52, 17.2);
+
+		// Tagline below logo
+		doc.setFont('helvetica', 'normal');
+		doc.setFontSize(8.5);
+		doc.setTextColor(80, 80, 80);
+		doc.text('Personalized Product Proofing & Fulfillment Platform', leftMargin, 39);
+	} else {
+		// Fallback to text brand title
+		doc.setFont('helvetica', 'bold');
+		doc.setFontSize(22);
+		doc.setTextColor(15, 23, 42); // Deep Charcoal / Black
+		doc.text('GRAVURTASTISCH', leftMargin, 22);
+
+		// Tagline
+		doc.setFont('helvetica', 'normal');
+		doc.setFontSize(8.5);
+		doc.setTextColor(80, 80, 80);
+		doc.text('Personalized Product Proofing & Fulfillment Platform', leftMargin, 28);
+	}
 
 	// Top Right - INVOICE title
 	doc.setFont('helvetica', 'bold');

@@ -40,11 +40,13 @@ const paymentSchema = new mongoose.Schema(
       type: String,
       default: 'usd',
       lowercase: true,
+      trim: true,
     },
     mode: {
       type: String,
       enum: ['subscription', 'payment'],
       default: 'subscription',
+      trim: true,
     },
     billingCycle: {
       type: Number,
@@ -57,6 +59,7 @@ const paymentSchema = new mongoose.Schema(
       enum: ['pending', 'paid', 'failed', 'canceled', 'refunded'],
       default: 'pending',
       index: true,
+      trim: true,
     },
     stripeSessionId: {
       type: String,
@@ -90,7 +93,7 @@ const paymentSchema = new mongoose.Schema(
     },
     /** Stripe event ids already processed (idempotency) */
     processedEventIds: {
-      type: [String],
+      type: [{ type: String, trim: true }],
       default: [],
     },
     userId: {

@@ -302,9 +302,9 @@ function BlogsContent({
 	}
 
 	const actionButtons = (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
 			{/* Status Filter */}
-			<FormControl size="small" className="min-w-[115px] bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700" sx={{ height: '38px' }}>
+			<FormControl size="small" className="min-w-[110px] sm:min-w-[125px] flex-1 sm:flex-initial bg-white dark:bg-slate-800 rounded-lg shadow-2xs border border-slate-200 dark:border-slate-700" sx={{ height: '38px' }}>
 				<Select
 					value={statusFilter}
 					onChange={(e) => onStatusChange(e.target.value)}
@@ -344,7 +344,7 @@ function BlogsContent({
 					type="button"
 					onClick={onAddNew}
 					style={{ height: '38px' }}
-					className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+					className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
 				>
 					<FuseSvgIcon size={16} className="text-white">
 						heroicons-outline:plus
@@ -409,12 +409,21 @@ function BlogsContent({
 					manualSorting
 					rowCount={totalResults}
 					pageCount={totalPages}
+					muiTableProps={{
+						sx: {
+							minWidth: { xs: '850px', lg: '100%' }
+						}
+					}}
 					muiTableContainerProps={{
+						className: 'flex-auto custom-table-scrollbar',
 						sx: {
 							maxWidth: '100%',
+							width: '100%',
 							flex: '1 1 auto',
 							minHeight: 0,
-							overflow: 'auto',
+							overflowX: 'auto',
+							overflowY: 'auto',
+							WebkitOverflowScrolling: 'touch',
 							'&::-webkit-scrollbar': { height: 8, width: 8 },
 							'&::-webkit-scrollbar-track': {
 								backgroundColor: 'background.default',

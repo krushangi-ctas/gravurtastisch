@@ -1,6 +1,8 @@
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
+import NavbarToggleButton from '@/components/theme-layouts/components/navbar/NavbarToggleButton';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import {
 	MRT_GlobalFilterTextField,
@@ -62,6 +64,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 
 	const isMobile = useMediaQuery('(max-width:720px)');
 	const isTablet = useMediaQuery('(max-width:1024px)');
+	const isNavMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
 
 	const toolbarProps = parseFromValuesOrFunc(muiTopToolbarProps, { table });
 
@@ -128,11 +131,19 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 			>
 				{['both', 'top'].includes(positionToolbarDropZone ?? '') && <MRT_ToolbarDropZone table={table} />}
 
-				<div className="flex w-full flex-wrap sm:flex-nowrap items-center justify-between gap-2.5 min-h-[40px]">
+				<div className="flex w-full flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 min-h-[40px]">
 					{/* Left: Icon & Title + optional custom actions */}
-					<div className="flex items-center gap-2.5 min-w-0 flex-1">
+					<div className="flex items-center gap-2.5 min-w-0 w-full lg:w-auto flex-1">
+						{isNavMobile && (
+							<NavbarToggleButton
+								className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0 -ml-1 border-0"
+								aria-label="open navigation menu"
+							>
+								<FuseSvgIcon size={20}>heroicons-outline:bars-3</FuseSvgIcon>
+							</NavbarToggleButton>
+						)}
 						{(icon || title) && (
-							<div className="flex items-center gap-3 shrink-0 py-0.5">
+							<div className="flex items-center gap-2.5 sm:gap-3 shrink-0 py-0.5">
 								{icon && (
 									<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
 										{typeof icon === 'string' ? (
@@ -146,11 +157,11 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 								)}
 								{title && (
 									<div className="flex flex-col min-w-0">
-										<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 m-0 whitespace-nowrap leading-tight">
+										<h1 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 m-0 truncate leading-tight">
 											{title}
 										</h1>
 										{(subtitle || (typeof title === 'string' && defaultTableSubtitles[title])) && (
-											<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium whitespace-nowrap leading-tight mt-1">
+											<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium whitespace-normal sm:truncate lg:whitespace-nowrap leading-tight mt-0.5 sm:mt-1">
 												{subtitle || (typeof title === 'string' && defaultTableSubtitles[title])}
 											</p>
 										)}
@@ -163,7 +174,12 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 							<MRT_GlobalFilterTextField
 								{...globalFilterProps}
 								sx={{
+									width: { xs: '100%', sm: 'auto' },
+									flex: { xs: '1 1 100%', sm: '1 1 auto', lg: '0 0 auto' },
+									minWidth: { xs: '100%', sm: '160px', lg: '200px' },
+									maxWidth: { xs: '100%', lg: '280px' },
 									'& .MuiInputBase-root': {
+										width: '100%',
 										height: '38px !important',
 										minHeight: '38px !important',
 										maxHeight: '38px !important',
@@ -229,7 +245,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 
 					{/* Right: Search + Refresh + Action Buttons + MRT internal buttons */}
 					<Box
-						className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap justify-end ml-auto"
+						className="flex items-center gap-2 w-full lg:w-auto flex-wrap lg:flex-nowrap justify-start sm:justify-end ml-0 lg:ml-auto"
 						sx={{
 							'& > .MuiIconButton-root, & .MRT_ToolbarInternalButtons .MuiIconButton-root': {
 								width: 38,
@@ -259,7 +275,12 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 							<MRT_GlobalFilterTextField
 								{...globalFilterProps}
 								sx={{
+									width: { xs: '100%', sm: 'auto' },
+									flex: { xs: '1 1 100%', sm: '1 1 auto', lg: '0 0 auto' },
+									minWidth: { xs: '100%', sm: '160px', lg: '200px' },
+									maxWidth: { xs: '100%', lg: '280px' },
 									'& .MuiInputBase-root': {
+										width: '100%',
 										height: '38px !important',
 										minHeight: '38px !important',
 										maxHeight: '38px !important',

@@ -26,7 +26,7 @@ const blogSchema = new mongoose.Schema(
       default: null,
     },
     description_images: {
-      type: [String],
+      type: [{ type: String, trim: true }],
       default: [],
     },
     status: {

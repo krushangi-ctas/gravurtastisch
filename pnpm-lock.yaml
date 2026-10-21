@@ -447,6 +447,9 @@ importers:
       history:
         specifier: 5.3.0
         version: 5.3.0
+      jspdf:
+        specifier: ^4.2.1
+        version: 4.2.1
       jwt-decode:
         specifier: 3.1.2
         version: 3.1.2
@@ -553,9 +556,6 @@ importers:
       '@types/crypto-js':
         specifier: ^4.2.2
         version: 4.2.2
-      '@types/jspdf':
-        specifier: ^2.0.0
-        version: 2.0.0
       '@types/lodash':
         specifier: 4.17.16
         version: 4.17.16
@@ -3819,10 +3819,6 @@ packages:
 
   '@types/jsonwebtoken@9.0.10':
     resolution: {integrity: sha512-asx5hIG9Qmf/1oStypjanR7iKTv0gXQ1Ov/jfrX6kS/EO0OFni8orbmGCn0672NHR3kXHwpAwR+B368ZGN/2rA==}
-
-  '@types/jspdf@2.0.0':
-    resolution: {integrity: sha512-oonYDXI4GegGaG7FFVtriJ+Yqlh4YR3L3NVDiwCEBVG7sbya19SoGx4MW4kg1MCMRPgkbbFTck8YKJL8PrkDfA==}
-    deprecated: This is a stub types definition. jspdf provides its own type definitions, so you do not need this installed.
 
   '@types/lodash@4.17.16':
     resolution: {integrity: sha512-HX7Em5NYQAXKW+1T+FiuG27NGwzJfCX3s1GjOa7ujxZa52kjJLOr4FUxT+giF6Tgxv1e+/czV/iTtBw27WTU9g==}
@@ -10611,10 +10607,6 @@ snapshots:
     dependencies:
       '@types/ms': 2.1.0
       '@types/node': 22.20.5
-
-  '@types/jspdf@2.0.0':
-    dependencies:
-      jspdf: 4.2.1
 
   '@types/lodash@4.17.16': {}
 

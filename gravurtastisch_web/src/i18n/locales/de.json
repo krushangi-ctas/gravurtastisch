@@ -282,7 +282,7 @@
     "errEmailRequired": "E-Mail ist erforderlich.",
     "errEmailInvalid": "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
     "errEmailMax": "E-Mail darf 100 Zeichen nicht überschreiten.",
-    "errPhoneInvalid": "Bitte geben Sie eine gültige Telefonnummer ein (mind. 7 Ziffern).",
+    "errPhoneInvalid": "Bitte geben Sie eine gültige Telefonnummer ein (10 bis 20 Ziffern).",
     "errPhoneMax": "Telefonnummer darf 20 Zeichen nicht überschreiten.",
     "errPlanRequired": "Bitte wählen Sie ein Abonnement aus."
   },

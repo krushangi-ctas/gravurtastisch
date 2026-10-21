@@ -189,7 +189,7 @@ function RegisterSection() {
       const digitsOnly = phone.replace(/\D/g, "");
       if (phone.length > 20) {
         errs.phone = t("register.errPhoneMax");
-      } else if (!PHONE_CHARS_REGEX.test(phone) || digitsOnly.length < 7) {
+      } else if (!PHONE_CHARS_REGEX.test(phone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
         errs.phone = t("register.errPhoneInvalid");
       }
     }

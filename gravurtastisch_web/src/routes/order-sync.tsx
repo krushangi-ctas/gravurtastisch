@@ -544,7 +544,7 @@ function OrderSyncPage() {
                     <span className="font-mono text-[#0032ab] bg-[#0032ab]/10 border border-[#0032ab]/20 px-2.5 py-1 rounded-md font-bold">AUTO-REFRESH: 5m</span>
                   </div>
 
-                  <div className="overflow-x-auto min-w-0 w-full">
+                  <div className="overflow-x-auto min-w-0 w-full custom-table-scrollbar">
                     <table className="w-full text-left text-xs min-w-[580px]">
                       <thead className="bg-[#e2e8f0] border-b border-slate-300">
                         <tr className="text-navy-deep uppercase font-mono tracking-wider font-bold">
