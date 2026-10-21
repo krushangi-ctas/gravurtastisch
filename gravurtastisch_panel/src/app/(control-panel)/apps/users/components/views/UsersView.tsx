@@ -34,6 +34,7 @@ import {
 	useAdminSellers,
 	useAdminStaffUsers,
 	useAdminUpdateUser,
+	useCancelPlanForUser,
 	useCreateAdminUser,
 	useCreateTeamUser,
 	useTeamUsers
@@ -149,6 +150,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const updateMutation = useAdminUpdateUser();
 	const createAdminMutation = useCreateAdminUser();
 	const createTeamMutation = useCreateTeamUser();
+	const cancelPlanMutation = useCancelPlanForUser();
 
 	const [createOpen, setCreateOpen] = useState(false);
 	const [editOpen, setEditOpen] = useState(false);
@@ -167,7 +169,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	// Confirmation Dialog state
 	const [confirmState, setConfirmState] = useState<{
 		open: boolean;
-		type: 'status' | 'delete';
+		type: 'status' | 'delete' | 'cancelPlan';
 		user: User | null;
 		targetStatus?: number;
 	}>({
@@ -175,6 +177,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		type: 'status',
 		user: null
 	});
+
+	const handleOpenCancelPlan = useCallback((user: User) => {
+		(document.activeElement as HTMLElement)?.blur();
+		setConfirmState({
+			open: true,
+			type: 'cancelPlan',
+			user
+		});
+	}, []);
 	const [isActionLoading, setIsActionLoading] = useState(false);
 
 	const [formName, setFormName] = useState('');
@@ -416,6 +427,12 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				enqueueSnackbar(
 					`User status updated to ${confirmState.targetStatus === 1 ? 'Active' : 'Inactive'}.`,
 					{ variant: 'success', autoHideDuration: 2000 }
+				);
+			} else if (confirmState.type === 'cancelPlan') {
+				await cancelPlanMutation.mutateAsync({ userId });
+				enqueueSnackbar(
+					`Subscription plan for "${confirmState.user.name || confirmState.user.email}" has been cancelled.`,
+					{ variant: 'success', autoHideDuration: 3000 }
 				);
 			}
 			setConfirmState({ open: false, type: 'status', user: null });
@@ -1413,25 +1430,46 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											</Tooltip>
 										)}
 										{isSellersMode && (
-											<Tooltip title="Assign Plan" arrow>
-												<IconButton
-													size="small"
-													onClick={(e) => {
-														(e.currentTarget as HTMLElement)?.blur();
-														handleOpenAssignPlan(row.original);
-													}}
-													sx={{
-														p: 0.6,
-														borderRadius: '6px',
-														color: (t) => (t.palette.mode === 'dark' ? '#34D399' : '#059669'),
-														'&:hover': {
-															bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
-														}
-													}}
-												>
-													<FuseSvgIcon size={16}>heroicons-outline:credit-card</FuseSvgIcon>
-												</IconButton>
-											</Tooltip>
+											<>
+												<Tooltip title="Assign Plan" arrow>
+													<IconButton
+														size="small"
+														onClick={(e) => {
+															(e.currentTarget as HTMLElement)?.blur();
+															handleOpenAssignPlan(row.original);
+														}}
+														sx={{
+															p: 0.6,
+															borderRadius: '6px',
+															color: (t) => (t.palette.mode === 'dark' ? '#34D399' : '#059669'),
+															'&:hover': {
+																bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+															}
+														}}
+													>
+														<FuseSvgIcon size={16}>heroicons-outline:credit-card</FuseSvgIcon>
+													</IconButton>
+												</Tooltip>
+												<Tooltip title="Cancel Plan" arrow>
+													<IconButton
+														size="small"
+														onClick={(e) => {
+															(e.currentTarget as HTMLElement)?.blur();
+															handleOpenCancelPlan(row.original);
+														}}
+														sx={{
+															p: 0.6,
+															borderRadius: '6px',
+															color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+															'&:hover': {
+																bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)')
+															}
+														}}
+													>
+														<FuseSvgIcon size={16}>heroicons-outline:x-circle</FuseSvgIcon>
+													</IconButton>
+												</Tooltip>
+											</>
 										)}
 										<Tooltip title="Edit user" arrow>
 											<IconButton
@@ -2033,22 +2071,28 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						<div className="p-6 pb-5 bg-white flex items-start justify-between gap-4">
 							<div className="flex items-start gap-3.5">
 								<div
-									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete' ? 'bg-red-100 text-red-500' : 'bg-amber-100 text-amber-500'
+									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete' || confirmState.type === 'cancelPlan' ? 'bg-red-100 text-red-500' : 'bg-amber-100 text-amber-500'
 										}`}
 								>
-									<FuseSvgIcon size={24} className={confirmState.type === 'delete' ? 'text-red-500' : 'text-amber-500'}>
-										{confirmState.type === 'delete' ? 'heroicons-outline:trash' : 'heroicons-outline:exclamation-triangle'}
+									<FuseSvgIcon size={24} className={confirmState.type === 'delete' || confirmState.type === 'cancelPlan' ? 'text-red-500' : 'text-amber-500'}>
+										{confirmState.type === 'delete' ? 'heroicons-outline:trash' : confirmState.type === 'cancelPlan' ? 'heroicons-outline:x-circle' : 'heroicons-outline:exclamation-triangle'}
 									</FuseSvgIcon>
 								</div>
 								<div className="flex flex-col">
 									<h3 className="text-base font-bold text-slate-800 m-0">
-										{confirmState.type === 'delete' ? 'Delete User' : 'Change User Status'}
+										{confirmState.type === 'delete' ? 'Delete User' : confirmState.type === 'cancelPlan' ? 'Cancel Subscription Plan' : 'Change User Status'}
 									</h3>
 									<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
 										{confirmState.type === 'delete' ? (
 											<>
 												Are you sure you want to delete{' '}
 												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong>? This action cannot be undone.
+											</>
+										) : confirmState.type === 'cancelPlan' ? (
+											<>
+												Are you sure you want to cancel the subscription plan for{' '}
+												<strong className="text-slate-800 font-semibold">{confirmState.user?.name || confirmState.user?.email}</strong>?
+												The seller will no longer be able to use marketplaces or send review requests until a new plan is assigned.
 											</>
 										) : (
 											<>
@@ -2085,13 +2129,13 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								type="button"
 								onClick={handleConfirmAction}
 								disabled={isActionLoading}
-								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${confirmState.type === 'delete'
+								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${confirmState.type === 'delete' || confirmState.type === 'cancelPlan'
 									? 'bg-red-600 hover:bg-red-700'
 									: 'bg-primary-800 hover:bg-primary-900'
 									}`}
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}
-								<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>
+								<span>{confirmState.type === 'delete' ? 'Delete' : confirmState.type === 'cancelPlan' ? 'Cancel Plan' : 'Change Status'}</span>
 							</button>
 						</div>
 					</Dialog>

@@ -93,7 +93,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 		} else if (isNaN(Number(price)) || Number(price) < 0) {
 			newErrors.price = 'Please enter a valid price (minimum 0)';
 		} else if (Number(price) > 999999) {
-			newErrors.price = 'Price cannot exceed $999,999';
+			newErrors.price = 'Price cannot exceed €999,999';
 		}
 
 		if (marketplace === '' || marketplace === null || marketplace === undefined) {
@@ -129,6 +129,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 		const payload = {
 			name: name.trim(),
 			price: Number(price),
+			currency: 'eur',
 			marketplace: Number(marketplace),
 			request_quota: Number(requestQuota),
 			billingCycle: Number(billingCycle) || 1,
@@ -238,10 +239,10 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 							/>
 						</div>
 
-						{/* Price ($) */}
+						{/* Price */}
 						<div>
 							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
-								Price (in USD $) <span className="text-red-500">*</span>
+								Price (in EUR €) <span className="text-red-500">*</span>
 							</label>
 							<TextField
 								fullWidth
@@ -261,17 +262,17 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								InputProps={{
 									startAdornment: (
 										<InputAdornment position="start">
-											<span className="font-bold text-gray-600 text-sm">$</span>
+											<span className="font-bold text-gray-600 text-sm">€</span>
 										</InputAdornment>
 									)
 								}}
 								helperText={
 									errors.price ||
 									(billingCycle === 3
-										? 'Total billed annually in USD ($) — set full yearly price'
+										? 'Total billed annually in EUR (€) — set full yearly price'
 										: billingCycle === 2
-										? 'Total billed quarterly in USD ($) — set full 3-month price'
-										: 'Billed monthly in USD ($)')
+										? 'Total billed quarterly in EUR (€) — set full 3-month price'
+										: 'Billed monthly in EUR (€)')
 								}
 							/>
 						</div>

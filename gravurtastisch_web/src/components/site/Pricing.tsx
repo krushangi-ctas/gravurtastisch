@@ -322,7 +322,7 @@ export function Pricing() {
                       <span
                         className="text-5xl font-extrabold tracking-tight text-foreground"
                       >
-                        ${plan.price}
+                        €{plan.price}
                       </span>
                       <span
                         className="text-slate-body text-sm font-semibold"
@@ -413,7 +413,7 @@ export function Pricing() {
                   Stripe Checkout
                 </p>
                 <h3 id="checkout-title" className="mt-1 text-xl font-extrabold text-navy-deep">
-                  {selectedPlan.name} — ${selectedPlan.price}{getCycleSuffix(selectedPlan.billingCycle)}
+                  {selectedPlan.name} — €{selectedPlan.price}{getCycleSuffix(selectedPlan.billingCycle)}
                 </h3>
                 <span className="inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
                   {getCycleBillingText(selectedPlan.billingCycle)}

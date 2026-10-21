@@ -1,12 +1,16 @@
 // @ts-nocheck
 const httpStatus = require('http-status');
 const mongoose = require('mongoose');
+const moment = require('moment');
 const PlanModel = require('../models/plan.model');
+const ordermodel = require('../models/order.model');
+const User = require('../models/user.model');
 
 const createPlan = async (bodyData, userId) => {
   const payload = {
     name: bodyData.name,
     price: Number(bodyData.price),
+    currency: bodyData.currency || 'eur',
     marketplace: Number(bodyData.marketplace ?? bodyData.marketplce ?? 0),
     request_quota: Number(bodyData.request_quota ?? 0),
     expireAt: bodyData.expireAt ? new Date(bodyData.expireAt) : null,
@@ -247,6 +251,8 @@ const syncUserSubscriptionPlans = async (userDocOrLean: any) => {
       userDocOrLean.planLimits = {
         maxMarketplaces: Number(nextQueuedPlan.marketplace) || 5,
         maxReviewRequestsPerMonth: Number(nextQueuedPlan.request_quota) || 1000,
+        usedReviewRequests: userDocOrLean.planLimits?.usedReviewRequests ?? 0,
+        usageMonth: userDocOrLean.planLimits?.usageMonth ?? null,
       };
       userDocOrLean.subscriptionStatus = 1; // active
       hasPlanUpdated = true;
@@ -341,6 +347,91 @@ const autoPromoteAllExpiredUserPlans = async () => {
 };
 
 /**
+ * Synchronizes and resets seller's usedReviewRequests count for the current month.
+ * If user's usageMonth is different from current month (YYYY-MM),
+ * usage resets to 0 and counts only requests sent/queued in the current month.
+ */
+const syncUserMonthlyUsage = async (userDocOrLean: any) => {
+  if (!userDocOrLean) return 0;
+
+
+  const currentMonthKey = moment().format('YYYY-MM');
+  const startOfMonth = moment().startOf('month').toDate();
+  const userId = userDocOrLean._id || userDocOrLean.id;
+  if (!userId) return 0;
+
+  let currentMonthUsed = 0;
+  try {
+    currentMonthUsed = await ordermodel.countDocuments({
+      userId,
+      $or: [
+        { isSent: true, updatedAt: { $gte: startOfMonth } },
+        { isNeedToSend: true, isSent: false },
+      ],
+    });
+  } catch (err: any) {
+    console.error('Error counting monthly orders for user:', userId, err?.message);
+    currentMonthUsed = 0;
+  }
+
+  // Update in-memory object
+  userDocOrLean.usedReviewRequests = currentMonthUsed;
+  if (!userDocOrLean.planLimits) {
+    userDocOrLean.planLimits = {};
+  }
+  userDocOrLean.planLimits.usedReviewRequests = currentMonthUsed;
+  userDocOrLean.planLimits.usageMonth = currentMonthKey;
+
+  // Persist to DB
+  try {
+    await User.updateOne(
+      { _id: userId },
+      {
+        $set: {
+          'planLimits.usageMonth': currentMonthKey,
+          usedReviewRequests: currentMonthUsed,
+          'planLimits.usedReviewRequests': currentMonthUsed,
+        },
+      }
+    );
+  } catch (err: any) {
+    console.error('Error persisting monthly usage for user:', userId, err?.message);
+  }
+
+  return currentMonthUsed;
+};
+
+/**
+ * Scans for users whose usageMonth is not current month,
+ * and resets their usedReviewRequests to 0 / current month count.
+ * Called automatically every 5 minutes by keepAlive cron or on-demand.
+ */
+const resetMonthlyUsageForAllUsers = async () => {
+  try {
+    const currentMonthKey = moment().format('YYYY-MM');
+
+    const outdatedUsers = await User.find({
+      $or: [
+        { 'planLimits.usageMonth': { $ne: currentMonthKey } },
+        { 'planLimits.usageMonth': { $exists: false } },
+      ],
+    }).limit(100);
+
+    if (!outdatedUsers || outdatedUsers.length === 0) return 0;
+
+    let updatedCount = 0;
+    for (const u of outdatedUsers) {
+      await syncUserMonthlyUsage(u);
+      updatedCount++;
+    }
+    return updatedCount;
+  } catch (err: any) {
+    console.error('Error resetting monthly usage for all users:', err?.message || err);
+    return 0;
+  }
+};
+
+/**
  * Resolves effective plan limits for a user (or their parent organization).
  * Priority:
  * 1. Active plan in user.plans array (status === 1 || 'active' && paymentStatus === 1 || 'paid')
@@ -370,22 +461,8 @@ const getEffectivePlanLimits = async (userOrId) => {
     if (parent) user = parent;
   }
 
-  const ordermodel = require('../models/order.model');
-  let usedReviewRequests = 0;
-  try {
-    const targetUserId = user._id || user.id;
-    if (targetUserId) {
-      const orderCount = await ordermodel.countDocuments({
-        userId: targetUserId,
-        $or: [{ isSent: true }, { isNeedToSend: true }],
-      });
-      usedReviewRequests = Math.max(
-        orderCount,
-        user.usedReviewRequests || 0,
-        user.planLimits?.usedReviewRequests || 0
-      );
-    }
-  } catch (_) {}
+  // Synchronize seller's usedReviewRequests count for current month
+  const usedReviewRequests = await syncUserMonthlyUsage(user);
 
   // Check plans in user.plans array
   if (Array.isArray(user.plans) && user.plans.length > 0) {
@@ -410,9 +487,34 @@ const getEffectivePlanLimits = async (userOrId) => {
       };
     }
 
+    // If user has a plan that is canceled (status === 3 or subscriptionStatus === 3)
+    const isLatestCanceled =
+      user.subscriptionStatus === 3 ||
+      user.subscriptionStatus === 'canceled' ||
+      latestPlan?.status === 3 ||
+      latestPlan?.status === 'canceled';
+
+    if (isLatestCanceled) {
+      return {
+        maxMarketplaces: 0,
+        maxReviewRequestsPerMonth: 0,
+        usedReviewRequests,
+        remainingReviewRequests: 0,
+        isLimitReached: true,
+        isExpired: false,
+        isCanceled: true,
+        hasActivePlan: false,
+        planName: latestPlan?.name || '',
+        planId: latestPlan?.planId || null,
+        billingCycle: latestPlan?.billingCycle || 1,
+        status: 3,
+        paymentStatus: latestPlan?.paymentStatus,
+        expireAt: latestPlan?.expireAt,
+      };
+    }
+
     // If user has a plan that is expired (status === 2 or past expireAt)
     const now = Date.now();
-    const latestPlan = user.plans[user.plans.length - 1];
     const isLatestExpired =
       latestPlan.status === 2 ||
       latestPlan.status === 'expired' ||
@@ -428,16 +530,33 @@ const getEffectivePlanLimits = async (userOrId) => {
         usedReviewRequests,
         remainingReviewRequests: Math.max(0, maxQuota - usedReviewRequests),
         isLimitReached: true,
+        isExpired: true,
+        isCanceled: false,
+        hasActivePlan: false,
         planName: latestPlan.name || '',
         planId: latestPlan.planId || null,
         billingCycle: latestPlan.billingCycle || 1,
-        isExpired: true,
-        hasActivePlan: false,
         status: 2,
         paymentStatus: latestPlan.paymentStatus,
         expireAt: latestPlan.expireAt,
       };
     }
+  }
+
+  if (user.subscriptionStatus === 3 || user.subscriptionStatus === 'canceled') {
+    return {
+      maxMarketplaces: 0,
+      maxReviewRequestsPerMonth: 0,
+      usedReviewRequests,
+      remainingReviewRequests: 0,
+      isLimitReached: true,
+      isExpired: false,
+      isCanceled: true,
+      hasActivePlan: false,
+      planName: '',
+      planId: null,
+      status: 3,
+    };
   }
 
   // Fallback to legacy planLimits (e.g. for superadmin or un-planned users)
@@ -464,4 +583,6 @@ module.exports = {
   getEffectivePlanLimits,
   syncUserSubscriptionPlans,
   autoPromoteAllExpiredUserPlans,
+  syncUserMonthlyUsage,
+  resetMonthlyUsageForAllUsers,
 };

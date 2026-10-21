@@ -294,7 +294,7 @@ function Guide() {
                         </p>
                         <div className="flex flex-wrap items-center gap-2.5 mt-3.5">
                           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700">
-                            🇺🇸 US Store
+                            🇩🇪 DE Store
                           </span>
                           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand/10 dark:bg-brand/20 text-brand dark:text-brand-bright border border-brand/30">
                             Filtered ✓
@@ -974,7 +974,7 @@ function OrderListingStreamSvg() {
         {/* Marketplace Pill */}
         <g transform="translate(10, 8)">
           <rect x="0" y="0" width="105" height="22" rx="6" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="0.8" />
-          <text x="8" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">🇺🇸 US Store ▼</text>
+          <text x="8" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">🇩🇪 DE Store ▼</text>
         </g>
 
         {/* Filter State Pill */}
@@ -1018,7 +1018,7 @@ function OrderListingStreamSvg() {
         {/* Marketplace */}
         <g transform="translate(180, 22)">
           <rect x="0" y="0" width="60" height="20" rx="5" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="0.8" />
-          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇺🇸 Amazon</text>
+          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇩🇪 Amazon</text>
         </g>
 
         {/* Status Pill: Pending */}
@@ -1053,7 +1053,7 @@ function OrderListingStreamSvg() {
         {/* Marketplace */}
         <g transform="translate(180, 17)">
           <rect x="0" y="0" width="60" height="20" rx="5" fill="#FFFFFF" stroke="#E7E5E4" strokeWidth="0.8" />
-          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇨🇦 CA Store</text>
+          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇫🇷 FR Store</text>
         </g>
 
         {/* Status Pill: Sent */}
@@ -1368,7 +1368,7 @@ function VisualWorkflowPipelineSvg() {
         <g transform="translate(12, 68)">
           <rect x="0" y="0" width="121" height="20" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
           <text x="60.5" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
-            🇺🇸 US • 🇨🇦 CA • 🇬🇧 UK
+            🇩🇪 DE • 🇫🇷 FR • 🇬🇧 UK
           </text>
         </g>
       </g>

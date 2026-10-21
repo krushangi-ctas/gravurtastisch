@@ -18,6 +18,13 @@ const generalSettingsByUpdate = async (userId, updateData = {}) => {
 
     const planLimits = await getEffectivePlanLimits(user);
 
+    if (planLimits?.isCanceled) {
+      return {
+        status: httpStatus.FORBIDDEN,
+        message: 'Your subscription plan has been cancelled. Please subscribe to an active plan to configure or activate marketplaces.',
+      };
+    }
+
     if (planLimits?.isExpired) {
       return {
         status: httpStatus.FORBIDDEN,

@@ -350,7 +350,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 													</span>
 												</div>
 												<span className="text-xs text-slate-500 font-medium">
-													${Number(p.price || 0).toFixed(2)} {cycleSuffix}
+													{p.currency === 'inr' ? '₹' : '€'}{Number(p.price || 0).toFixed(2)} {cycleSuffix}
 												</span>
 											</div>
 										);
@@ -388,7 +388,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 													</div>
 													<div className="flex items-center gap-2 text-xs text-slate-500 shrink-0">
 														<span className="font-semibold text-slate-700">
-															${Number(p.price || 0).toFixed(2)} {cycleSuffix}
+															{p.currency === 'inr' ? '₹' : '€'}{Number(p.price || 0).toFixed(2)} {cycleSuffix}
 														</span>
 														<span className="text-slate-300">•</span>
 														<span>{p.marketplace ?? 1} Channels</span>
@@ -461,7 +461,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 										<div>
 											<span className="text-slate-500">Price:</span>{' '}
 											<strong className="text-slate-900">
-												${Number(selectedPlan.price || 0).toFixed(2)}{' '}
+												{selectedPlan.currency === 'inr' ? '₹' : '€'}{Number(selectedPlan.price || 0).toFixed(2)}{' '}
 												<span className="text-slate-500 font-normal">{billingCycle === 3 ? '/yr' : billingCycle === 2 ? '/qtr' : '/mo'}</span>
 											</strong>
 										</div>

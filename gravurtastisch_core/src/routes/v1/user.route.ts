@@ -129,6 +129,22 @@ router.post(
   userController.assignPlanToUser
 );
 
+router.post(
+  '/:userId/cancel-plan',
+  auth(),
+  async (req, res, next) => {
+    try {
+      if (req.user?.isSuperAdmin) {
+        return next();
+      }
+      return requirePermission('sellers', 'update')(req, res, next);
+    } catch (error) {
+      return next(error);
+    }
+  },
+  userController.cancelPlanForUser
+);
+
 router.get('/get-chats/:userId', auth(), userController.getUserForChat);
 
 router.put('/update-profile', auth(), userController.updateUser);

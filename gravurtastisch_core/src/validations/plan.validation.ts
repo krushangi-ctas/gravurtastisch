@@ -11,6 +11,7 @@ const createPlan = {
   body: Joi.object().keys({
     name: Joi.string().required().trim(),
     price: Joi.number().min(0).required(),
+    currency: Joi.string().trim().lowercase().allow('', null),
     marketplace: Joi.number().integer().min(0),
     marketplce: Joi.number().integer().min(0),
     request_quota: Joi.number().integer().min(0).required(),
@@ -44,6 +45,7 @@ const updatePlan = {
     .keys({
       name: Joi.string().trim(),
       price: Joi.number().min(0),
+      currency: Joi.string().trim().lowercase().allow('', null),
       marketplace: Joi.number().integer().min(0),
       marketplce: Joi.number().integer().min(0),
       request_quota: Joi.number().integer().min(0),

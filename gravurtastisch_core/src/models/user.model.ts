@@ -116,6 +116,10 @@ const userSchema = mongoose.Schema(
         type: Number,
         default: 0,
       },
+      usageMonth: {
+        type: String,
+        default: null,
+      },
     },
     usedReviewRequests: {
       type: Number,
@@ -139,6 +143,12 @@ const userSchema = mongoose.Schema(
         price: {
           type: Number,
           default: 0,
+        },
+        currency: {
+          type: String,
+          default: 'eur',
+          lowercase: true,
+          trim: true,
         },
         marketplace: {
           type: Number,

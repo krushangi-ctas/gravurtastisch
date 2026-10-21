@@ -468,6 +468,14 @@ const assignPlanToUser = catchAsync(async (req, res) => {
   res.status(result.status).send(result);
 });
 
+const cancelPlanForUser = catchAsync(async (req, res) => {
+  const result = await userService.cancelPlanForUser(
+    req.params.userId,
+    req.user
+  );
+  res.status(result.status).send(result);
+});
+
 module.exports = {
   createUser,
   createManagedUser,
@@ -485,4 +493,5 @@ module.exports = {
   adminUpdateUser,
   registerSeller,
   assignPlanToUser,
+  cancelPlanForUser,
 };

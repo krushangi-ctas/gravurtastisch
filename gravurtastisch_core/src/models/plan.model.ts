@@ -14,7 +14,12 @@ const planSchema = new mongoose.Schema(
       type: Number,
       required: true,
       min: 0,
-
+    },
+    currency: {
+      type: String,
+      default: 'eur',
+      lowercase: true,
+      trim: true,
     },
     marketplace: {
       type: Number,

@@ -38,7 +38,7 @@ const paymentSchema = new mongoose.Schema(
     },
     currency: {
       type: String,
-      default: 'usd',
+      default: 'eur',
       lowercase: true,
       trim: true,
     },

@@ -93,7 +93,7 @@ function OrderSyncPage() {
   const liveMockOrders = [
     {
       id: "114-8923019-3928101",
-      market: "🇺🇸 Amazon US",
+      market: "🇫🇷 Amazon FR",
       sku: "CT-HYDR-BTL-32",
       channel: "FBA",
       delivery: "Delivered 2h ago",
@@ -120,7 +120,7 @@ function OrderSyncPage() {
     },
     {
       id: "701-1928374-5561029",
-      market: "🇮🇳 Amazon IN",
+      market: "🇮🇹 Amazon IT",
       sku: "CT-CUP-CERAMIC-SET",
       channel: "FBA",
       delivery: "Cancelled by Buyer",
@@ -230,12 +230,12 @@ function OrderSyncPage() {
                       </div>
                       <p className="text-xs font-bold text-navy-deep">{t('orderSync.statMarketplacesTitle') || "Active Marketplaces"}</p>
                       <div className="flex items-center gap-1.5 text-xs mt-0.5">
-                        <span>🇺🇸</span>
                         <span>🇬🇧</span>
                         <span>🇩🇪</span>
-                        <span>🇯🇵</span>
-                        <span>🇮🇳</span>
-                        <span className="text-[10px] text-slate-500 font-semibold">+7 more</span>
+                        <span>🇫🇷</span>
+                        <span>🇮🇹</span>
+                        <span>🇪🇸</span>
+                        <span className="text-[10px] text-slate-500 font-semibold">+EU</span>
                       </div>
                     </div>
                   </div>
@@ -440,11 +440,11 @@ function OrderSyncPage() {
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                       <div className="flex items-center gap-1.5 text-sm p-1 px-2 rounded-lg bg-slate-50 border border-slate-200">
-                        <span>🇺🇸</span>
                         <span>🇬🇧</span>
                         <span>🇩🇪</span>
-                        <span>🇯🇵</span>
-                        <span>🇮🇳</span>
+                        <span>🇫🇷</span>
+                        <span>🇮🇹</span>
+                        <span>🇪🇸</span>
                       </div>
                     </div>
                   </div>
@@ -818,11 +818,11 @@ function OrderSyncHeroSvg() {
         <text x="26" y="19" fill="#0f172a" fontFamily="system-ui, -apple-system, sans-serif" fontSize="8.5" fontWeight="800">
           SYNCED:
         </text>
-        <text x="75" y="20" fontSize="11">🇺🇸</text>
-        <text x="96" y="20" fontSize="11">🇬🇧</text>
-        <text x="117" y="20" fontSize="11">🇩🇪</text>
-        <text x="138" y="20" fontSize="11">🇯🇵</text>
-        <text x="159" y="20" fontSize="11">🇮🇳</text>
+        <text x="75" y="20" fontSize="11">🇬🇧</text>
+        <text x="96" y="20" fontSize="11">🇩🇪</text>
+        <text x="117" y="20" fontSize="11">🇫🇷</text>
+        <text x="138" y="20" fontSize="11">🇮🇹</text>
+        <text x="159" y="20" fontSize="11">🇪🇸</text>
       </g>
 
       {/* ==================================================== */}
@@ -924,7 +924,7 @@ function OrderSyncHeroSvg() {
 
           <rect x="76" y="0" width="70" height="21" rx="6" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="0.8" />
           <text x="111" y="14" textAnchor="middle" fill="#0f172a" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
-            🇺🇸 amazon.com
+            🇩🇪 amazon.de
           </text>
         </g>
 
@@ -1321,7 +1321,7 @@ function OrderSyncFaqSvg() {
           <g transform="translate(14, 14)">
             <rect x="0" y="0" width="76" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
             <text x="38" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇺🇸 FBA PRIME
+              🇩🇪 FBA PRIME
             </text>
             <text x="86" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
               Carrier Sync
