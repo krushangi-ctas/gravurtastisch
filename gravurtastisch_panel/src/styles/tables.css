@@ -107,3 +107,40 @@ table.dense tbody tr td:last-child {
 table.dense tbody tr:last-child td {
     border-bottom: none;
 }
+
+/* Custom visible horizontal scrollbar for data tables on mobile and desktop */
+.custom-table-scrollbar {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: #0032ab #e2e8f0;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 9999px;
+}
+
+.dark .custom-table-scrollbar::-webkit-scrollbar-track {
+    background: #1e293b;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar-thumb {
+    background: #0032ab;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+}
+
+.dark .custom-table-scrollbar::-webkit-scrollbar-thumb {
+    background: #3b82f6;
+    border: 1px solid #1e293b;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #155dfc;
+}

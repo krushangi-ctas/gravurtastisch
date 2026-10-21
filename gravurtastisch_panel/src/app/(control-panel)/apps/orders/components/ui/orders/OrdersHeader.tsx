@@ -124,7 +124,7 @@ function CustomDateRangePicker({
   const days = getDaysInMonth();
 
   return (
-    <Paper sx={{ p: 2, minWidth: 320 }}>
+    <Paper sx={{ p: { xs: 1.5, sm: 2 }, minWidth: { xs: 280, sm: 320 }, maxWidth: '100%', boxSizing: 'border-box' }}>
       {/* Header */}
       <Box
         sx={{
@@ -820,11 +820,11 @@ export function OrdersFilters({
   };
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
       {/* Marketplace Selector Dropdown */}
       <FormControl
         size="small"
-        className="min-w-[130px] bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 table-toolbar-control shrink-0"
+        className="min-w-[125px] sm:min-w-[140px] flex-1 sm:flex-initial bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 table-toolbar-control shrink-0"
         sx={{
           height: '38px !important',
           minHeight: '38px !important',
@@ -982,7 +982,7 @@ export function OrdersFilters({
         type="button"
         onClick={(e) => setDateAnchorEl(dateAnchorEl ? null : e.currentTarget)}
         style={{ height: '38px', minHeight: '38px', maxHeight: '38px' }}
-        className="h-[38px] flex items-center justify-between gap-2 px-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer shadow-2xs shrink-0 box-border"
+        className="h-[38px] flex-1 sm:flex-initial flex items-center justify-between gap-2 px-2.5 sm:px-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[12px] sm:text-[13px] font-medium rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer shadow-2xs shrink-0 box-border whitespace-nowrap"
       >
         <FuseSvgIcon size={16} className="text-slate-500">heroicons-outline:calendar</FuseSvgIcon>
         <span>{formatDateRange()}</span>
@@ -1001,6 +1001,7 @@ export function OrdersFilters({
               boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15)',
               borderRadius: '12px',
               overflow: 'hidden',
+              maxWidth: 'calc(100vw - 24px)',
             }
           }
         }}

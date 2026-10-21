@@ -7,6 +7,8 @@ const Controller = HookFormController as React.ComponentType<any>;
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
+import NavbarToggleButton from '@/components/theme-layouts/components/navbar/NavbarToggleButton';
 import {
 	Typography,
 	Paper,
@@ -207,6 +209,7 @@ const defaultValues: SiteConfigFormType = {
 function SiteConfigurationView() {
 	const { canView, canUpdate } = usePermissions();
 	const hasAccess = canView('site-configuration');
+	const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
 	const canMutate = canUpdate('site-configuration');
 	const { enqueueSnackbar } = useSnackbar();
 	const [activeTab, setActiveTab] = useState<0 | 1 | 2>(0);
@@ -320,9 +323,17 @@ function SiteConfigurationView() {
 	return (
 		<div className="w-full h-full flex flex-col min-h-0 bg-slate-50/50 dark:bg-slate-950/50 overflow-hidden">
 			{/* Top Header Bar */}
-			<div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 sm:px-6 py-2 sm:py-2.5 flex flex-col sm:flex-row items-center justify-between gap-2.5 border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 z-10">
+			<div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 sm:gap-3 border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 z-10">
 				{/* Left Title & Icon */}
-				<div className="flex items-center gap-3 w-full sm:w-auto">
+				<div className="flex items-center gap-2.5 sm:gap-3 w-full lg:w-auto min-w-0">
+					{isMobile && (
+						<NavbarToggleButton
+							className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0 -ml-1 border-0"
+							aria-label="open navigation menu"
+						>
+							<FuseSvgIcon size={20}>heroicons-outline:bars-3</FuseSvgIcon>
+						</NavbarToggleButton>
+					)}
 					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
 						<FuseSvgIcon size={20} className="text-primary">
 							heroicons-outline:globe-alt
@@ -339,7 +350,7 @@ function SiteConfigurationView() {
 				</div>
 
 				{/* Right Actions: Reload, Discard, Save */}
-				<div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+				<div className="flex items-center gap-2 w-full lg:w-auto justify-start sm:justify-end flex-wrap sm:flex-nowrap shrink-0">
 					<Tooltip title="Reload configuration" arrow>
 						<button
 							type="button"
@@ -362,7 +373,7 @@ function SiteConfigurationView() {
 						onClick={handleReset}
 						disabled={!canMutate || !isDirty || updateMutation.isPending}
 						style={{ height: '32px' }}
-						className="h-8 px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed"
+						className="h-8 flex-1 sm:flex-initial px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
 					>
 						<span>Discard Changes</span>
 					</button>
@@ -372,7 +383,7 @@ function SiteConfigurationView() {
 						onClick={handleSubmit(onSubmit)}
 						disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
 						style={{ height: '32px' }}
-						className="h-8 px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed"
+						className="h-8 flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
 					>
 						{updateMutation.isPending ? (
 							<CircularProgress size={14} color="inherit" />
@@ -393,7 +404,7 @@ function SiteConfigurationView() {
 				) : (
 					<form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-3.5 pb-10">
 						{/* Slim Compact Segmented Tabs */}
-						<div className="flex items-center gap-1.5 p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-xl w-fit">
+						<div className="flex items-center gap-1.5 p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-xl w-fit max-w-full overflow-x-auto custom-table-scrollbar">
 							<button
 								type="button"
 								onClick={() => setActiveTab(0)}

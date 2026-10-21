@@ -371,7 +371,7 @@ function RolesView() {
 			type="button"
 			onClick={openCreate}
 			style={{ height: '38px' }}
-			className="h-[38px] px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center gap-1.5 shrink-0 border-0"
+			className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
 		>
 			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
@@ -426,12 +426,21 @@ function RolesView() {
 							showSkeletons: Boolean(isLoading || sectionsLoading)
 						}}
 						manualPagination={false}
+						muiTableProps={{
+							sx: {
+								minWidth: { xs: '700px', lg: '100%' }
+							}
+						}}
 						muiTableContainerProps={{
+							className: 'flex-auto custom-table-scrollbar',
 							sx: {
 								maxWidth: '100%',
+								width: '100%',
 								flex: '1 1 auto',
 								minHeight: 0,
-								overflow: 'auto',
+								overflowX: 'auto',
+								overflowY: 'auto',
+								WebkitOverflowScrolling: 'touch',
 								'&::-webkit-scrollbar': { height: 8, width: 8 },
 								'&::-webkit-scrollbar-track': {
 									backgroundColor: 'background.default',

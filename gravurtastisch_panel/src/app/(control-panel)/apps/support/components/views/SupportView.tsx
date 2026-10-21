@@ -340,11 +340,11 @@ function SupportContent({
 	}
 
 	const actionButtons = (
-		<div className="flex items-center gap-2">
+		<div className="flex items-center gap-2 flex-wrap sm:flex-nowrap w-full sm:w-auto">
 			{/* Status Filter */}
 			<FormControl
 				size="small"
-				className="min-w-[120px] bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 table-toolbar-control shrink-0"
+				className="min-w-[120px] flex-1 sm:flex-initial bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 table-toolbar-control shrink-0"
 				sx={{
 					height: '38px !important',
 					minHeight: '38px !important',
@@ -468,12 +468,21 @@ function SupportContent({
 					manualSorting
 					rowCount={totalResults}
 					pageCount={totalPages}
+					muiTableProps={{
+						sx: {
+							minWidth: { xs: '800px', lg: '100%' }
+						}
+					}}
 					muiTableContainerProps={{
+						className: 'flex-auto custom-table-scrollbar',
 						sx: {
 							maxWidth: '100%',
+							width: '100%',
 							flex: '1 1 auto',
 							minHeight: 0,
-							overflow: 'auto',
+							overflowX: 'auto',
+							overflowY: 'auto',
+							WebkitOverflowScrolling: 'touch',
 							'&::-webkit-scrollbar': { height: 8, width: 8 },
 							'&::-webkit-scrollbar-track': {
 								backgroundColor: 'background.default',

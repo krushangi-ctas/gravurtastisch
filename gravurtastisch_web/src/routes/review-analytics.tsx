@@ -382,7 +382,7 @@ function ReviewAnalyticsPage() {
             </Reveal>
 
             <Reveal delay={100}>
-              <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm">
+              <div className="overflow-x-auto rounded-2xl border border-border bg-surface shadow-sm w-full max-w-full custom-table-scrollbar">
                 <table className="w-full text-left text-sm min-w-[640px]">
                   <thead className="bg-[#e2e8f0] border-b border-slate-300 text-navy-deep text-xs uppercase tracking-wider font-mono">
                     <tr>

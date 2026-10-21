@@ -551,3 +551,31 @@ a.bg-brand:not([class*="/"]) * {
   50% { transform: translate3d(-25%, -8px, 0); }
   100% { transform: translate3d(0, 0, 0); }
 }
+
+/* Custom visible horizontal scrollbar for tables across mobile and desktop */
+.custom-table-scrollbar {
+  overflow-x: auto !important;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #0032ab #e2e8f0;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar {
+  height: 7px;
+  width: 7px;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 9999px;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar-thumb {
+  background: #0032ab;
+  border-radius: 9999px;
+  border: 1px solid #e2e8f0;
+}
+
+.custom-table-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #155dfc;
+}

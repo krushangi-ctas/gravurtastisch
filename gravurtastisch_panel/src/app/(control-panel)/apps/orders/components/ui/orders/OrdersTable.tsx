@@ -197,9 +197,9 @@ function OrdersTable({
   const planLimits = (ordersResponse as any)?.planLimits;
   const isQuotaExceeded = Boolean(
     planLimits &&
-      (planLimits.isLimitReached ||
-        planLimits.remainingReviewRequests <= 0 ||
-        planLimits.usedReviewRequests >= planLimits.maxReviewRequestsPerMonth)
+    (planLimits.isLimitReached ||
+      planLimits.remainingReviewRequests <= 0 ||
+      planLimits.usedReviewRequests >= planLimits.maxReviewRequestsPerMonth)
   );
 
   // Extract orders data from the response and flatten orderItems
@@ -928,7 +928,7 @@ function OrdersTable({
         muiTableProps={{
           sx: {
             tableLayout: 'auto',
-            minWidth: '100%',
+            minWidth: { xs: '980px', lg: '100%' },
             '& .MuiTableRow-root:hover': {
               backgroundColor: 'action.hover',
               transition: 'background-color 0.15s ease',
@@ -977,11 +977,15 @@ function OrdersTable({
           className: 'bg-gray-100 border-t border-b border-gray-200',
         }}
         muiTableContainerProps={{
+          className: 'flex-auto custom-table-scrollbar',
           sx: {
             maxWidth: '100%',
+            width: '100%',
             flex: '1 1 auto',
             minHeight: 0,
-            overflow: 'auto',
+            overflowX: 'auto',
+            overflowY: 'auto',
+            WebkitOverflowScrolling: 'touch',
             '&::-webkit-scrollbar': { height: 8, width: 8 },
             '&::-webkit-scrollbar-track': {
               backgroundColor: 'background.default',
@@ -996,7 +1000,7 @@ function OrdersTable({
         }}
         muiBottomToolbarProps={{
           className:
-            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100',
+            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-slate-800 border-t border-gray-200 dark:border-slate-700 overflow-x-auto',
           sx: {
             borderTop: '1px solid',
             borderColor: 'divider',
@@ -1009,7 +1013,7 @@ function OrdersTable({
             height: '46px !important',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'flex-end',
+            justifyContent: { xs: 'center', sm: 'flex-end' },
             '& .MuiTablePagination-root': {
               overflow: 'visible',
               width: 'auto',
@@ -1021,7 +1025,7 @@ function OrdersTable({
             '& .MuiTablePagination-toolbar': {
               flexWrap: 'nowrap',
               alignItems: 'center',
-              justifyContent: 'flex-end',
+              justifyContent: { xs: 'center', sm: 'flex-end' },
               gap: { xs: 0.5, sm: 1 },
               minHeight: '46px !important',
               height: '46px !important',
@@ -1031,11 +1035,15 @@ function OrdersTable({
               my: 'auto',
             },
             '& .MuiTablePagination-selectLabel': {
-              fontSize: { xs: '12px', sm: '13px' },
+              fontSize: { xs: '11px', sm: '13px' },
               margin: '0 !important',
               lineHeight: '1.2 !important',
               display: 'inline-flex',
               alignItems: 'center',
+            },
+            '& .MuiTablePagination-displayedRows': {
+              fontSize: { xs: '11px', sm: '13px' },
+              margin: '0 !important',
             },
             '& .MuiTablePagination-input': {
               marginRight: { xs: 0.5, sm: 1 },
@@ -1045,7 +1053,7 @@ function OrdersTable({
               '& .MuiSelect-select': {
                 paddingTop: '3px !important',
                 paddingBottom: '3px !important',
-                fontSize: { xs: '12px', sm: '13px' },
+                fontSize: { xs: '11px', sm: '13px' },
                 display: 'inline-flex',
                 alignItems: 'center',
               },
