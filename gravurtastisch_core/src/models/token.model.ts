@@ -24,6 +24,7 @@ const tokenSchema = mongoose.Schema(
         tokenTypes.VERIFY_EMAIL,
       ],
       required: true,
+      trim: true,
     },
     expires: {
       type: Date,

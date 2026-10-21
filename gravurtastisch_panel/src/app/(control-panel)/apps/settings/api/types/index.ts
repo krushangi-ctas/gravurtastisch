@@ -2,7 +2,8 @@
 export type UpdateUserData = {
   name: string;
   email: string;
-  // contact_no: string;
+  businessName?: string;
+  contact_no?: string;
 };
 
 export type UpdatePasswordData = {

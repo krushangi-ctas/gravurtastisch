@@ -232,8 +232,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			const digitsOnly = trimmedPhone.replace(/\D/g, '');
 			if (trimmedPhone.length > 20) {
 				errs.phone = 'Phone number cannot exceed 20 characters.';
-			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
-				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
+				errs.phone = 'Please enter a valid phone number (between 10 and 20 digits).';
 			}
 		}
 
@@ -268,8 +268,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			const digitsOnly = trimmedPhone.replace(/\D/g, '');
 			if (trimmedPhone.length > 20) {
 				errs.phone = 'Phone number cannot exceed 20 characters.';
-			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 7) {
-				errs.phone = 'Please enter a valid phone number (at least 7 digits).';
+			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
+				errs.phone = 'Please enter a valid phone number (between 10 and 20 digits).';
 			}
 		}
 
@@ -768,35 +768,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										</FuseSvgIcon>
 										{planName || queuedPlan?.name || 'Cancelled'}
 									</Box>
-									{isPaymentCancelled ? (
-										<Tooltip title="Stripe checkout was cancelled. Seller is inactive." arrow>
-											<Box
-												sx={{
-													display: 'inline-flex',
-													alignItems: 'center',
-													gap: 0.3,
-													px: 0.6,
-													py: 0.1,
-													borderRadius: '4px',
-													fontSize: 9.5,
-													fontWeight: 700,
-													bgcolor: (t) =>
-														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.28)' : '#FEE2E2',
-													color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
-													border: '1px solid',
-													borderColor: (t) =>
-														t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.45)' : 'rgba(239, 68, 68, 0.3)',
-													lineHeight: 1,
-													whiteSpace: 'nowrap'
-												}}
-											>
-												<FuseSvgIcon size={10} sx={{ color: 'inherit' }}>
-													heroicons-outline:x-circle
-												</FuseSvgIcon>
-												Cancelled
-											</Box>
-										</Tooltip>
-									) : isExpired ? (
+									{isExpired ? (
 										<Box
 											sx={{
 												display: 'inline-flex',
@@ -1838,6 +1810,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											onChange={(e) => {
 												setFormPhone(e.target.value);
 												if (editErrors.phone) setEditErrors((prev) => ({ ...prev, phone: undefined }));
+											}}
+											onBlur={() => {
+												const errs = validateEditUser(
+													formName,
+													formPhone,
+													formRoleId,
+													isSellersMode ? editBusinessName : undefined
+												);
+												setEditErrors((prev) => ({ ...prev, phone: errs.phone }));
 											}}
 											error={!!editErrors.phone}
 											helperText={editErrors.phone}

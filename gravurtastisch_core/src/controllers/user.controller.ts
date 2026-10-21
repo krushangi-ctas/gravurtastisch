@@ -170,7 +170,7 @@ const adminUpdateUser = catchAsync(async (req, res) => {
 
     return res.status(httpStatus.OK).send({
       status: httpStatus.OK,
-      message: 'User deleted successfully',
+      message: 'User deleted successfully.',
       data: {},
     });
   }
@@ -196,7 +196,7 @@ const adminUpdateUser = catchAsync(async (req, res) => {
 
   return res.status(httpStatus.OK).send({
     status: httpStatus.OK,
-    message: 'User updated successfully',
+    message: 'User updated successfully.',
     data: updatedUser,
   });
 });
@@ -267,50 +267,69 @@ const registerSeller = catchAsync(async (req, res) => {
   const existingUser = await User.findOne({ email: normalizedEmail });
 
   if (existingUser) {
+    const currentSubStatus = Number(existingUser.subscriptionStatus);
     if (
-      (existingUser.subscriptionStatus === 0 || existingUser.subscriptionStatus === 'pending_payment') &&
-      isPaidPlan &&
-      selectedPlan
+      currentSubStatus === 3 ||
+      currentSubStatus === 0 ||
+      existingUser.subscriptionStatus === 3 ||
+      existingUser.subscriptionStatus === 0
     ) {
       existingUser.name = seller || existingUser.name;
       existingUser.businessName = business || existingUser.businessName;
       existingUser.contact_no = phone || existingUser.contact_no;
-      existingUser.currentPlanId = selectedPlan._id;
+      existingUser.currentPlanId = selectedPlan ? selectedPlan._id : null;
       existingUser.planLimits = planLimits;
       existingUser.plans = plansArray;
-      existingUser.status = isPaidPlan ? 0 : 1; // Inactive (0) until payment succeeds
+      existingUser.status = isPaidPlan ? 0 : 1; // Inactive (0) until payment succeeds, Active (1) if free plan
+      existingUser.subscriptionStatus = isPaidPlan ? 0 : 1;
       await existingUser.save();
 
-      try {
-        const checkoutResult = await paymentService.createCheckoutSession({
-          planId: selectedPlan._id,
-          email: normalizedEmail,
-          name: seller,
-          userId: existingUser._id,
-        });
+      if (isPaidPlan && selectedPlan) {
+        try {
+          const checkoutResult = await paymentService.createCheckoutSession({
+            planId: selectedPlan._id,
+            email: normalizedEmail,
+            name: seller,
+            userId: existingUser._id,
+          });
 
-        if (checkoutResult?.data?.sessionId) {
-          existingUser.plans[0].stripeSessionId = checkoutResult.data.sessionId;
-          await existingUser.save();
+          if (checkoutResult?.data?.sessionId) {
+            existingUser.plans[0].stripeSessionId = checkoutResult.data.sessionId;
+            await existingUser.save();
+          }
+
+          return res.status(httpStatus.OK).send({
+            status: httpStatus.OK,
+            message: 'Payment checkout created. Redirecting to payment...',
+            data: {
+              user: existingUser,
+              checkoutUrl: checkoutResult.data.url,
+              sessionId: checkoutResult.data.sessionId,
+            },
+          });
+        } catch (stripeErr: any) {
+          console.error('Failed to create Stripe Checkout session for pending seller:', stripeErr);
+          return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
+            status: httpStatus.INTERNAL_SERVER_ERROR,
+            message: `Failed to initialize Stripe payment: ${stripeErr?.message || 'Payment gateway error'}`,
+            data: { user: existingUser },
+          });
         }
-
-        return res.status(httpStatus.OK).send({
-          status: httpStatus.OK,
-          message: 'Payment checkout created. Redirecting to payment...',
-          data: {
-            user: existingUser,
-            checkoutUrl: checkoutResult.data.url,
-            sessionId: checkoutResult.data.sessionId,
-          },
-        });
-      } catch (stripeErr: any) {
-        console.error('Failed to create Stripe Checkout session for pending seller:', stripeErr);
-        return res.status(httpStatus.INTERNAL_SERVER_ERROR).send({
-          status: httpStatus.INTERNAL_SERVER_ERROR,
-          message: `Failed to initialize Stripe payment: ${stripeErr?.message || 'Payment gateway error'}`,
-          data: { user: existingUser },
-        });
       }
+
+      return res.status(httpStatus.OK).send({
+        status: httpStatus.OK,
+        message: 'Seller registered successfully.',
+        data: { user: existingUser },
+      });
+    }
+
+    if (currentSubStatus === 1 || existingUser.subscriptionStatus === 1) {
+      return res.status(httpStatus.CONFLICT).send({
+        status: httpStatus.CONFLICT,
+        message:
+          'An account with this email already exists. Please use a different email or contact support.',
+      });
     }
 
     if (existingUser.status === 0) {

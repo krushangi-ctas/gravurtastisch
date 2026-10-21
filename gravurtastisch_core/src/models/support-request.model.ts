@@ -25,6 +25,7 @@ const supportRequestSchema = new mongoose.Schema(
       type: String,
       enum: ['pending', 'resolved'],
       default: 'pending',
+      trim: true,
     },
   },
   { timestamps: true }

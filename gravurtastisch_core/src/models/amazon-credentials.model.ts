@@ -30,7 +30,7 @@ const amazonCredentialsSchema = new mongoose.Schema(
       required: true,
     },
     marketplace_id: {
-      type: [String],
+      type: [{ type: String, trim: true }],
       trim: true,
       required: true,
     },

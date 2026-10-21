@@ -42,9 +42,9 @@ const isValidEmail = (val?: string) => {
 const isValidPhone = (val?: string) => {
 	if (!val || !val.trim()) return true;
 	const trimmed = val.trim();
-	const allowedChars = /^[+0-9\s\-()]{7,20}$/.test(trimmed);
+	const allowedChars = /^[+0-9\s\-()]{10,20}$/.test(trimmed);
 	const digitCount = trimmed.replace(/\D/g, '').length;
-	return allowedChars && digitCount >= 7 && digitCount <= 15;
+	return allowedChars && digitCount >= 10 && digitCount <= 20;
 };
 
 const isValidPostalCode = (val?: string) => {
@@ -96,7 +96,7 @@ const siteConfigSchema = z.object({
 			.string()
 			.max(20, 'Phone number must not exceed 20 characters')
 			.refine(isValidPhone, {
-				message: 'Please enter a valid phone number (7-15 digits, +, spaces, hyphens only)'
+				message: 'Please enter a valid phone number (10 to 20 digits, +, spaces, hyphens only)'
 			})
 			.optional()
 			.or(z.literal('')),

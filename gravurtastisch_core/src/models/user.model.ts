@@ -55,6 +55,7 @@ const userSchema = mongoose.Schema(
       enum: ['admin', 'seller'],
       default: 'seller',
       index: true,
+      trim: true,
     },
     /**
      * Seller organization owner. Not listed in seller team listings.
@@ -173,10 +174,12 @@ const userSchema = mongoose.Schema(
         stripeSessionId: {
           type: String,
           default: null,
+          trim: true,
         },
         stripePaymentIntentId: {
           type: String,
           default: null,
+          trim: true,
         },
         selectedAt: {
           type: Date,
