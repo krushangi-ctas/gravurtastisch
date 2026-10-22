@@ -84,8 +84,8 @@ export function Hero() {
       <Container className="relative z-20 max-w-5xl mx-auto text-center px-4">
         <div className="max-w-3xl xl:max-w-[820px] mx-auto flex flex-col items-center">
           {/* Top Pill Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 bg-[#e0e7ff]/80 border border-[#c7d2fe] text-[#4338ca] text-xs font-semibold shadow-2xs backdrop-blur-md mb-6">
-            <Sparkles className="h-3.5 w-3.5 text-[#6366f1]" />
+          <div className="section-badge mb-6">
+            <Sparkles className="h-3.5 w-3.5 text-brand shrink-0" />
             <span>Custom Art • Digital Proofs • Fast Delivery</span>
           </div>
 
