@@ -45,6 +45,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 		price?: string;
 		marketplace?: string;
 		requestQuota?: string;
+		expireAt?: string;
 	}>({});
 
 	// Populate form state when editing or resetting
@@ -77,6 +78,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 			price?: string;
 			marketplace?: string;
 			requestQuota?: string;
+			expireAt?: string;
 		} = {};
 
 		const trimmedName = name.trim();
@@ -84,32 +86,43 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 			newErrors.name = 'Plan name is required';
 		} else if (trimmedName.length < 2) {
 			newErrors.name = 'Plan name must be at least 2 characters';
-		} else if (trimmedName.length > 60) {
-			newErrors.name = 'Plan name must not exceed 60 characters';
+		} else if (trimmedName.length > 50) {
+			newErrors.name = 'Plan name must not exceed 50 characters';
 		}
 
 		if (price === '' || price === null || price === undefined) {
 			newErrors.price = 'Price is required';
-		} else if (isNaN(Number(price)) || Number(price) < 0) {
-			newErrors.price = 'Please enter a valid price (minimum 0)';
-		} else if (Number(price) > 999999) {
-			newErrors.price = 'Price cannot exceed €999,999';
+		} else if (isNaN(Number(price)) || Number(price) <= 0) {
+			newErrors.price = 'Must be greater than 0';
+		} else if (Number(price) > 9999999) {
+			newErrors.price = 'Price cannot exceed €9,999,999';
 		}
 
 		if (marketplace === '' || marketplace === null || marketplace === undefined) {
 			newErrors.marketplace = 'Marketplace count is required';
-		} else if (isNaN(Number(marketplace)) || Number(marketplace) < 0 || !Number.isInteger(Number(marketplace))) {
-			newErrors.marketplace = 'Please enter a valid whole number (minimum 0)';
-		} else if (Number(marketplace) > 100) {
-			newErrors.marketplace = 'Marketplaces allowed cannot exceed 100';
+		} else if (isNaN(Number(marketplace)) || Number(marketplace) <= 0) {
+			newErrors.marketplace = 'Must be greater than 0';
+		} else if (!Number.isInteger(Number(marketplace))) {
+			newErrors.marketplace = 'Please enter a valid whole number';
+		} else if (Number(marketplace) > 9999999) {
+			newErrors.marketplace = 'Marketplaces allowed cannot exceed 9,999,999';
 		}
 
 		if (requestQuota === '' || requestQuota === null || requestQuota === undefined) {
 			newErrors.requestQuota = 'Request quota is required';
-		} else if (isNaN(Number(requestQuota)) || Number(requestQuota) < 0 || !Number.isInteger(Number(requestQuota))) {
-			newErrors.requestQuota = 'Please enter a valid whole number (minimum 0)';
+		} else if (isNaN(Number(requestQuota)) || Number(requestQuota) <= 0) {
+			newErrors.requestQuota = 'Must be greater than 0';
+		} else if (!Number.isInteger(Number(requestQuota))) {
+			newErrors.requestQuota = 'Please enter a valid whole number';
 		} else if (Number(requestQuota) > 10000000) {
 			newErrors.requestQuota = 'Request quota cannot exceed 10,000,000';
+		}
+
+		if (expireAt) {
+			const todayStr = moment().format('YYYY-MM-DD');
+			if (expireAt < todayStr) {
+				newErrors.expireAt = 'Expiry date must be a future date';
+			}
 		}
 
 		setErrors(newErrors);
@@ -219,10 +232,11 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								placeholder="e.g., Basic, Professional, Enterprise"
 								value={name}
 								onChange={(e) => {
-									setName(e.target.value);
+									const val = e.target.value.slice(0, 50);
+									setName(val);
 									if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
 								}}
-								inputProps={{ maxLength: 60 }}
+								inputProps={{ maxLength: 50 }}
 								error={Boolean(errors.name)}
 								helperText={errors.name}
 								variant="outlined"
@@ -248,12 +262,25 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 0, max: 999999, step: 'any' }}
+								inputProps={{ min: 0.01, max: 9999999, step: 'any' }}
 								placeholder="e.g., 250"
 								value={price}
+								onKeyDown={(e) => {
+									if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+										e.preventDefault();
+									}
+								}}
 								onChange={(e) => {
-									setPrice(e.target.value);
-									if (errors.price) setErrors((prev) => ({ ...prev, price: undefined }));
+									const val = e.target.value;
+									setPrice(val);
+									const num = Number(val);
+									if (val !== '' && (isNaN(num) || num <= 0)) {
+										setErrors((prev) => ({ ...prev, price: 'Must be greater than 0' }));
+									} else if (num > 9999999) {
+										setErrors((prev) => ({ ...prev, price: 'Price cannot exceed €9,999,999' }));
+									} else if (errors.price) {
+										setErrors((prev) => ({ ...prev, price: undefined }));
+									}
 								}}
 								onWheel={(e) => (e.target as HTMLElement).blur()}
 								error={Boolean(errors.price)}
@@ -350,12 +377,25 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 0, max: 100, step: 1 }}
+								inputProps={{ min: 1, max: 9999999, step: 1 }}
 								placeholder="e.g., 5"
 								value={marketplace}
+								onKeyDown={(e) => {
+									if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '.') {
+										e.preventDefault();
+									}
+								}}
 								onChange={(e) => {
-									setMarketplace(e.target.value);
-									if (errors.marketplace) setErrors((prev) => ({ ...prev, marketplace: undefined }));
+									const val = e.target.value;
+									setMarketplace(val);
+									const num = Number(val);
+									if (val !== '' && (isNaN(num) || num <= 0)) {
+										setErrors((prev) => ({ ...prev, marketplace: 'Must be greater than 0' }));
+									} else if (num > 9999999) {
+										setErrors((prev) => ({ ...prev, marketplace: 'Marketplaces allowed cannot exceed 9,999,999' }));
+									} else if (errors.marketplace) {
+										setErrors((prev) => ({ ...prev, marketplace: undefined }));
+									}
 								}}
 								onWheel={(e) => (e.target as HTMLElement).blur()}
 								error={Boolean(errors.marketplace)}
@@ -370,7 +410,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText={errors.marketplace || 'Maximum connected marketplaces supported under this plan (0-100)'}
+								helperText={errors.marketplace || 'Maximum connected marketplaces supported under this plan (min: 1, max: 9,999,999)'}
 							/>
 						</div>
 
@@ -383,12 +423,22 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 0, max: 10000000, step: 1 }}
+								inputProps={{ min: 1, max: 10000000, step: 1 }}
 								placeholder="e.g., 2000"
 								value={requestQuota}
+								onKeyDown={(e) => {
+									if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '.') {
+										e.preventDefault();
+									}
+								}}
 								onChange={(e) => {
-									setRequestQuota(e.target.value);
-									if (errors.requestQuota) setErrors((prev) => ({ ...prev, requestQuota: undefined }));
+									const val = e.target.value;
+									setRequestQuota(val);
+									if (val !== '' && (isNaN(Number(val)) || Number(val) <= 0)) {
+										setErrors((prev) => ({ ...prev, requestQuota: 'Must be greater than 0' }));
+									} else if (errors.requestQuota) {
+										setErrors((prev) => ({ ...prev, requestQuota: undefined }));
+									}
 								}}
 								onWheel={(e) => (e.target as HTMLElement).blur()}
 								error={Boolean(errors.requestQuota)}
@@ -415,8 +465,21 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 							<TextField
 								fullWidth
 								type="date"
+								inputProps={{
+									min: moment().format('YYYY-MM-DD')
+								}}
 								value={expireAt}
-								onChange={(e) => setExpireAt(e.target.value)}
+								onChange={(e) => {
+									const val = e.target.value;
+									setExpireAt(val);
+									const todayStr = moment().format('YYYY-MM-DD');
+									if (val && val < todayStr) {
+										setErrors((prev) => ({ ...prev, expireAt: 'Expiry date must be a future date' }));
+									} else if (errors.expireAt) {
+										setErrors((prev) => ({ ...prev, expireAt: undefined }));
+									}
+								}}
+								error={Boolean(errors.expireAt)}
 								variant="outlined"
 								size="small"
 								InputLabelProps={{ shrink: true }}
@@ -429,7 +492,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText="Plan expiration date. Leave blank if plan has no expiry."
+								helperText={errors.expireAt || 'Plan expiration date. Only future dates are allowed. Leave blank if plan has no expiry.'}
 							/>
 						</div>
 

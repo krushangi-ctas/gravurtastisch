@@ -113,7 +113,7 @@ function NavbarStyle2Content(props: NavbarStyle2ContentProps) {
 				>
 					<img
 						className="my-4 w-6"
-						src="/assets/images/logo/ctasis-logo.svg"
+						src="/assets/images/logo/gravurstastich-wordmark.svg"
 						alt="logo"
 					/>
 

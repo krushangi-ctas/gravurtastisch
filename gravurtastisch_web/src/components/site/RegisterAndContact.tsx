@@ -81,7 +81,7 @@ const defaultFallbackPlans: PlanItem[] = [
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
-const PHONE_CHARS_REGEX = /^[+0-9\s\-()]+$/;
+const PHONE_CHARS_REGEX = /^[+0-9\s()]+$/;
 
 function RegisterSection() {
   const { t } = useTranslation();
@@ -187,7 +187,9 @@ function RegisterSection() {
     const phone = values.phone.trim();
     if (phone) {
       const digitsOnly = phone.replace(/\D/g, "");
-      if (phone.length > 20) {
+      if (phone.includes("-")) {
+        errs.phone = "Phone number cannot contain hyphens (-)";
+      } else if (phone.length > 20) {
         errs.phone = t("register.errPhoneMax");
       } else if (!PHONE_CHARS_REGEX.test(phone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
         errs.phone = t("register.errPhoneInvalid");
@@ -203,7 +205,8 @@ function RegisterSection() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const nextValues = { ...formValues, [name]: value };
+    const finalValue = name === "phone" ? value.replace(/-/g, "") : value;
+    const nextValues = { ...formValues, [name]: finalValue };
     setFormValues(nextValues);
 
     if (touched[name]) {
@@ -613,6 +616,7 @@ function Field({
         maxLength={maxLength}
         minLength={minLength}
         disabled={disabled}
+        autoComplete={name === "phone" ? "tel" : name === "email" ? "email" : name === "seller" ? "name" : "organization"}
         aria-invalid={hasError}
         aria-describedby={hasError ? `register-${name}-error` : undefined}
         className={`h-12 rounded-xl border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-xs focus-visible:outline-none focus-visible:ring-2 transition ${
@@ -763,7 +767,7 @@ function ContactSection() {
     }
   };
 
-  const supportEmail = config?.contact?.email || "info@ctasis.com";
+  const supportEmail = config?.contact?.email || "info@gravurtastisch.com";
   const workingHours =
     currentLang === "en" && config?.contact?.working_hours
       ? config.contact.working_hours

@@ -4,8 +4,8 @@ function SignOutPageTitle() {
 	return (
 		<div className="w-full">
 			<img
-				className="mx-auto w-12"
-				src="/assets/images/logo/ctasis-logo.svg"
+				className="mx-auto w-40"
+				src="/gravurtastich.png"
 				alt="logo"
 			/>
 

@@ -59,7 +59,14 @@ function NumberTextField(props: NumberTextFieldProps) {
 	).current;
 
 	const handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
-		const newValue = +ev.target.value;
+		const val = ev.target.value;
+		const newValue = +val;
+
+		if (val !== '' && (isNaN(newValue) || newValue <= 0)) {
+			setError('Must be greater than 0');
+			setLocalValue(newValue);
+			return;
+		}
 
 		if (item?.min && newValue < item?.min) {
 			setError(`Value is too low (min: ${item?.min})`);
@@ -90,10 +97,15 @@ function NumberTextField(props: NumberTextFieldProps) {
 				value={localValue}
 				onChange={handleChange}
 				type="number"
+				onKeyDown={(e) => {
+					if (e.key === '-' || e.key === 'e' || e.key === 'E') {
+						e.preventDefault();
+					}
+				}}
 				onWheel={(e) => (e.target as HTMLElement).blur()}
 				slotProps={{
 					input: {
-						inputProps: { min: item.min, max: item.max }
+						inputProps: { min: Math.max(1, item?.min ?? 1), max: item?.max }
 					}
 				}}
 				variant="outlined"

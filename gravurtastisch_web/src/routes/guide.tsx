@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 
 import { GuidePageSkeleton } from "@/components/skeletons/GuidePageSkeleton";
+import { FlagDE, FlagFR, FlagGB } from "@/components/ui/FlagIcon";
 
 export const Route = createFileRoute("/guide")({
   pendingComponent: GuidePageSkeleton,
@@ -294,7 +295,7 @@ function Guide() {
                         </p>
                         <div className="flex flex-wrap items-center gap-2.5 mt-3.5">
                           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700">
-                            🇩🇪 DE Store
+                            <FlagDE className="w-4 h-2.5 rounded-[2px] shadow-xs" /> DE Store
                           </span>
                           <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-brand/10 dark:bg-brand/20 text-brand dark:text-brand-bright border border-brand/30">
                             Filtered ✓
@@ -974,7 +975,8 @@ function OrderListingStreamSvg() {
         {/* Marketplace Pill */}
         <g transform="translate(10, 8)">
           <rect x="0" y="0" width="105" height="22" rx="6" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="0.8" />
-          <text x="8" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">🇩🇪 DE Store ▼</text>
+          <FlagDE x={8} y={6.5} width={14} height={9} />
+          <text x="26" y="15" fill="#282828" fontFamily="system-ui" fontSize="9.5" fontWeight="700">DE Store ▼</text>
         </g>
 
         {/* Filter State Pill */}
@@ -1017,8 +1019,9 @@ function OrderListingStreamSvg() {
 
         {/* Marketplace */}
         <g transform="translate(180, 22)">
-          <rect x="0" y="0" width="60" height="20" rx="5" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="0.8" />
-          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇩🇪 Amazon</text>
+          <rect x="0" y="0" width="68" height="20" rx="5" fill="#f8fafc" stroke="#E7E5E4" strokeWidth="0.8" />
+          <FlagDE x={5} y={5.5} width={14} height={9} />
+          <text x="42" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">Amazon</text>
         </g>
 
         {/* Status Pill: Pending */}
@@ -1052,8 +1055,9 @@ function OrderListingStreamSvg() {
 
         {/* Marketplace */}
         <g transform="translate(180, 17)">
-          <rect x="0" y="0" width="60" height="20" rx="5" fill="#FFFFFF" stroke="#E7E5E4" strokeWidth="0.8" />
-          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇫🇷 FR Store</text>
+          <rect x="0" y="0" width="68" height="20" rx="5" fill="#FFFFFF" stroke="#E7E5E4" strokeWidth="0.8" />
+          <FlagFR x={5} y={5.5} width={14} height={9} />
+          <text x="44" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">FR Store</text>
         </g>
 
         {/* Status Pill: Sent */}
@@ -1079,8 +1083,9 @@ function OrderListingStreamSvg() {
 
         {/* Marketplace */}
         <g transform="translate(180, 17)">
-          <rect x="0" y="0" width="60" height="20" rx="5" fill="#FFFFFF" stroke="#E7E5E4" strokeWidth="0.8" />
-          <text x="30" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">🇬🇧 UK Store</text>
+          <rect x="0" y="0" width="68" height="20" rx="5" fill="#FFFFFF" stroke="#E7E5E4" strokeWidth="0.8" />
+          <FlagGB x={5} y={5.5} width={14} height={9} />
+          <text x="45" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="9" fontWeight="700">UK Store</text>
         </g>
 
         {/* Status Pill: Queued */}
@@ -1366,10 +1371,13 @@ function VisualWorkflowPipelineSvg() {
           Marketplace filters
         </text>
         <g transform="translate(12, 68)">
-          <rect x="0" y="0" width="121" height="20" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
-          <text x="60.5" y="13.5" textAnchor="middle" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">
-            🇩🇪 DE • 🇫🇷 FR • 🇬🇧 UK
-          </text>
+          <rect x="0" y="0" width="125" height="20" rx="10" fill="#f8fafc" stroke="#4f6ef7" strokeWidth="0.8" />
+          <FlagDE x={8} y={5.5} width={13} height={9} />
+          <text x="25" y="13.5" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">DE •</text>
+          <FlagFR x={45} y={5.5} width={13} height={9} />
+          <text x="62" y="13.5" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">FR •</text>
+          <FlagGB x={82} y={5.5} width={13} height={9} />
+          <text x="99" y="13.5" fill="#282828" fontFamily="system-ui" fontSize="8" fontWeight="800">UK</text>
         </g>
       </g>
 

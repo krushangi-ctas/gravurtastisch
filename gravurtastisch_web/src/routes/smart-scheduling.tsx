@@ -27,8 +27,8 @@ import {
   Pill,
   Star
 } from "lucide-react";
-import i18n from "@/i18n/config";
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
+import { FlagDE, FlagFR, FlagGB } from "@/components/ui/FlagIcon";
 
 export const Route = createFileRoute("/smart-scheduling")({
   pendingComponent: ServicePageSkeleton,
@@ -1100,8 +1100,9 @@ function SmartSchedulingHeroSvg() {
           {/* Timezone Row 1: US East */}
           <g transform="translate(14, 48)">
             <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
-            <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇫🇷 Paris (CEST)
+            <FlagFR x={10} y={7.5} width={14} height={9} />
+            <text x="28" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
+              Paris (CEST)
             </text>
             <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Postal Code Mapped
@@ -1115,8 +1116,9 @@ function SmartSchedulingHeroSvg() {
           {/* Timezone Row 2: UK */}
           <g transform="translate(14, 88)">
             <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
-            <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇬🇧 London (BST)
+            <FlagGB x={10} y={7.5} width={14} height={9} />
+            <text x="28" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
+              London (BST)
             </text>
             <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Evening Slot Target
@@ -1130,8 +1132,9 @@ function SmartSchedulingHeroSvg() {
           {/* Timezone Row 3: EU Germany */}
           <g transform="translate(14, 128)">
             <rect x="0" y="0" width="232" height="34" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
-            <text x="10" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇩🇪 Berlin (CEST)
+            <FlagDE x={10} y={7.5} width={14} height={9} />
+            <text x="28" y="15" fill="#0f172a" fontFamily="system-ui" fontSize="9" fontWeight="800">
+              Berlin (CEST)
             </text>
             <text x="10" y="27" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
               Post-Dinner Window
@@ -1441,25 +1444,25 @@ function SmartSchedulingFaqSvg() {
       {/* ==================================================== */}
       <g transform="translate(248, 70)" filter="url(#sched-pill-shadow)">
         <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-        <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
-        <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
-          🇫🇷 18:30 CEST
+        <FlagFR x={8} y={6.5} width={13} height={9} />
+        <text x="25" y="14.5" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          18:30 CEST
         </text>
       </g>
 
       <g transform="translate(425, 40)" filter="url(#sched-pill-shadow)">
         <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-        <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
-        <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
-          🇬🇧 19:00 BST
+        <FlagGB x={8} y={6.5} width={13} height={9} />
+        <text x="25" y="14.5" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          19:00 BST
         </text>
       </g>
 
       <g transform="translate(255, 330)" filter="url(#sched-pill-shadow)">
         <rect width="84" height="22" rx="11" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-        <circle cx="10" cy="11" r="3" fill="#4f6ef7" />
-        <text x="18" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
-          🇩🇪 18:45 CEST
+        <FlagDE x={8} y={6.5} width={13} height={9} />
+        <text x="25" y="14.5" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="800">
+          18:45 CEST
         </text>
       </g>
     </svg>
