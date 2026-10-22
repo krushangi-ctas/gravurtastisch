@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Container } from "./Container";
 import { FlagIcon } from "@/components/ui/FlagIcon";
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
+import { FooterWaveCanvas } from "./FooterWaveCanvas";
 import {
   Mail,
   Phone,
@@ -116,56 +117,18 @@ export function Footer() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-700 relative overflow-hidden">
+    <footer className="bg-gradient-to-b from-[#edf5fd] via-[#f5f9fe] to-[#e4f0fc] text-slate-700 relative overflow-hidden">
+      {/* Top spacing before waves section */}
+      <div className="w-full h-8 sm:h-12 bg-white" />
 
-      {/* Live Seamless Floating Wave Ribbons (Confined to middle band, criss-crossing and overlapping) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden select-none">
-        {/* Wave 1: Luminous Frost Wave Ribbon (Moves left) */}
-        <svg
-          className="absolute top-0 bottom-0 left-0 w-[200%] h-full"
-          style={{ animation: "live-wave-layer-1 22s linear infinite" }}
-          viewBox="0 0 2400 900"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <linearGradient id="live-cross-wave-1" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" stopOpacity="0.95" />
-              <stop offset="50%" stopColor="#f3f7fd" stopOpacity="0.88" />
-              <stop offset="100%" stopColor="#ffffff" stopOpacity="0.95" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#live-cross-wave-1)"
-            d="M 0,170 C 270,170 330,340 600,340 C 870,340 930,170 1200,170 C 1470,170 1530,340 1800,340 C 2070,340 2130,170 2400,170 L 2400,330 C 2130,330 2070,500 1800,500 C 1530,500 1470,330 1200,330 C 930,330 870,500 600,500 C 330,500 270,330 0,330 Z"
-          />
-        </svg>
-
-        {/* Wave 2: Slate-Blue Soft Wave Ribbon (Moves right, overlaps with Wave 1) */}
-        <svg
-          className="absolute top-0 bottom-0 left-0 w-[200%] h-full"
-          style={{ animation: "live-wave-layer-3 26s linear infinite" }}
-          viewBox="0 0 2400 900"
-          preserveAspectRatio="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <defs>
-            <linearGradient id="live-cross-wave-2" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#7a9ecc" stopOpacity="0.30" />
-              <stop offset="50%" stopColor="#96b6e2" stopOpacity="0.22" />
-              <stop offset="100%" stopColor="#7a9ecc" stopOpacity="0.30" />
-            </linearGradient>
-          </defs>
-          <path
-            fill="url(#live-cross-wave-2)"
-            d="M 0,340 C 270,340 330,170 600,170 C 870,170 930,340 1200,340 C 1470,340 1530,170 1800,170 C 2070,170 2130,340 2400,340 L 2400,500 C 2130,500 2070,330 1800,330 C 1530,330 1470,500 1200,500 C 930,500 870,330 600,330 C 330,330 270,500 0,500 Z"
-          />
-        </svg>
+      {/* Dynamic Animated Waves Band */}
+      <div className="relative w-full h-36 sm:h-44 md:h-48 overflow-hidden pointer-events-none select-none bg-gradient-to-b from-white via-white/70 to-transparent">
+        <FooterWaveCanvas className="absolute inset-0 w-full h-full" />
       </div>
 
       <Container className="relative z-10">
         {/* Modern Bento Trust Strip - Interactive Light Capsules */}
-        <div className="pt-5 pb-3.5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <div className="pt-4 sm:pt-6 pb-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
           {trustStrip.map(({ icon: Icon, titleKey, copyKey, iconBg, border }) => (
             <div
               key={titleKey}
