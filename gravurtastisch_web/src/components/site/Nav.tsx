@@ -123,7 +123,7 @@ export function Nav() {
   };
 
   const getLinkClasses = (isActive: boolean) =>
-    `transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-lg select-none text-xs xl:text-sm font-medium cursor-pointer ${
+    `relative transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-lg select-none text-xs xl:text-sm font-medium cursor-pointer ${
       isActive
         ? solid
           ? "text-brand font-bold"
@@ -260,7 +260,10 @@ export function Nav() {
                           }
                         }}
                       >
-                        {item.label}
+                        <span>{item.label}</span>
+                        {isActive && (
+                          <span className="absolute -bottom-1 left-2 right-2 h-[2px] bg-brand rounded-full" />
+                        )}
                       </Link>
                     </NavigationMenuLink>
                   </NavigationMenuItem>
@@ -271,7 +274,10 @@ export function Nav() {
                 <NavigationMenuItem key={item.href || idx}>
                   <NavigationMenuLink asChild>
                     <Link to={item.href!} className={linkClass}>
-                      {item.label}
+                      <span>{item.label}</span>
+                      {isActive && (
+                        <span className="absolute -bottom-1 left-2 right-2 h-[2px] bg-brand rounded-full" />
+                      )}
                     </Link>
                   </NavigationMenuLink>
                 </NavigationMenuItem>

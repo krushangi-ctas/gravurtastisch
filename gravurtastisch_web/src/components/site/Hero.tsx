@@ -1,15 +1,10 @@
 import {
-  Star,
-  Sparkles,
-  Send,
   Clock,
-  MailOpen,
-  TrendingUp,
-  Package,
-  LayoutDashboard,
-  Inbox,
-  Settings,
-  Bell,
+  Star,
+  Truck,
+  Sparkles,
+  Shield,
+  ShieldCheck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { Container } from "./Container";
@@ -23,642 +18,247 @@ import {
 
 export function Hero() {
   const { t } = useTranslation();
+
   return (
     <section
       id="home"
-      className="relative overflow-hidden pt-28 pb-12 lg:pt-32 lg:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800"
+      className="relative overflow-hidden pt-28 pb-16 lg:pt-32 lg:pb-24 bg-gradient-to-b from-[#edf4fe] via-[#e2edfc] to-[#edf4fe] text-slate-800"
     >
-      <div className="absolute inset-0 grid-bg opacity-15 pointer-events-none" />
-      <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-brand/10 blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-brand-bright/10 blur-3xl pointer-events-none" />
+      {/* Ambient Radial Soft Glows */}
+      <div className="absolute top-12 left-1/2 -translate-x-1/2 w-[850px] h-[400px] bg-gradient-to-b from-indigo-200/35 via-sky-200/25 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -left-20 top-1/4 w-[500px] h-[500px] bg-gradient-to-tr from-sky-300/30 via-indigo-200/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute -right-20 top-1/4 w-[500px] h-[500px] bg-gradient-to-tl from-indigo-300/35 via-purple-200/25 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      {/* Ambient Orbs */}
-      <div className="hero-orb blue -top-12 right-[10%] h-72 w-72 opacity-20" />
-      <div className="hero-orb cyan top-[30%] -left-16 h-64 w-64 opacity-20" />
+      {/* Floating 3D Ambient Spheres matching reference artwork */}
+      {/* Left side spheres */}
+      <div className="hidden lg:block absolute top-[36%] left-[2.5%] w-6 h-6 rounded-full bg-gradient-to-br from-[#60a5fa] to-[#2563eb] shadow-[0_4px_12px_rgba(37,99,235,0.4)] pointer-events-none z-10" />
+      <div className="hidden lg:block absolute bottom-[22%] left-[4%] w-11 h-11 rounded-full bg-gradient-to-br from-[#818cf8] via-[#6366f1] to-[#3b82f6] shadow-[0_8px_20px_rgba(99,102,241,0.35)] pointer-events-none z-10" />
+      <div className="hidden lg:block absolute bottom-[40%] left-[20%] w-5 h-5 rounded-full bg-gradient-to-br from-[#38bdf8] to-[#2563eb] shadow-md pointer-events-none z-10" />
+      <div className="hidden lg:block absolute bottom-[28%] left-[24%] w-4 h-4 rounded-full bg-gradient-to-br from-[#a855f7] to-[#7c3aed] shadow-[0_4px_10px_rgba(124,58,237,0.3)] pointer-events-none z-10" />
 
-      <Container className="relative max-w-5xl mx-auto text-center">
-        <div className="rise max-w-4xl mx-auto flex flex-col items-center">
-          <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.75rem] xl:text-[4.5rem] leading-[1.08] text-navy-deep text-center">
-            <span>{t('hero.headline')}</span>{" "}
-            <span className="text-gradient-animated">
-              {t('hero.headlineHighlight')}
+      {/* Right side spheres */}
+      <div className="hidden lg:block absolute top-[16%] right-[24%] w-5 h-5 rounded-full bg-gradient-to-br from-[#c084fc] to-[#7c3aed] shadow-md pointer-events-none z-10" />
+      <div className="hidden lg:block absolute top-[32%] right-[7%] w-5 h-5 rounded-full bg-gradient-to-br from-[#60a5fa] to-[#2563eb] shadow-md pointer-events-none z-10" />
+      <div className="hidden lg:block absolute top-[54%] right-[3%] w-4 h-4 rounded-full bg-gradient-to-br from-[#a855f7] to-[#6366f1] shadow-md pointer-events-none z-10" />
+      <div className="hidden lg:block absolute bottom-[23%] right-[15%] w-6 h-6 rounded-full bg-gradient-to-br from-[#818cf8] to-[#3b82f6] shadow-md pointer-events-none z-10" />
+
+      {/* Left 3D Podium & Mug Composition (home1.png) */}
+      <div className="hidden lg:block absolute left-0 bottom-6 xl:bottom-8 w-[28%] xl:w-[30%] max-w-[480px] xl:max-w-[540px] pointer-events-none select-none z-10">
+        <div className="relative">
+          {/* Subtle 3D Disc & Orbital Ring behind Podium */}
+          <div className="absolute -left-10 bottom-6 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-[#818cf8]/25 via-[#6366f1]/15 to-[#3b82f6]/20 blur-xl pointer-events-none -z-10" />
+          <div className="absolute -left-6 bottom-10 w-[380px] h-[380px] rounded-full border border-indigo-300/35 pointer-events-none -z-10" />
+          <img
+            src="/home1.png?v=2"
+            alt="Personalized Photo Mug & Laser Engraved Keepsakes"
+            className="w-full h-auto object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,40,150,0.1)]"
+          />
+        </div>
+      </div>
+
+      {/* Right Floating Bottle, Photo Frame & Keychain Composition (home2.png) */}
+      <div className="hidden lg:block absolute right-0 lg:right-2 xl:right-6 2xl:right-10 top-1/2 -translate-y-[48%] w-[25%] xl:w-[27%] max-w-[400px] xl:max-w-[460px] pointer-events-none select-none z-10">
+        <div className="relative">
+          {/* Subtle 3D Disc & Orbital Ring behind Composition */}
+          <div className="absolute -right-8 top-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-[#a855f7]/20 via-[#6366f1]/20 to-[#3b82f6]/15 blur-xl pointer-events-none -z-10" />
+          <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-[390px] h-[390px] rounded-full border border-indigo-300/35 pointer-events-none -z-10 animate-[spin_60s_linear_infinite]" />
+
+          <img
+            src="/home2.png?v=2"
+            alt="Custom Engraved Bottle, Keychain & Photo Frame"
+            className="w-full h-auto object-contain drop-shadow-[0_25px_45px_rgba(20,40,140,0.15)] float-y"
+          />
+
+          {/* Frosted Glass Pill Badge: Your Design Our Craft 💜 */}
+          <div className="absolute bottom-[6%] right-[8%] bg-white/75 backdrop-blur-xl border border-white/90 rounded-2xl px-3.5 py-2 shadow-[0_10px_25px_rgba(99,102,241,0.2)] flex items-center gap-2">
+            <div className="text-left">
+              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">Your Design</p>
+              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">Our Craft</p>
+            </div>
+            <span className="text-xs">💜</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Center Hero Content */}
+      <Container className="relative z-20 max-w-5xl mx-auto text-center px-4">
+        <div className="max-w-3xl xl:max-w-[820px] mx-auto flex flex-col items-center">
+          {/* Top Pill Badge */}
+          <div className="section-badge mb-6">
+            <Sparkles className="h-3.5 w-3.5 text-brand shrink-0" />
+            <span>Custom Art • Digital Proofs • Fast Delivery</span>
+          </div>
+
+          {/* Main Headline */}
+          <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.5rem] xl:text-[4.25rem] leading-[1.08] text-[#0f172a] text-center">
+            <span>{t("hero.headline") || "Make it"}</span>{" "}
+            <span className="bg-gradient-to-r from-[#7c3aed] to-[#2563eb] bg-clip-text text-transparent">
+              {t("hero.headlineHighlight") || "Uniquely Yours"}
             </span>
           </h1>
-          <p className="mt-7 max-w-2xl text-base sm:text-lg text-slate-700 leading-[1.7] font-medium text-center mx-auto">
-            {t('hero.description')}
+
+          {/* Description */}
+          <p className="mt-6 max-w-2xl text-sm sm:text-base lg:text-lg text-slate-600 leading-[1.65] font-normal text-center mx-auto">
+            {t("hero.description") ||
+              "From photo mugs and kitchen accessories to apparel and keepsakes – Gravurtastisch turns your artwork into finished pieces with digital proofs, studio-grade engraving, and dependable delivery."}
           </p>
 
-          <div className="mt-9 flex flex-wrap justify-center items-center gap-4">
+          {/* CTA Buttons */}
+          <div className="mt-8 flex flex-wrap justify-center items-center gap-3.5">
             <a
               href="#register"
-              className="btn-glass-primary !py-3.5 px-8 text-sm font-bold !text-white shadow-[0_8px_24px_rgba(0,50,171,0.35)] hover:-translate-y-0.5 transition-all duration-300"
+              className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#1c22aa] via-[#2032b5] to-[#2563eb] shadow-[0_8px_24px_rgba(28,34,170,0.38)] hover:shadow-[0_12px_28px_rgba(28,34,170,0.48)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <span className="!text-white font-bold">{t('hero.ctaRegister')} →</span>
+              <span>{t("hero.ctaRegister") || "Place Custom Order"} →</span>
             </a>
             <a
               href="/#pricing"
-              className="inline-flex items-center gap-2 rounded-full border border-[#0032ab]/20 bg-white hover:bg-slate-50 px-8 py-3.5 text-sm font-semibold text-navy-deep shadow-xs hover:border-[#0032ab]/40 transition-all duration-300"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 px-7 py-3 text-sm font-semibold text-slate-800 shadow-xs hover:border-slate-300 transition-all duration-300"
             >
-              {t('hero.ctaPricing')}
+              {t("hero.ctaPricing") || "See Pricing"}
             </a>
           </div>
 
-          {/* Liquid Glass Stats Cards - Sleek Horizontal Single-Row Cards with Static Blue Border */}
-          <div className="mt-9 grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 lg:gap-5 w-full max-w-5xl lg:max-w-6xl mx-auto">
-            {/* Card 1: 48h Proof Turnaround */}
-            <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass liquid-glass-blue-border px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-300 hover:-translate-y-0.5 text-left flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="h-9 w-9 rounded-xl bg-sky-50 border border-sky-200 flex items-center justify-center text-sky-600 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                  <Clock className="h-4 w-4" />
+          {/* 3D Bento Luxury Glass Cards */}
+          <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 w-full">
+            {/* Bento Card 1: 48h Proof Turnaround */}
+            <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-sky-400 hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)] hover:-translate-y-1 transition-all duration-300">
+              {/* Top Row: Icon + Badge */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-500 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                  <Clock className="h-5 w-5" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-xl sm:text-2xl font-black text-navy-deep tracking-tight leading-none">
-                    48h
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-600 mt-1 uppercase tracking-wider leading-none whitespace-nowrap">
-                    {t('hero.statSendWindow') || "Proof Turnaround"}
-                  </p>
-                </div>
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sky-600 bg-sky-50 border border-sky-200/70 px-2.5 py-0.5 rounded-full">
+                  Fast SLA
+                </span>
               </div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-sky-700 bg-sky-100/90 border border-sky-300/80 px-2 py-0.5 rounded-md shrink-0">
-                Fast SLA
-              </span>
+
+              {/* Metric & Label */}
+              <div>
+                <div className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#0f172a] tracking-tight leading-none">
+                  48h
+                </div>
+                <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
+                  {t("hero.statSendWindow") || "Proof turnaround"}
+                </p>
+                <p className="text-xs text-slate-500 mt-1 font-medium">
+                  Digital proof ready before production
+                </p>
+              </div>
+
+              {/* Bottom Subtle Row */}
+              <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-600 font-semibold">
+                <span className="flex items-center gap-1">⚡ Express Proofing</span>
+                <span className="flex items-center gap-1">
+                  <Shield className="h-3.5 w-3.5 fill-sky-600 text-sky-600" /> Guaranteed
+                </span>
+              </div>
             </div>
 
-            {/* Card 2: 10k+ Happy Clients */}
-            <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass liquid-glass-blue-border px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-300 hover:-translate-y-0.5 text-left flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="h-9 w-9 rounded-xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-600 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                  <Star className="h-4 w-4 fill-amber-500 text-amber-500" />
+            {/* Bento Card 2: 10k+ Happy Clients */}
+            <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-amber-400 hover:shadow-[0_18px_40px_rgba(245,158,11,0.18)] hover:-translate-y-1 transition-all duration-300">
+              {/* Top Row: Icon + Badge */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                  <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-xl sm:text-2xl font-black text-navy-deep tracking-tight leading-none">
-                    10k+
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-600 mt-1 uppercase tracking-wider leading-none whitespace-nowrap">
-                    {t('hero.statReviewLift') || "Happy Clients"}
-                  </p>
-                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200/70 px-2.5 py-0.5 rounded-full">
+                  ✦ 4.9 RATING
+                </span>
               </div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-700 bg-amber-100/90 border border-amber-300/80 px-2 py-0.5 rounded-md shrink-0">
-                ★ 4.9
-              </span>
+
+              {/* Metric & Label */}
+              <div>
+                <div className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#0f172a] tracking-tight leading-none">
+                  10k+
+                </div>
+                <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
+                  {t("hero.statReviewLift") || "Happy clients"}
+                </p>
+                <p className="text-xs text-slate-500 mt-1 font-medium">
+                  Verified custom orders completed
+                </p>
+              </div>
+
+              {/* Bottom Subtle Row */}
+              <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-800 font-semibold">
+                <span>Five-Star Quality</span>
+                <span className="text-amber-500 tracking-wider font-bold">★★★★★</span>
+              </div>
             </div>
 
-            {/* Card 3: 99.8% On-Time Ship Rate */}
-            <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass liquid-glass-blue-border px-4 sm:px-5 py-3.5 sm:py-4 transition-all duration-300 hover:-translate-y-0.5 text-left flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="h-9 w-9 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-center text-emerald-600 shadow-xs shrink-0 group-hover:scale-105 transition-transform">
-                  <Sparkles className="h-4 w-4" />
+            {/* Bento Card 3: 99.8% On-Time Ship Rate */}
+            <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-emerald-400 hover:shadow-[0_18px_40px_rgba(16,185,129,0.18)] hover:-translate-y-1 transition-all duration-300">
+              {/* Top Row: Icon + Badge */}
+              <div className="flex items-center justify-between mb-5">
+                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                  <Truck className="h-5 w-5" />
                 </div>
-                <div className="min-w-0">
-                  <div className="text-xl sm:text-2xl font-black text-navy-deep tracking-tight leading-none">
-                    99.8%
-                  </div>
-                  <p className="text-[11px] font-semibold text-slate-600 mt-1 uppercase tracking-wider leading-none whitespace-nowrap">
-                    {t('hero.statUptime') || "On-Time Ship Rate"}
-                  </p>
-                </div>
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 rounded-full">
+                  ✦ EU WIDE
+                </span>
               </div>
-              <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-700 bg-emerald-100/90 border border-emerald-300/80 px-2 py-0.5 rounded-md shrink-0">
-                EU Wide
-              </span>
+
+              {/* Metric & Label */}
+              <div>
+                <div className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#0f172a] tracking-tight leading-none">
+                  99.8%
+                </div>
+                <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
+                  {t("hero.statUptime") || "On-time ship rate"}
+                </p>
+                <p className="text-xs text-slate-500 mt-1 font-medium">
+                  Tracked courier dispatch across EU
+                </p>
+              </div>
+
+              {/* Bottom Subtle Row */}
+              <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
+                <span className="flex items-center gap-1">📦 Direct Studio Shipping</span>
+                <span className="flex items-center gap-1">
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Insured
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="mt-8 pt-6 border-t border-[#0032ab]/15 flex flex-wrap items-center justify-center gap-3 text-xs text-slate-600">
-            <div className="flex items-center gap-1.5 font-semibold text-navy-deep">
+          {/* Precision Bar */}
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-600">
+            <div className="flex items-center gap-1.5 font-semibold text-slate-800">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{t('hero.spApiVerified')}</span>
+              <span>{t("hero.spApiVerified") || "German craft precision"}</span>
             </div>
-            <span className="text-slate-400">•</span>
+            <span className="text-slate-300 mx-1 font-light">|</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-slate-600">{t('hero.stores')}</span>
-              <FlagDE className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
-              <FlagFR className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
-              <FlagGB className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
-              <FlagIT className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
-              <FlagES className="w-3.5 h-2.5 shadow-xs rounded-[2px]" />
-              <span className="text-[10px] font-mono text-brand font-bold">+EU</span>
+              <span className="text-slate-500">{t("hero.stores") || "Channels:"}</span>
+              <FlagDE className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
+              <FlagFR className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
+              <FlagGB className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
+              <FlagIT className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
+              <FlagES className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
+              <span className="text-[10px] font-mono text-brand font-bold bg-blue-50/80 text-blue-700 px-1 py-0.5 rounded border border-blue-200/60">
+                +EU
+              </span>
             </div>
           </div>
         </div>
       </Container>
+
+      {/* Bottom Curved Wave Transition */}
+      <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none z-10 pointer-events-none">
+        <svg
+          viewBox="0 0 1440 96"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-full h-10 sm:h-14 lg:h-20 block preserve-3d"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,36 C320,80 560,18 880,48 C1160,76 1320,28 1440,42 L1440,96 L0,96 Z"
+            fill="#ffffff"
+          />
+        </svg>
+      </div>
     </section>
   );
 }
-
-function HeroMock() {
-  const { t } = useTranslation();
-  const orders = [
-    {
-      id: "GT-24018",
-      product: "Photo Mug Duo",
-      sku: "CUP-WRAP-11",
-      channel: "Studio • DE",
-      key: "sent",
-      Icon: Send,
-      tone: "bg-[#0032ab]/15 text-[#0032ab] font-bold border border-[#0032ab]/25",
-      av: "from-[#0032ab] to-[#4f6ef7]",
-    },
-    {
-      id: "GT-24017",
-      product: "Engraved Oak Board",
-      sku: "KIT-BOARD-02",
-      channel: "Laser • EU",
-      key: "queued",
-      Icon: Clock,
-      tone: "bg-[#152238]/10 text-navy-deep font-bold border border-[#152238]/20",
-      av: "from-[#1447e6] to-[#0032ab]",
-    },
-    {
-      id: "GT-24016",
-      product: "Acrylic Night Lamp",
-      sku: "LIFE-LED-07",
-      channel: "Proof OK",
-      key: "reviewed",
-      Icon: Sparkles,
-      tone: "bg-[#4f6ef7]/15 text-[#0032ab] font-bold border border-[#4f6ef7]/30",
-      av: "from-[#4f6ef7] to-[#3080ff]",
-    },
-  ];
-
-  const statusLabels: Record<string, string> = {
-    sent: t('hero.mockStatusSent'),
-    queued: t('hero.mockStatusQueued'),
-    reviewed: t('hero.mockStatusReviewed'),
-  };
-
-  return (
-    <div className="relative float-y">
-      <div
-        className="absolute -inset-12 bg-gradient-to-br from-brand/50 via-brand/20 to-transparent blur-3xl animate-pulse"
-        style={{ animationDuration: '4s' }}
-        aria-hidden
-      />
-
-      {/* ReviewSnapp-style orbital rings — Royal Blue & Electric Indigo */}
-      <svg
-        className="absolute -right-12 -top-12 w-64 h-64 opacity-75 pointer-events-none select-none overflow-visible"
-        viewBox="0 0 200 200"
-        aria-hidden
-      >
-        <defs>
-          <linearGradient id="orbGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#4f6ef7" stopOpacity="0.9" />
-            <stop offset="50%" stopColor="#0032ab" stopOpacity="0.55" />
-            <stop offset="100%" stopColor="#0b132b" stopOpacity="0" />
-          </linearGradient>
-          <filter id="orbGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="3" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-
-        <g>
-          <circle
-            cx="100"
-            cy="100"
-            r="86"
-            fill="none"
-            stroke="url(#orbGrad1)"
-            strokeWidth="1.5"
-            strokeDasharray="8 6"
-          >
-            <animate attributeName="stroke-dashoffset" values="0;-100" dur="8s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="100" cy="14" r="4" fill="#4f6ef7" filter="url(#orbGlow)">
-            <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="0 100 100"
-              to="360 100 100"
-              dur="10s"
-              repeatCount="indefinite"
-            />
-          </circle>
-        </g>
-
-        <g>
-          <circle
-            cx="100"
-            cy="100"
-            r="62"
-            fill="none"
-            stroke="#4f6ef7"
-            strokeWidth="1.2"
-            strokeDasharray="5 5"
-            opacity="0.5"
-          >
-            <animate attributeName="stroke-dashoffset" values="0;80" dur="6s" repeatCount="indefinite" />
-          </circle>
-          <circle cx="100" cy="38" r="3" fill="#38bdf8" filter="url(#orbGlow)">
-            <animateTransform
-              attributeName="transform"
-              type="rotate"
-              from="360 100 100"
-              to="0 100 100"
-              dur="7s"
-              repeatCount="indefinite"
-            />
-          </circle>
-        </g>
-
-        <circle cx="100" cy="100" r="38" fill="rgba(79,110,247,0.12)">
-          <animate attributeName="r" values="32;42;32" dur="3s" repeatCount="indefinite" />
-          <animate attributeName="opacity" values="0.2;0.5;0.2" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="100" cy="100" r="22" fill="#0032ab" opacity="0.35" filter="url(#orbGlow)">
-          <animate attributeName="r" values="18;26;18" dur="2s" repeatCount="indefinite" />
-        </circle>
-      </svg>
-
-      <div className="relative rounded-[1.5rem] bg-slate-50 text-navy-deep shadow-[0_40px_90px_-20px_rgba(0,0,0,0.5)] ring-1 ring-white/30 overflow-hidden transition-all duration-300 hover:shadow-[0_45px_100px_-20px_rgba(0,0,0,0.65)]">
-        {/* App chrome */}
-        <div className="flex items-center justify-between px-4 sm:px-5 py-3 bg-white border-b border-border/80">
-          <div className="flex items-center gap-3">
-            <div className="flex gap-1.5">
-              <span className="h-2.5 w-2.5 rounded-full bg-rose-500 transition-transform hover:scale-125" />
-              <span className="h-2.5 w-2.5 rounded-full bg-amber-400 transition-transform hover:scale-125" />
-              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 transition-transform hover:scale-125" />
-            </div>
-            <div className="hidden sm:flex items-center gap-1.5 rounded-md bg-surface-alt px-2.5 py-1 text-[10px] font-mono text-slate-body">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              {t('hero.mockUrl')}
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="grid place-items-center h-7 w-7 rounded-lg bg-surface-alt text-slate-body transition-colors hover:text-brand">
-              <Bell className="h-3.5 w-3.5" />
-            </span>
-            <span className="grid place-items-center h-7 w-7 rounded-full bg-gradient-to-br from-navy-deep to-brand text-[10px] font-bold text-white shadow-xs">
-              G
-            </span>
-          </div>
-        </div>
-
-        <div className="flex">
-          {/* Mini sidebar */}
-          <aside className="hidden sm:flex w-14 shrink-0 flex-col items-center gap-3 py-4 border-r border-border/80 bg-white">
-            {[
-              { Icon: LayoutDashboard, active: true },
-              { Icon: Inbox, active: false },
-              { Icon: Package, active: false },
-              { Icon: Settings, active: false },
-            ].map(({ Icon, active }, i) => (
-              <span
-                key={i}
-                className={`grid place-items-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer ${active
-                    ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/30 scale-105"
-                    : "text-slate-500 bg-transparent hover:bg-slate-100 hover:text-slate-900"
-                  }`}
-              >
-                <Icon className="h-4 w-4" strokeWidth={1.75} />
-              </span>
-            ))}
-          </aside>
-
-          <div className="flex-1 min-w-0 p-4 sm:p-5">
-            {/* Header row */}
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-slate-body font-semibold">
-                  {t('hero.mockReviewPipeline')}
-                </p>
-                <p className="text-base sm:text-lg font-bold mt-0.5">{t('hero.mockTodayOrders')}</p>
-              </div>
-              <div className="flex items-center gap-1.5 rounded-full bg-brand/10 px-2.5 py-1 text-[11px] font-semibold text-brand shadow-2xs">
-                <span className="h-1.5 w-1.5 rounded-full bg-brand animate-ping" />
-                {t('hero.mockLive')}
-              </div>
-            </div>
-
-            {/* KPI strip */}
-            <div className="mt-4 grid grid-cols-3 gap-2 sm:gap-2.5">
-              {[
-                { key: "sent", value: "842", delta: "+12%", Icon: Send, tint: "from-brand/25 to-brand/10 text-navy-deep" },
-                { key: "opened", value: "618", delta: "+8%", Icon: MailOpen, tint: "from-[#282828]/15 to-[#282828]/5 text-navy-deep" },
-                { key: "reviews", value: "312", delta: "+18%", Icon: Star, tint: "from-brand/35 to-brand/15 text-navy-deep" },
-              ].map((k) => (
-                <div
-                  key={k.key}
-                  className="rounded-xl bg-white border border-border/70 p-2.5 sm:p-3 shadow-sm hover:border-brand/40 hover:-translate-y-0.5 transition-all duration-200"
-                >
-                  <div className="flex items-center justify-between">
-                    <span
-                      className={`grid place-items-center h-7 w-7 rounded-lg bg-gradient-to-br ${k.tint}`}
-                    >
-                      <k.Icon className="h-3.5 w-3.5" strokeWidth={2} />
-                    </span>
-                    <span className="inline-flex items-center gap-0.5 text-[10px] font-bold text-navy-deep bg-brand/20 px-1.5 py-0.5 rounded-full">
-                      <TrendingUp className="h-3 w-3" />
-                      {k.delta}
-                    </span>
-                  </div>
-                  <p className="mt-2 text-lg sm:text-xl font-extrabold tracking-tight leading-none">
-                    {k.value}
-                  </p>
-                  <p className="mt-1 text-[10px] text-slate-body font-medium">
-                    {k.key === 'sent' ? t('hero.mockSent') : k.key === 'opened' ? t('hero.mockOpened') : t('hero.mockReviews')}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Chart + rating ring */}
-            <div className="mt-3 grid grid-cols-12 gap-2.5">
-              <div className="col-span-8 rounded-xl bg-white border border-border/70 p-3 shadow-sm hover:border-brand/30 transition-colors">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[10px] font-semibold text-slate-body uppercase tracking-wider">
-                    {t('hero.mockChartLabel')}
-                  </p>
-                  <span className="text-[10px] font-semibold text-brand flex items-center gap-0.5">
-                    <span>↑ 24%</span>
-                  </span>
-                </div>
-                <PipelineChart />
-              </div>
-
-              <div className="col-span-4 rounded-xl bg-white border border-border/70 p-3 shadow-sm flex flex-col items-center justify-center hover:border-amber-300/60 transition-colors">
-                <RatingRing />
-                <p className="mt-1.5 text-[10px] font-semibold text-slate-body text-center leading-tight">
-                  {t('hero.mockAvgRating')}
-                </p>
-              </div>
-            </div>
-
-            {/* Activity feed */}
-            <div className="mt-3 rounded-xl bg-white border border-border/70 shadow-sm overflow-hidden">
-              <div className="flex items-center justify-between px-3 py-2 border-b border-border/60 bg-slate-50/50">
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-slate-body">
-                  {t('hero.mockRecentActivity')}
-                </p>
-                <span className="text-[10px] font-medium text-brand hover:underline cursor-pointer">{t('hero.mockViewAll')}</span>
-              </div>
-              <ul className="divide-y divide-border/60">
-                {orders.map((o) => (
-                  <li
-                    key={o.id}
-                    className="flex items-center gap-2.5 px-3 py-2.5 transition-colors hover:bg-surface-alt/80"
-                  >
-                    <span
-                      className={`grid place-items-center h-9 w-9 shrink-0 rounded-xl bg-gradient-to-br ${o.av} text-white shadow-sm transition-transform hover:scale-105`}
-                    >
-                      <Package className="h-3.5 w-3.5" strokeWidth={2} />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-center gap-1.5 flex-wrap">
-                        <p className="text-xs font-semibold text-navy-deep truncate">{o.product}</p>
-                        <span className="inline-flex items-center px-1.5 py-0.2 rounded text-[9px] font-bold bg-brand/10 text-brand border border-brand/25 font-mono">
-                          {o.channel}
-                        </span>
-                      </div>
-                      <div className="flex items-center gap-2 mt-0.5 text-[10px] text-slate-body">
-                        <span className="font-mono text-brand font-semibold">{o.sku}</span>
-                        <span>•</span>
-                        <span className="font-mono text-slate-400">{o.id}</span>
-                      </div>
-                    </div>
-                    <span
-                      className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-semibold shrink-0 ${o.tone}`}
-                    >
-                      <o.Icon className="h-3 w-3" strokeWidth={2.25} />
-                      {statusLabels[o.key]}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function PipelineChart() {
-  // Smooth area + line over 7 days
-  const points = [28, 42, 36, 58, 52, 74, 68, 88];
-  const w = 220;
-  const h = 72;
-  const max = 100;
-  const step = w / (points.length - 1);
-  const coords = points.map((p, i) => [i * step, h - (p / max) * h] as const);
-  const line = coords.map(([x, y], i) => `${i === 0 ? "M" : "L"}${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
-  const area = `${line} L${w},${h} L0,${h} Z`;
-
-  return (
-    <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-[72px] overflow-visible" aria-hidden>
-      <defs>
-        <linearGradient id="heroArea" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4f6ef7" stopOpacity="0.4" />
-          <stop offset="60%" stopColor="#0032ab" stopOpacity="0.12" />
-          <stop offset="100%" stopColor="#0032ab" stopOpacity="0.01" />
-        </linearGradient>
-        <linearGradient id="heroLine" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="50%" stopColor="#4f6ef7" />
-          <stop offset="100%" stopColor="#0032ab" />
-        </linearGradient>
-        <filter id="heroChartGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="2.5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-
-      {/* Grid lines */}
-      {[0.25, 0.5, 0.75].map((t) => (
-        <line
-          key={t}
-          x1="0"
-          y1={h * t}
-          x2={w}
-          y2={h * t}
-          stroke="#E2E8F0"
-          strokeWidth="1"
-          strokeDasharray="3 3"
-        />
-      ))}
-
-      {/* Area Gradient with smooth breathing pulse */}
-      <path d={area} fill="url(#heroArea)">
-        <animate attributeName="opacity" values="0.7;1;0.7" dur="3s" repeatCount="indefinite" />
-      </path>
-
-      {/* Glowing under-line */}
-      <path
-        d={line}
-        fill="none"
-        stroke="#4f6ef7"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.35"
-        filter="url(#heroChartGlow)"
-      >
-        <animate attributeName="opacity" values="0.2;0.5;0.2" dur="2s" repeatCount="indefinite" />
-      </path>
-
-      {/* Base Solid Chart Line */}
-      <path
-        d={line}
-        fill="none"
-        stroke="url(#heroLine)"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-
-      {/* Continuous Dash-Flow Wave on Line */}
-      <path
-        d={line}
-        fill="none"
-        stroke="#FFFFFF"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        strokeDasharray="8 12"
-        opacity="0.85"
-      >
-        <animate attributeName="stroke-dashoffset" values="0;-40" dur="1.8s" repeatCount="indefinite" />
-      </path>
-
-      {/* Flowing Pulse Particle moving along the line */}
-      <g>
-        <circle r="4" fill="#4f6ef7" opacity="0.6" filter="url(#heroChartGlow)">
-          <animateMotion path={line} dur="3s" repeatCount="indefinite" />
-          <animate attributeName="r" values="3;6;3" dur="1.5s" repeatCount="indefinite" />
-        </circle>
-        <circle r="2.5" fill="#FFFFFF">
-          <animateMotion path={line} dur="3s" repeatCount="indefinite" />
-        </circle>
-      </g>
-
-      {/* Data point nodes with animations */}
-      {coords.map(([x, y], i) => (
-        <g key={i}>
-          {i === coords.length - 1 ? (
-            <>
-              {/* Pulsing radar wave around the active latest node */}
-              <circle cx={x} cy={y} r="8" fill="#4f6ef7" opacity="0.4">
-                <animate attributeName="r" values="4;12;4" dur="1.6s" repeatCount="indefinite" />
-                <animate attributeName="opacity" values="0.7;0;0.7" dur="1.6s" repeatCount="indefinite" />
-              </circle>
-              <circle
-                cx={x}
-                cy={y}
-                r="4.5"
-                fill="#4f6ef7"
-                stroke="#0032ab"
-                strokeWidth="2"
-              >
-                <animate attributeName="r" values="4;5.5;4" dur="1.6s" repeatCount="indefinite" />
-              </circle>
-            </>
-          ) : (
-            <circle
-              cx={x}
-              cy={y}
-              r="2.5"
-              fill="#FFFFFF"
-              stroke="#4f6ef7"
-              strokeWidth="2"
-            >
-              <animate
-                attributeName="r"
-                values="2;3.2;2"
-                dur="2.4s"
-                begin={`${i * 0.3}s`}
-                repeatCount="indefinite"
-              />
-            </circle>
-          )}
-        </g>
-      ))}
-    </svg>
-  );
-}
-
-function RatingRing() {
-  const r = 28;
-  const c = 2 * Math.PI * r;
-  const pct = 0.98; // 4.9 / 5
-
-  return (
-    <div className="relative">
-      <svg width="72" height="72" viewBox="0 0 72 72" aria-hidden className="overflow-visible">
-        <defs>
-          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#38bdf8" />
-            <stop offset="50%" stopColor="#4f6ef7" />
-            <stop offset="100%" stopColor="#0032ab" />
-          </linearGradient>
-          <filter id="ringGlow" x="-20%" y="-20%" width="140%" height="140%">
-            <feGaussianBlur stdDeviation="2" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
-          </filter>
-        </defs>
-
-        {/* Background Track */}
-        <circle cx="36" cy="36" r={r} fill="none" stroke="#E2E8F0" strokeWidth="6" />
-
-        {/* Outer Glow Ring */}
-        <circle
-          cx="36"
-          cy="36"
-          r={r}
-          fill="none"
-          stroke="url(#ringGrad)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={`${c * pct} ${c}`}
-          transform="rotate(-90 36 36)"
-          opacity="0.4"
-          filter="url(#ringGlow)"
-        >
-          <animate attributeName="opacity" values="0.3;0.7;0.3" dur="2.5s" repeatCount="indefinite" />
-        </circle>
-
-        {/* Animated Progress Arc */}
-        <circle
-          cx="36"
-          cy="36"
-          r={r}
-          fill="none"
-          stroke="url(#ringGrad)"
-          strokeWidth="6"
-          strokeLinecap="round"
-          strokeDasharray={`${c * pct} ${c}`}
-          transform="rotate(-90 36 36)"
-        >
-          <animate
-            attributeName="stroke-dashoffset"
-            values="0;-16;0"
-            dur="4s"
-            repeatCount="indefinite"
-          />
-        </circle>
-      </svg>
-      <div className="absolute inset-0 grid place-items-center">
-        <div className="text-center">
-          <p className="text-sm font-extrabold text-navy-deep leading-none">4.9</p>
-          <div className="flex justify-center mt-0.5 gap-px">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className="h-2 w-2 text-brand transition-transform"
-                style={{
-                  animation: `twinkle 2s ease-in-out infinite`,
-                  animationDelay: `${i * 0.2}s`,
-                }}
-                fill="currentColor"
-                strokeWidth={0}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
