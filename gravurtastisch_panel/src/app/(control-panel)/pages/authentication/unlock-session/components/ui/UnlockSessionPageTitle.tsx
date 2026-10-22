@@ -4,8 +4,8 @@ function UnlockSessionPageTitle() {
 	return (
 		<div className="w-full">
 			<img
-				className="w-12"
-				src="/assets/images/logo/ctasis-logo.svg"
+				className="w-40"
+				src="/gravurtastich.png"
 				alt="logo"
 			/>
 

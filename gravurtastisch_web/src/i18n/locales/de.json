@@ -345,7 +345,7 @@
     "colLegalLink1": "Datenschutzrichtlinie",
     "colLegalLink2": "Allgemeine Geschäftsbedingungen",
     "colLegalLink3": "Rückgaberecht",
-    "colLegalLink4": "Ctas Info Services",
+    "colLegalLink4": "Gravurtastisch",
     "marketplacesTitle": "Unterstützte Marktplätze",
     "newsletterTitle": "Verkäufer-Einblicke",
     "newsletterDesc": "Monatliche Hinweise zu Amazon-Bewertungsrichtlinienänderungen, SP-API-Updates und Conversion-Benchmarks. Kein Spam.",
@@ -368,7 +368,7 @@
   "privacy": {
     "title": "Datenschutzrichtlinie",
     "updated": "24. Juli 2026",
-    "para1": "Gravurtastisch (\"wir\", \"uns\" oder \"unser\"), betrieben von Ctas Info Services, respektiert Ihre Privatsphäre. Diese Richtlinie erklärt, welche Informationen wir sammeln, wenn Sie unsere Website und Dienste nutzen, und wie wir sie verwenden.",
+    "para1": "Gravurtastisch (\"wir\", \"uns\" oder \"unser\") respektiert Ihre Privatsphäre. Diese Richtlinie erklärt, welche Informationen wir sammeln, wenn Sie unsere Website und Dienste nutzen, und wie wir sie verwenden.",
     "heading1": "Informationen, die wir sammeln",
     "list1Item1": "Konto- und Kontaktdaten, die Sie angeben (Name, E-Mail, Telefon, Firmenname).",
     "list1Item2": "Marktplatz- und Verkäuferkennungen, die zur Bereitstellung des Dienstes nach Genehmigung erforderlich sind.",
@@ -401,7 +401,7 @@
     "heading4": "Gesendet-Status",
     "para4": "Bewertungsanfragen werden als Gesendet markiert, wenn sie Gravurtastisch verlassen. Amazon bestätigt weder Öffnungen noch veröffentlichte Bewertungen, und wir stellen dies nicht anders dar.",
     "heading5": "Haftungsbeschränkung",
-    "para5": "Im gesetzlich zulässigen Umfang haften Gravurtastisch und Ctas Info Services nicht für indirekte, zufällige oder Folgeschäden, die aus der Nutzung des Dienstes entstehen, einschließlich marktplatzpolitischer Maßnahmen von Amazon.",
+    "para5": "Im gesetzlich zulässigen Umfang haftet Gravurtastisch nicht für indirekte, zufällige oder Folgeschäden, die aus der Nutzung des Dienstes entstehen, einschließlich marktplatzpolitischer Maßnahmen von Amazon.",
     "heading6": "Kontakt",
     "para6": "Rechtliche Fragen:"
   },

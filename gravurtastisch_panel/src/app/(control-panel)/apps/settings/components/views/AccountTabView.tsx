@@ -30,7 +30,7 @@ const defaultValues: FormType = {
 };
 
 const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
-const PHONE_CHARS_REGEX = /^[+0-9\s\-()]+$/;
+const PHONE_CHARS_REGEX = /^[+0-9\s()]+$/;
 
 /**
  * Form Validation Schema
@@ -59,8 +59,11 @@ const schema = z.object({
     .max(20, 'Contact number cannot exceed 20 characters')
     .regex(
       PHONE_CHARS_REGEX,
-      'Contact number can only contain numbers, +, spaces, hyphens, and parentheses'
+      'Contact number can only contain numbers, +, spaces, and parentheses'
     )
+    .refine((val) => !val.includes('-'), {
+      message: 'Contact number cannot contain hyphens (-)',
+    })
     .refine(
       (val) => {
         const digits = val.replace(/\D/g, '');
@@ -417,6 +420,14 @@ function AccountTabView() {
                     <FormControl className="w-full">
                       <TextField
                         {...field}
+                        onKeyDown={(e) => {
+                          if (e.key === '-') {
+                            e.preventDefault();
+                          }
+                        }}
+                        onChange={(e) => {
+                          field.onChange(e.target.value.replace(/-/g, ''));
+                        }}
                         placeholder="Enter your contact number (10-20 digits)"
                         id="contact_no"
                         error={!!errors.contact_no}

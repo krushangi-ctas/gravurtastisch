@@ -40,24 +40,8 @@ export function Hero() {
         <div className="rise max-w-4xl mx-auto flex flex-col items-center">
           <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.75rem] xl:text-[4.5rem] leading-[1.08] text-navy-deep text-center">
             <span>{t('hero.headline')}</span>{" "}
-            <span className="relative inline-block">
-              <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
-                {t('hero.headlineHighlight')}
-              </span>
-              <svg
-                className="absolute -bottom-2 left-0 w-full"
-                viewBox="0 0 300 12"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M2 8 C 80 2, 160 12, 298 4"
-                  stroke="#0032ab"
-                  strokeWidth="3.5"
-                  strokeLinecap="round"
-                  className="draw-line"
-                />
-              </svg>
+            <span className="text-gradient-animated">
+              {t('hero.headlineHighlight')}
             </span>
           </h1>
           <p className="mt-7 max-w-2xl text-base sm:text-lg text-slate-700 leading-[1.7] font-medium text-center mx-auto">
@@ -324,11 +308,10 @@ function HeroMock() {
             ].map(({ Icon, active }, i) => (
               <span
                 key={i}
-                className={`grid place-items-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer ${
-                  active
+                className={`grid place-items-center h-9 w-9 rounded-xl transition-all duration-200 cursor-pointer ${active
                     ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/30 scale-105"
                     : "text-slate-500 bg-transparent hover:bg-slate-100 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 <Icon className="h-4 w-4" strokeWidth={1.75} />
               </span>

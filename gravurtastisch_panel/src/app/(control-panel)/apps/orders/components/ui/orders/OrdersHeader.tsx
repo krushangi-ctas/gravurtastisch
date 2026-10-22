@@ -320,8 +320,9 @@ function OrdersHeader({
     setDateAnchorEl(null);
     const defaultMarketplace = marketplaces?.find(
       (item: any) =>
-        item.country_code?.toUpperCase() === 'IN' ||
-        item.country?.toLowerCase() === 'india'
+        item.country_code?.toUpperCase() === 'DE' ||
+        item.country?.toLowerCase() === 'germany' ||
+        item.country?.toLowerCase() === 'deutschland'
     ) || marketplaces?.[0];
     if (defaultMarketplace) {
       setSelectedMarketplace([defaultMarketplace.marketplace_id]);

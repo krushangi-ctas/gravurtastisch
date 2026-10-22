@@ -1,12 +1,16 @@
 import React from "react";
 
-interface FlagProps {
+export interface FlagProps {
   className?: string;
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  height?: number | string;
 }
 
-export function FlagGB({ className = "w-4 h-3" }: FlagProps) {
+export function FlagGB({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="36" fill="#012169" />
       <path d="M0,0 L60,36 M60,0 L0,36" stroke="#ffffff" strokeWidth="6" />
       <path d="M0,0 L60,36 M60,0 L0,36" stroke="#C8102E" strokeWidth="3.5" />
@@ -16,9 +20,9 @@ export function FlagGB({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagDE({ className = "w-4 h-3" }: FlagProps) {
+export function FlagDE({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="12" y="0" fill="#000000" />
       <rect width="60" height="12" y="12" fill="#DD0000" />
       <rect width="60" height="12" y="24" fill="#FFCE00" />
@@ -26,9 +30,9 @@ export function FlagDE({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagAT({ className = "w-4 h-3" }: FlagProps) {
+export function FlagAT({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="12" y="0" fill="#C8102E" />
       <rect width="60" height="12" y="12" fill="#FFFFFF" />
       <rect width="60" height="12" y="24" fill="#C8102E" />
@@ -36,9 +40,9 @@ export function FlagAT({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagCH({ className = "w-4 h-3" }: FlagProps) {
+export function FlagCH({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="36" fill="#D52B1E" />
       <rect width="8" height="22" x="26" y="7" fill="#FFFFFF" />
       <rect width="22" height="8" x="19" y="14" fill="#FFFFFF" />
@@ -46,9 +50,9 @@ export function FlagCH({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagFR({ className = "w-4 h-3" }: FlagProps) {
+export function FlagFR({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="20" height="36" x="0" fill="#002395" />
       <rect width="20" height="36" x="20" fill="#FFFFFF" />
       <rect width="20" height="36" x="40" fill="#ED2939" />
@@ -56,9 +60,9 @@ export function FlagFR({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagES({ className = "w-4 h-3" }: FlagProps) {
+export function FlagES({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="9" y="0" fill="#AA151B" />
       <rect width="60" height="18" y="9" fill="#F1BF00" />
       <rect width="60" height="9" y="27" fill="#AA151B" />
@@ -67,9 +71,9 @@ export function FlagES({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagIT({ className = "w-4 h-3" }: FlagProps) {
+export function FlagIT({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="20" height="36" x="0" fill="#009246" />
       <rect width="20" height="36" x="20" fill="#FFFFFF" />
       <rect width="20" height="36" x="40" fill="#CE2B37" />
@@ -77,9 +81,9 @@ export function FlagIT({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagNL({ className = "w-4 h-3" }: FlagProps) {
+export function FlagNL({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="12" y="0" fill="#AE1C28" />
       <rect width="60" height="12" y="12" fill="#FFFFFF" />
       <rect width="60" height="12" y="24" fill="#21468B" />
@@ -87,18 +91,18 @@ export function FlagNL({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagPL({ className = "w-4 h-3" }: FlagProps) {
+export function FlagPL({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="18" y="0" fill="#FFFFFF" />
       <rect width="60" height="18" y="18" fill="#DC143C" />
     </svg>
   );
 }
 
-export function FlagSE({ className = "w-4 h-3" }: FlagProps) {
+export function FlagSE({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="36" fill="#006AA7" />
       <rect width="8" height="36" x="18" fill="#FECC00" />
       <rect width="60" height="8" y="14" fill="#FECC00" />
@@ -106,9 +110,9 @@ export function FlagSE({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagBE({ className = "w-4 h-3" }: FlagProps) {
+export function FlagBE({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="20" height="36" x="0" fill="#000000" />
       <rect width="20" height="36" x="20" fill="#FDDA24" />
       <rect width="20" height="36" x="40" fill="#EF3340" />
@@ -116,9 +120,9 @@ export function FlagBE({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagUS({ className = "w-4 h-3" }: FlagProps) {
+export function FlagUS({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="36" fill="#B22234" />
       <path d="M0,2.77 h60 M0,8.31 h60 M0,13.85 h60 M0,19.38 h60 M0,24.92 h60 M0,30.46 h60" stroke="#ffffff" strokeWidth="2.77" />
       <rect width="26" height="19.38" fill="#3C3B6E" />
@@ -134,9 +138,9 @@ export function FlagUS({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagIN({ className = "w-4 h-3" }: FlagProps) {
+export function FlagIN({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="12" y="0" fill="#FF9933" />
       <rect width="60" height="12" y="12" fill="#FFFFFF" />
       <rect width="60" height="12" y="24" fill="#138808" />
@@ -146,9 +150,9 @@ export function FlagIN({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagAE({ className = "w-4 h-3" }: FlagProps) {
+export function FlagAE({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="12" y="0" fill="#00732F" />
       <rect width="60" height="12" y="12" fill="#FFFFFF" />
       <rect width="60" height="12" y="24" fill="#000000" />
@@ -157,9 +161,9 @@ export function FlagAE({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagCA({ className = "w-4 h-3" }: FlagProps) {
+export function FlagCA({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="15" height="36" x="0" fill="#FF0000" />
       <rect width="30" height="36" x="15" fill="#FFFFFF" />
       <rect width="15" height="36" x="45" fill="#FF0000" />
@@ -171,9 +175,9 @@ export function FlagCA({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagAU({ className = "w-4 h-3" }: FlagProps) {
+export function FlagAU({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="36" fill="#00008B" />
       <g transform="scale(0.5)">
         <rect width="60" height="36" fill="#012169" />
@@ -192,18 +196,18 @@ export function FlagAU({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagJP({ className = "w-4 h-3" }: FlagProps) {
+export function FlagJP({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="36" fill="#FFFFFF" stroke="#CBD5E1" strokeWidth="0.75" />
       <circle cx="30" cy="18" r="10.8" fill="#BC002D" />
     </svg>
   );
 }
 
-export function FlagMX({ className = "w-4 h-3" }: FlagProps) {
+export function FlagMX({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="20" height="36" x="0" fill="#006847" />
       <rect width="20" height="36" x="20" fill="#FFFFFF" />
       <rect width="20" height="36" x="40" fill="#CE1126" />
@@ -213,9 +217,9 @@ export function FlagMX({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagZA({ className = "w-4 h-3" }: FlagProps) {
+export function FlagZA({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
   return (
-    <svg viewBox="0 0 60 36" className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
       <rect width="60" height="18" y="0" fill="#E03C31" />
       <rect width="60" height="18" y="18" fill="#001489" />
       <path d="M0,0 L24,18 L60,18 M0,36 L24,18" fill="none" stroke="#FFFFFF" strokeWidth="10" strokeLinejoin="round" />
@@ -226,51 +230,84 @@ export function FlagZA({ className = "w-4 h-3" }: FlagProps) {
   );
 }
 
-export function FlagIcon({ code, className = "w-4 h-3" }: { code: string; className?: string }) {
+export function FlagEU({ className = "w-4 h-3", x, y, width, height }: FlagProps) {
+  return (
+    <svg viewBox="0 0 60 36" x={x} y={y} width={width} height={height} className={`inline-block rounded-[2px] shadow-xs shrink-0 overflow-hidden ${className}`}>
+      <rect width="60" height="36" fill="#003399" />
+      <g transform="translate(30,18)" fill="#FFCC00">
+        {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((deg) => {
+          const rad = (deg * Math.PI) / 180;
+          const cx = Math.sin(rad) * 11;
+          const cy = -Math.cos(rad) * 11;
+          return <circle key={deg} cx={cx} cy={cy} r="1.2" />;
+        })}
+      </g>
+    </svg>
+  );
+}
+
+export function FlagIcon({
+  code,
+  className = "w-4 h-3",
+  x,
+  y,
+  width,
+  height,
+}: {
+  code: string;
+  className?: string;
+  x?: number | string;
+  y?: number | string;
+  width?: number | string;
+  height?: number | string;
+}) {
   const normalized = code.toLowerCase();
+  const props: FlagProps = { className, x, y, width, height };
   switch (normalized) {
     case "gb":
     case "uk":
     case "en":
-      return <FlagGB className={className} />;
+      return <FlagGB {...props} />;
     case "de":
-      return <FlagDE className={className} />;
+      return <FlagDE {...props} />;
     case "at":
-      return <FlagAT className={className} />;
+      return <FlagAT {...props} />;
     case "ch":
-      return <FlagCH className={className} />;
+      return <FlagCH {...props} />;
     case "fr":
-      return <FlagFR className={className} />;
+      return <FlagFR {...props} />;
     case "es":
-      return <FlagES className={className} />;
+      return <FlagES {...props} />;
     case "it":
-      return <FlagIT className={className} />;
+      return <FlagIT {...props} />;
     case "nl":
-      return <FlagNL className={className} />;
+      return <FlagNL {...props} />;
     case "pl":
-      return <FlagPL className={className} />;
+      return <FlagPL {...props} />;
     case "se":
-      return <FlagSE className={className} />;
+      return <FlagSE {...props} />;
     case "be":
-      return <FlagBE className={className} />;
+      return <FlagBE {...props} />;
+    case "eu":
+      return <FlagEU {...props} />;
     case "us":
     case "com":
-      return <FlagUS className={className} />;
+      return <FlagUS {...props} />;
     case "mx":
-      return <FlagMX className={className} />;
+      return <FlagMX {...props} />;
     case "in":
-      return <FlagIN className={className} />;
+      return <FlagIN {...props} />;
     case "ae":
-      return <FlagAE className={className} />;
+      return <FlagAE {...props} />;
     case "ca":
-      return <FlagCA className={className} />;
+      return <FlagCA {...props} />;
     case "au":
-      return <FlagAU className={className} />;
+      return <FlagAU {...props} />;
     case "jp":
-      return <FlagJP className={className} />;
+      return <FlagJP {...props} />;
     case "za":
-      return <FlagZA className={className} />;
+      return <FlagZA {...props} />;
     default:
-      return <FlagGB className={className} />;
+      return <FlagGB {...props} />;
   }
 }

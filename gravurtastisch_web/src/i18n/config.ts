@@ -30,8 +30,8 @@ i18n
   });
 
 export const SUPPORTED_LANGUAGES = [
-  { code: 'en', label: 'English', flag: '🇬🇧', tag: 'EN' },
-  { code: 'de', label: 'Deutsch', flag: '🇩🇪', tag: 'DE' },
+  { code: 'en', label: 'English', flag: 'GB', tag: 'EN' },
+  { code: 'de', label: 'Deutsch', flag: 'DE', tag: 'DE' },
 ] as const;
 
 export default i18n;

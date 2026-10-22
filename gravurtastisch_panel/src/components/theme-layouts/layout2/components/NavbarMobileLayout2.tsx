@@ -59,7 +59,7 @@ function NavbarMobileLayout2(props: NavbarMobileLayout2Props) {
 				<div className="flex shrink-0 items-center justify-center py-12 opacity-10">
 					<img
 						className="w-full max-w-16"
-						src="/assets/images/logo/ctasis-logo.svg"
+						src="/gravurtastich.png"
 						alt="footer logo"
 					/>
 				</div>

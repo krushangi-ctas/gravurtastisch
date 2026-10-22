@@ -27,8 +27,15 @@ import {
   ShoppingBag,
   Headphones
 } from "lucide-react";
-import i18n from "@/i18n/config";
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
+import {
+  FlagIcon,
+  FlagGB,
+  FlagDE,
+  FlagFR,
+  FlagIT,
+  FlagES,
+} from "@/components/ui/FlagIcon";
 
 export const Route = createFileRoute("/order-sync")({
   pendingComponent: ServicePageSkeleton,
@@ -93,7 +100,8 @@ function OrderSyncPage() {
   const liveMockOrders = [
     {
       id: "114-8923019-3928101",
-      market: "🇫🇷 Amazon FR",
+      marketCode: "fr",
+      market: "Amazon FR",
       sku: "CT-HYDR-BTL-32",
       channel: "FBA",
       delivery: "Delivered 2h ago",
@@ -102,7 +110,8 @@ function OrderSyncPage() {
     },
     {
       id: "402-9918231-1029384",
-      market: "🇬🇧 Amazon UK",
+      marketCode: "gb",
+      market: "Amazon UK",
       sku: "CT-LEATH-WLLT-BRN",
       channel: "FBA",
       delivery: "Delivered 1d ago",
@@ -111,7 +120,8 @@ function OrderSyncPage() {
     },
     {
       id: "028-4491023-8829103",
-      market: "🇩🇪 Amazon DE",
+      marketCode: "de",
+      market: "Amazon DE",
       sku: "CT-MAT-YOGA-BLK",
       channel: "FBM",
       delivery: "Delivered 4d ago",
@@ -120,7 +130,8 @@ function OrderSyncPage() {
     },
     {
       id: "701-1928374-5561029",
-      market: "🇮🇹 Amazon IT",
+      marketCode: "it",
+      market: "Amazon IT",
       sku: "CT-CUP-CERAMIC-SET",
       channel: "FBA",
       delivery: "Cancelled by Buyer",
@@ -230,11 +241,11 @@ function OrderSyncPage() {
                       </div>
                       <p className="text-xs font-bold text-navy-deep">{t('orderSync.statMarketplacesTitle') || "Active Marketplaces"}</p>
                       <div className="flex items-center gap-1.5 text-xs mt-0.5">
-                        <span>🇬🇧</span>
-                        <span>🇩🇪</span>
-                        <span>🇫🇷</span>
-                        <span>🇮🇹</span>
-                        <span>🇪🇸</span>
+                        <FlagGB className="w-3.5 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagDE className="w-3.5 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagFR className="w-3.5 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagIT className="w-3.5 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagES className="w-3.5 h-2.5 rounded-[2px] shadow-xs" />
                         <span className="text-[10px] text-slate-500 font-semibold">+EU</span>
                       </div>
                     </div>
@@ -440,11 +451,11 @@ function OrderSyncPage() {
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
                       <div className="flex items-center gap-1.5 text-sm p-1 px-2 rounded-lg bg-slate-50 border border-slate-200">
-                        <span>🇬🇧</span>
-                        <span>🇩🇪</span>
-                        <span>🇫🇷</span>
-                        <span>🇮🇹</span>
-                        <span>🇪🇸</span>
+                        <FlagGB className="w-4 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagDE className="w-4 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagFR className="w-4 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagIT className="w-4 h-2.5 rounded-[2px] shadow-xs" />
+                        <FlagES className="w-4 h-2.5 rounded-[2px] shadow-xs" />
                       </div>
                     </div>
                   </div>
@@ -558,7 +569,12 @@ function OrderSyncPage() {
                         {liveMockOrders.map((ord) => (
                           <tr key={ord.id} className="hover:bg-slate-50/80 transition-colors">
                             <td className="py-3.5 px-3.5 font-mono text-[#0032ab] font-extrabold whitespace-nowrap">{ord.id}</td>
-                            <td className="py-3.5 px-3.5 text-slate-700 font-semibold whitespace-nowrap">{ord.market}</td>
+                            <td className="py-3.5 px-3.5 text-slate-700 font-semibold whitespace-nowrap">
+                              <span className="inline-flex items-center gap-1.5">
+                                <FlagIcon code={ord.marketCode} className="w-4 h-2.5 rounded-[2px] shadow-xs" />
+                                <span>{ord.market}</span>
+                              </span>
+                            </td>
                             <td className="py-3.5 px-3.5 whitespace-nowrap">
                               <p className="font-extrabold text-navy-deep">{ord.sku}</p>
                               <p className="text-[11px] text-slate-500 font-medium">{ord.delivery}</p>
@@ -818,11 +834,11 @@ function OrderSyncHeroSvg() {
         <text x="26" y="19" fill="#0f172a" fontFamily="system-ui, -apple-system, sans-serif" fontSize="8.5" fontWeight="800">
           SYNCED:
         </text>
-        <text x="75" y="20" fontSize="11">🇬🇧</text>
-        <text x="96" y="20" fontSize="11">🇩🇪</text>
-        <text x="117" y="20" fontSize="11">🇫🇷</text>
-        <text x="138" y="20" fontSize="11">🇮🇹</text>
-        <text x="159" y="20" fontSize="11">🇪🇸</text>
+        <FlagGB x={72} y={10} width={16} height={10} />
+        <FlagDE x={93} y={10} width={16} height={10} />
+        <FlagFR x={114} y={10} width={16} height={10} />
+        <FlagIT x={135} y={10} width={16} height={10} />
+        <FlagES x={156} y={10} width={16} height={10} />
       </g>
 
       {/* ==================================================== */}
@@ -922,9 +938,10 @@ function OrderSyncHeroSvg() {
             FBA PRIME
           </text>
 
-          <rect x="76" y="0" width="70" height="21" rx="6" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="0.8" />
-          <text x="111" y="14" textAnchor="middle" fill="#0f172a" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
-            🇩🇪 amazon.de
+          <rect x="76" y="0" width="76" height="21" rx="6" fill="#f8fafc" stroke="#cbd5e1" strokeWidth="0.8" />
+          <FlagDE x={82} y={6} width={14} height={9} />
+          <text x="120" y="14" textAnchor="middle" fill="#0f172a" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+            amazon.de
           </text>
         </g>
 
@@ -1319,11 +1336,12 @@ function OrderSyncFaqSvg() {
 
           {/* Header Bar */}
           <g transform="translate(14, 14)">
-            <rect x="0" y="0" width="76" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-            <text x="38" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇩🇪 FBA PRIME
+            <rect x="0" y="0" width="82" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+            <FlagDE x={6} y={5.5} width={14} height={9} />
+            <text x="47" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
+              FBA PRIME
             </text>
-            <text x="86" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
+            <text x="92" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
               Carrier Sync
             </text>
           </g>
@@ -1387,11 +1405,12 @@ function OrderSyncFaqSvg() {
 
           {/* Header Bar */}
           <g transform="translate(14, 14)">
-            <rect x="0" y="0" width="76" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-            <text x="38" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              🇬🇧 FBM / MFN
+            <rect x="0" y="0" width="84" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
+            <FlagGB x={6} y={5.5} width={14} height={9} />
+            <text x="49" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
+              FBM / MFN
             </text>
-            <text x="86" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
+            <text x="94" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
               Multi-Carrier
             </text>
           </g>

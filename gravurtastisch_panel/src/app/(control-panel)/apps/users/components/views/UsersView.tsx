@@ -42,11 +42,10 @@ import {
 import { User } from '../../api/services/usersApiService';
 import { getErrorMessage } from '@/utils/errorMessage';
 import AssignPlanDialog from '../dialogs/AssignPlanDialog';
-import { generateSellerInvoicePDF } from '../../utils/generateSellerInvoicePDF';
 
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
 const NAME_REGEX = /^[a-zA-Z\u00C0-\u024F\u1E00-\u1EFF\s.'-]+$/;
-const PHONE_CHARS_REGEX = /^[+0-9\s\-()]+$/;
+const PHONE_CHARS_REGEX = /^[+0-9\s()]+$/;
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -208,6 +207,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		phone?: string;
 		roleId?: string;
 		businessName?: string;
+		maxMarketplaces?: string;
+		maxReviewRequestsPerMonth?: string;
 	}>({});
 
 	const validateCreateUser = (
@@ -241,7 +242,9 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		const trimmedPhone = phoneVal.trim();
 		if (trimmedPhone) {
 			const digitsOnly = trimmedPhone.replace(/\D/g, '');
-			if (trimmedPhone.length > 20) {
+			if (trimmedPhone.includes('-')) {
+				errs.phone = 'Phone number cannot contain hyphens (-).';
+			} else if (trimmedPhone.length > 20) {
 				errs.phone = 'Phone number cannot exceed 20 characters.';
 			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
 				errs.phone = 'Please enter a valid phone number (between 10 and 20 digits).';
@@ -261,7 +264,14 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		roleVal: string,
 		businessVal?: string
 	) => {
-		const errs: { name?: string; phone?: string; roleId?: string; businessName?: string } = {};
+		const errs: {
+			name?: string;
+			phone?: string;
+			roleId?: string;
+			businessName?: string;
+			maxMarketplaces?: string;
+			maxReviewRequestsPerMonth?: string;
+		} = {};
 
 		const trimmedName = nameVal.trim();
 		if (!trimmedName) {
@@ -277,17 +287,27 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		const trimmedPhone = phoneVal.trim();
 		if (trimmedPhone) {
 			const digitsOnly = trimmedPhone.replace(/\D/g, '');
-			if (trimmedPhone.length > 20) {
+			if (trimmedPhone.includes('-')) {
+				errs.phone = 'Phone number cannot contain hyphens (-).';
+			} else if (trimmedPhone.length > 20) {
 				errs.phone = 'Phone number cannot exceed 20 characters.';
 			} else if (!PHONE_CHARS_REGEX.test(trimmedPhone) || digitsOnly.length < 10 || digitsOnly.length > 20) {
 				errs.phone = 'Please enter a valid phone number (between 10 and 20 digits).';
 			}
 		}
 
-		if (isSellersMode && businessVal !== undefined) {
-			const trimmedBiz = businessVal.trim();
-			if (trimmedBiz.length > 100) {
-				errs.businessName = 'Brand name cannot exceed 100 characters.';
+		if (isSellersMode) {
+			if (businessVal !== undefined) {
+				const trimmedBiz = businessVal.trim();
+				if (trimmedBiz.length > 100) {
+					errs.businessName = 'Brand name cannot exceed 100 characters.';
+				}
+			}
+			if (isNaN(Number(maxMarketplaces)) || Number(maxMarketplaces) <= 0) {
+				errs.maxMarketplaces = 'Must be greater than 0';
+			}
+			if (isNaN(Number(maxReviewRequestsPerMonth)) || Number(maxReviewRequestsPerMonth) <= 0) {
+				errs.maxReviewRequestsPerMonth = 'Must be greater than 0';
 			}
 		}
 
@@ -551,10 +571,10 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					const secondary = user.createdAt
 						? `Joined ${moment(user.createdAt).format('DD MMM YYYY')}`
 						: user.contact_no
-						? user.contact_no
-						: user._id
-						? `ID: ${user._id.slice(-6).toUpperCase()}`
-						: 'Seller Account';
+							? user.contact_no
+							: user._id
+								? `ID: ${user._id.slice(-6).toUpperCase()}`
+								: 'Seller Account';
 
 					return (
 						<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
@@ -744,7 +764,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						const isExpired =
 							!isPaymentCancelled &&
 							(user.subscriptionStatus === 2 ||
-							(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now()));
+								(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now()));
 
 						if (!planName && !queuedPlan && !isPaymentCancelled) {
 							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
@@ -1355,168 +1375,124 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						renderRowActions={({ row }: { row: MRT_Row<User> }) => {
 							const user = row.original;
 							const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
-							const hasSuccessPayment =
-								!isPaymentCancelled &&
-								(user.subscriptionStatus === 1 ||
-									(Array.isArray(user.plans) &&
-										user.plans.some(
-											(p: any) =>
-												p.paymentStatus === 1 ||
-												(p.status === 1 && Number(p.price) > 0)
-										)));
 
 							return (
-							<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
-								{canUpdate(sectionKey) && (
-									<>
-										<Tooltip
-											title={
-												isPaymentCancelled
-													? 'Payment Cancelled (Inactive Seller)'
-													: row.original.status === 1
-													? 'Click to deactivate user'
-													: 'Click to activate user'
-											}
-											arrow
-										>
-											<Box
-												onClick={() => {
-													if (isPaymentCancelled) return;
-													handleOpenStatusConfirm(row.original, row.original.status);
-												}}
-												className={`${isPaymentCancelled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} inline-flex items-center p-0.5`}
-												sx={{ lineHeight: 0 }}
-											>
-												<CustomStatusSwitch
-													size="small"
-													checked={!isPaymentCancelled && row.original.status === 1}
-													sx={{ pointerEvents: 'none' }}
-												/>
-											</Box>
-										</Tooltip>
-										{isSellersMode && (
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
+									{canUpdate(sectionKey) && (
+										<>
 											<Tooltip
-												title={hasSuccessPayment ? 'Download Payment Invoice (PDF)' : ''}
+												title={
+													isPaymentCancelled
+														? 'Payment Cancelled (Inactive Seller)'
+														: row.original.status === 1
+															? 'Click to deactivate user'
+															: 'Click to activate user'
+												}
 												arrow
-												disableHoverListener={!hasSuccessPayment}
 											>
-												<Box sx={{ display: 'inline-flex' }}>
-													<IconButton
+												<Box
+													onClick={() => {
+														if (isPaymentCancelled) return;
+														handleOpenStatusConfirm(row.original, row.original.status);
+													}}
+													className={`${isPaymentCancelled ? 'cursor-not-allowed opacity-60' : 'cursor-pointer'} inline-flex items-center p-0.5`}
+													sx={{ lineHeight: 0 }}
+												>
+													<CustomStatusSwitch
 														size="small"
-														disabled={!hasSuccessPayment}
-														onClick={(e) => {
-															if (!hasSuccessPayment) return;
-															(e.currentTarget as HTMLElement)?.blur();
-															generateSellerInvoicePDF(row.original);
-														}}
-														sx={{
-															p: 0.6,
-															borderRadius: '6px',
-															color: 'text.secondary',
-															visibility: hasSuccessPayment ? 'visible' : 'hidden',
-															pointerEvents: hasSuccessPayment ? 'auto' : 'none',
-															'&:hover': {
-																color: 'text.primary',
-																bgcolor: (t) =>
-																	t.palette.mode === 'dark'
-																		? 'rgba(255, 255, 255, 0.08)'
-																		: 'rgba(0, 0, 0, 0.04)'
-															}
-														}}
-													>
-														<FuseSvgIcon size={16}>heroicons-outline:document-text</FuseSvgIcon>
-													</IconButton>
+														checked={!isPaymentCancelled && row.original.status === 1}
+														sx={{ pointerEvents: 'none' }}
+													/>
 												</Box>
 											</Tooltip>
-										)}
-										{isSellersMode && (
-											<>
-												<Tooltip title="Assign Plan" arrow>
-													<IconButton
-														size="small"
-														onClick={(e) => {
-															(e.currentTarget as HTMLElement)?.blur();
-															handleOpenAssignPlan(row.original);
-														}}
-														sx={{
-															p: 0.6,
-															borderRadius: '6px',
-															color: (t) => (t.palette.mode === 'dark' ? '#34D399' : '#059669'),
-															'&:hover': {
-																bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
-															}
-														}}
-													>
-														<FuseSvgIcon size={16}>heroicons-outline:credit-card</FuseSvgIcon>
-													</IconButton>
-												</Tooltip>
-												<Tooltip title="Cancel Plan" arrow>
-													<IconButton
-														size="small"
-														onClick={(e) => {
-															(e.currentTarget as HTMLElement)?.blur();
-															handleOpenCancelPlan(row.original);
-														}}
-														sx={{
-															p: 0.6,
-															borderRadius: '6px',
-															color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
-															'&:hover': {
-																bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)')
-															}
-														}}
-													>
-														<FuseSvgIcon size={16}>heroicons-outline:x-circle</FuseSvgIcon>
-													</IconButton>
-												</Tooltip>
-											</>
-										)}
-										<Tooltip title="Edit user" arrow>
+											{isSellersMode && (
+												<>
+													<Tooltip title="Assign Plan" arrow>
+														<IconButton
+															size="small"
+															onClick={(e) => {
+																(e.currentTarget as HTMLElement)?.blur();
+																handleOpenAssignPlan(row.original);
+															}}
+															sx={{
+																p: 0.6,
+																borderRadius: '6px',
+																color: (t) => (t.palette.mode === 'dark' ? '#34D399' : '#059669'),
+																'&:hover': {
+																	bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)')
+																}
+															}}
+														>
+															<FuseSvgIcon size={16}>heroicons-outline:credit-card</FuseSvgIcon>
+														</IconButton>
+													</Tooltip>
+													<Tooltip title="Cancel Plan" arrow>
+														<IconButton
+															size="small"
+															onClick={(e) => {
+																(e.currentTarget as HTMLElement)?.blur();
+																handleOpenCancelPlan(row.original);
+															}}
+															sx={{
+																p: 0.6,
+																borderRadius: '6px',
+																color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+																'&:hover': {
+																	bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)')
+																}
+															}}
+														>
+															<FuseSvgIcon size={16}>heroicons-outline:x-circle</FuseSvgIcon>
+														</IconButton>
+													</Tooltip>
+												</>
+											)}
+											<Tooltip title="Edit user" arrow>
+												<IconButton
+													size="small"
+													onClick={(e) => {
+														(e.currentTarget as HTMLElement)?.blur();
+														handleOpenEdit(row.original);
+													}}
+													sx={{
+														p: 0.6,
+														borderRadius: '6px',
+														color: 'text.secondary',
+														'&:hover': {
+															color: 'text.primary',
+															bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)')
+														}
+													}}
+												>
+													<FuseSvgIcon size={16}>heroicons-outline:pencil-square</FuseSvgIcon>
+												</IconButton>
+											</Tooltip>
+										</>
+									)}
+									{canDelete(sectionKey) && (
+										<Tooltip title="Delete user" arrow>
 											<IconButton
 												size="small"
 												onClick={(e) => {
 													(e.currentTarget as HTMLElement)?.blur();
-													handleOpenEdit(row.original);
+													handleOpenDeleteConfirm(row.original);
 												}}
 												sx={{
 													p: 0.6,
 													borderRadius: '6px',
-													color: 'text.secondary',
+													color: (t) => t.palette.mode === 'dark' ? '#F87171' : '#DC2626',
 													'&:hover': {
-														color: 'text.primary',
-														bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.04)')
+														bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'
 													}
 												}}
 											>
-												<FuseSvgIcon size={16}>heroicons-outline:pencil-square</FuseSvgIcon>
+												<FuseSvgIcon size={16}>heroicons-outline:trash</FuseSvgIcon>
 											</IconButton>
 										</Tooltip>
-									</>
-								)}
-								{canDelete(sectionKey) && (
-									<Tooltip title="Delete user" arrow>
-										<IconButton
-											size="small"
-											onClick={(e) => {
-												(e.currentTarget as HTMLElement)?.blur();
-												handleOpenDeleteConfirm(row.original);
-											}}
-											sx={{
-												p: 0.6,
-												borderRadius: '6px',
-												color: (t) => t.palette.mode === 'dark' ? '#F87171' : '#DC2626',
-												'&:hover': {
-													bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(239, 68, 68, 0.1)'
-												}
-											}}
-										>
-											<FuseSvgIcon size={16}>heroicons-outline:trash</FuseSvgIcon>
-										</IconButton>
-									</Tooltip>
-								)}
-							</Box>
-						);
-					}}
+									)}
+								</Box>
+							);
+						}}
 					/>
 
 					{/* Create User Dialog */}
@@ -1646,9 +1622,21 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											fullWidth
 											placeholder="e.g., +49 151 2345001"
 											value={formPhone}
+											onKeyDown={(e) => {
+												if (e.key === '-') {
+													e.preventDefault();
+												}
+											}}
 											onChange={(e) => {
-												setFormPhone(e.target.value);
-												if (createErrors.phone) setCreateErrors((prev) => ({ ...prev, phone: undefined }));
+												const raw = e.target.value;
+												if (raw.includes('-')) {
+													const cleaned = raw.replace(/-/g, '');
+													setFormPhone(cleaned);
+													setCreateErrors((prev) => ({ ...prev, phone: 'Phone number cannot contain hyphens (-).' }));
+												} else {
+													setFormPhone(raw);
+													if (createErrors.phone) setCreateErrors((prev) => ({ ...prev, phone: undefined }));
+												}
 											}}
 											onBlur={() => {
 												const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
@@ -1853,9 +1841,21 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 											fullWidth
 											placeholder="Phone Number"
 											value={formPhone}
+											onKeyDown={(e) => {
+												if (e.key === '-') {
+													e.preventDefault();
+												}
+											}}
 											onChange={(e) => {
-												setFormPhone(e.target.value);
-												if (editErrors.phone) setEditErrors((prev) => ({ ...prev, phone: undefined }));
+												const raw = e.target.value;
+												if (raw.includes('-')) {
+													const cleaned = raw.replace(/-/g, '');
+													setFormPhone(cleaned);
+													setEditErrors((prev) => ({ ...prev, phone: 'Phone number cannot contain hyphens (-).' }));
+												} else {
+													setFormPhone(raw);
+													if (editErrors.phone) setEditErrors((prev) => ({ ...prev, phone: undefined }));
+												}
 											}}
 											onBlur={() => {
 												const errs = validateEditUser(
@@ -1964,9 +1964,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 															fullWidth
 															variant="outlined"
 															size="small"
+															inputProps={{ min: 1 }}
 															value={maxMarketplaces}
-															onChange={(e) => setMaxMarketplaces(Math.max(1, Number(e.target.value)))}
+															onKeyDown={(e) => {
+																if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '.') {
+																	e.preventDefault();
+																}
+															}}
+															onChange={(e) => {
+																const val = e.target.value;
+																const num = Number(val);
+																setMaxMarketplaces(num);
+																if (val !== '' && (isNaN(num) || num <= 0)) {
+																	setEditErrors((prev) => ({ ...prev, maxMarketplaces: 'Must be greater than 0' }));
+																} else {
+																	setEditErrors((prev) => ({ ...prev, maxMarketplaces: undefined }));
+																}
+															}}
 															onWheel={(e) => (e.target as HTMLElement).blur()}
+															error={!!editErrors.maxMarketplaces}
+															helperText={editErrors.maxMarketplaces}
 															InputProps={{
 																startAdornment: (
 																	<InputAdornment position="start">
@@ -1988,11 +2005,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 															fullWidth
 															variant="outlined"
 															size="small"
+															inputProps={{ min: 1 }}
 															value={maxReviewRequestsPerMonth}
-															onChange={(e) =>
-																setMaxReviewRequestsPerMonth(Math.max(0, Number(e.target.value)))
-															}
+															onKeyDown={(e) => {
+																if (e.key === '-' || e.key === 'e' || e.key === 'E' || e.key === '.') {
+																	e.preventDefault();
+																}
+															}}
+															onChange={(e) => {
+																const val = e.target.value;
+																const num = Number(val);
+																setMaxReviewRequestsPerMonth(num);
+																if (val !== '' && (isNaN(num) || num <= 0)) {
+																	setEditErrors((prev) => ({ ...prev, maxReviewRequestsPerMonth: 'Must be greater than 0' }));
+																} else {
+																	setEditErrors((prev) => ({ ...prev, maxReviewRequestsPerMonth: undefined }));
+																}
+															}}
 															onWheel={(e) => (e.target as HTMLElement).blur()}
+															error={!!editErrors.maxReviewRequestsPerMonth}
+															helperText={editErrors.maxReviewRequestsPerMonth}
 															InputProps={{
 																startAdornment: (
 																	<InputAdornment position="start">

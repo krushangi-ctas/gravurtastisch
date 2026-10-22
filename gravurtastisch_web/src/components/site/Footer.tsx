@@ -44,11 +44,11 @@ export function Footer() {
     ? config.company.about
     : t('footer.companyDesc');
 
-  const contactEmail = config?.contact?.email || "info@ctasis.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.com";
   const contactPhone = config?.contact?.phone || "+91 79489 93409";
   const contactAddress = config?.contact?.address || t('footer.officeAddress');
-  const companyWebsite = config?.company?.website || "https://ctasis.com";
-  const companyName = config?.company?.name || "Ctas Info Services";
+  const companyWebsite = config?.company?.website || "https://gravurtastisch.com";
+  const companyName = config?.company?.name || "Gravurtastisch";
   const companyLocation = currentLang === 'en'
     ? [config?.contact?.city, config?.contact?.state].filter(Boolean).join(", ") || "Ahmedabad, Gujarat"
     : t('contact.officeLocation');
@@ -90,22 +90,22 @@ export function Footer() {
     {
       icon: Linkedin,
       label: t('footer.socialLinkedin'),
-      href: config?.social_links?.linkedin || 'https://linkedin.com/company/ctas-info-services',
+      href: config?.social_links?.linkedin || 'https://linkedin.com/company/gravurtastisch',
     },
     {
       icon: FacebookIcon,
       label: t('footer.socialFacebook'),
-      href: config?.social_links?.facebook || 'https://www.facebook.com/ctasinfoservices',
+      href: config?.social_links?.facebook || 'https://www.facebook.com/gravurtastisch',
     },
     {
       icon: Youtube,
       label: t('footer.socialYoutube'),
-      href: config?.social_links?.youtube || 'https://www.youtube.com/@ctasinfoservicesllp7030',
+      href: config?.social_links?.youtube || 'https://www.youtube.com/@gravurtastisch',
     },
     {
       icon: Instagram,
       label: t('footer.socialInstagram'),
-      href: config?.social_links?.instagram || 'https://instagram.com/ctasinfoservices/',
+      href: config?.social_links?.instagram || 'https://instagram.com/gravurtastisch/',
     },
   ];
 

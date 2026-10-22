@@ -668,7 +668,7 @@ function SiteConfigurationView() {
 													{...field}
 													fullWidth
 													size="small"
-													placeholder="e.g. info@ctasis.com"
+													placeholder="e.g. info@gravurtastisch.com"
 													inputProps={{ maxLength: 100 }}
 													error={Boolean(errors.contact?.email)}
 													helperText={errors.contact?.email?.message}
