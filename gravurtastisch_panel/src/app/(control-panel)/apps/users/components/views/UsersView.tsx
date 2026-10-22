@@ -1149,7 +1149,21 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								muiTableHeadCellProps: {
 									sx: {
 										width: isSellersMode ? '135px !important' : '95px !important',
-										maxWidth: isSellersMode ? '150px !important' : '105px !important'
+										maxWidth: isSellersMode ? '150px !important' : '105px !important',
+										backgroundColor: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+										color: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
+										borderColor: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
+										'&:before': {
+											backgroundColor: (theme: any) =>
+												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+										},
+										'&[data-pinned="true"]:before': {
+											backgroundColor: (theme: any) =>
+												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+										},
 									}
 								},
 								muiTableBodyCellProps: {
@@ -1229,11 +1243,12 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									fontSize: 11.5,
 									letterSpacing: 0.3,
 									textTransform: 'uppercase',
-									color: 'text.secondary',
+									color: (t: any) => (t.palette?.mode === 'dark' ? '#e2e8f0' : '#1f2937'),
+									backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb'),
 									borderTop: '1px solid',
 									borderBottom: '1px solid',
 									borderColor: (t: any) =>
-										t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.12)' : 'rgb(229 231 235)',
+										t.palette.mode === 'dark' ? '#334155' : '#d1d5db',
 									whiteSpace: 'nowrap !important',
 									overflow: 'visible !important',
 									textOverflow: 'clip !important',
@@ -1252,25 +1267,32 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									'& .Mui-TableHeadCell-Content-Labels': {
 										overflow: 'visible !important',
 										whiteSpace: 'nowrap !important'
+									},
+									'& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
+										backgroundColor: (t: any) =>
+											t.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important'
 									}
 								}
 							}
 						}}
 						muiTableHeadProps={{
-							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+							className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700'
 						}}
 						muiTableHeadRowProps={{
-							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+							className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700'
 						}}
 						muiTableHeadCellProps={{
-							className: 'bg-gray-100 dark:bg-slate-900 border-t border-b border-gray-200 dark:border-slate-800'
+							className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700'
 						}}
 						muiBottomToolbarProps={{
 							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-slate-900 border-t border-gray-200 dark:border-slate-800 overflow-x-auto',
+								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-200 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-700 overflow-x-auto',
 							sx: {
+								backgroundColor: (theme: any) =>
+									theme.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb',
 								borderTop: '1px solid',
-								borderColor: 'divider',
+								borderColor: (theme: any) =>
+									theme.palette?.mode === 'dark' ? '#334155' : '#d1d5db',
 								flexShrink: 0,
 								marginTop: 'auto',
 								position: 'sticky',

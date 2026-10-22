@@ -9,6 +9,7 @@ import {
   Typography,
   TypographyProps,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import FuseNavBadge from '../../FuseNavBadge';
 import FuseSvgIcon from '../../../FuseSvgIcon';
 import { FuseNavItemType } from '../../types/FuseNavItemType';
@@ -135,14 +136,28 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
         )}
         sx={{
           ...sx,
+          borderLeft: '4px solid transparent',
           '&.active': {
             backgroundColor: (theme) =>
               theme.palette.mode === 'light'
-                ? 'rgba(25, 118, 210, 0.08)!important'
-                : 'rgba(25, 118, 210, 0.15)!important',
-            color: (theme) => theme.palette.primary.main,
+                ? `${alpha(theme.palette.primary.main, 0.08)} !important`
+                : `${alpha(theme.palette.primary.main, 0.16)} !important`,
+            color: (theme) => `${theme.palette.primary.main} !important`,
+            borderLeft: (theme) => `4px solid ${theme.palette.primary.main} !important`,
+            borderTopLeftRadius: '8px !important',
+            borderBottomLeftRadius: '8px !important',
             '& .fuse-list-item-icon': {
-              color: (theme) => theme.palette.primary.main,
+              color: (theme) => `${theme.palette.primary.main} !important`,
+            },
+            '& .fuse-list-item-title': {
+              color: (theme) => `${theme.palette.primary.main} !important`,
+              fontWeight: 600,
+            },
+            '&:hover': {
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? `${alpha(theme.palette.primary.main, 0.12)} !important`
+                  : `${alpha(theme.palette.primary.main, 0.22)} !important`,
             },
           },
           '&:hover': {

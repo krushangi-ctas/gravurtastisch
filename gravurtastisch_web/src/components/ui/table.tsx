@@ -15,7 +15,14 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
+  <thead
+    ref={ref}
+    className={cn(
+      "bg-gray-200 dark:bg-slate-800 border-b border-gray-300 dark:border-slate-700 [&_tr]:border-b [&_tr]:border-gray-300 dark:[&_tr]:border-slate-700",
+      className,
+    )}
+    {...props}
+  />
 ));
 TableHeader.displayName = "TableHeader";
 
@@ -33,7 +40,10 @@ const TableFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <tfoot
     ref={ref}
-    className={cn("border-t bg-muted/50 font-medium [&>tr]:last:border-b-0", className)}
+    className={cn(
+      "border-t border-gray-300 dark:border-slate-700 bg-gray-200 dark:bg-slate-800 font-medium [&>tr]:last:border-b-0",
+      className,
+    )}
     {...props}
   />
 ));
@@ -60,7 +70,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      "h-10 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
+      "h-10 px-2 text-left align-middle font-semibold text-gray-800 dark:text-slate-200 bg-gray-200 dark:bg-slate-800 [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]",
       className,
     )}
     {...props}

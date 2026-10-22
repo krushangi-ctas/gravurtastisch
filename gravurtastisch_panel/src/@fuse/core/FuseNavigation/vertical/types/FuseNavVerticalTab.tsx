@@ -31,11 +31,15 @@ const Root = styled(Box)(({ theme }) => ({
 			backgroundColor: theme.vars.palette.divider,
 			pointerEvents: 'none'
 		},
+		borderLeft: '4px solid transparent',
 		'&:hover': {
 			color: theme.vars.palette.text.primary
 		},
 		'&.active': {
-			color: theme.vars.palette.text.primary,
+			color: theme.vars.palette.primary.main,
+			borderLeft: `4px solid ${theme.vars.palette.primary.main}!important`,
+			borderTopLeftRadius: '12px!important',
+			borderBottomLeftRadius: '12px!important',
 			backgroundColor: 'rgba(255, 255, 255, .1)!important',
 			transition: 'border-radius .15s cubic-bezier(0.4,0.0,0.2,1)',
 			'& .fuse-list-item-text-primary': {

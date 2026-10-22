@@ -417,7 +417,25 @@ function RolesView() {
 							'mrt-row-actions': {
 								size: 80,
 								minSize: 70,
-								maxSize: 90
+								maxSize: 90,
+								muiTableHeadCellProps: {
+									sx: {
+										backgroundColor: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+										color: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
+										borderColor: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
+										'&:before': {
+											backgroundColor: (theme: any) =>
+												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+										},
+										'&[data-pinned="true"]:before': {
+											backgroundColor: (theme: any) =>
+												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+										},
+									}
+								}
 							}
 						}}
 						enableRowSelection={false}
@@ -441,6 +459,8 @@ function RolesView() {
 								overflowX: 'auto',
 								overflowY: 'auto',
 								WebkitOverflowScrolling: 'touch',
+								backgroundColor: (theme: any) =>
+									theme.palette?.mode === 'dark' ? '#0f172a' : '#ffffff',
 								'&::-webkit-scrollbar': { height: 8, width: 8 },
 								'&::-webkit-scrollbar-track': {
 									backgroundColor: 'background.default',
