@@ -29,7 +29,7 @@ export function FooterWaveCanvas({ className = "absolute inset-0 w-full h-full p
     let targetMouseWave = 0;
     let currentMouseWave = 0;
 
-    // 3 Curvaceous, visibly rounded ("golakar") waves in brand colors (#0032ab & #4f6ef7)
+    // 3 Curvaceous, visibly rounded waves with lightened, softer brand colors
     const waves: WaveConfig[] = [
       {
         yBase: 0.30,
@@ -38,10 +38,10 @@ export function FooterWaveCanvas({ className = "absolute inset-0 w-full h-full p
         freq: 0.0036,
         freq2: 0.0068,
         speed: 0.013,
-        color: [79, 110, 247], // #4f6ef7 (Brand Bright Blue)
-        fillAlpha: 0.18,
-        lineWidth: 1.8,
-        strokeAlpha: 0.70,
+        color: [99, 128, 250], // Soft bright blue
+        fillAlpha: 0.09,
+        lineWidth: 1.5,
+        strokeAlpha: 0.42,
       },
       {
         yBase: 0.50,
@@ -50,10 +50,10 @@ export function FooterWaveCanvas({ className = "absolute inset-0 w-full h-full p
         freq: 0.0030,
         freq2: 0.0058,
         speed: 0.016,
-        color: [0, 50, 171], // #0032ab (Brand Main Navy)
-        fillAlpha: 0.24,
-        lineWidth: 2.0,
-        strokeAlpha: 0.75,
+        color: [55, 95, 210], // Lighter navy blue
+        fillAlpha: 0.12,
+        lineWidth: 1.6,
+        strokeAlpha: 0.46,
       },
       {
         yBase: 0.68,
@@ -62,10 +62,10 @@ export function FooterWaveCanvas({ className = "absolute inset-0 w-full h-full p
         freq: 0.0040,
         freq2: 0.0076,
         speed: 0.011,
-        color: [79, 110, 247], // #4f6ef7 (Brand Bright Blue)
-        fillAlpha: 0.20,
-        lineWidth: 1.6,
-        strokeAlpha: 0.60,
+        color: [99, 128, 250], // Soft bright blue
+        fillAlpha: 0.10,
+        lineWidth: 1.4,
+        strokeAlpha: 0.36,
       },
     ];
 

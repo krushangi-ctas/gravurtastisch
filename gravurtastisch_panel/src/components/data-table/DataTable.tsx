@@ -176,11 +176,13 @@ function DataTable<TData>({
         manualSorting: false, // Will be overridden if API sorting is needed
         muiBottomToolbarProps: {
           className:
-            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 overflow-x-auto',
+            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-200 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-700 overflow-x-auto',
           sx: {
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb',
             borderTop: '1px solid',
             borderColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#1e293b' : '#e2e8f0',
+              theme.palette.mode === 'dark' ? '#334155' : '#d1d5db',
             flexShrink: 0,
             minHeight: '46px !important',
             height: '46px !important',
@@ -209,9 +211,9 @@ function DataTable<TData>({
             },
             '& .MuiTablePagination-selectLabel': {
               fontSize: { xs: '11px', sm: '13px' },
-              fontWeight: 500,
+              fontWeight: 600,
               color: (theme: Theme) =>
-                theme.palette.mode === 'dark' ? '#94a3b8' : '#64748b',
+                theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937',
               margin: '0 !important',
               lineHeight: '1.2 !important',
               display: 'inline-flex',
@@ -284,6 +286,8 @@ function DataTable<TData>({
             minHeight: 0,
             overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
           },
         },
         enableStickyHeader: true,
@@ -357,6 +361,18 @@ function DataTable<TData>({
               borderBottom: '1px solid',
               borderColor: 'divider',
             },
+            '& .MuiTableHead-root th, & .MuiTableHead-root .MuiTableCell-root, & th[data-pinned], & th[data-pinned="true"], & th.MRT_TableHeadCell-pinned, & th[data-column-id="mrt-row-actions"], & th[data-column-id="mrt-row-select"], & th[data-column-id="mrt-row-expand"]': {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              color: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
+              borderColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+            },
+            '& .MuiTableHead-root .MuiTableCell-root[data-pinned="true"]:before, & .MuiTableHead-root th[data-pinned="true"]:before, & .MuiTableHead-root th:before, & th[data-column-id="mrt-row-actions"]:before, & th[data-column-id="mrt-row-select"]:before, & th[data-column-id="mrt-row-expand"]:before': {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+            },
             '& .MuiTableRow-root:hover': {
               backgroundColor: (theme: Theme) =>
                 theme.palette.mode === 'dark'
@@ -366,10 +382,53 @@ function DataTable<TData>({
             },
           },
         },
+        displayColumnDefOptions: {
+          'mrt-row-actions': {
+            muiTableHeadCellProps: {
+              sx: {
+                backgroundColor: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                color: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
+                borderColor: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+                '&:before': {
+                  backgroundColor: (theme: Theme) =>
+                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                },
+                '&[data-pinned="true"]:before': {
+                  backgroundColor: (theme: Theme) =>
+                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                },
+              },
+            },
+          },
+          'mrt-row-select': {
+            muiTableHeadCellProps: {
+              sx: {
+                backgroundColor: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                color: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
+                borderColor: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+                '&:before': {
+                  backgroundColor: (theme: Theme) =>
+                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                },
+                '&[data-pinned="true"]:before': {
+                  backgroundColor: (theme: Theme) =>
+                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                },
+              },
+            },
+          },
+        },
         muiTableBodyRowProps: ({ row, table }) => {
           return {
             sx: {
-              backgroundColor: 'initial',
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark' ? '#0f172a !important' : '#ffffff !important',
               opacity: 1,
               boxShadow: 'none',
               minHeight: '40px',
@@ -389,25 +448,31 @@ function DataTable<TData>({
           className: 'border-b',
           sx: {
             backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',
+              `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
             borderTop: '1px solid',
             borderBottom: '1px solid',
-            borderColor: 'divider',
+            borderColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#334155' : '#d1d5db',
+            '& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+            },
           },
         },
         muiTableHeadRowProps: {
           sx: {
             backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',
+              `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
           },
         },
         muiTableHeadCellProps: ({ column }) => ({
           sx: {
             backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#0f172a' : '#f8fafc',
+              `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
             borderTop: '1px solid',
             borderBottom: '1px solid',
-            borderColor: 'divider',
+            borderColor: (theme: Theme) =>
+              `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
             py: 1,
             px: 1.5,
             fontWeight: 700,
@@ -415,7 +480,15 @@ function DataTable<TData>({
             letterSpacing: '0.04em',
             textTransform: 'uppercase',
             color: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#94a3b8' : '#64748b',
+              `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
+            '&:before': {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+            },
+            '&[data-pinned="true"]:before': {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+            },
             '& .Mui-TableHeadCell-Content-Labels': {
               flex: 1,
               justifyContent: 'space-between',
@@ -440,11 +513,13 @@ function DataTable<TData>({
               color: (theme: Theme) => theme.palette.text.disabled,
               fontSize: 11,
             },
+            '&[data-pinned], &[data-pinned="true"], &.MRT_TableHeadCell-pinned, &[data-column-id="mrt-row-actions"], &[data-column-id="mrt-row-select"]': {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+            },
             ...(column.getIsPinned() && {
               backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#0f172a'
-                  : '#f8fafc',
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
             }),
           },
         }),
@@ -492,6 +567,137 @@ function DataTable<TData>({
       data,
       ...defaults,
       ...rest,
+      muiTableProps: {
+        ...(defaults.muiTableProps || {}),
+        ...(rest.muiTableProps || {}),
+        sx: {
+          backgroundColor: (theme: Theme) =>
+            theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          ...((defaults.muiTableProps as any)?.sx || {}),
+          ...((rest.muiTableProps as any)?.sx || {}),
+          '& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
+            fontWeight: 700,
+            fontSize: 11.5,
+            letterSpacing: 0.3,
+            textTransform: 'uppercase',
+            color: (t: any) => (t.palette?.mode === 'dark' ? '#e2e8f0' : '#1f2937'),
+            backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb'),
+            borderTop: '1px solid',
+            borderBottom: '1px solid',
+            borderColor: (t: any) =>
+              t.palette.mode === 'dark' ? '#334155' : '#d1d5db',
+            '& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
+              backgroundColor: (t: any) =>
+                t.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+            },
+          },
+        },
+      },
+      muiTablePaperProps: {
+        ...(defaults.muiTablePaperProps || {}),
+        ...(rest.muiTablePaperProps || {}),
+        elevation: 0,
+        square: true,
+        className: 'flex flex-col flex-auto h-full rounded-none',
+        sx: {
+          borderRadius: '0px !important',
+          boxShadow: 'none !important',
+          backgroundColor: (theme: Theme) =>
+            theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          ...((defaults.muiTablePaperProps as any)?.sx || {}),
+          ...((rest.muiTablePaperProps as any)?.sx || {}),
+        },
+      },
+      muiTableContainerProps: {
+        ...(defaults.muiTableContainerProps || {}),
+        ...(rest.muiTableContainerProps || {}),
+        className: 'flex-auto custom-table-scrollbar',
+        sx: {
+          backgroundColor: (theme: Theme) =>
+            theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          ...((defaults.muiTableContainerProps as any)?.sx || {}),
+          ...((rest.muiTableContainerProps as any)?.sx || {}),
+        },
+      },
+      muiTableBodyRowProps: (props: any) => {
+        const defaultRowProps =
+          typeof defaults.muiTableBodyRowProps === 'function'
+            ? defaults.muiTableBodyRowProps(props)
+            : defaults.muiTableBodyRowProps || {};
+        const restRowProps =
+          typeof rest.muiTableBodyRowProps === 'function'
+            ? rest.muiTableBodyRowProps(props)
+            : rest.muiTableBodyRowProps || {};
+        return {
+          ...defaultRowProps,
+          ...restRowProps,
+          sx: {
+            opacity: 1,
+            boxShadow: 'none',
+            minHeight: '40px',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            transition: 'background-color 0.15s ease',
+            '&:hover': {
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                  ? 'rgba(30, 41, 59, 0.4) !important'
+                  : 'rgba(248, 250, 252, 0.8) !important',
+            },
+            ...(defaultRowProps?.sx || {}),
+            ...(restRowProps?.sx || {}),
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#0f172a !important' : '#ffffff !important',
+          },
+        };
+      },
+      muiBottomToolbarProps: {
+        ...(defaults.muiBottomToolbarProps || {}),
+        ...(rest.muiBottomToolbarProps || {}),
+        className:
+          'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-200 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-700 overflow-x-auto',
+        sx: {
+          ...((defaults.muiBottomToolbarProps as any)?.sx || {}),
+          ...((rest.muiBottomToolbarProps as any)?.sx || {}),
+          backgroundColor: (theme: Theme) =>
+            theme.palette.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+          borderTop: '1px solid',
+          borderColor: (theme: Theme) =>
+            theme.palette.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
+          flexShrink: 0,
+          marginTop: 'auto',
+          position: 'sticky',
+          bottom: 0,
+        },
+      },
+      displayColumnDefOptions: {
+        ...(defaults.displayColumnDefOptions || {}),
+        ...(rest.displayColumnDefOptions || {}),
+        'mrt-row-actions': {
+          ...(defaults.displayColumnDefOptions?.['mrt-row-actions'] || {}),
+          ...(rest.displayColumnDefOptions?.['mrt-row-actions'] || {}),
+          muiTableHeadCellProps: {
+            ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableHeadCellProps || {}),
+            sx: {
+              backgroundColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              color: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
+              borderColor: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+              '&:before': {
+                backgroundColor: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              },
+              '&[data-pinned="true"]:before': {
+                backgroundColor: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              },
+              ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableHeadCellProps?.sx || {}),
+            },
+          },
+        },
+      },
       state: {
         showLoadingOverlay: false,
         showProgressBars: false,

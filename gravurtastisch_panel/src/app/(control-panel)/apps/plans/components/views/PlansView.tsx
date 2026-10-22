@@ -244,24 +244,24 @@ function PlansContent({
 					const config =
 						val === 3
 							? {
-									label: 'Yearly',
-									icon: 'heroicons-outline:sparkles',
-									badge: 'bg-[#FDF7EE] text-[#8E6B40] border-[#DFCBB0] shadow-2xs font-semibold',
-									iconColor: 'text-[#B38B5B]'
-							  }
+								label: 'Yearly',
+								icon: 'heroicons-outline:sparkles',
+								badge: 'bg-[#FDF7EE] text-[#8E6B40] border-[#DFCBB0] shadow-2xs font-semibold',
+								iconColor: 'text-[#B38B5B]'
+							}
 							: val === 2
-							? {
+								? {
 									label: 'Quarterly',
 									icon: 'heroicons-outline:clock',
 									badge: 'bg-[#F9F5EF] text-[#7A5B32] border-[#EADDCB] font-semibold',
 									iconColor: 'text-[#B38B5B]'
-							  }
-							: {
+								}
+								: {
 									label: 'Monthly',
 									icon: 'heroicons-outline:calendar',
 									badge: 'bg-[#FAF8F5] text-[#5C5346] border-[#EADDCB] font-semibold',
 									iconColor: 'text-[#B38B5B]'
-							  };
+								};
 
 					return (
 						<div
@@ -500,7 +500,25 @@ function PlansContent({
 						'mrt-row-actions': {
 							size: 105,
 							minSize: 95,
-							maxSize: 115
+							maxSize: 115,
+							muiTableHeadCellProps: {
+								sx: {
+									backgroundColor: (theme: any) =>
+										theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+									color: (theme: any) =>
+										theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
+									borderColor: (theme: any) =>
+										theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
+									'&:before': {
+										backgroundColor: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+									},
+									'&[data-pinned="true"]:before': {
+										backgroundColor: (theme: any) =>
+											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+									},
+								}
+							}
 						}
 					}}
 					enableRowSelection={false}
@@ -532,6 +550,8 @@ function PlansContent({
 							minHeight: 0,
 							overflowX: 'auto',
 							overflowY: 'auto',
+							backgroundColor: (theme: any) =>
+								theme.palette?.mode === 'dark' ? '#0f172a' : '#ffffff',
 							WebkitOverflowScrolling: 'touch',
 							'&::-webkit-scrollbar': { height: 8, width: 8 },
 							'&::-webkit-scrollbar-track': {
