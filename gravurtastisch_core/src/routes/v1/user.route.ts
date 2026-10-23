@@ -69,6 +69,12 @@ router
   .route('/upload-image')
   .post(auth(), multipartMiddleware, userController.uploadProfile);
 
+router.post(
+  '/profile/delete-image',
+  auth(),
+  userController.deleteProfile
+);
+
 router.get(
   '/sellers',
   auth(),
@@ -164,6 +170,5 @@ router.post(
   userController.deleteUser
 );
 
-router.route('/profile/delete-image').post(auth(), userController.deleteProfile);
 
 module.exports = router;

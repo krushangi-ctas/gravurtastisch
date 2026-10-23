@@ -16,7 +16,7 @@ const validate = (schema) => async (req, res, next) => {
 
     if (error) {
       const errorMessage = error.details
-        .map((details) => details.message)
+        .map((details) => (details.message || '').replace(/["\\]/g, ''))
         .join(', ');
       return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));
     }
@@ -24,7 +24,8 @@ const validate = (schema) => async (req, res, next) => {
     Object.assign(req, value);
     return next();
   } catch (error) {
-    return next(new ApiError(httpStatus.BAD_REQUEST, error.message));
+    const errorMsg = (error.message || '').replace(/["\\]/g, '');
+    return next(new ApiError(httpStatus.BAD_REQUEST, errorMsg));
   }
 };
 
