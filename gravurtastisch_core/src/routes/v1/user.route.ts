@@ -10,6 +10,8 @@ const {
   isSellerOwner,
 } = require('../../services/permission.service');
 const multipart = require('connect-multiparty');
+const path = require('path');
+const fs = require('fs');
 
 const router = express.Router();
 
@@ -19,8 +21,13 @@ router.post(
   userController.registerSeller
 );
 
+const uploadProfilesDir = path.join(__dirname, '../../uploads/profiles');
+if (!fs.existsSync(uploadProfilesDir)) {
+  fs.mkdirSync(uploadProfilesDir, { recursive: true });
+}
+
 const multipartMiddleware = multipart({
-  uploadDir: `${__dirname}/../../uploads`,
+  uploadDir: uploadProfilesDir,
 });
 
 router.route('/sign-in-with-token').get(auth(), async (req, res, next) => {

@@ -6,12 +6,15 @@ import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
 import Link from '@fuse/core/Link';
+import { useNavigate } from 'react-router';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { darken } from '@mui/material/styles';
 import Tooltip from '@mui/material/Tooltip';
 import clsx from 'clsx';
 import Popover, { PopoverProps } from '@mui/material/Popover';
 import useUser from '@auth/useUser';
+import { getImageUrl } from '@/configs/env';
+import { useProfile } from '@/app/(control-panel)/apps/settings/api/hooks/account/useAccountSettings';
 
 type UserMenuProps = {
   className?: string;
@@ -25,6 +28,7 @@ type UserMenuProps = {
  * The user menu.
  */
 function UserMenu(props: UserMenuProps) {
+  const navigate = useNavigate();
   const {
     className,
     popoverProps,
@@ -33,6 +37,9 @@ function UserMenu(props: UserMenuProps) {
     onlyAvatar = false,
   } = props;
   const { data: user, signOut, isGuest } = useUser();
+  const { data: profileResponse } = useProfile();
+  const effectiveUser = profileResponse?.data || user;
+
   const [userMenu, setUserMenu] = useState<HTMLElement | null>(null);
   const userMenuClick = (event: React.MouseEvent<HTMLElement>) => {
     setUserMenu(event.currentTarget);
@@ -42,10 +49,9 @@ function UserMenu(props: UserMenuProps) {
     setUserMenu(null);
   };
 
-  if (!user) {
+  if (!effectiveUser) {
     return null;
   }
-
 
   return (
     <>
@@ -62,16 +68,15 @@ function UserMenu(props: UserMenuProps) {
         onClick={userMenuClick}
         color="inherit"
       >
-        {user?.avatar ? (
+        {effectiveUser?.avatar ? (
           <Avatar
             sx={(theme) => ({
               background: theme.vars.palette.background.default,
               color: theme.vars.palette.text.secondary,
             })}
-            className={clsx('avatar rounded', dense ? 'h-7 w-7' : 'h-10 w-10')}
-            alt="user photo"
-            src={'/logo.png'}
-            variant="rounded"
+            className={clsx('avatar', dense ? 'h-7 w-7' : 'h-10 w-10')}
+            alt={effectiveUser?.name || 'user photo'}
+            src={getImageUrl(effectiveUser.avatar as string)}
           />
         ) : (
           <Avatar
@@ -82,7 +87,7 @@ function UserMenu(props: UserMenuProps) {
             })}
             className={clsx('avatar h-10 w-10', dense && 'h-8 w-8')}
           >
-            {user?.name?.[0] || 'A'}
+            {effectiveUser?.name?.[0] || 'A'}
           </Avatar>
         )}
         {!onlyAvatar && (
@@ -97,7 +102,7 @@ function UserMenu(props: UserMenuProps) {
                   dense ? 'text-md' : 'text-base'
                 )}
               >
-                {user?.name as string}
+                {effectiveUser?.name as string}
               </Typography>
               <Typography
                 className={clsx(
@@ -106,7 +111,7 @@ function UserMenu(props: UserMenuProps) {
                 )}
                 color="text.secondary"
               >
-                {user?.email}
+                {effectiveUser?.email}
               </Typography>
             </div>
             <div className="flex shrink-0 items-center gap-2">
@@ -142,7 +147,7 @@ function UserMenu(props: UserMenuProps) {
           horizontal: 'left',
         }}
         classes={{
-          paper: 'min-w-32',
+          paper: 'min-w-36',
         }}
         {...popoverProps}
       >
@@ -157,9 +162,9 @@ function UserMenu(props: UserMenuProps) {
           </>
         ) : (
           <>
-            {/* <MenuItem
+            <MenuItem
               component={Link}
-              to="/apps/profile"
+              to="/settings/account"
               onClick={userMenuClose}
               role="button"
             >
@@ -167,10 +172,12 @@ function UserMenu(props: UserMenuProps) {
                 <FuseSvgIcon>lucide:circle-user</FuseSvgIcon>
               </ListItemIcon>
               <ListItemText primary="My Profile" />
-            </MenuItem> */}
+            </MenuItem>
             <MenuItem
               onClick={() => {
+                userMenuClose();
                 signOut();
+                navigate('/sign-in', { replace: true });
               }}
             >
               <ListItemIcon>

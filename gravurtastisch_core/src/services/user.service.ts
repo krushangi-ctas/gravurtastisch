@@ -8,6 +8,9 @@ const Role = require('../models/role.model');
 const ordermodel = require('../models/order.model');
 const PlanModel = require('../models/plan.model');
 const PaymentModel = require('../models/payment.model');
+const fs = require('fs');
+const path = require('path');
+const config = require('../config/config');
 const errorHandler = require('../utils/error.handler');
 const logger = require('../config/logger');
 const { systemLog } = require('../utils/system-log');
@@ -703,7 +706,7 @@ const updateUserStatusById = async (userId) => {
   }
 };
 
-const uploadProfileImage = async (userId, data) => {
+const uploadProfileImage = async (userId, file) => {
   const userData = await User.findById(userId);
   if (!userData) {
     return {
@@ -712,16 +715,60 @@ const uploadProfileImage = async (userId, data) => {
     };
   }
 
-  const fileName = await uploadFile(data, '');
+  if (!file) {
+    return {
+      status: httpStatus.BAD_REQUEST,
+      message: 'Image file is required',
+    };
+  }
+
+  const uploadDir = path.join(__dirname, '../uploads/profiles');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const ext =
+    path
+      .extname(file.name || file.originalFilename || file.path || '')
+      .toLowerCase() || '.png';
+  const uniqueName = `profile-${Date.now()}-${Math.floor(
+    100000000 + Math.random() * 900000000
+  )}${ext}`;
+  const targetPath = path.join(uploadDir, uniqueName);
+
+  if (file.path && fs.existsSync(file.path)) {
+    fs.copyFileSync(file.path, targetPath);
+    try {
+      fs.unlinkSync(file.path);
+    } catch (e) {
+      // ignore
+    }
+  } else if (file.buffer) {
+    fs.writeFileSync(targetPath, file.buffer);
+  }
+
+  // Remove previous avatar file if exists
+  if (userData.avatar) {
+    const prevFile = userData.avatar.replace(/^(\/?uploads\/)?(\/?profiles\/)?/, '');
+    const oldPath = path.join(uploadDir, prevFile);
+    if (fs.existsSync(oldPath)) {
+      try {
+        fs.unlinkSync(oldPath);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  const relativePath = `profiles/${uniqueName}`;
+  const baseUrl = (config.site_url || process.env.BASE_URL || 'http://localhost:7051').replace(/\/+$/, '');
+  const avatarUrl = `${baseUrl}/${relativePath}`;
+
   const resData = await User.findByIdAndUpdate(
     userId,
-    { avatar: fileName },
+    { avatar: relativePath },
     { new: true }
   );
-
-  if (userData.avatar) {
-    await deleteFile(userData.avatar, '');
-  }
 
   if (resData) {
     await systemLog(
@@ -731,57 +778,98 @@ const uploadProfileImage = async (userId, data) => {
       'update-profile-image',
       userData
     );
-    const avatarUrl = `${process.env.BASE_URL}/uploads/${fileName}`;
     return {
       status: httpStatus.OK,
       data: resData,
-      picture: fileName,
+      picture: relativePath,
+      avatar: relativePath,
       avatarUrl: avatarUrl,
-      message: 'Profile Picture has been uploaded.',
+      message: 'Profile picture has been uploaded.',
     };
   } else {
-    errorHandler.errorM({
-      action_type: 'update-profile-image',
-      error_data: { message: 'occures while update profile image.' },
-    });
     return {
-      status: httpStatus.FORBIDDEN,
-      message: 'Something want wrong, Please try again',
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update user profile image',
     };
   }
 };
 
+const deleteProfileImage = async (userId) => {
+  const userData = await User.findById(userId);
+  if (!userData) {
+    return {
+      status: httpStatus.NOT_FOUND,
+      message: 'User not found',
+    };
+  }
+
+  if (userData.avatar) {
+    const uploadDir = path.join(__dirname, '../uploads/profiles');
+    const prevFile = userData.avatar.replace(/^(\/?uploads\/)?(\/?profiles\/)?/, '');
+    const oldPath = path.join(uploadDir, prevFile);
+    if (fs.existsSync(oldPath)) {
+      try {
+        fs.unlinkSync(oldPath);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  const resData = await User.findByIdAndUpdate(
+    userId,
+    { avatar: '' },
+    { new: true }
+  );
+
+  return {
+    status: httpStatus.OK,
+    data: resData,
+    message: 'Profile picture has been removed.',
+  };
+};
+
 const updatePasswordById = async (userId, updateBody) => {
   try {
-    const user = await getUserById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return createResponse(httpStatus.NOT_FOUND, 'User not found');
     }
-    const data = {};
-    if (updateBody.password && updateBody.password !== '') {
-      data['password'] = updateBody.password;
-    }
-    let result;
-    if (
-      (await user.isPasswordMatch(updateBody.currentPassword)) &&
-      updateBody.password === updateBody.passwordConfirm
-    ) {
-      result = await User.findByIdAndUpdate(userId, data, { new: true });
+
+    if (!updateBody.currentPassword) {
+      return createResponse(httpStatus.BAD_REQUEST, 'Current password is required');
     }
 
-    if (result) {
-      return createResponse(httpStatus.OK, 'sucessfully password updated');
-    } else {
+    const isMatch = await user.isPasswordMatch(updateBody.currentPassword);
+    if (!isMatch) {
+      return createResponse(httpStatus.BAD_REQUEST, 'Current password is incorrect');
+    }
+
+    if (!updateBody.password || updateBody.password.length < 8) {
+      return createResponse(httpStatus.BAD_REQUEST, 'New password must be at least 8 characters long');
+    }
+
+    if (!updateBody.password.match(/\d/) || !updateBody.password.match(/[a-zA-Z]/)) {
       return createResponse(
         httpStatus.BAD_REQUEST,
-        'something want wrong, please try again'
+        'New password must contain at least one letter and one number'
       );
     }
+
+    if (updateBody.password !== updateBody.passwordConfirm) {
+      return createResponse(httpStatus.BAD_REQUEST, 'New password and confirm password do not match');
+    }
+
+    user.password = updateBody.password;
+    await user.save();
+
+    await systemLog('UPDATE', { _id: user._id }, userId, 'update-password');
+    return createResponse(httpStatus.OK, 'Password updated successfully');
   } catch (error) {
-    console.error('error: ');
+    console.error('Password update error:', error);
     return createResponse(
       httpStatus.INTERNAL_SERVER_ERROR,
-      'something want wrong, please try again'
+      error?.message || 'Failed to update password'
     );
   }
 };
@@ -1231,6 +1319,7 @@ module.exports = {
   deleteUserById,
   updateUserStatusById,
   uploadProfileImage,
+  deleteProfileImage,
   updatePasswordById,
   getUserDetailById,
   getChatUserList,

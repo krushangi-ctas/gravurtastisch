@@ -7,9 +7,12 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}, isFi
 
 	const isFormData = options.body instanceof FormData;
 
+	const passedAuth = (options.headers as any)?.Authorization || (options.headers as any)?.authorization;
+	const authHeader = passedAuth || (token ? `Bearer ${token}` : '');
+
 	const headers: HeadersInit = {
 		...(options.headers || {}),
-		Authorization: token ? `Bearer ${token}` : '',
+		...(authHeader ? { Authorization: authHeader } : {}),
 	};
 
 	if (!isFormData && options.body) {

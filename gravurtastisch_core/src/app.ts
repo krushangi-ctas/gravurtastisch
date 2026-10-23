@@ -92,6 +92,8 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/uploads', express.static(`${__dirname}/uploads`));
+app.use('/profiles', express.static(`${__dirname}/uploads/profiles`));
 app.use(express.static(`${__dirname}/uploads`));
 app.use(express.static(`${__dirname}/../public`));
 

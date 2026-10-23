@@ -47,25 +47,40 @@ function FuseAuthProvider(props: FuseAuthenticationProviderProps) {
 
 	const handleAuthStateChange = useCallback(
 		(providerAuthState: FuseAuthProviderState, name: string) => {
-			setProviderStatuses((prevStatuses) => ({
-				...prevStatuses,
-				[name]: providerAuthState.authStatus
-			}));
-			setAuthState((prev) => {
-				// Scenario 1: Same provider, user logged out
-				if (prev.provider === name && !providerAuthState.isAuthenticated) {
-					return initialAuthState;
+			setProviderStatuses((prevStatuses) => {
+				if (prevStatuses[name] === providerAuthState.authStatus) {
+					return prevStatuses;
 				}
-
-				// Scenario 2: Ignore unauthenticated state if previously authenticated
-				if (prev.isAuthenticated && !providerAuthState.isAuthenticated) {
+				return {
+					...prevStatuses,
+					[name]: providerAuthState.authStatus
+				};
+			});
+			setAuthState((prev) => {
+				if (
+					prev?.isAuthenticated === providerAuthState.isAuthenticated &&
+					prev?.authStatus === providerAuthState.authStatus &&
+					(prev?.user as any)?._id === (providerAuthState?.user as any)?._id &&
+					(prev?.user as any)?.email === (providerAuthState?.user as any)?.email &&
+					prev?.provider === name
+				) {
 					return prev;
 				}
 
-				// Scenario 3: Update provider if previously unauthenticated
-				if (!prev.isAuthenticated && providerAuthState.isAuthenticated && providerAuthState.user) {
+				// Scenario 1: Provider is authenticated with a user (initial login or switching users)
+				if (providerAuthState.isAuthenticated && providerAuthState.user) {
 					setAuthProvider(name);
 					return { ...providerAuthState, provider: name };
+				}
+
+				// Scenario 2: Same provider, user logged out
+				if (prev?.provider === name && !providerAuthState.isAuthenticated) {
+					return initialAuthState;
+				}
+
+				// Scenario 3: Ignore unauthenticated state if previously authenticated with another provider
+				if (prev?.isAuthenticated && !providerAuthState.isAuthenticated) {
+					return prev;
 				}
 
 				return prev;

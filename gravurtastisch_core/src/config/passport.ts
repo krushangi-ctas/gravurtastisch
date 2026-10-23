@@ -4,9 +4,17 @@ const { tokenTypes } = require('./tokens');
 const User = require('../models/user.model');
 const Customer = require('../models/customer.model');
 
+const jwtFromRequest = (req) => {
+  let token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+  if (token) {
+    token = token.replace(/^["']+|["']+$/g, '').trim();
+  }
+  return token;
+};
+
 const jwtOptions = {
   secretOrKey: config.jwt.secret,
-  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+  jwtFromRequest,
 };
 
 const jwtVerify = async (payload, done) => {

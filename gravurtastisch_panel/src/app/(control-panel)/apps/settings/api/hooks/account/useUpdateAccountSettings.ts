@@ -21,3 +21,35 @@ export const useUpdateUser = () => {
     },
   });
 };
+
+export const useUploadAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (file: File) => settingsApiService.uploadAvatar(file),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: profilePostsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+    onError: (error: any) => {
+      console.error('Failed to upload avatar:', error);
+    },
+  });
+};
+
+export const useDeleteAvatar = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: () => settingsApiService.deleteAvatar(),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: profilePostsQueryKey });
+      queryClient.invalidateQueries({ queryKey: ['auth', 'user'] });
+      queryClient.invalidateQueries({ queryKey: ['user'] });
+    },
+    onError: (error: any) => {
+      console.error('Failed to delete avatar:', error);
+    },
+  });
+};
