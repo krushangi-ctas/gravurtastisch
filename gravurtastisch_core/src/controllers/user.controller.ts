@@ -73,7 +73,14 @@ const uploadProfile = catchAsync(async (req, res) => {
 });
 
 const deleteProfile = catchAsync(async (req, res) => {
-  const result = await userService.deleteProfileImage(req.user._id);
+  const userId = req.user?._id || req.user?.id;
+  if (!userId) {
+    return res.status(httpStatus.UNAUTHORIZED).send({
+      status: httpStatus.UNAUTHORIZED,
+      message: 'Unauthorized: User not authenticated',
+    });
+  }
+  const result = await userService.deleteProfileImage(userId);
   return res.status(result.status).send(result);
 });
 
