@@ -9,6 +9,7 @@ import { styled } from '@mui/material/styles';
 import {
 	Box,
 	Button,
+	Checkbox,
 	CircularProgress,
 	Dialog,
 	DialogActions,
@@ -18,11 +19,25 @@ import {
 	InputAdornment,
 	MenuItem,
 	Paper,
+	Popover,
 	Select,
 	TextField,
 	Tooltip,
 	Typography
 } from '@mui/material';
+import {
+	format,
+	isAfter,
+	addDays,
+	subDays,
+	startOfMonth,
+	endOfMonth,
+	eachDayOfInterval,
+	isSameDay,
+	isWithinInterval,
+	addMonths,
+	subMonths
+} from 'date-fns';
 import { useSnackbar } from 'notistack';
 import { type MRT_ColumnDef, type MRT_Row, type MRT_SortingState } from 'material-react-table';
 import DataTable from 'src/components/data-table/DataTable';
@@ -30,6 +45,7 @@ import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
 import CustomStatusSwitch from '@/components/CustomSwitch';
 import usePermissions from '@/hooks/usePermissions';
 import { useRoles } from '../../../roles/api/hooks/useRoles';
+import { useAllPlans } from '../../../plans/api/hooks/usePlans';
 import {
 	useAdminSellers,
 	useAdminStaffUsers,
@@ -88,7 +104,209 @@ function roleLabel(user: User) {
 	if (user.userType) {
 		return user.userType === 'seller' ? 'Seller' : user.userType;
 	}
-	return '—';
+}
+
+function TableCopyButton({ text }: { text: string }) {
+	const [copied, setCopied] = useState(false);
+
+	const handleCopy = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (!text) return;
+		navigator.clipboard.writeText(text);
+		setCopied(true);
+		setTimeout(() => setCopied(false), 1500);
+	};
+
+	return (
+		<Tooltip title={copied ? 'Copied!' : 'Copy'} arrow>
+			<button
+				type="button"
+				onClick={handleCopy}
+				className="inline-flex items-center justify-center p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded transition-colors text-black dark:text-gray-200"
+			>
+				<FuseSvgIcon size={13} sx={{ color: 'inherit' }}>
+					{copied ? 'heroicons-outline:check-circle' : 'heroicons-outline:document-duplicate'}
+				</FuseSvgIcon>
+			</button>
+		</Tooltip>
+	);
+}
+
+// Custom Date Range Picker Component matching Orders
+interface DateRangePickerProps {
+	value: Record<string, Date | null>;
+	onChange: (range: Record<string, Date | null>) => void;
+	onClose: () => void;
+}
+
+function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProps) {
+	const [currentMonth, setCurrentMonth] = useState(new Date());
+	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
+	const [tempRange, setTempRange] = useState<Record<string, Date | null>>(value);
+
+	useEffect(() => {
+		setTempRange(value);
+		if (value.from) {
+			setCurrentMonth(value.from);
+		}
+	}, [value]);
+
+	const handleDateClick = (date: Date) => {
+		if (!tempRange.from || (tempRange.from && tempRange.to)) {
+			setTempRange({ from: date, to: null });
+		} else {
+			if (isAfter(date, tempRange.from)) {
+				setTempRange({ ...tempRange, to: date });
+			} else {
+				setTempRange({ from: date, to: tempRange.from });
+			}
+		}
+	};
+
+	const handleApply = () => {
+		if (tempRange.from && tempRange.to) {
+			onChange(tempRange);
+			onClose();
+		}
+	};
+
+	const handleCancel = () => {
+		setTempRange(value);
+		onClose();
+	};
+
+	const getDaysInMonth = () => {
+		const start = startOfMonth(currentMonth);
+		const end = endOfMonth(currentMonth);
+		const days = eachDayOfInterval({ start, end });
+
+		const startPadding = start.getDay();
+		const endPadding = 6 - end.getDay();
+
+		const startPaddingDays = Array.from({ length: startPadding }, (_, i) =>
+			subDays(start, startPadding - i)
+		);
+		const endPaddingDays = Array.from({ length: endPadding }, (_, i) =>
+			addDays(end, i + 1)
+		);
+
+		return [...startPaddingDays, ...days, ...endPaddingDays];
+	};
+
+	const isInRange = (date: Date) => {
+		if (!tempRange.from) return false;
+		if (!tempRange.to) return isSameDay(date, tempRange.from);
+		return isWithinInterval(date, { start: tempRange.from, end: tempRange.to });
+	};
+
+	const isRangeStart = (date: Date) => (tempRange.from ? isSameDay(date, tempRange.from) : false);
+	const isRangeEnd = (date: Date) => (tempRange.to ? isSameDay(date, tempRange.to) : false);
+	const isInHoverRange = (date: Date) => {
+		if (!tempRange.from || tempRange.to) return false;
+		return hoveredDate ? isWithinInterval(date, { start: tempRange.from, end: hoveredDate }) : false;
+	};
+
+	const days = getDaysInMonth();
+
+	return (
+		<Paper sx={{ p: { xs: 1.5, sm: 2 }, minWidth: { xs: 280, sm: 320 }, maxWidth: '100%', boxSizing: 'border-box' }}>
+			{/* Header */}
+			<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+				<IconButton onClick={() => setCurrentMonth(subMonths(currentMonth, 1))} size="small">
+					<FuseSvgIcon>lucide:chevron-left</FuseSvgIcon>
+				</IconButton>
+				<Typography variant="subtitle1" fontWeight={600}>
+					{format(currentMonth, 'MMMM yyyy')}
+				</Typography>
+				<IconButton onClick={() => setCurrentMonth(addMonths(currentMonth, 1))} size="small">
+					<FuseSvgIcon>lucide:chevron-right</FuseSvgIcon>
+				</IconButton>
+			</Box>
+
+			{/* Day Headers */}
+			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', mb: 1 }}>
+				{['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((day) => (
+					<Box
+						key={day}
+						sx={{
+							textAlign: 'center',
+							py: 1,
+							fontSize: '0.75rem',
+							fontWeight: 'bold',
+							color: 'text.secondary'
+						}}
+					>
+						{day}
+					</Box>
+				))}
+			</Box>
+
+			{/* Calendar Grid */}
+			<Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+				{days.map((date, index) => {
+					const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+					const isSelected = isInRange(date);
+					const isStart = isRangeStart(date);
+					const isEnd = isRangeEnd(date);
+					const isHoverRange = isInHoverRange(date);
+
+					return (
+						<Box
+							key={index}
+							onClick={() => handleDateClick(date)}
+							onMouseEnter={() => setHoveredDate(date)}
+							onMouseLeave={() => setHoveredDate(null)}
+							sx={{
+								aspectRatio: '1',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								cursor: 'pointer',
+								fontSize: '0.875rem',
+								fontWeight: isStart || isEnd ? 'bold' : 'normal',
+								color: isCurrentMonth ? 'text.primary' : 'text.disabled',
+								backgroundColor:
+									isStart || isEnd
+										? 'rgba(25, 118, 210, 0.15)'
+										: isHoverRange
+											? 'rgba(25, 118, 210, 0.08)'
+											: isSelected
+												? 'rgba(25, 118, 210, 0.05)'
+												: 'transparent',
+								borderRadius: isStart
+									? '50% 0 0 50%'
+									: isEnd
+										? '0 50% 50% 0'
+										: '0',
+								'&:hover': {
+									backgroundColor: isStart || isEnd ? 'primary.100' : 'action.hover'
+								},
+								border: isStart || isEnd ? '1px solid' : 'none',
+								borderColor: 'primary.main'
+							}}
+						>
+							{format(date, 'd')}
+						</Box>
+					);
+				})}
+			</Box>
+
+			{/* Actions */}
+			<Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'flex-end' }}>
+				<Button onClick={handleCancel} color="inherit" size="small">
+					Cancel
+				</Button>
+				<Button
+					onClick={handleApply}
+					variant="contained"
+					size="small"
+					disabled={!tempRange.from || !tempRange.to}
+				>
+					Apply
+				</Button>
+			</Box>
+		</Paper>
+	);
 }
 
 export type UsersViewVariant = 'sellers' | 'admin-users' | 'team';
@@ -116,15 +334,60 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const [globalFilter, setGlobalFilter] = useState('');
 	const [sorting, setSorting] = useState<MRT_SortingState>([]);
 
+	// Plan Filter State
+	const { data: plansRes } = useAllPlans({ limit: 100, status: 1 }, hasAccess && isSellersMode);
+	const allPlans = useMemo(() => {
+		const raw = (plansRes as any)?.data;
+		if (Array.isArray(raw)) return raw;
+		if (Array.isArray((plansRes as any)?.results)) return (plansRes as any)?.results;
+		return [];
+	}, [plansRes]);
+	const allPlanIds = useMemo(
+		() => allPlans.map((p: any) => String(p.id || p._id)),
+		[allPlans]
+	);
+
+	const [selectedPlans, setSelectedPlans] = useState<string[]>([]);
+	const [hasUserFilteredPlans, setHasUserFilteredPlans] = useState(false);
+
+	useEffect(() => {
+		if (allPlanIds.length > 0 && !hasUserFilteredPlans && selectedPlans.length === 0) {
+			setSelectedPlans(allPlanIds);
+		}
+	}, [allPlanIds, hasUserFilteredPlans, selectedPlans.length]);
+
+	// Date Range Filter State
+	const [searchDate, setSearchDate] = useState<Record<string, Date | null>>({
+		from: null,
+		to: null
+	});
+	const [dateAnchorEl, setDateAnchorEl] = useState<null | HTMLElement>(null);
+
 	const sortKey = sorting[0]?.id || 'createdAt';
 	const sortOrder = sorting[0]?.desc ? 'desc' : 'asc';
 	const sortBy = sorting.length > 0 ? `${sortKey}:${sortOrder}` : undefined;
+
+	const isAllPlansSelected =
+		!hasUserFilteredPlans ||
+		selectedPlans.length === 0 ||
+		(allPlanIds.length > 0 && selectedPlans.length === allPlanIds.length);
+	const plansParam = isAllPlansSelected ? undefined : selectedPlans;
+
+	const fromParam = searchDate.from ? searchDate.from.toISOString() : undefined;
+	const toParam = searchDate.to ? searchDate.to.toISOString() : undefined;
 
 	const listParams = {
 		page: pagination.pageIndex + 1,
 		limit: pagination.pageSize,
 		search: globalFilter,
-		sortBy
+		sortBy,
+		...(isSellersMode
+			? {
+					plans: plansParam,
+					from: fromParam,
+					to: toParam
+				}
+			: {})
 	};
 
 	const sellersQuery = useAdminSellers(listParams, hasAccess && isSellersMode);
@@ -251,7 +514,8 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			}
 		}
 
-		if (!roleVal) {
+		// Role is only required for Admin Users and Team (not Sellers)
+		if (!isSellersMode && !roleVal) {
 			errs.roleId = 'Please select a role.';
 		}
 
@@ -386,18 +650,18 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		}
 
 		try {
-			const payload = {
+			const payload: any = {
 				name: formName.trim(),
 				email: formEmail.trim(),
 				contact_no: formPhone.trim(),
-				role_id: formRoleId
+				...(formRoleId ? { role_id: formRoleId } : {})
 			};
 			if (isTeamMode) {
 				await createTeamMutation.mutateAsync(payload);
 			} else {
 				await createAdminMutation.mutateAsync(payload);
 			}
-			enqueueSnackbar('User created.', { variant: 'success' });
+			enqueueSnackbar('User created successfully.', { variant: 'success' });
 			setCreateOpen(false);
 			resetCreateForm();
 		} catch (err: unknown) {
@@ -435,7 +699,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		try {
 			if (confirmState.type === 'delete') {
 				await updateMutation.mutateAsync({ userId, payload: { status: 2 } });
-				enqueueSnackbar(`"${confirmState.user.name}" has been deleted.`, {
+				enqueueSnackbar(`"${confirmState.user.name}" has been deleted successfully.`, {
 					variant: 'success',
 					autoHideDuration: 2000
 				});
@@ -514,7 +778,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						: undefined
 				}
 			});
-			enqueueSnackbar('User updated.', { variant: 'success' });
+			enqueueSnackbar('User updated successfully.', { variant: 'success' });
 			setEditOpen(false);
 			setEditErrors({});
 		} catch (err: unknown) {
@@ -532,8 +796,16 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			...prev,
 			pageIndex: 0
 		}));
+		setSearchDate({ from: null, to: null });
+		setDateAnchorEl(null);
+		setHasUserFilteredPlans(false);
+		if (allPlanIds.length > 0) {
+			setSelectedPlans(allPlanIds);
+		} else {
+			setSelectedPlans([]);
+		}
 		activeQuery.refetch();
-	}, [activeQuery]);
+	}, [activeQuery, allPlanIds]);
 
 	const getPlanBadgeStyle = (planName?: string | null) => {
 		const name = (planName || '').toLowerCase();
@@ -561,29 +833,84 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const columns = useMemo<MRT_ColumnDef<User>[]>(() => {
 		const base: MRT_ColumnDef<User>[] = [
 			{
-				accessorKey: 'name',
-				header: 'NAME',
-				size: 140,
+				accessorKey: 'createdAt',
+				header: 'Date',
+				size: 180,
+				minSize: 170,
 				Cell: ({ cell, row }) => {
-					const val = cell.getValue<string>() || '—';
+					const val = (cell.getValue?.() as string) || row.original?.createdAt;
 					const user = row.original;
-					const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
-					const secondary = user.createdAt
-						? `Joined ${moment(user.createdAt).format('DD MMM YYYY')}`
-						: user.contact_no
-							? user.contact_no
-							: user._id
-								? `ID: ${user._id.slice(-6).toUpperCase()}`
-								: 'Seller Account';
+					const isPaymentCancelled = user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0;
+
+					if (!val || !moment(val).isValid()) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+					const m = moment(val);
+					return (
+						<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.75, whiteSpace: 'nowrap' }}>
+							{isSellersMode && (
+								<Box
+									sx={{
+										width: 15,
+										height: 15,
+										display: 'inline-flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+										flexShrink: 0
+									}}
+								>
+									{isPaymentCancelled ? (
+										<Tooltip title="Payment Canceled" arrow>
+											<Box
+												component="span"
+												sx={{
+													display: 'inline-flex',
+													alignItems: 'center',
+													color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+													cursor: 'help'
+												}}
+											>
+												<FuseSvgIcon size={14} sx={{ color: 'inherit' }}>
+													heroicons-outline:x-circle
+												</FuseSvgIcon>
+											</Box>
+										</Tooltip>
+									) : null}
+								</Box>
+							)}
+							<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{m.format('DD-MM-YYYY hh:mm A')}
+								</Typography>
+							</Tooltip>
+						</Box>
+					);
+				}
+			},
+			{
+				accessorKey: 'name',
+				header: 'Name',
+				size: 140,
+				Cell: ({ cell }) => {
+					const val = cell.getValue<string>() || '—';
 
 					return (
-						<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
+						<Box sx={{ display: 'inline-flex', alignItems: 'center', lineHeight: 1.25, maxWidth: '100%' }}>
 							<Tooltip title={val} arrow>
 								<Typography
 									sx={{
 										fontSize: 12,
-										fontWeight: 600,
-										color: 'text.primary',
+										fontWeight: !isSellersMode ? 500 : 400,
+										color: !isSellersMode
+											? (t) => (t.palette.mode === 'dark' ? '#FACC15' : '#CA8A04')
+											: 'text.primary',
 										overflow: 'hidden',
 										textOverflow: 'ellipsis',
 										whiteSpace: 'nowrap'
@@ -592,46 +919,45 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									{val}
 								</Typography>
 							</Tooltip>
-							{isPaymentCancelled && isSellersMode ? (
-								<Box
-									sx={{
-										display: 'inline-flex',
-										alignItems: 'center',
-										gap: 0.4,
-										color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
-										fontSize: 10.5,
-										fontWeight: 600
-									}}
-								>
-									<FuseSvgIcon size={12} sx={{ color: 'inherit', flexShrink: 0 }}>
-										heroicons-outline:x-circle
-									</FuseSvgIcon>
-									<span>Payment Cancelled</span>
-								</Box>
-							) : (
-								<Typography
-									sx={{
-										fontSize: 10.5,
-										color: 'text.secondary',
-										overflow: 'hidden',
-										textOverflow: 'ellipsis',
-										whiteSpace: 'nowrap'
-									}}
-								>
-									{secondary}
-								</Typography>
-							)}
 						</Box>
 					);
 				}
 			},
 			{
 				accessorKey: 'email',
-				header: 'EMAIL',
+				header: 'Email',
 				size: 180,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+
+					if (isSellersMode) {
+						return (
+							<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, maxWidth: '100%' }}>
+								<Tooltip title={val} arrow>
+									<Typography
+										component="span"
+										sx={{
+											fontSize: 12,
+											fontWeight: 400,
+											lineHeight: 1.25,
+											px: 0.75,
+											py: 0.25,
+											bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(147, 51, 234, 0.25)' : '#F3E8FF'),
+											color: (t) => (t.palette.mode === 'dark' ? '#F3F4F6' : '#000000'),
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
+											whiteSpace: 'nowrap',
+											maxWidth: 220
+										}}
+									>
+										{val}
+									</Typography>
+								</Tooltip>
+								<TableCopyButton text={val} />
+							</Box>
+						);
+					}
 
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -639,7 +965,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								<Typography
 									sx={{
 										fontSize: 12,
-										fontWeight: 500,
+										fontWeight: 400,
 										color: 'text.primary',
 										overflow: 'hidden',
 										textOverflow: 'ellipsis',
@@ -650,55 +976,94 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									{val}
 								</Typography>
 							</Tooltip>
-							<Tooltip title="Copy Email" arrow>
-								<FuseSvgIcon
-									size={12}
-									sx={{
-										color: 'text.disabled',
-										cursor: 'pointer',
-										flexShrink: 0,
-										'&:hover': { color: 'primary.main' }
-									}}
-									onClick={() => navigator.clipboard.writeText(val)}
-								>
-									heroicons-outline:clipboard-document
-								</FuseSvgIcon>
-							</Tooltip>
+							<TableCopyButton text={val} />
 						</Box>
 					);
 				}
 			}
 		];
 
-		// Include ROLE column for ALL users (sellers, team, admin-users)
-		base.push({
-			id: 'role',
-			header: 'ROLE',
-			size: 130,
-			Cell: ({ row }) => {
-				const rawLabel = roleLabel(row.original);
-				const label = rawLabel !== '—' ? rawLabel : (isSellersMode ? 'Seller' : '—');
-				return (
-					<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
-						<span
-							className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold border bg-indigo-50 text-indigo-700 border-indigo-200/80 dark:bg-indigo-950/40 dark:text-indigo-300 dark:border-indigo-800/50"
-						>
-							<FuseSvgIcon size={13}>heroicons-outline:shield-check</FuseSvgIcon>
-							{label}
-						</span>
-						<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
-							{isSellersMode ? 'Account Role' : 'Assigned Role'}
-						</Typography>
-					</Box>
-				);
-			}
-		});
+		// Include Mobile Number for sellers right after email
+		if (isSellersMode) {
+			base.push({
+				accessorKey: 'contact_no',
+				header: 'Mobile',
+				size: 140,
+				Cell: ({ cell }) => {
+					const val = cell.getValue<string>();
+					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+
+					return (
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+							<Tooltip title={val} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										color: 'text.primary',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{val}
+								</Typography>
+							</Tooltip>
+							<TableCopyButton text={val} />
+						</Box>
+					);
+				}
+			});
+		}
+
+		// Role column: excluded for Sellers, but included for Admin Users & Team
+		if (!isSellersMode) {
+			base.push({
+				id: 'role',
+				header: 'Role',
+				size: 130,
+				enableSorting: true,
+				accessorFn: (row) => roleLabel(row) || '',
+				Cell: ({ row }) => {
+					const rawLabel = roleLabel(row.original);
+					const label = rawLabel !== '—' ? rawLabel : '—';
+
+					if (!label || label === '—') {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+
+					return (
+						<Tooltip title={label} arrow>
+							<Box sx={{ display: 'inline-flex', alignItems: 'center', maxWidth: '100%' }}>
+								<Typography
+									component="span"
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										lineHeight: 1.25,
+										px: 0.75,
+										py: 0.25,
+										bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(147, 51, 234, 0.25)' : '#F3E8FF'),
+										color: (t) => (t.palette.mode === 'dark' ? '#F3F4F6' : '#000000'),
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{label}
+								</Typography>
+							</Box>
+						</Tooltip>
+					);
+				}
+			});
+		}
 
 		if (isSellersMode) {
 			base.push(
 				{
 					accessorKey: 'businessName',
-					header: 'BRAND',
+					header: 'Brand',
 					size: 160,
 					minSize: 130,
 					Cell: ({ cell }) => {
@@ -707,41 +1072,26 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 						}
 						return (
-							<Tooltip title={`Brand: ${val}`} arrow>
-								<Box
-									sx={{
-										display: 'inline-flex',
-										alignItems: 'center',
-										gap: 0.5,
-										px: 0.9,
-										py: 0.25,
-										borderRadius: '2px',
-										fontSize: 11.5,
-										fontWeight: 600,
-										bgcolor: (t) =>
-											t.palette.mode === 'dark' ? 'rgba(51, 65, 85, 0.45)' : 'rgba(226, 232, 240, 0.9)',
-										color: (t) => (t.palette.mode === 'dark' ? '#E2E8F0' : '#1E293B'),
-										border: 'none',
-										boxSizing: 'border-box',
-										whiteSpace: 'nowrap'
-									}}
-								>
-									<FuseSvgIcon
-										size={12}
-										sx={{ color: (t) => (t.palette.mode === 'dark' ? '#CBD5E1' : '#334155'), flexShrink: 0 }}
-									>
-										heroicons-outline:building-storefront
-									</FuseSvgIcon>
+							<Tooltip title={val} arrow>
+								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, maxWidth: '100%' }}>
 									<Typography
 										component="span"
 										sx={{
-											fontSize: 'inherit',
-											fontWeight: 'inherit',
+											fontSize: 12,
+											fontWeight: 400,
+											lineHeight: 1.25,
+											px: 0.75,
+											py: 0.25,
+											bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(234, 179, 8, 0.25)' : '#FEF9C3'),
+											color: (t) => (t.palette.mode === 'dark' ? '#F3F4F6' : '#000000'),
+											overflow: 'hidden',
+											textOverflow: 'ellipsis',
 											whiteSpace: 'nowrap'
 										}}
 									>
 										{val}
 									</Typography>
+									<TableCopyButton text={val} />
 								</Box>
 							</Tooltip>
 						);
@@ -749,8 +1099,20 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 				},
 				{
 					id: 'currentPlan',
-					header: 'PLAN',
-					size: 145,
+					header: 'Plan',
+					size: 130,
+					enableSorting: true,
+					accessorFn: (row) => {
+						const isPaymentCancelled = row.subscriptionStatus === 3 || row.subscriptionStatus === 0;
+						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
+						const queuedPlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 4) : null;
+						const cancelledPlan = Array.isArray(row.plans) ? row.plans[0] : null;
+						const planName =
+							activePlan?.name ||
+							(typeof row.currentPlanId === 'object' ? (row.currentPlanId as any)?.name : null) ||
+							(isPaymentCancelled ? (cancelledPlan?.name || 'Cancelled Plan') : null);
+						return planName || queuedPlan?.name || (isPaymentCancelled ? 'Cancelled' : '');
+					},
 					Cell: ({ row }) => {
 						const user = row.original;
 						const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
@@ -761,104 +1123,122 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							activePlan?.name ||
 							(typeof user.currentPlanId === 'object' ? user.currentPlanId?.name : null) ||
 							(isPaymentCancelled ? (cancelledPlan?.name || 'Cancelled Plan') : null);
+
+						const displayName = planName || queuedPlan?.name || (isPaymentCancelled ? 'Cancelled' : null);
+
+						if (!displayName) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
+
+						return (
+							<Tooltip title={displayName} arrow>
+								<Typography
+									component="span"
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										lineHeight: 1.25,
+										display: 'inline-flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+										px: 1.25,
+										py: 0.25,
+										borderRadius: '9999px',
+										bgcolor: isPaymentCancelled
+											? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.25)' : '#FEE2E2')
+											: (t) => (t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.25)' : '#E0E7FF'),
+										color: isPaymentCancelled
+											? (t) => (t.palette.mode === 'dark' ? '#FCA5A5' : '#B91C1C')
+											: (t) => (t.palette.mode === 'dark' ? '#F3F4F6' : '#000000'),
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{displayName}
+								</Typography>
+							</Tooltip>
+						);
+					}
+				},
+				{
+					id: 'expireDate',
+					header: 'Expire Date',
+					size: 160,
+					enableSorting: true,
+					accessorFn: (row) => {
+						const isPaymentCancelled = row.subscriptionStatus === 3 || row.subscriptionStatus === 0;
+						if (isPaymentCancelled) return '';
+						const activePlan = Array.isArray(row.plans) ? row.plans.find((p) => p.status === 1) : null;
+						return activePlan?.expireAt ? new Date(activePlan.expireAt).getTime() : 0;
+					},
+					Cell: ({ row }) => {
+						const user = row.original;
+						const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
+						const activePlan = Array.isArray(user.plans) ? user.plans.find((p) => p.status === 1) : null;
 						const isExpired =
 							!isPaymentCancelled &&
 							(user.subscriptionStatus === 2 ||
 								(activePlan?.expireAt && new Date(activePlan.expireAt).getTime() < Date.now()));
 
-						if (!planName && !queuedPlan && !isPaymentCancelled) {
+						const hasExpiry = Boolean(activePlan?.expireAt) && !isPaymentCancelled;
+
+						if (isPaymentCancelled) {
+							return (
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+										whiteSpace: 'nowrap'
+									}}
+								>
+									Cancelled
+								</Typography>
+							);
+						}
+
+						if (isExpired) {
+							return (
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
+										whiteSpace: 'nowrap'
+									}}
+								>
+									Expired
+								</Typography>
+							);
+						}
+
+						if (!hasExpiry) {
 							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 						}
 
-						const pStyle = getPlanBadgeStyle(planName || queuedPlan?.name);
-						const hasExpiry = Boolean(activePlan?.expireAt) && !isPaymentCancelled;
+						const m = moment(activePlan.expireAt);
+						if (!m.isValid()) {
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						}
 
 						return (
-							<Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.25 }}>
-								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
-									<Box
-										sx={{
-											display: 'inline-flex',
-											alignItems: 'center',
-											gap: 0.4,
-											px: 0.85,
-											py: 0.15,
-											borderRadius: '6px',
-											fontSize: 11,
-											fontWeight: 600,
-											bgcolor: isPaymentCancelled
-												? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(254, 226, 226, 0.8)')
-												: pStyle.bg,
-											color: isPaymentCancelled
-												? (t) => (t.palette.mode === 'dark' ? '#FCA5A5' : '#B91C1C')
-												: pStyle.color,
-											border: '1px solid',
-											borderColor: isPaymentCancelled
-												? (t) => (t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(252, 165, 165, 0.6)')
-												: pStyle.border,
-											lineHeight: 1.2,
-											whiteSpace: 'nowrap'
-										}}
-									>
-										<FuseSvgIcon size={12}>
-											{isPaymentCancelled ? 'heroicons-outline:x-circle' : 'heroicons-outline:ticket'}
-										</FuseSvgIcon>
-										{planName || queuedPlan?.name || 'Cancelled'}
-									</Box>
-									{isExpired ? (
-										<Box
-											sx={{
-												display: 'inline-flex',
-												alignItems: 'center',
-												px: 0.6,
-												py: 0.1,
-												borderRadius: '4px',
-												fontSize: 9.5,
-												fontWeight: 600,
-												bgcolor: (t) =>
-													t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.2)' : 'rgba(239, 68, 68, 0.1)',
-												color: (t) => (t.palette.mode === 'dark' ? '#F87171' : '#DC2626'),
-												border: '1px solid',
-												borderColor: (t) =>
-													t.palette.mode === 'dark' ? 'rgba(239, 68, 68, 0.35)' : 'rgba(239, 68, 68, 0.25)',
-												lineHeight: 1
-											}}
-										>
-											Expired
-										</Box>
-									) : null}
-								</Box>
-								{(hasExpiry || queuedPlan) && (
-									<Typography
-										sx={{
-											fontSize: 10,
-											color: 'text.secondary',
-											display: 'flex',
-											alignItems: 'center',
-											gap: 0.5,
-											whiteSpace: 'nowrap'
-										}}
-									>
-										{hasExpiry && (
-											<span>Exp: {moment(activePlan.expireAt).format('DD MMM YY')}</span>
-										)}
-										{queuedPlan && (
-											<>
-												{hasExpiry && <span>·</span>}
-												<span className="text-violet-600 dark:text-violet-400 font-medium">
-													Next: {queuedPlan.name}
-												</span>
-											</>
-										)}
-									</Typography>
-								)}
-							</Box>
+							<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{m.format('DD-MM-YYYY hh:mm A')}
+								</Typography>
+							</Tooltip>
 						);
 					}
 				},
 				{
 					id: 'planLimits.maxMarketplaces',
-					header: 'MARKETS',
+					header: 'Markets',
 					size: 85,
 					minSize: 80,
 					maxSize: 95,
@@ -886,28 +1266,33 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						}
 						return (
 							<Tooltip title={`Max Marketplaces: ${val}`} arrow>
-								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
-									<FuseSvgIcon size={13} sx={{ color: 'text.secondary', flexShrink: 0 }}>
-										heroicons-outline:globe-alt
-									</FuseSvgIcon>
-									<Typography
-										sx={{
-											fontSize: 12,
-											fontWeight: 600,
-											color: 'text.primary',
-											lineHeight: 1.2
-										}}
-									>
-										{val}
-									</Typography>
-								</Box>
+								<Typography
+									component="span"
+									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										lineHeight: 1.25,
+										display: 'inline-flex',
+										alignItems: 'center',
+										justifyContent: 'center',
+										px: 1,
+										py: 0.25,
+										borderRadius: '4px',
+										bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.25)' : '#BBF7D0'),
+										color: (t) => (t.palette.mode === 'dark' ? '#86EFAC' : '#15803D'),
+										minWidth: 24,
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{val}
+								</Typography>
 							</Tooltip>
 						);
 					}
 				},
 				{
 					id: 'planLimits.maxReviewRequestsPerMonth',
-					header: 'QUOTA',
+					header: 'Quota',
 					size: 85,
 					minSize: 80,
 					maxSize: 95,
@@ -936,39 +1321,31 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						const numericVal = Number(val);
 						return (
 							<Tooltip title={`Monthly Request Quota: ${numericVal.toLocaleString()}`} arrow>
-								<Box
+								<Typography
+									component="span"
 									sx={{
+										fontSize: 12,
+										fontWeight: 400,
+										lineHeight: 1.25,
 										display: 'inline-flex',
 										alignItems: 'center',
 										px: 0.75,
-										py: 0.15,
-										borderRadius: '4px',
-										bgcolor: (t) =>
-											t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)',
-										border: '1px solid',
-										borderColor: (t) =>
-											t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.25)'
+										py: 0.25,
+										borderRadius: '3px',
+										bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(234, 179, 8, 0.25)' : '#FEF9C3'),
+										color: (t) => (t.palette.mode === 'dark' ? '#FEF08A' : '#713F12'),
+										whiteSpace: 'nowrap'
 									}}
 								>
-									<Typography
-										sx={{
-											fontSize: 11.5,
-											fontWeight: 700,
-											fontFamily: "'Roboto Mono', monospace",
-											color: (t) => (t.palette.mode === 'dark' ? '#FBBF24' : '#B45309'),
-											lineHeight: 1.2
-										}}
-									>
-										{numericVal.toLocaleString()}
-									</Typography>
-								</Box>
+									{numericVal.toLocaleString()}
+								</Typography>
 							</Tooltip>
 						);
 					}
 				},
 				{
 					id: 'planLimits.usedReviewRequests',
-					header: 'USED',
+					header: 'Used',
 					size: 85,
 					minSize: 80,
 					maxSize: 95,
@@ -998,32 +1375,18 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								arrow
 							>
 								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4 }}>
-									<FuseSvgIcon size={12} sx={{ color: 'text.secondary', flexShrink: 0 }}>
-										heroicons-outline:paper-airplane
-									</FuseSvgIcon>
-									<Box sx={{ display: 'inline-flex', alignItems: 'baseline', gap: 0.2 }}>
-										<Typography
-											sx={{
-												fontSize: 12,
-												fontWeight: 600,
-												fontFamily: "'Roboto Mono', monospace",
-												color: 'text.primary',
-												lineHeight: 1.2
-											}}
-										>
-											{used.toLocaleString()}
-										</Typography>
-										<Typography
-											sx={{
-												fontSize: 10.5,
-												fontFamily: "'Roboto Mono', monospace",
-												color: 'text.secondary',
-												lineHeight: 1.2
-											}}
-										>
-											/{quota > 0 ? (quota >= 1000 ? `${Math.round(quota / 1000)}k` : quota) : '—'}
-										</Typography>
-									</Box>
+									<Typography
+										sx={{
+											fontSize: 12,
+											fontWeight: 400,
+											color: 'text.primary',
+											lineHeight: 1.2
+										}}
+									>
+										{used >= 1000 ? `${(used / 1000).toFixed(used % 1000 === 0 ? 0 : 1)}k` : used.toLocaleString()}
+										{' / '}
+										{quota > 0 ? (quota >= 1000 ? `${Math.round(quota / 1000)}k` : quota) : '—'}
+									</Typography>
 								</Box>
 							</Tooltip>
 						);
@@ -1034,45 +1397,35 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			base.push({
 				accessorKey: 'contact_no',
 				header: 'PHONE',
-				size: 140,
+				size: 150,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) {
 						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 					}
 					return (
-						<Typography sx={{ fontSize: 12, color: 'text.primary', fontWeight: 600 }}>
-							{val}
-						</Typography>
-					);
-				}
-			});
-
-			base.push({
-				accessorKey: 'createdAt',
-				header: 'CREATED AT',
-				size: 140,
-				Cell: ({ cell, row }) => {
-					const val = (cell.getValue?.() as string) || row.original?.createdAt;
-					if (!val || !moment(val).isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
-					}
-					const m = moment(val);
-					return (
-						<Tooltip title={m.format('DD MMM YYYY, hh:mm A')} arrow>
-							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-									{m.format('DD MMM YYYY')}
+						<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+							<Tooltip title={val} arrow>
+								<Typography
+									sx={{
+										fontSize: 12,
+										color: 'text.primary',
+										fontWeight: 400,
+										overflow: 'hidden',
+										textOverflow: 'ellipsis',
+										whiteSpace: 'nowrap'
+									}}
+								>
+									{val}
 								</Typography>
-								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
-									{m.format('hh:mm A')}
-								</Typography>
-							</Box>
-						</Tooltip>
+							</Tooltip>
+							<TableCopyButton text={val} />
+						</Box>
 					);
 				}
 			});
 		}
+
 		return base;
 	}, [isSellersMode]);
 
@@ -1091,7 +1444,266 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 			? 'lucide:users'
 			: 'lucide:user-cog';
 
-	const actionButtons = !isSellersMode && canCreate(sectionKey) ? (
+	const handlePlanChange = (event: { target: { value: string | string[] } }) => {
+		const value = event.target.value;
+		const newValue = typeof value === 'string' ? value.split(',') : value;
+
+		setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+
+		if (newValue.includes('')) {
+			const isCurrentlyAll =
+				!hasUserFilteredPlans ||
+				selectedPlans.length === 0 ||
+				(allPlanIds.length > 0 && selectedPlans.length === allPlanIds.length);
+			if (isCurrentlyAll) {
+				setSelectedPlans([]);
+				setHasUserFilteredPlans(true);
+			} else {
+				setSelectedPlans(allPlanIds);
+				setHasUserFilteredPlans(false);
+			}
+		} else {
+			const filtered = newValue.filter((id) => id !== '');
+			setSelectedPlans(filtered);
+			setHasUserFilteredPlans(true);
+		}
+	};
+
+	const formatDateRange = () => {
+		if (!searchDate.from && !searchDate.to) return 'Date Range';
+		if (searchDate.from && searchDate.to) {
+			return `${format(searchDate.from, 'MMM dd')} - ${format(searchDate.to, 'MMM dd, yyyy')}`;
+		}
+		if (searchDate.from) return `From ${format(searchDate.from, 'MMM dd, yyyy')}`;
+		if (searchDate.to) return `Until ${format(searchDate.to, 'MMM dd, yyyy')}`;
+		return 'Date Range';
+	};
+
+	const actionButtons = isSellersMode ? (
+		<div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+			{/* Date Range Picker Trigger */}
+			<div className="relative">
+				<button
+					type="button"
+					onClick={(e) => setDateAnchorEl(dateAnchorEl ? null : e.currentTarget)}
+					style={{ height: '38px', minHeight: '38px', maxHeight: '38px' }}
+					className="h-[38px] flex items-center justify-between gap-2 px-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 outline-none hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer shadow-xs transition-colors shrink-0"
+				>
+					<div className="flex items-center gap-1.5">
+						<FuseSvgIcon size={15} className="text-slate-500 dark:text-slate-400">
+							heroicons-outline:calendar
+						</FuseSvgIcon>
+						<span className="text-slate-700 dark:text-slate-200">{formatDateRange()}</span>
+					</div>
+					<FuseSvgIcon size={14} className="text-slate-400">
+						heroicons-outline:calendar-days
+					</FuseSvgIcon>
+				</button>
+
+				<Popover
+					open={Boolean(dateAnchorEl)}
+					anchorEl={dateAnchorEl}
+					onClose={() => setDateAnchorEl(null)}
+					anchorOrigin={{
+						vertical: 'bottom',
+						horizontal: 'right'
+					}}
+					transformOrigin={{
+						vertical: 'top',
+						horizontal: 'right'
+					}}
+					slotProps={{
+						paper: {
+							sx: {
+								mt: 1,
+								boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
+								borderRadius: '12px',
+								overflow: 'hidden'
+							}
+						}
+					}}
+				>
+					<CustomDateRangePicker
+						value={searchDate}
+						onChange={(range) => {
+							setSearchDate(range);
+							setDateAnchorEl(null);
+							setPagination((prev) => ({ ...prev, pageIndex: 0 }));
+						}}
+						onClose={() => setDateAnchorEl(null)}
+					/>
+				</Popover>
+			</div>
+
+			{/* Plan Multi-Select Filter */}
+			<FormControl
+				size="small"
+				className="min-w-[150px] bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 shadow-xs shrink-0"
+				sx={{
+					height: '38px !important',
+					minHeight: '38px !important',
+					maxHeight: '38px !important',
+					justifyContent: 'center',
+					'& .MuiInputBase-root': {
+						height: '38px !important',
+						minHeight: '38px !important',
+						maxHeight: '38px !important',
+						borderRadius: '8px !important',
+						backgroundColor: 'transparent !important',
+						fontSize: '12px !important'
+					},
+					'& .MuiOutlinedInput-notchedOutline': {
+						border: 'none !important'
+					},
+					'& .MuiSelect-select': {
+						py: '0 !important',
+						height: '38px !important',
+						minHeight: '38px !important',
+						maxHeight: '38px !important',
+						lineHeight: '38px !important',
+						display: 'flex !important',
+						alignItems: 'center !important',
+						fontSize: '12px !important',
+						boxSizing: 'border-box !important'
+					}
+				}}
+			>
+				<Select
+					value={
+						!hasUserFilteredPlans || selectedPlans.length === 0
+							? (allPlanIds.length > 0 ? allPlanIds : [])
+							: selectedPlans
+					}
+					onChange={handlePlanChange}
+					displayEmpty
+					className="text-xs bg-white dark:bg-slate-800 font-medium text-slate-700 dark:text-slate-200 border-0"
+					sx={{
+						height: '38px !important',
+						borderRadius: '8px !important',
+						'& .MuiOutlinedInput-notchedOutline': {
+							border: 'none !important'
+						},
+						'& .MuiSelect-select': {
+							py: '0 !important',
+							height: '38px !important',
+							display: 'flex !important',
+							alignItems: 'center !important',
+							fontSize: '12px !important'
+						}
+					}}
+					MenuProps={{
+						PaperProps: {
+							sx: {
+								maxHeight: 380,
+								borderRadius: '12px',
+								boxShadow: '0 10px 25px -5px rgba(0,0,0,0.15), 0 8px 10px -6px rgba(0,0,0,0.1)'
+							}
+						}
+					}}
+					multiple
+					renderValue={(selected: any) => {
+						const current = Array.isArray(selected) ? selected : [];
+						const isAll =
+							!hasUserFilteredPlans ||
+							current.length === 0 ||
+							(allPlanIds.length > 0 && current.length === allPlanIds.length);
+						if (isAll) {
+							return (
+								<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs font-semibold">
+									<FuseSvgIcon size={15} className="text-slate-600 dark:text-slate-300">
+										heroicons-outline:sparkles
+									</FuseSvgIcon>
+									ALL PLANS
+								</span>
+							);
+						}
+						const selectedNames = current
+							.map((id: string) => allPlans.find((p: any) => String(p.id || p._id) === String(id))?.name || id)
+							.filter(Boolean);
+						const label =
+							selectedNames.length > 2
+								? `${selectedNames.length} Plans`
+								: selectedNames.join(', ');
+						return (
+							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs font-semibold truncate max-w-[150px]">
+								<FuseSvgIcon size={15} className="text-slate-600 dark:text-slate-300 shrink-0">
+									heroicons-outline:sparkles
+								</FuseSvgIcon>
+								<span className="truncate">{label}</span>
+							</span>
+						);
+					}}
+				>
+					<MenuItem
+						value=""
+						sx={{
+							py: 1,
+							px: 2,
+							minHeight: 38,
+							'&:hover': {
+								bgcolor: (t) =>
+									t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'
+							}
+						}}
+					>
+						<Checkbox
+							checked={
+								!hasUserFilteredPlans ||
+								selectedPlans.length === 0 ||
+								(allPlanIds.length > 0 && selectedPlans.length === allPlanIds.length)
+							}
+							size="small"
+							sx={{
+								p: 0.5,
+								mr: 1,
+								color: '#94a3b8',
+								'&.Mui-checked': { color: 'var(--color-primary-700, #0032ab)' }
+							}}
+						/>
+						<em className="text-xs font-semibold not-italic text-slate-800 dark:text-slate-100">
+							ALL PLANS
+						</em>
+					</MenuItem>
+					{allPlans.map((plan: any) => {
+						const planId = String(plan.id || plan._id);
+						const isChecked =
+							!hasUserFilteredPlans ||
+							selectedPlans.length === 0 ||
+							selectedPlans.includes(planId);
+						return (
+							<MenuItem
+								key={planId}
+								value={planId}
+								sx={{
+									py: 1,
+									px: 2,
+									minHeight: 38,
+									'&:hover': {
+										bgcolor: (t) =>
+											t.palette.mode === 'dark' ? 'rgba(255, 255, 255, 0.06)' : 'rgba(0, 0, 0, 0.04)'
+									}
+								}}
+							>
+								<Checkbox
+									checked={isChecked}
+									size="small"
+									sx={{
+										p: 0.5,
+										mr: 1,
+										color: '#94a3b8',
+										'&.Mui-checked': { color: 'var(--color-primary-700, #0032ab)' }
+									}}
+								/>
+								<span className="text-xs font-medium text-slate-700 dark:text-slate-200">
+									{plan.name}
+								</span>
+							</MenuItem>
+						);
+					})}
+				</Select>
+			</FormControl>
+		</div>
+	) : !isSellersMode && canCreate(sectionKey) ? (
 		<button
 			type="button"
 			onClick={() => {
@@ -1134,7 +1746,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 					<DataTable
 						columns={columns}
 						data={users}
-						tableId={isSellersMode ? 'sellers-table' : isTeamMode ? 'team-table' : 'admin-users-table'}
+						tableId={isSellersMode ? 'sellers-table-v6' : isTeamMode ? 'team-table-v2' : 'admin-users-table-v2'}
 						title={title}
 						icon={icon}
 						actionButtons={actionButtons}
@@ -1143,33 +1755,20 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						positionActionsColumn="last"
 						displayColumnDefOptions={{
 							'mrt-row-actions': {
-								size: isSellersMode ? 135 : 95,
-								minSize: isSellersMode ? 125 : 90,
-								maxSize: isSellersMode ? 150 : 105,
+								size: isSellersMode ? 190 : 115,
+								minSize: isSellersMode ? 180 : 105,
+								maxSize: isSellersMode ? 210 : 125,
 								muiTableHeadCellProps: {
 									sx: {
-										width: isSellersMode ? '135px !important' : '95px !important',
-										maxWidth: isSellersMode ? '150px !important' : '105px !important',
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-										color: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
-										borderColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
-										'&:before': {
-											backgroundColor: (theme: any) =>
-												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-										},
-										'&[data-pinned="true"]:before': {
-											backgroundColor: (theme: any) =>
-												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-										},
+										width: isSellersMode ? '190px !important' : '115px !important',
+										minWidth: isSellersMode ? '180px !important' : '105px !important'
 									}
 								},
 								muiTableBodyCellProps: {
 									sx: {
-										width: isSellersMode ? '135px !important' : '95px !important',
-										maxWidth: isSellersMode ? '150px !important' : '105px !important'
+										width: isSellersMode ? '190px !important' : '115px !important',
+										minWidth: isSellersMode ? '180px !important' : '105px !important',
+										px: '8px !important'
 									}
 								}
 							}
@@ -1193,9 +1792,15 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							const user = row.original;
 							const isPaymentCancelled = user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0;
 
+							const baseRowSx = {
+								minHeight: '38px',
+								height: '38px'
+							};
+
 							if (isSellersMode && isPaymentCancelled) {
 								return {
 									sx: {
+										...baseRowSx,
 										backgroundColor: (theme: any) =>
 											theme.palette.mode === 'dark'
 												? 'rgba(239, 68, 68, 0.16) !important'
@@ -1219,41 +1824,50 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									}
 								};
 							}
-							return {};
+							return {
+								sx: {
+									...baseRowSx,
+									'&:hover, &:hover td, &:hover td:before': {
+										backgroundColor: (theme: any) =>
+											theme.palette.mode === 'dark'
+												? '#1f2937 !important'
+												: '#f3f4f6 !important'
+									},
+									'&:hover td:after': {
+										backgroundColor: 'transparent !important'
+									}
+								}
+							};
 						}}
 						muiTableProps={{
 							sx: {
 								tableLayout: 'auto',
 								minWidth: { xs: isSellersMode ? '1080px' : '880px', lg: '100%' },
-								'& .MuiTableRow-root:hover': {
-									backgroundColor: 'action.hover',
-									transition: 'background-color 0.15s ease'
-								},
 								'& .MuiTableCell-root': {
 									borderBottom: '1px solid',
 									borderColor: 'divider',
-									padding: '4px 8px',
+									padding: '6px 10px',
 									overflow: 'hidden',
 									textOverflow: 'ellipsis',
 									whiteSpace: 'nowrap',
 									maxWidth: '100%'
 								},
 								'& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
-									fontWeight: 700,
-									fontSize: 11.5,
-									letterSpacing: 0.3,
-									textTransform: 'uppercase',
-									color: (t: any) => (t.palette?.mode === 'dark' ? '#e2e8f0' : '#1f2937'),
-									backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb'),
+									fontWeight: 600,
+									fontSize: 12,
+									letterSpacing: 'normal',
+									textTransform: 'none',
+									color: (t: any) => (t.palette?.mode === 'dark' ? '#cbd5e1' : '#334155'),
+									backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6'),
 									borderTop: '1px solid',
 									borderBottom: '1px solid',
 									borderColor: (t: any) =>
-										t.palette.mode === 'dark' ? '#334155' : '#d1d5db',
+										t.palette.mode === 'dark' ? '#374151' : '#e5e7eb',
 									whiteSpace: 'nowrap !important',
 									overflow: 'visible !important',
 									textOverflow: 'clip !important',
 									wordBreak: 'normal',
-									padding: '6px 8px',
+									padding: '8px 10px',
 									textAlign: 'left',
 									'& .MuiTableSortLabel-root': {
 										overflow: 'visible !important',
@@ -1270,29 +1884,29 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									},
 									'& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
 										backgroundColor: (t: any) =>
-											t.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important'
+											t.palette?.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important'
 									}
 								}
 							}
 						}}
 						muiTableHeadProps={{
-							className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700'
+							className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700'
 						}}
 						muiTableHeadRowProps={{
-							className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700'
+							className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700'
 						}}
 						muiTableHeadCellProps={{
-							className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700'
+							className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700'
 						}}
 						muiBottomToolbarProps={{
 							className:
-								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-200 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-700 overflow-x-auto',
+								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 overflow-x-auto',
 							sx: {
 								backgroundColor: (theme: any) =>
-									theme.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb',
+									theme.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6',
 								borderTop: '1px solid',
 								borderColor: (theme: any) =>
-									theme.palette?.mode === 'dark' ? '#334155' : '#d1d5db',
+									theme.palette?.mode === 'dark' ? '#374151' : '#e5e7eb',
 								flexShrink: 0,
 								marginTop: 'auto',
 								position: 'sticky',
@@ -1382,15 +1996,22 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								overflowX: 'auto',
 								overflowY: 'auto',
 								WebkitOverflowScrolling: 'touch',
-								'&::-webkit-scrollbar': { height: 8, width: 8 },
+								scrollbarWidth: 'thin',
+								scrollbarColor: '#94a3b8 #f1f5f9',
+								'&::-webkit-scrollbar': { height: 6, width: 6 },
 								'&::-webkit-scrollbar-track': {
-									backgroundColor: 'background.default',
-									borderRadius: 4
+									backgroundColor: (theme: any) =>
+										theme.palette.mode === 'dark' ? '#1e293b' : '#f1f5f9',
+									borderRadius: 9999
 								},
 								'&::-webkit-scrollbar-thumb': {
-									backgroundColor: 'divider',
-									borderRadius: 4,
-									'&:hover': { backgroundColor: 'text.disabled' }
+									backgroundColor: '#94a3b8',
+									borderRadius: 9999,
+									border: (theme: any) =>
+										theme.palette.mode === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0',
+									'&:hover': {
+										backgroundColor: '#64748b'
+									}
 								}
 							}
 						}}
@@ -1399,7 +2020,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 							const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
 
 							return (
-								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap' }}>
+								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap', minWidth: 'max-content' }}>
 									{canUpdate(sectionKey) && (
 										<>
 											<Tooltip
@@ -1681,55 +2302,57 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										/>
 									</div>
 
-									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
-											Role <span className="text-red-500">*</span>
-										</label>
-										<FormControl fullWidth size="small" required error={!!createErrors.roleId}>
-											<Select
-												value={formRoleId}
-												onChange={(e) => {
-													setFormRoleId(String(e.target.value));
-													if (createErrors.roleId) setCreateErrors((prev) => ({ ...prev, roleId: undefined }));
-												}}
-												displayEmpty
-												renderValue={(selected) => {
-													if (!selected) {
-														return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+									{!isSellersMode && (
+										<div>
+											<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+												Role <span className="text-red-500">*</span>
+											</label>
+											<FormControl fullWidth size="small" required error={!!createErrors.roleId}>
+												<Select
+													value={formRoleId}
+													onChange={(e) => {
+														setFormRoleId(String(e.target.value));
+														if (createErrors.roleId) setCreateErrors((prev) => ({ ...prev, roleId: undefined }));
+													}}
+													displayEmpty
+													renderValue={(selected) => {
+														if (!selected) {
+															return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+														}
+														const roleObj = roles.find((r) => (r.id || r._id) === selected);
+														return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
+													}}
+													startAdornment={
+														<InputAdornment position="start">
+															<FuseSvgIcon size={16} className="text-gray-400">
+																heroicons-outline:shield-check
+															</FuseSvgIcon>
+														</InputAdornment>
 													}
-													const roleObj = roles.find((r) => (r.id || r._id) === selected);
-													return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
-												}}
-												startAdornment={
-													<InputAdornment position="start">
-														<FuseSvgIcon size={16} className="text-gray-400">
-															heroicons-outline:shield-check
-														</FuseSvgIcon>
-													</InputAdornment>
-												}
-											>
-												{roles.map((role) => {
-													const id = role.id || role._id || '';
-													return (
-														<MenuItem key={id} value={id}>
-															<span className="text-xs sm:text-sm">{role.role_name}</span>
-														</MenuItem>
-													);
-												})}
-											</Select>
-											{createErrors.roleId && (
-												<Typography variant="caption" color="error" className="mt-1">
-													{createErrors.roleId}
+												>
+													{roles.map((role) => {
+														const id = role.id || role._id || '';
+														return (
+															<MenuItem key={id} value={id}>
+																<span className="text-xs sm:text-sm">{role.role_name}</span>
+															</MenuItem>
+														);
+													})}
+												</Select>
+												{createErrors.roleId && (
+													<Typography variant="caption" color="error" className="mt-1">
+														{createErrors.roleId}
+													</Typography>
+												)}
+											</FormControl>
+											{!roles.length && (
+												<Typography variant="body2" className="text-amber-600 text-xs mt-1.5 flex items-center gap-1">
+													<FuseSvgIcon size={14}>heroicons-outline:exclamation-triangle</FuseSvgIcon>
+													Create a role first before adding users.
 												</Typography>
 											)}
-										</FormControl>
-										{!roles.length && (
-											<Typography variant="body2" className="text-amber-600 text-xs mt-1.5 flex items-center gap-1">
-												<FuseSvgIcon size={14}>heroicons-outline:exclamation-triangle</FuseSvgIcon>
-												Create a role first before adding users.
-											</Typography>
-										)}
-									</div>
+										</div>
+									)}
 								</div>
 							</DialogContent>
 
@@ -1905,44 +2528,46 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 										/>
 									</div>
 
-									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
-											Role
-										</label>
-										<FormControl fullWidth size="small">
-											<Select
-												value={formRoleId}
-												onChange={(e) => {
-													setFormRoleId(String(e.target.value));
-													if (editErrors.roleId) setEditErrors((prev) => ({ ...prev, roleId: undefined }));
-												}}
-												displayEmpty
-												renderValue={(selected) => {
-													if (!selected) {
-														return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+									{!isSellersMode && (
+										<div>
+											<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+												Role
+											</label>
+											<FormControl fullWidth size="small">
+												<Select
+													value={formRoleId}
+													onChange={(e) => {
+														setFormRoleId(String(e.target.value));
+														if (editErrors.roleId) setEditErrors((prev) => ({ ...prev, roleId: undefined }));
+													}}
+													displayEmpty
+													renderValue={(selected) => {
+														if (!selected) {
+															return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+														}
+														const roleObj = roles.find((r) => (r.id || r._id) === selected);
+														return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
+													}}
+													startAdornment={
+														<InputAdornment position="start">
+															<FuseSvgIcon size={16} className="text-gray-400">
+																heroicons-outline:shield-check
+															</FuseSvgIcon>
+														</InputAdornment>
 													}
-													const roleObj = roles.find((r) => (r.id || r._id) === selected);
-													return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
-												}}
-												startAdornment={
-													<InputAdornment position="start">
-														<FuseSvgIcon size={16} className="text-gray-400">
-															heroicons-outline:shield-check
-														</FuseSvgIcon>
-													</InputAdornment>
-												}
-											>
-												{roles.map((role) => {
-													const id = role.id || role._id || '';
-													return (
-														<MenuItem key={id} value={id}>
-															<span className="text-xs sm:text-sm">{role.role_name}</span>
-														</MenuItem>
-													);
-												})}
-											</Select>
-										</FormControl>
-									</div>
+												>
+													{roles.map((role) => {
+														const id = role.id || role._id || '';
+														return (
+															<MenuItem key={id} value={id}>
+																<span className="text-xs sm:text-sm">{role.role_name}</span>
+															</MenuItem>
+														);
+													})}
+												</Select>
+											</FormControl>
+										</div>
+									)}
 
 									{isSellersMode && (
 										<>

@@ -104,14 +104,10 @@ function DataTable<TData>({
 
   const getDensityFromLocalStorage = (id: string) => {
     const storedDensity = localStorage.getItem(`density_${id}`);
-    if (storedDensity === 'comfortable' || storedDensity === 'spacious') {
-      localStorage.setItem(`density_${id}`, 'compact');
-      return 'compact';
-    }
     return storedDensity &&
       ['compact', 'comfortable', 'spacious'].includes(storedDensity)
       ? storedDensity
-      : 'compact';
+      : 'comfortable';
   };
 
   const setDensityToLocalStorage = (id: string, density: string) => {
@@ -141,7 +137,7 @@ function DataTable<TData>({
     () =>
       _.defaults(rest, {
         initialState: {
-          density: 'compact',
+          density: 'comfortable',
           showColumnFilters: false,
           showGlobalFilter: true,
           columnPinning: {
@@ -176,13 +172,13 @@ function DataTable<TData>({
         manualSorting: false, // Will be overridden if API sorting is needed
         muiBottomToolbarProps: {
           className:
-            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-200 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-700 overflow-x-auto',
+            'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 overflow-x-auto',
           sx: {
             backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb',
+              theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6',
             borderTop: '1px solid',
             borderColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#334155' : '#d1d5db',
+              theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb',
             flexShrink: 0,
             minHeight: '46px !important',
             height: '46px !important',
@@ -313,6 +309,10 @@ function DataTable<TData>({
           sx: {
             minWidth: { xs: '160px', sm: '220px', md: '280px' },
             minHeight: '32px !important',
+            '& .MuiInputBase-root': {
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff',
+            },
             '& input': {
               fontStyle: 'italic',
               fontSize: '13px',
@@ -363,22 +363,37 @@ function DataTable<TData>({
             },
             '& .MuiTableHead-root th, & .MuiTableHead-root .MuiTableCell-root, & th[data-pinned], & th[data-pinned="true"], & th.MRT_TableHeadCell-pinned, & th[data-column-id="mrt-row-actions"], & th[data-column-id="mrt-row-select"], & th[data-column-id="mrt-row-expand"]': {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
               color: (theme: Theme) =>
                 `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
               borderColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+                `${theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb'} !important`,
             },
             '& .MuiTableHead-root .MuiTableCell-root[data-pinned="true"]:before, & .MuiTableHead-root th[data-pinned="true"]:before, & .MuiTableHead-root th:before, & th[data-column-id="mrt-row-actions"]:before, & th[data-column-id="mrt-row-select"]:before, & th[data-column-id="mrt-row-expand"]:before': {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
             },
             '& .MuiTableRow-root:hover': {
               backgroundColor: (theme: Theme) =>
                 theme.palette.mode === 'dark'
-                  ? 'rgba(30, 41, 59, 0.4) !important'
-                  : 'rgba(248, 250, 252, 0.8) !important',
+                  ? '#1f2937 !important'
+                  : '#f3f4f6 !important',
               transition: 'background-color 0.15s ease',
+            },
+            '& .MuiTableRow-root:hover td': {
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                  ? '#1f2937 !important'
+                  : '#f3f4f6 !important',
+            },
+            '& .MuiTableRow-root:hover td:before': {
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark'
+                  ? '#1f2937 !important'
+                  : '#f3f4f6 !important',
+            },
+            '& .MuiTableRow-root:hover td:after': {
+              backgroundColor: 'transparent !important',
             },
           },
         },
@@ -387,18 +402,18 @@ function DataTable<TData>({
             muiTableHeadCellProps: {
               sx: {
                 backgroundColor: (theme: Theme) =>
-                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                  `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
                 color: (theme: Theme) =>
                   `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
                 borderColor: (theme: Theme) =>
-                  `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+                  `${theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb'} !important`,
                 '&:before': {
                   backgroundColor: (theme: Theme) =>
-                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                    `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
                 },
                 '&[data-pinned="true"]:before': {
                   backgroundColor: (theme: Theme) =>
-                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                    `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
                 },
               },
             },
@@ -407,18 +422,18 @@ function DataTable<TData>({
             muiTableHeadCellProps: {
               sx: {
                 backgroundColor: (theme: Theme) =>
-                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                  `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
                 color: (theme: Theme) =>
                   `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
                 borderColor: (theme: Theme) =>
-                  `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+                  `${theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb'} !important`,
                 '&:before': {
                   backgroundColor: (theme: Theme) =>
-                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                    `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
                 },
                 '&[data-pinned="true"]:before': {
                   backgroundColor: (theme: Theme) =>
-                    `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                    `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
                 },
               },
             },
@@ -431,15 +446,22 @@ function DataTable<TData>({
                 theme.palette.mode === 'dark' ? '#0f172a !important' : '#ffffff !important',
               opacity: 1,
               boxShadow: 'none',
-              minHeight: '40px',
+              minHeight: '48px',
               borderBottom: '1px solid',
               borderColor: 'divider',
               transition: 'background-color 0.15s ease',
-              '&:hover': {
+              '& td, & td:before': {
+                backgroundColor: (theme: Theme) =>
+                  theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+              },
+              '&:hover, &:hover td, &:hover td:before': {
                 backgroundColor: (theme: Theme) =>
                   theme.palette.mode === 'dark'
-                    ? 'rgba(30, 41, 59, 0.4) !important'
-                    : 'rgba(248, 250, 252, 0.8) !important',
+                    ? '#1f2937 !important'
+                    : '#f3f4f6 !important',
+              },
+              '&:hover td:after': {
+                backgroundColor: 'transparent !important',
               },
             },
           };
@@ -448,31 +470,31 @@ function DataTable<TData>({
           className: 'border-b',
           sx: {
             backgroundColor: (theme: Theme) =>
-              `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
             borderTop: '1px solid',
             borderBottom: '1px solid',
             borderColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#334155' : '#d1d5db',
+              theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb',
             '& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
             },
           },
         },
         muiTableHeadRowProps: {
           sx: {
             backgroundColor: (theme: Theme) =>
-              `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
           },
         },
         muiTableHeadCellProps: ({ column }) => ({
           sx: {
             backgroundColor: (theme: Theme) =>
-              `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+              `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
             borderTop: '1px solid',
             borderBottom: '1px solid',
             borderColor: (theme: Theme) =>
-              `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
+              `${theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb'} !important`,
             py: 1,
             px: 1.5,
             fontWeight: 700,
@@ -483,11 +505,11 @@ function DataTable<TData>({
               `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
             '&:before': {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
             },
             '&[data-pinned="true"]:before': {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
             },
             '& .Mui-TableHeadCell-Content-Labels': {
               flex: 1,
@@ -515,24 +537,32 @@ function DataTable<TData>({
             },
             '&[data-pinned], &[data-pinned="true"], &.MRT_TableHeadCell-pinned, &[data-column-id="mrt-row-actions"], &[data-column-id="mrt-row-select"]': {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+              background: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+              opacity: '1 !important',
+              boxShadow: 'none !important',
             },
             ...(column.getIsPinned() && {
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+              background: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+              opacity: '1 !important',
+              boxShadow: 'none !important',
             }),
           },
         }),
         mrtTheme: (theme) => ({
-          baseBackgroundColor: theme.palette.background.paper,
+          baseBackgroundColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
           menuBackgroundColor: theme.palette.background.paper,
-          pinnedRowBackgroundColor: theme.palette.background.paper,
-          pinnedColumnBackgroundColor: theme.palette.background.paper,
+          pinnedRowBackgroundColor: theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6',
+          pinnedColumnBackgroundColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
         }),
         muiTableBodyCellProps: {
           sx: {
             px: 1.5,
-            py: '6px',
+            py: '10px !important',
             boxSizing: 'border-box',
             borderBottom: '1px solid',
             borderColor: 'divider',
@@ -581,14 +611,19 @@ function DataTable<TData>({
             letterSpacing: 0.3,
             textTransform: 'uppercase',
             color: (t: any) => (t.palette?.mode === 'dark' ? '#e2e8f0' : '#1f2937'),
-            backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb'),
+            backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6'),
+            background: (t: any) => (t.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6'),
             borderTop: '1px solid',
             borderBottom: '1px solid',
             borderColor: (t: any) =>
-              t.palette.mode === 'dark' ? '#334155' : '#d1d5db',
+              t.palette.mode === 'dark' ? '#374151' : '#e5e7eb',
             '& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
               backgroundColor: (t: any) =>
-                t.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+                t.palette?.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important',
+              background: (t: any) =>
+                t.palette?.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important',
+              boxShadow: 'none !important',
+              opacity: '1 !important',
             },
           },
         },
@@ -634,20 +669,50 @@ function DataTable<TData>({
           sx: {
             opacity: 1,
             boxShadow: 'none',
-            minHeight: '40px',
+            minHeight: '48px',
             borderBottom: '1px solid',
             borderColor: 'divider',
             transition: 'background-color 0.15s ease',
-            '&:hover': {
+            backgroundColor: (theme: Theme) =>
+              theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+            '& td, & td:before': {
+              backgroundColor: (theme: Theme) =>
+                theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+            },
+            '&:hover, &:hover td, &:hover td:before': {
               backgroundColor: (theme: Theme) =>
                 theme.palette.mode === 'dark'
-                  ? 'rgba(30, 41, 59, 0.4) !important'
-                  : 'rgba(248, 250, 252, 0.8) !important',
+                  ? '#1f2937 !important'
+                  : '#f3f4f6 !important',
+            },
+            '&:hover td:after': {
+              backgroundColor: 'transparent !important',
             },
             ...(defaultRowProps?.sx || {}),
             ...(restRowProps?.sx || {}),
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#0f172a !important' : '#ffffff !important',
+          },
+        };
+      },
+      muiTableBodyCellProps: (props: any) => {
+        const defaultCellProps =
+          typeof defaults.muiTableBodyCellProps === 'function'
+            ? defaults.muiTableBodyCellProps(props)
+            : defaults.muiTableBodyCellProps || {};
+        const restCellProps =
+          typeof rest.muiTableBodyCellProps === 'function'
+            ? rest.muiTableBodyCellProps(props)
+            : rest.muiTableBodyCellProps || {};
+        return {
+          ...defaultCellProps,
+          ...restCellProps,
+          sx: {
+            px: 1.5,
+            py: '10px !important',
+            boxSizing: 'border-box',
+            borderBottom: '1px solid',
+            borderColor: 'divider',
+            ...(defaultCellProps?.sx || {}),
+            ...(restCellProps?.sx || {}),
           },
         };
       },
@@ -655,15 +720,17 @@ function DataTable<TData>({
         ...(defaults.muiBottomToolbarProps || {}),
         ...(rest.muiBottomToolbarProps || {}),
         className:
-          'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-200 dark:bg-slate-800 border-t border-gray-300 dark:border-slate-700 overflow-x-auto',
+          'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 overflow-x-auto',
         sx: {
           ...((defaults.muiBottomToolbarProps as any)?.sx || {}),
           ...((rest.muiBottomToolbarProps as any)?.sx || {}),
           backgroundColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
+            theme.palette.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important',
+          background: (theme: Theme) =>
+            theme.palette.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important',
           borderTop: '1px solid',
           borderColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
+            theme.palette.mode === 'dark' ? '#374151 !important' : '#e5e7eb !important',
           flexShrink: 0,
           marginTop: 'auto',
           position: 'sticky',
@@ -679,21 +746,32 @@ function DataTable<TData>({
           muiTableHeadCellProps: {
             ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableHeadCellProps || {}),
             sx: {
+              ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableHeadCellProps?.sx || {}),
               backgroundColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+              background: (theme: Theme) =>
+                `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
               color: (theme: Theme) =>
                 `${theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937'} !important`,
               borderColor: (theme: Theme) =>
-                `${theme.palette.mode === 'dark' ? '#334155' : '#d1d5db'} !important`,
-              '&:before': {
+                `${theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb'} !important`,
+              opacity: '1 !important',
+              boxShadow: 'none !important',
+              '&:before, &:after, &[data-pinned="true"]:before, &[data-pinned="true"]:after': {
                 backgroundColor: (theme: Theme) =>
-                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
+                  `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+                background: (theme: Theme) =>
+                  `${theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6'} !important`,
+                boxShadow: 'none !important',
+                opacity: '1 !important',
               },
-              '&[data-pinned="true"]:before': {
-                backgroundColor: (theme: Theme) =>
-                  `${theme.palette.mode === 'dark' ? '#1e293b' : '#e5e7eb'} !important`,
-              },
-              ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableHeadCellProps?.sx || {}),
+            },
+          },
+          muiTableBodyCellProps: {
+            ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableBodyCellProps || {}),
+            sx: {
+              ...((rest.displayColumnDefOptions?.['mrt-row-actions'] as any)?.muiTableBodyCellProps?.sx || {}),
+              boxShadow: 'none !important',
             },
           },
         },
@@ -701,7 +779,7 @@ function DataTable<TData>({
       state: {
         showLoadingOverlay: false,
         showProgressBars: false,
-        columnOrder,
+        ...(Boolean(rest.enableColumnOrdering) && columnOrder && columnOrder.length > 0 ? { columnOrder } : {}),
         density,
         ...rest.state,
         showSkeletons:

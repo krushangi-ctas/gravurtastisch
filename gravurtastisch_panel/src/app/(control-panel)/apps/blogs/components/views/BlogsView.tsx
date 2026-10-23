@@ -153,7 +153,7 @@ function BlogsContent({
 					blogId,
 					status: 2 // Soft delete
 				});
-				enqueueSnackbar(`"${confirmState.blog.blog_title}" has been deleted.`, {
+				enqueueSnackbar(`"${confirmState.blog.blog_title}" has been deleted successfully.`, {
 					variant: 'success',
 					autoHideDuration: 2000
 				});
@@ -189,23 +189,9 @@ function BlogsContent({
 					const title = cell.getValue<string>() || '';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-							<Box
-								sx={{
-									width: 26,
-									height: 26,
-									borderRadius: '6px',
-									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 50, 171, 0.08)',
-									color: (t) => t.palette.mode === 'dark' ? '#60A5FA' : '#0032ab',
-									border: '1px solid',
-									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0, 50, 171, 0.2)',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									shrink: 0,
-								}}
-							>
-								<FuseSvgIcon size={14}>heroicons-outline:document-text</FuseSvgIcon>
-							</Box>
+							<FuseSvgIcon size={16} className="text-blue-600 dark:text-blue-400 shrink-0">
+								heroicons-outline:document-text
+							</FuseSvgIcon>
 							<Tooltip title={title} arrow>
 								<Typography sx={{ fontSize: 12.5, fontWeight: 600, color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
 									{title}
@@ -268,7 +254,7 @@ function BlogsContent({
 			{
 				accessorKey: 'createdAt',
 				header: 'CREATED AT',
-				size: 140,
+				size: 160,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val || !moment(val).isValid()) {
@@ -276,15 +262,17 @@ function BlogsContent({
 					}
 					const m = moment(val);
 					return (
-						<Tooltip title={m.format('DD MMM YYYY, hh:mm A')} arrow>
-							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-									{m.format('DD MMM YYYY')}
-								</Typography>
-								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
-									{m.format('hh:mm A')}
-								</Typography>
-							</Box>
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
+								{m.format('DD-MM-YYYY hh:mm A')}
+							</Typography>
 						</Tooltip>
 					);
 				}
@@ -391,25 +379,7 @@ function BlogsContent({
 						'mrt-row-actions': {
 							size: 135,
 							minSize: 125,
-							maxSize: 145,
-							muiTableHeadCellProps: {
-								sx: {
-									backgroundColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									color: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
-									borderColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
-									'&:before': {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									},
-									'&[data-pinned="true"]:before': {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									},
-								}
-							}
+							maxSize: 145
 						}
 					}}
 					enableRowSelection={false}
@@ -425,11 +395,23 @@ function BlogsContent({
 					manualPagination
 					manualFiltering
 					manualSorting
-					rowCount={totalResults}
-					pageCount={totalPages}
+					muiTableBodyRowProps={{
+						sx: {
+							minHeight: '38px',
+							height: '38px'
+						}
+					}}
 					muiTableProps={{
 						sx: {
-							minWidth: { xs: '850px', lg: '100%' }
+							minWidth: { xs: '850px', lg: '100%' },
+							'& .MuiTableCell-root': {
+								padding: '6px 10px',
+								borderBottom: '1px solid',
+								borderColor: 'divider',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap'
+							}
 						}
 					}}
 					muiTableContainerProps={{

@@ -34,14 +34,25 @@ const createTeamUser = {
 };
 
 const getUsers = {
-  query: Joi.object().keys({
-    search: Joi.string().optional().allow(''),
-    status: Joi.string().optional().allow(''),
-    key: Joi.string().optional().allow(''),
-    sortBy: Joi.string().optional().allow(''),
-    limit: Joi.number().integer().optional().allow(''),
-    page: Joi.number().integer().optional().allow(''),
-  }),
+  query: Joi.object()
+    .keys({
+      search: Joi.string().optional().allow(''),
+      status: Joi.string().optional().allow(''),
+      key: Joi.string().optional().allow(''),
+      sortBy: Joi.string().optional().allow(''),
+      limit: Joi.number().integer().optional().allow(''),
+      page: Joi.number().integer().optional().allow(''),
+      plans: Joi.alternatives()
+        .try(Joi.array().items(Joi.string()), Joi.string())
+        .optional()
+        .allow(''),
+      plan: Joi.string().optional().allow(''),
+      from: Joi.string().optional().allow('', null),
+      to: Joi.string().optional().allow('', null),
+      startDate: Joi.string().optional().allow('', null),
+      endDate: Joi.string().optional().allow('', null),
+    })
+    .unknown(true),
 };
 
 const getUser = {

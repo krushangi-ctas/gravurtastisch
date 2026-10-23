@@ -30,9 +30,9 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
         id="fuse-toolbar"
         className={clsx('relative z-20 flex', className)}
         sx={(theme) => ({
-          backgroundColor: '#e0e0e0',
+          backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#0f172a' : '#ffffff'),
           color: theme.vars.palette.text.primary,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+          boxShadow: 'none',
           borderBottom: `1px solid ${theme.vars.palette.divider}`,
         })}
       >

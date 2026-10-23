@@ -24,6 +24,7 @@ import { useOrders, useMarketplace, ordersQueryKey } from '../../../api/hooks/or
 import { OrdersFilters } from './OrdersHeader';
 import { useSnackbar } from 'notistack';
 import React from 'react';
+import moment from 'moment';
 
 // Extended type for flattened orders
 type FlattenedOrder = Order & {
@@ -148,12 +149,14 @@ function OrdersTable({
     purchaseDate: 'purchaseDate',
     orderInfo: 'amazonOrderId',
     amazonOrderId: 'amazonOrderId',
+    buyerEmail: 'buyerEmail',
     delivery: 'earliestDeliveryDate',
     earliestDeliveryDate: 'earliestDeliveryDate',
     totalAmount: 'orderTotal.amount',
     city: 'shippingAddress.city',
     title: 'orderItems.title',
     ASIN: 'orderItems.ASIN',
+    orderItemId: 'orderItems.orderItemId',
   };
   const sortKey = sortKeyMapping[rawSortKey] || rawSortKey;
   const sortOrder = sorting[0]?.desc ? 'desc' : 'asc';
@@ -268,34 +271,30 @@ function OrdersTable({
       {
         id: 'purchaseDate',
         header: 'Order Date',
-        size: 90,
+        size: 160,
         Cell: ({ row }) => {
           if (!row.original || !row.original.purchaseDate) {
             return null;
           }
           if (!row.original.isFirstRow) {
-            return <Box sx={{ height: 16 }} />; // Empty space for non-first rows
+            return null;
           }
 
-          const purchaseDate = row.original.purchaseDate;
-          const date = new Date(purchaseDate);
-          if (isNaN(date.getTime())) return null;
-          const dateString = date.toLocaleDateString('en-GB');
-          const timeString = date.toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
+          const m = moment(row.original.purchaseDate);
+          if (!m.isValid()) return null;
 
           return (
-            <Tooltip title={`${dateString} ${timeString}`} arrow>
-              <Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.2 }}>
-                <Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-                  {dateString}
-                </Typography>
-                <Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
-                  {timeString}
-                </Typography>
-              </Box>
+            <Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  fontWeight: 400,
+                  color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {m.format('DD-MM-YYYY hh:mm A')}
+              </Typography>
             </Tooltip>
           );
         },
@@ -303,49 +302,95 @@ function OrdersTable({
       {
         id: 'orderInfo',
         header: 'Order',
-        size: 160,
+        size: 175,
         accessorKey: 'amazonOrderId',
         Cell: ({ row }) => {
           if (!row.original || !row.original.amazonOrderId) {
             return null;
           }
           if (!row.original.isFirstRow) {
-            return <Box sx={{ height: 16 }} />; // Empty space for non-first rows
+            return null;
           }
 
           return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Tooltip title={`Order ID: ${row.original.amazonOrderId}`} arrow>
-                  <Typography sx={{ ...monoText, fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-                    {row.original.amazonOrderId}
-                  </Typography>
-                </Tooltip>
-                <FuseSvgIcon
-                  size={13}
-                  sx={copyIconSx}
-                  onClick={() =>
-                    navigator.clipboard.writeText(row.original.amazonOrderId)
-                  }
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Tooltip title={`Order ID: ${row.original.amazonOrderId}`} arrow>
+                <Box
+                  component="span"
+                  sx={{
+                    ...monoText,
+                    fontSize: 12,
+                    fontWeight: 600,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    px: 1,
+                    py: 0.2,
+                    borderRadius: '3px',
+                    bgcolor: (t) =>
+                      t.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.8)' : '#EBF1F7',
+                    color: (t) =>
+                      t.palette.mode === 'dark' ? '#E2E8F0' : '#0F2C59',
+                    whiteSpace: 'nowrap',
+                    lineHeight: 1.25,
+                  }}
                 >
-                  heroicons-outline:clipboard-document
-                </FuseSvgIcon>
-              </Box>
-              <Tooltip title={row.original.buyerEmail || ''} arrow>
+                  {row.original.amazonOrderId}
+                </Box>
+              </Tooltip>
+              <FuseSvgIcon
+                size={13}
+                sx={copyIconSx}
+                onClick={() =>
+                  navigator.clipboard.writeText(row.original.amazonOrderId)
+                }
+              >
+                heroicons-outline:clipboard-document
+              </FuseSvgIcon>
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'buyerEmail',
+        header: 'Buyer Email',
+        size: 165,
+        accessorKey: 'buyerEmail',
+        enableSorting: true,
+        Cell: ({ row }) => {
+          if (!row.original || !row.original.buyerEmail) {
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+          }
+          if (!row.original.isFirstRow) {
+            return null;
+          }
+
+          return (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Tooltip title={row.original.buyerEmail} arrow>
                 <Typography
                   sx={{
-                    fontSize: 11,
-                    color: 'text.disabled',
+                    fontSize: 12,
+                    color: 'text.secondary',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                     whiteSpace: 'nowrap',
-                    maxWidth: 155,
+                    maxWidth: 160,
                     display: 'block',
                   }}
                 >
                   {row.original.buyerEmail}
                 </Typography>
               </Tooltip>
+              <FuseSvgIcon
+                size={12}
+                sx={copyIconSx}
+                onClick={() =>
+                  navigator.clipboard.writeText(row.original.buyerEmail)
+                }
+              >
+                heroicons-outline:clipboard-document
+              </FuseSvgIcon>
             </Box>
           );
         },
@@ -381,11 +426,11 @@ function OrdersTable({
                     alignItems: 'center',
                     gap: 0.5,
                     px: 1.25,
-                    py: 0.3,
-                    borderRadius: '6px',
-                    fontSize: 11.5,
+                    py: 0.1,
+                    borderRadius: '5px',
+                    fontSize: 12,
                     fontWeight: 600,
-                    height: 24,
+                    height: 22,
                     boxSizing: 'border-box',
                     bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)',
                     color: (t) => t.palette.mode === 'dark' ? '#4ADE80' : '#16A34A',
@@ -410,11 +455,11 @@ function OrdersTable({
                     alignItems: 'center',
                     gap: 0.5,
                     px: 1.25,
-                    py: 0.3,
-                    borderRadius: '6px',
-                    fontSize: 11.5,
+                    py: 0.1,
+                    borderRadius: '5px',
+                    fontSize: 12,
                     fontWeight: 600,
-                    height: 24,
+                    height: 22,
                     boxSizing: 'border-box',
                     bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)',
                     color: (t) => t.palette.mode === 'dark' ? '#FBBF24' : '#D97706',
@@ -450,14 +495,14 @@ function OrdersTable({
                 }}
                 startIcon={<FuseSvgIcon size={13}>lucide:send</FuseSvgIcon>}
                 sx={{
-                  borderRadius: '6px',
+                  borderRadius: '5px',
                   fontWeight: 600,
-                  fontSize: 11.5,
+                  fontSize: 12,
                   textTransform: 'none',
                   px: 1.25,
-                  py: 0.3,
-                  minHeight: 24,
-                  height: 24,
+                  py: 0.1,
+                  minHeight: 22,
+                  height: 22,
                   boxSizing: 'border-box',
                   lineHeight: 1,
                   bgcolor: (t) =>
@@ -493,56 +538,77 @@ function OrdersTable({
       },
       {
         id: 'ASIN',
-        header: 'ASIN / Item ID',
-        size: 125,
+        header: 'ASIN',
+        size: 110,
         enableSorting: true,
         Cell: ({ row }) => {
-          const orderItem = row.original.orderItem;
-          if (!orderItem)
+          const asin = row.original.orderItem?.ASIN;
+          if (!asin)
             return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 
           return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.15 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Tooltip title={`ASIN: ${orderItem.ASIN}`} arrow>
-                  <Typography
-                    sx={{
-                      ...monoText,
-                      fontSize: 12,
-                      color: (t) => (t.palette.mode === 'dark' ? '#FB923C' : '#C2410C'),
-                      fontWeight: 600,
-                    }}
-                  >
-                    {orderItem.ASIN}
-                  </Typography>
-                </Tooltip>
-                <FuseSvgIcon
-                  size={12}
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Tooltip title={`ASIN: ${asin}`} arrow>
+                <Typography
                   sx={{
-                    ...copyIconSx,
-                    '&:hover': {
-                      color: (t) => (t.palette.mode === 'dark' ? '#FB923C' : '#C2410C'),
-                    },
+                    ...monoText,
+                    fontSize: 12,
+                    color: (t) => (t.palette.mode === 'dark' ? '#FB923C' : '#C2410C'),
+                    fontWeight: 600,
+                    whiteSpace: 'nowrap',
                   }}
-                  onClick={() => navigator.clipboard.writeText(orderItem.ASIN)}
                 >
-                  heroicons-outline:clipboard-document
-                </FuseSvgIcon>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                <Tooltip title={`Item ID: ${orderItem.orderItemId}`} arrow>
-                  <Typography sx={{ ...monoText, fontSize: 10.5, color: 'text.disabled' }}>
-                    {orderItem.orderItemId}
-                  </Typography>
-                </Tooltip>
-                <FuseSvgIcon
-                  size={11}
-                  sx={copyIconSx}
-                  onClick={() => navigator.clipboard.writeText(orderItem.orderItemId)}
+                  {asin}
+                </Typography>
+              </Tooltip>
+              <FuseSvgIcon
+                size={12}
+                sx={{
+                  ...copyIconSx,
+                  '&:hover': {
+                    color: (t) => (t.palette.mode === 'dark' ? '#FB923C' : '#C2410C'),
+                  },
+                }}
+                onClick={() => navigator.clipboard.writeText(asin)}
+              >
+                heroicons-outline:clipboard-document
+              </FuseSvgIcon>
+            </Box>
+          );
+        },
+      },
+      {
+        id: 'orderItemId',
+        header: 'Item ID',
+        size: 135,
+        enableSorting: true,
+        Cell: ({ row }) => {
+          const itemId = row.original.orderItem?.orderItemId;
+          if (!itemId)
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+
+          return (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <Tooltip title={`Item ID: ${itemId}`} arrow>
+                <Typography
+                  sx={{
+                    ...monoText,
+                    fontSize: 12,
+                    color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#64748B'),
+                    fontWeight: 500,
+                    whiteSpace: 'nowrap',
+                  }}
                 >
-                  heroicons-outline:clipboard-document
-                </FuseSvgIcon>
-              </Box>
+                  {itemId}
+                </Typography>
+              </Tooltip>
+              <FuseSvgIcon
+                size={12}
+                sx={copyIconSx}
+                onClick={() => navigator.clipboard.writeText(itemId)}
+              >
+                heroicons-outline:clipboard-document
+              </FuseSvgIcon>
             </Box>
           );
         },
@@ -561,28 +627,24 @@ function OrdersTable({
           const isTransparency = orderItem.isTransparency;
 
           return (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, maxWidth: 220 }}>
               <Tooltip title={orderItem.title} arrow>
                 <Typography
                   sx={{
                     fontSize: 12,
                     fontWeight: 500,
                     color: 'text.primary',
-                    display: '-webkit-box',
-                    WebkitLineClamp: 2,
-                    WebkitBoxOrient: 'vertical',
                     overflow: 'hidden',
-                    whiteSpace: 'normal',
-                    lineHeight: 1.25,
-                    maxWidth: 195,
-                    wordBreak: 'break-word',
+                    whiteSpace: 'nowrap',
+                    textOverflow: 'ellipsis',
+                    maxWidth: (isGift || isTransparency) ? 145 : 215,
                   }}
                 >
                   {orderItem.title}
                 </Typography>
               </Tooltip>
               {(isGift || isTransparency) && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3, flexShrink: 0 }}>
                   {isGift && (
                     <Tooltip title="Gift order" arrow>
                       <Chip
@@ -595,7 +657,8 @@ function OrdersTable({
                           fontSize: 10.5,
                           bgcolor: 'secondary.light',
                           color: 'secondary.dark',
-                          '& .MuiChip-icon': { color: 'secondary.dark', ml: 0.5 },
+                          '& .MuiChip-icon': { color: 'secondary.dark', ml: 0.4 },
+                          '& .MuiChip-label': { px: 0.5 },
                         }}
                       />
                     </Tooltip>
@@ -612,7 +675,8 @@ function OrdersTable({
                           fontSize: 10.5,
                           bgcolor: 'info.light',
                           color: 'info.dark',
-                          '& .MuiChip-icon': { color: 'info.dark', ml: 0.5 },
+                          '& .MuiChip-icon': { color: 'info.dark', ml: 0.4 },
+                          '& .MuiChip-label': { px: 0.5 },
                         }}
                       />
                     </Tooltip>
@@ -639,9 +703,9 @@ function OrdersTable({
             return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 
           return (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <Tooltip title={`Quantity: ${orderItem.quantityOrdered}`} arrow>
-                <Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+                <Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary', whiteSpace: 'nowrap' }}>
                   Qty {orderItem.quantityOrdered}
                 </Typography>
               </Tooltip>
@@ -652,12 +716,13 @@ function OrdersTable({
                       display: 'inline-flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      px: 1,
-                      py: 0.15,
+                      px: 0.85,
+                      py: 0.05,
                       borderRadius: '999px',
-                      fontSize: 10.5,
+                      fontSize: 11,
                       fontWeight: 600,
-                      lineHeight: 1.2,
+                      lineHeight: 1.1,
+                      height: 19,
                       bgcolor: (t) =>
                         t.palette.mode === 'dark'
                           ? 'rgba(21, 101, 192, 0.18)'
@@ -698,16 +763,17 @@ function OrdersTable({
 
           return (
             <Tooltip title={`Fulfillment: ${fulfillment || '—'} · Channel: ${sales || '—'}`} arrow>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.7 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Box
                   sx={{
                     display: 'inline-flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     px: 0.75,
-                    py: 0.1,
+                    py: 0.05,
+                    height: 19,
                     borderRadius: '4px',
-                    fontSize: 10.5,
+                    fontSize: 11,
                     fontWeight: 700,
                     letterSpacing: 0.3,
                     bgcolor: isAFN
@@ -720,14 +786,14 @@ function OrdersTable({
                     borderColor: isAFN
                       ? (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.35)' : 'rgba(37, 99, 235, 0.25)'
                       : 'divider',
-                    lineHeight: 1.2,
+                    lineHeight: 1,
                   }}
                 >
                   {fulfillment || '—'}
                 </Box>
                 <Typography
                   sx={{
-                    fontSize: 11.5,
+                    fontSize: 12,
                     fontWeight: 500,
                     color: 'text.secondary',
                     overflow: 'hidden',
@@ -745,11 +811,15 @@ function OrdersTable({
       {
         id: 'delivery',
         header: 'Delivery (EDD)',
-        size: 105,
+        size: 165,
         accessorKey: 'earliestDeliveryDate',
         Cell: ({ row }) => {
           const edd = row.original?.earliestDeliveryDate;
           if (!edd) {
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+          }
+          const m = moment(edd);
+          if (!m.isValid()) {
             return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
           }
           const daysDiff =
@@ -759,26 +829,26 @@ function OrdersTable({
             null;
 
           return (
-            <Tooltip title={`Delivery Date: ${new Date(edd).toLocaleDateString('en-GB')}${daysDiff !== null ? ` (${daysDiff} days left)` : ''}`} arrow>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.2 }}>
-                <Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-                  {new Date(edd).toLocaleDateString('en-GB')}
+            <Tooltip title={`Delivery Date: ${m.format('DD MMM YYYY, hh:mm:ss A')}${daysDiff !== null ? ` (${daysDiff} days left)` : ''}`} arrow>
+              <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, whiteSpace: 'nowrap' }}>
+                <Typography
+                  sx={{
+                    fontSize: 12,
+                    fontWeight: 400,
+                    color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {m.format('DD-MM-YYYY hh:mm A')}
                 </Typography>
-                {daysDiff === null ? (
-                  <Chip
-                    label="N/A"
-                    size="small"
-                    variant="outlined"
-                    sx={{ ...chipBase, height: 18, fontSize: 10, borderColor: 'divider', color: 'text.disabled' }}
-                  />
-                ) : (
+                {daysDiff !== null && (
                   (() => {
                     const { color, bg } = urgencyToken(daysDiff as number);
                     return (
                       <Chip
                         label={`${daysDiff}d left`}
                         size="small"
-                        sx={{ ...chipBase, height: 18, fontSize: 10.5, color, bgcolor: bg, alignSelf: 'flex-start' }}
+                        sx={{ ...chipBase, height: 18, fontSize: 10.5, color, bgcolor: bg, flexShrink: 0, '& .MuiChip-label': { px: 0.6 } }}
                       />
                     );
                   })()
@@ -822,11 +892,11 @@ function OrdersTable({
 
           return (
             <Tooltip title={`Total: ${numericAmount.toFixed(2)} ${currencyCode}`} arrow>
-              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.4 }}>
+              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.3 }}>
                 <Typography
                   sx={{
                     ...monoText,
-                    fontSize: 12.5,
+                    fontSize: 12,
                     fontWeight: 700,
                     color: (t) => t.palette.mode === 'dark' ? '#FBBF24' : '#B45309',
                     letterSpacing: -0.2,
@@ -836,7 +906,7 @@ function OrdersTable({
                 </Typography>
                 <Typography
                   sx={{
-                    fontSize: 10.5,
+                    fontSize: 12,
                     fontWeight: 600,
                     color: (t) => t.palette.mode === 'dark' ? '#FCD34D' : '#D97706',
                   }}
@@ -851,36 +921,29 @@ function OrdersTable({
       {
         id: 'city',
         header: 'Location',
-        size: 110,
+        size: 130,
         accessorFn: (row) => row.shippingAddress?.city ?? '',
         Cell: ({ row }) => {
           const addr = row.original.shippingAddress;
-          const city = addr?.city || 'N/A';
-          const subLine = [addr?.postalCode, addr?.countryCode].filter(Boolean).join(', ');
+          const locationParts = [addr?.city, addr?.postalCode, addr?.countryCode].filter(Boolean);
+          const locationText = locationParts.length > 0 ? locationParts.join(', ') : 'N/A';
 
           return (
-            <Tooltip title={[city, subLine].filter(Boolean).join(' · ')} arrow>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.1 }}>
-                <Typography
-                  sx={{
-                    fontSize: 12,
-                    fontWeight: 500,
-                    color: 'text.primary',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    display: 'block',
-                    maxWidth: 105,
-                  }}
-                >
-                  {city}
-                </Typography>
-                {subLine && (
-                  <Typography sx={{ fontSize: 10.5, color: 'text.disabled' }}>
-                    {subLine}
-                  </Typography>
-                )}
-              </Box>
+            <Tooltip title={locationText} arrow>
+              <Typography
+                sx={{
+                  fontSize: 12,
+                  fontWeight: 500,
+                  color: 'text.primary',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  display: 'block',
+                  maxWidth: 140,
+                }}
+              >
+                {locationText}
+              </Typography>
             </Tooltip>
           );
         },
@@ -921,12 +984,27 @@ function OrdersTable({
         columns={columns}
         enableGlobalFilter={true}
         onGlobalFilterChange={setSearchText}
+        tableId="Orders_v4"
         state={{
           globalFilter: searchText,
           isLoading,
           showSkeletons: isLoading,
           pagination,
           sorting,
+          columnOrder: [
+            'purchaseDate',
+            'orderInfo',
+            'buyerEmail',
+            'actions',
+            'ASIN',
+            'orderItemId',
+            'title',
+            'qtyCondition',
+            'channelInfo',
+            'delivery',
+            'totalAmount',
+            'city',
+          ],
         }}
         onPaginationChange={(updater) => {
           setPagination((prev) => {
@@ -947,27 +1025,56 @@ function OrdersTable({
         initialState={{
           pagination: { pageIndex: 0, pageSize: pagination.pageSize || 20 },
           sorting: [],
+          columnOrder: [
+            'purchaseDate',
+            'orderInfo',
+            'buyerEmail',
+            'actions',
+            'ASIN',
+            'orderItemId',
+            'title',
+            'qtyCondition',
+            'channelInfo',
+            'delivery',
+            'totalAmount',
+            'city',
+          ],
+        }}
+        muiTableBodyRowProps={{
+          sx: {
+            minHeight: '36px',
+            height: '36px',
+          },
         }}
         muiTableProps={{
           sx: {
             tableLayout: 'auto',
-            minWidth: { xs: '980px', lg: '100%' },
+            minWidth: { xs: '1200px', lg: '100%' },
             '& .MuiTableRow-root:hover': {
-              backgroundColor: 'action.hover',
+              backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important'),
               transition: 'background-color 0.15s ease',
+            },
+            '& .MuiTableRow-root:hover td': {
+              backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important'),
+            },
+            '& .MuiTableRow-root:hover td:after': {
+              backgroundColor: 'transparent !important',
             },
             '& .MuiTableCell-root': {
               borderBottom: '1px solid',
               borderColor: 'divider',
               padding: '4px 8px',
+              height: '36px',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
               whiteSpace: 'nowrap',
               maxWidth: '100%',
+              fontSize: 11.5,
+              lineHeight: 1.15,
             },
             '& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
               fontWeight: 700,
-              fontSize: 11.5,
+              fontSize: 11,
               letterSpacing: 0.3,
               textTransform: 'uppercase',
               color: (t: any) => (t.palette?.mode === 'dark' ? '#e2e8f0' : '#1f2937'),
@@ -975,17 +1082,17 @@ function OrdersTable({
               borderTop: '1px solid',
               borderBottom: '1px solid',
               borderColor: (t: any) => (t.palette?.mode === 'dark' ? '#334155' : '#d1d5db'),
-              whiteSpace: 'normal',
+              whiteSpace: 'nowrap',
               overflow: 'visible',
               textOverflow: 'clip',
-              wordBreak: 'break-word',
-              padding: '6px 8px',
+              padding: '5px 8px',
+              height: '36px',
               maxWidth: '100%',
               textAlign: 'left',
               '& .MuiTableSortLabel-root': {
                 overflow: 'visible',
                 textOverflow: 'clip',
-                whiteSpace: 'normal',
+                whiteSpace: 'nowrap',
                 maxWidth: '100%',
               },
               '& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {

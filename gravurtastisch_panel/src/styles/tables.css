@@ -108,12 +108,12 @@ table.dense tbody tr:last-child td {
     border-bottom: none;
 }
 
-/* Custom visible horizontal scrollbar for data tables on mobile and desktop */
+/* Custom visible horizontal and vertical scrollbar for data tables on mobile and desktop */
 .custom-table-scrollbar {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: thin;
-    scrollbar-color: #0032ab #e2e8f0;
+    scrollbar-color: #94a3b8 #f1f5f9;
 }
 
 .custom-table-scrollbar::-webkit-scrollbar {
@@ -131,16 +131,185 @@ table.dense tbody tr:last-child td {
 }
 
 .custom-table-scrollbar::-webkit-scrollbar-thumb {
-    background: #0032ab;
+    background: #94a3b8;
     border-radius: 9999px;
     border: 1px solid #e2e8f0;
 }
 
 .dark .custom-table-scrollbar::-webkit-scrollbar-thumb {
-    background: #3b82f6;
+    background: #64748b;
     border: 1px solid #1e293b;
 }
 
 .custom-table-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: #155dfc;
+    background: #64748b;
+}
+
+.dark .custom-table-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* ==========================================================================
+   Global System-Wide Table Header & Pagination (bg-gray-100 / #f3f4f6)
+   ========================================================================== */
+
+/* Table Head, Headers & Pinned Headers (Actions, Select, Expand) */
+.MuiTableHead-root,
+.MuiTableHead-root th,
+.MuiTableHead-root .MuiTableCell-root,
+.MuiTableHead-root tr,
+th.MRT_TableHeadCell-pinned,
+th[data-pinned="true"],
+th[data-column-id="mrt-row-actions"],
+th[data-column-id="mrt-row-select"],
+th[data-column-id="mrt-row-expand"],
+.MRT_TableHeadCell-pinned-right,
+th.MRT_TableHeadCell-pinned-right {
+    background-color: #f3f4f6 !important;
+    background: #f3f4f6 !important;
+    border-color: #e5e7eb !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+
+/* Pseudo-elements for pinned MRT column headers */
+.MuiTableHead-root th:before,
+.MuiTableHead-root th:after,
+.MuiTableHead-root .MuiTableCell-root:before,
+.MuiTableHead-root .MuiTableCell-root:after,
+th.MRT_TableHeadCell-pinned:before,
+th.MRT_TableHeadCell-pinned:after,
+th[data-pinned="true"]:before,
+th[data-pinned="true"]:after,
+th[data-column-id="mrt-row-actions"]:before,
+th[data-column-id="mrt-row-actions"]:after,
+th[data-column-id="mrt-row-select"]:before,
+th[data-column-id="mrt-row-select"]:after,
+th[data-column-id="mrt-row-expand"]:before,
+th[data-column-id="mrt-row-expand"]:after,
+.MRT_TableHeadCell-pinned-right:before,
+.MRT_TableHeadCell-pinned-right:after {
+    background-color: #f3f4f6 !important;
+    background: #f3f4f6 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+
+/* Dark mode Table Headers */
+.dark .MuiTableHead-root,
+.dark .MuiTableHead-root th,
+.dark .MuiTableHead-root .MuiTableCell-root,
+.dark .MuiTableHead-root tr,
+.dark th.MRT_TableHeadCell-pinned,
+.dark th[data-pinned="true"],
+.dark th[data-column-id="mrt-row-actions"],
+.dark th[data-column-id="mrt-row-select"],
+.dark th[data-column-id="mrt-row-expand"],
+.dark .MRT_TableHeadCell-pinned-right,
+.dark th.MRT_TableHeadCell-pinned-right {
+    background-color: #1f2937 !important;
+    background: #1f2937 !important;
+    border-color: #374151 !important;
+    opacity: 1 !important;
+    box-shadow: none !important;
+}
+
+.dark .MuiTableHead-root th:before,
+.dark .MuiTableHead-root th:after,
+.dark .MuiTableHead-root .MuiTableCell-root:before,
+.dark .MuiTableHead-root .MuiTableCell-root:after,
+.dark th.MRT_TableHeadCell-pinned:before,
+.dark th.MRT_TableHeadCell-pinned:after,
+.dark th[data-pinned="true"]:before,
+.dark th[data-pinned="true"]:after,
+.dark th[data-column-id="mrt-row-actions"]:before,
+.dark th[data-column-id="mrt-row-actions"]:after,
+.dark th[data-column-id="mrt-row-select"]:before,
+.dark th[data-column-id="mrt-row-select"]:after,
+.dark th[data-column-id="mrt-row-expand"]:before,
+.dark th[data-column-id="mrt-row-expand"]:after,
+.dark .MRT_TableHeadCell-pinned-right:before,
+.dark .MRT_TableHeadCell-pinned-right:after {
+    background-color: #1f2937 !important;
+    background: #1f2937 !important;
+    box-shadow: none !important;
+    opacity: 1 !important;
+}
+
+/* Bottom Toolbar & Pagination */
+.MRT_BottomToolbar-root,
+div[class*="MRT_BottomToolbar-root"],
+.MuiTablePagination-root {
+    background-color: #f3f4f6 !important;
+}
+
+.dark .MRT_BottomToolbar-root,
+.dark div[class*="MRT_BottomToolbar-root"],
+.dark .MuiTablePagination-root {
+    background-color: #1f2937 !important;
+}
+
+/* Table Body Rows - Default White */
+.MuiTableBody-root tr:not([data-selected="true"]) > td,
+.MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned,
+.MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"] {
+    background-color: #ffffff;
+}
+
+.MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"]:before,
+.MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned:before {
+    background-color: #ffffff !important;
+}
+
+/* Neutralize MRT's default dark overlay pseudo-element on hover */
+.MuiTableBody-root tr td:after,
+.MuiTableBody-root tr:hover td:after,
+.MuiTableBody-root tr:hover > td:after,
+.MuiTableBody-root tr:hover td[data-pinned="true"]:after,
+.MuiTableBody-root tr:hover td.MRT_TableBodyCell-pinned:after {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* Row Hover - pure gray-100 (#f3f4f6) across row and all cells including pinned cells */
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"],
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned {
+    background-color: #f3f4f6 !important;
+    background: #f3f4f6 !important;
+}
+
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td:before,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"]:before,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned:before {
+    background-color: #f3f4f6 !important;
+    background: #f3f4f6 !important;
+}
+
+/* Dark mode Table Body Rows & Hover */
+.dark .MuiTableBody-root tr:not([data-selected="true"]) > td,
+.dark .MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned,
+.dark .MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"] {
+    background-color: #0f172a;
+}
+
+.dark .MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"]:before,
+.dark .MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned:before {
+    background-color: #0f172a !important;
+}
+
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"],
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned {
+    background-color: #1f2937 !important;
+    background: #1f2937 !important;
+}
+
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td:before,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"]:before,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned:before {
+    background-color: #1f2937 !important;
+    background: #1f2937 !important;
 }

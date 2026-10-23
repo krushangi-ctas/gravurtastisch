@@ -148,7 +148,7 @@ const createManagedUser = async (actor, body) => {
   }
 };
 
-const buildUserListQuery = (baseFilter, query = {}) => {
+const buildUserListQuery = async (baseFilter, query = {}) => {
   const filter = { ...baseFilter };
   const andParts = [];
 
@@ -171,16 +171,154 @@ const buildUserListQuery = (baseFilter, query = {}) => {
     filter.userType = query.userType;
   }
 
+  // 1. Search across: name, email, plan, brand (businessName), role, marketplace, and quota
   if (query.search) {
-    const searchRegex = new RegExp(String(query.search).trim(), 'i');
-    andParts.push({
-      $or: [
-        { name: searchRegex },
-        { email: searchRegex },
-        { businessName: searchRegex },
-        { contact_no: searchRegex },
-      ],
-    });
+    const rawSearch = String(query.search).trim();
+    const escapedSearch = rawSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const searchRegex = new RegExp(escapedSearch, 'i');
+
+    // Matching roles
+    const matchingRoles = await Role.find({ role_name: searchRegex })
+      .select('_id')
+      .lean();
+    const matchingRoleIds = matchingRoles.map((r) => r._id);
+
+    // Matching plans
+    const matchingPlans = await PlanModel.find({ name: searchRegex })
+      .select('_id')
+      .lean();
+    const matchingPlanIds = matchingPlans.map((p) => p._id);
+
+    // Numeric search for marketplace and quota
+    const cleanNumStr = rawSearch.replace(/,/g, '');
+    const numVal = Number(cleanNumStr);
+    const isNumeric = !isNaN(numVal) && cleanNumStr !== '';
+
+    const orConditions = [
+      { name: searchRegex },
+      { email: searchRegex },
+      { businessName: searchRegex },
+      { contact_no: searchRegex },
+      { 'plans.name': searchRegex },
+    ];
+
+    if (matchingRoleIds.length > 0) {
+      orConditions.push({ role_id: { $in: matchingRoleIds } });
+    }
+    if (/seller/i.test(rawSearch)) {
+      orConditions.push(
+        { userType: 'seller' },
+        { isSellerAdmin: true },
+        { role_id: null },
+        { role_id: { $exists: false } }
+      );
+    }
+
+    if (matchingPlanIds.length > 0) {
+      orConditions.push(
+        { currentPlanId: { $in: matchingPlanIds } },
+        { 'plans.planId': { $in: matchingPlanIds } }
+      );
+    }
+
+    if (isNumeric) {
+      orConditions.push(
+        { 'planLimits.maxMarketplaces': numVal },
+        { 'plans.marketplace': numVal },
+        { 'planLimits.maxReviewRequestsPerMonth': numVal },
+        { 'plans.request_quota': numVal }
+      );
+    }
+
+    andParts.push({ $or: orConditions });
+  }
+
+  // 2. Plan filter (multi-select)
+  const plansParam = query.plans || query.plan;
+  if (plansParam !== undefined && plansParam !== null && plansParam !== '') {
+    if (plansParam === '__NONE__') {
+      andParts.push({ _id: null });
+    } else {
+      let plansList = [];
+      if (Array.isArray(plansParam)) {
+        plansList = plansParam
+          .flatMap((p) => String(p).split(','))
+          .map((p) => p.trim())
+          .filter(Boolean);
+      } else if (typeof plansParam === 'string') {
+        plansList = plansParam
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean);
+      }
+
+      if (plansList.length > 0) {
+        const validObjectIds = [];
+        const planNames = [];
+
+        for (const p of plansList) {
+          if (
+            mongoose.Types.ObjectId.isValid(p) &&
+            String(new mongoose.Types.ObjectId(p)) === p
+          ) {
+            validObjectIds.push(new mongoose.Types.ObjectId(p));
+          } else {
+            planNames.push(p);
+          }
+        }
+
+        const orPlanConditions = [];
+        if (validObjectIds.length > 0) {
+          orPlanConditions.push(
+            { currentPlanId: { $in: validObjectIds } },
+            { 'plans.planId': { $in: validObjectIds } }
+          );
+        }
+        if (planNames.length > 0) {
+          const matchingDbPlans = await PlanModel.find({
+            name: { $in: planNames },
+          })
+            .select('_id name')
+            .lean();
+          const foundIds = matchingDbPlans.map((p) => p._id);
+          if (foundIds.length > 0) {
+            orPlanConditions.push(
+              { currentPlanId: { $in: foundIds } },
+              { 'plans.planId': { $in: foundIds } }
+            );
+          }
+          orPlanConditions.push({ 'plans.name': { $in: planNames } });
+        }
+
+        if (orPlanConditions.length > 0) {
+          andParts.push({ $or: orPlanConditions });
+        }
+      }
+    }
+  }
+
+  // 3. Date range filter (createdAt)
+  const fromDateStr = query.from || query.startDate;
+  const toDateStr = query.to || query.endDate;
+  if (fromDateStr || toDateStr) {
+    const dateQuery = {};
+    if (fromDateStr) {
+      const fromD = new Date(fromDateStr);
+      if (!isNaN(fromD.getTime())) {
+        fromD.setHours(0, 0, 0, 0);
+        dateQuery.$gte = fromD;
+      }
+    }
+    if (toDateStr) {
+      const toD = new Date(toDateStr);
+      if (!isNaN(toD.getTime())) {
+        toD.setHours(23, 59, 59, 999);
+        dateQuery.$lte = toD;
+      }
+    }
+    if (Object.keys(dateQuery).length > 0) {
+      andParts.push({ createdAt: dateQuery });
+    }
   }
 
   if (andParts.length) {
@@ -194,7 +332,19 @@ const buildUserListQuery = (baseFilter, query = {}) => {
     const [rawKey, order] = String(query.sortBy).split(':');
     const keyMap = {
       role: 'role_id',
-      currentPlan: 'currentPlanId',
+      currentPlan: 'plans.name',
+      plan: 'plans.name',
+      expireDate: 'plans.expireAt',
+      expireAt: 'plans.expireAt',
+      'planLimits.maxMarketplaces': 'planLimits.maxMarketplaces',
+      'planLimits.maxReviewRequestsPerMonth': 'planLimits.maxReviewRequestsPerMonth',
+      quota: 'planLimits.maxReviewRequestsPerMonth',
+      marketplaces: 'planLimits.maxMarketplaces',
+      markets: 'planLimits.maxMarketplaces',
+      used: 'usedReviewRequests',
+      usedReviewRequests: 'usedReviewRequests',
+      mobile: 'contact_no',
+      brand: 'businessName',
     };
     const key = keyMap[rawKey] || rawKey;
     sort = { [key]: order === 'asc' ? 1 : -1 };
@@ -204,18 +354,65 @@ const buildUserListQuery = (baseFilter, query = {}) => {
 };
 
 const paginateUserList = async (baseFilter, query, okMessage) => {
-  const { filter, page, limit, sort } = buildUserListQuery(baseFilter, query);
+  const { filter, page, limit, sort } = await buildUserListQuery(
+    baseFilter,
+    query
+  );
 
-  const [totalResults, results] = await Promise.all([
-    User.countDocuments(filter),
-    User.find(filter)
-      .populate('role_id', 'role_name scope permissions status')
-      .populate('currentPlanId', 'name price marketplace request_quota billingCycle status')
-      .sort(sort)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean(),
-  ]);
+  const [rawKey, orderStr] = query.sortBy ? String(query.sortBy).split(':') : ['', ''];
+  const isRoleSort = rawKey === 'role';
+  const roleOrder = orderStr === 'desc' ? -1 : 1;
+
+  let totalResults = 0;
+  let results = [];
+
+  if (isRoleSort) {
+    const [count, rawResults] = await Promise.all([
+      User.countDocuments(filter),
+      User.aggregate([
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'tbl_roles',
+            localField: 'role_id',
+            foreignField: '_id',
+            as: 'role_info',
+          },
+        },
+        {
+          $addFields: {
+            role_name_sort: {
+              $toLower: {
+                $ifNull: [{ $arrayElemAt: ['$role_info.role_name', 0] }, ''],
+              },
+            },
+          },
+        },
+        { $sort: { role_name_sort: roleOrder, createdAt: -1 } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        { $project: { role_info: 0, role_name_sort: 0 } },
+      ]),
+    ]);
+    totalResults = count;
+    results = await User.populate(rawResults, [
+      { path: 'role_id', select: 'role_name scope permissions status' },
+      { path: 'currentPlanId', select: 'name price marketplace request_quota billingCycle status' },
+    ]);
+  } else {
+    const [count, rawResults] = await Promise.all([
+      User.countDocuments(filter),
+      User.find(filter)
+        .populate('role_id', 'role_name scope permissions status')
+        .populate('currentPlanId', 'name price marketplace request_quota billingCycle status')
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+    ]);
+    totalResults = count;
+    results = rawResults;
+  }
 
   if (Array.isArray(results) && results.length > 0) {
     const startOfMonth = moment().startOf('month').toDate();
@@ -303,7 +500,7 @@ const listSellerTeamUsers = async (actor, query = {}) => {
       );
     }
 
-    const { filter, page, limit, sort } = buildUserListQuery(
+    const { filter, page, limit, sort } = await buildUserListQuery(
       {
         parentId: ownerId,
         isSellerAdmin: { $ne: true },
