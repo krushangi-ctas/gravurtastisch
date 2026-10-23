@@ -10,6 +10,8 @@ import {
   updatePasswordUrl,
   updateProfileUrl,
   upoadImageUrl,
+  uploadProfileImageUrl,
+  deleteProfileImageUrl,
 } from '@/configs/env';
 import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
@@ -98,6 +100,24 @@ export const settingsApiService = {
       // Re-throw the error so the mutation can handle it
       throw error;
     }
+  },
+
+  uploadAvatar: async (file: File): Promise<any> => {
+    const formData = new FormData();
+    formData.append('file', file);
+    return await fetchWithAuth(`${uploadProfileImageUrl}`, {
+      method: 'POST',
+      body: formData,
+    });
+  },
+
+  deleteAvatar: async (): Promise<any> => {
+    const res = await fetchWithAuth(`${deleteProfileImageUrl}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({}),
+    });
+    return res;
   },
 
   getSecuritySettings: () =>

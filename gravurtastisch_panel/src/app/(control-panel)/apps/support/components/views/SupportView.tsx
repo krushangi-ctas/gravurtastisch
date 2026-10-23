@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
+import moment from 'moment';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -109,7 +110,7 @@ function SupportContent({
 		(text: string, label: string) => {
 			if (!text) return;
 			navigator.clipboard.writeText(text);
-			enqueueSnackbar(`${label} copied to clipboard`, {
+			enqueueSnackbar(`${label} copied to clipboard.`, {
 				variant: 'success',
 				autoHideDuration: 1500
 			});
@@ -156,12 +157,12 @@ function SupportContent({
 					const val = cell.getValue<string>() || 'N/A';
 					const initials = val !== 'N/A' ? val.slice(0, 2).toUpperCase() : 'U';
 					return (
-						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 							<Box
 								sx={{
-									width: 28,
-									height: 28,
-									borderRadius: '6px',
+									width: 22,
+									height: 22,
+									borderRadius: '50%',
 									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 50, 171, 0.08)',
 									color: (t) => t.palette.mode === 'dark' ? '#60A5FA' : '#0032ab',
 									border: '1px solid',
@@ -169,7 +170,7 @@ function SupportContent({
 									display: 'flex',
 									alignItems: 'center',
 									justifyContent: 'center',
-									fontSize: '11px',
+									fontSize: '9.5px',
 									fontWeight: 700,
 									shrink: 0,
 								}}
@@ -188,36 +189,56 @@ function SupportContent({
 			{
 				accessorKey: 'email',
 				header: 'EMAIL',
-				size: 200,
-				minSize: 160,
-				maxSize: 240,
+				size: 220,
+				minSize: 180,
+				maxSize: 260,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>N/A</Typography>;
 					return (
-						<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+						<Box
+							sx={{
+								display: 'inline-flex',
+								alignItems: 'center',
+								gap: 0.75,
+								px: 1,
+								py: 0.35,
+								borderRadius: '6px',
+								bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(147, 51, 234, 0.25)' : '#F3E8FF'),
+								color: (t) => (t.palette.mode === 'dark' ? '#C084FC' : '#7E22CE'),
+								maxWidth: '100%'
+							}}
+						>
 							<Tooltip title={val} arrow>
 								<Typography
+									component="span"
 									sx={{
 										fontSize: 12,
-										color: 'text.secondary',
+										fontWeight: 400,
+										lineHeight: 1.25,
+										color: 'inherit',
 										overflow: 'hidden',
 										textOverflow: 'ellipsis',
 										whiteSpace: 'nowrap',
-										maxWidth: 180,
+										maxWidth: 190
 									}}
 								>
 									{val}
 								</Typography>
 							</Tooltip>
 							<Tooltip title="Copy Email" arrow>
-								<FuseSvgIcon
-									size={13}
-									sx={{ color: 'text.disabled', cursor: 'pointer', '&:hover': { color: 'primary.main' } }}
-									onClick={() => handleCopyText(val, 'Email')}
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										handleCopyText(val, 'Email');
+									}}
+									className="inline-flex items-center justify-center p-0.5 hover:bg-black/5 dark:hover:bg-white/10 rounded transition-colors text-inherit border-0 bg-transparent cursor-pointer shrink-0"
 								>
-									heroicons-outline:clipboard-document
-								</FuseSvgIcon>
+									<FuseSvgIcon size={13} sx={{ color: 'inherit' }}>
+										heroicons-outline:document-duplicate
+									</FuseSvgIcon>
+								</button>
 							</Tooltip>
 						</Box>
 					);
@@ -273,22 +294,22 @@ function SupportContent({
 									py: 0.3,
 									borderRadius: '6px',
 									fontSize: 11.5,
-									fontWeight: 600,
+									fontWeight: 400,
 									height: 24,
 									boxSizing: 'border-box',
 									bgcolor: (t) =>
 										isResolved
-											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.15)' : 'rgba(34, 197, 94, 0.1)'
-											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.15)' : 'rgba(245, 158, 11, 0.1)',
+											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.22)' : '#DCFCE7'
+											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.22)' : '#FEF3C7',
 									color: (t) =>
 										isResolved
-											? t.palette.mode === 'dark' ? '#4ADE80' : '#16A34A'
-											: t.palette.mode === 'dark' ? '#FBBF24' : '#D97706',
+											? t.palette.mode === 'dark' ? '#4ADE80' : '#15803D'
+											: t.palette.mode === 'dark' ? '#FBBF24' : '#B45309',
 									border: '1px solid',
 									borderColor: (t) =>
 										isResolved
-											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.3)' : 'rgba(34, 197, 94, 0.25)'
-											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.3)' : 'rgba(245, 158, 11, 0.25)',
+											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.45)' : '#86EFAC'
+											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.45)' : '#FCD34D',
 									lineHeight: 1,
 								}}
 							>
@@ -304,25 +325,26 @@ function SupportContent({
 			{
 				accessorKey: 'createdAt',
 				header: 'SUBMITTED AT',
-				size: 150,
-				minSize: 130,
-				maxSize: 170,
+				size: 165,
+				minSize: 155,
+				maxSize: 185,
 				Cell: ({ cell }) => {
 					const dateVal = cell.getValue<string>();
-					if (!dateVal) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>N/A</Typography>;
-					const d = new Date(dateVal);
-					const dateStr = d.toLocaleDateString('en-GB');
-					const timeStr = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+					if (!dateVal) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					const m = moment(dateVal);
+					if (!m.isValid()) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 					return (
-						<Tooltip title={`${dateStr} ${timeStr}`} arrow>
-							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-									{dateStr}
-								</Typography>
-								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
-									{timeStr}
-								</Typography>
-							</Box>
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
+								{m.format('DD-MM-YYYY hh:mm A')}
+							</Typography>
 						</Tooltip>
 					);
 				}
@@ -439,7 +461,7 @@ function SupportContent({
 				<DataTable
 					columns={columns}
 					data={supportRequests}
-					tableId="support-management-table"
+					tableId="support-management-table-v2"
 					title="Support"
 					icon="heroicons-outline:chat-bubble-left-right"
 					actionButtons={actionButtons}
@@ -450,25 +472,7 @@ function SupportContent({
 						'mrt-row-actions': {
 							size: 70,
 							minSize: 60,
-							maxSize: 80,
-							muiTableHeadCellProps: {
-								sx: {
-									backgroundColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									color: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
-									borderColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
-									'&:before': {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									},
-									'&[data-pinned="true"]:before': {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									},
-								}
-							}
+							maxSize: 80
 						}
 					}}
 					enableRowSelection={false}
@@ -486,9 +490,23 @@ function SupportContent({
 					manualSorting
 					rowCount={totalResults}
 					pageCount={totalPages}
+					muiTableBodyRowProps={{
+						sx: {
+							minHeight: '38px',
+							height: '38px'
+						}
+					}}
 					muiTableProps={{
 						sx: {
-							minWidth: { xs: '800px', lg: '100%' }
+							minWidth: { xs: '800px', lg: '100%' },
+							'& .MuiTableCell-root': {
+								padding: '6px 10px',
+								borderBottom: '1px solid',
+								borderColor: 'divider',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap'
+							}
 						}
 					}}
 					muiTableContainerProps={{

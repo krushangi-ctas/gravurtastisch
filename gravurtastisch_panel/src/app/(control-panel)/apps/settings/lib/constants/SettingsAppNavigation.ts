@@ -13,7 +13,6 @@ const SettingsAppNavigation: FuseNavItemType = {
       title: 'Account',
       type: 'item',
       url: '/settings/account',
-      subtitle: 'Manage your public profile and private information',
     },
     {
       id: 'settings.generalSetting',
@@ -21,7 +20,6 @@ const SettingsAppNavigation: FuseNavItemType = {
       title: 'General Setting',
       type: 'item',
       url: '/settings/generalSetting',
-      subtitle: 'Configure automated review rules, dispatch schedule, and campaign triggers',
     },
   ],
 };

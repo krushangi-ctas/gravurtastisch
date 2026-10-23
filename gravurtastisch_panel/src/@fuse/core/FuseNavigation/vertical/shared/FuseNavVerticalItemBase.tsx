@@ -124,129 +124,131 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
 
   return (
     <>
-      <Button
-        component={buttonComponent}
-        className={clsx(
-          'mb-2 flex w-full items-center justify-start gap-3 rounded-lg p-3 transition-all duration-200 hover:shadow-sm',
-          item.active && 'active',
-          item.subtitle && 'items-start',
-          className,
-          isGroup && 'my-4',
-          dense && 'p-2'
-        )}
-        sx={{
-          ...sx,
-          borderLeft: '4px solid transparent',
-          '&.active': {
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? `${alpha(theme.palette.primary.main, 0.08)} !important`
-                : `${alpha(theme.palette.primary.main, 0.16)} !important`,
-            color: (theme) => `${theme.palette.primary.main} !important`,
-            borderLeft: (theme) => `4px solid ${theme.palette.primary.main} !important`,
-            borderTopLeftRadius: '8px !important',
-            borderBottomLeftRadius: '8px !important',
-            '& .fuse-list-item-icon': {
+      {(!isGroup || Boolean(item.title)) && (
+        <Button
+          component={buttonComponent}
+          className={clsx(
+            'mb-1 flex w-full items-center justify-start gap-3 rounded-lg py-2 px-3 transition-all duration-200 hover:shadow-sm',
+            item.active && 'active',
+            item.subtitle && 'items-start',
+            className,
+            isGroup && 'my-2',
+            dense && 'py-1.5 px-2 mb-0.5'
+          )}
+          sx={{
+            ...sx,
+            borderLeft: '4px solid transparent',
+            '&.active': {
+              backgroundColor: (theme) =>
+                theme.palette.mode === 'light'
+                  ? `${alpha(theme.palette.primary.main, 0.08)} !important`
+                  : `${alpha(theme.palette.primary.main, 0.16)} !important`,
               color: (theme) => `${theme.palette.primary.main} !important`,
-            },
-            '& .fuse-list-item-title': {
-              color: (theme) => `${theme.palette.primary.main} !important`,
-              fontWeight: 600,
+              borderLeft: (theme) => `4px solid ${theme.palette.primary.main} !important`,
+              borderTopLeftRadius: '8px !important',
+              borderBottomLeftRadius: '8px !important',
+              '& .fuse-list-item-icon': {
+                color: (theme) => `${theme.palette.primary.main} !important`,
+              },
+              '& .fuse-list-item-title': {
+                color: (theme) => `${theme.palette.primary.main} !important`,
+                fontWeight: 600,
+              },
+              '&:hover': {
+                backgroundColor: (theme) =>
+                  theme.palette.mode === 'light'
+                    ? `${alpha(theme.palette.primary.main, 0.12)} !important`
+                    : `${alpha(theme.palette.primary.main, 0.22)} !important`,
+              },
             },
             '&:hover': {
               backgroundColor: (theme) =>
                 theme.palette.mode === 'light'
-                  ? `${alpha(theme.palette.primary.main, 0.12)} !important`
-                  : `${alpha(theme.palette.primary.main, 0.22)} !important`,
+                  ? 'rgba(0, 0, 0, 0.04)!important'
+                  : 'rgba(255, 255, 255, 0.08)!important',
+              transform: 'translateX(2px)',
             },
-          },
-          '&:hover': {
-            backgroundColor: (theme) =>
-              theme.palette.mode === 'light'
-                ? 'rgba(0, 0, 0, 0.04)!important'
-                : 'rgba(255, 255, 255, 0.08)!important',
-            transform: 'translateX(2px)',
-          },
-        }}
-        color="inherit"
-        onClick={handleClick}
-        aria-label={item.title}
-        aria-expanded={open}
-        {...itemProps}
-      >
-        {!isGroup && showIcon && item.icon && (
-          <FuseSvgIcon
-            className={clsx('fuse-list-item-icon', 'shrink-0', item.iconClass)}
-            sx={{
-              fontSize: '1.25rem',
-              transition: 'all 0.2s ease-in-out',
-            }}
-          >
-            {item.icon}
-          </FuseSvgIcon>
-        )}
-        <div className="flex min-w-0 flex-auto flex-col items-start gap-2">
-          {item.title && (
-            <Typography
-              {...{
-                ...primaryTitleProps,
-                className: clsx(
-                  'fuse-list-item-title',
-                  ' max-w-full font-medium',
-                  isGroup && 'font-semibold text-xl',
-                  primaryTitleProps?.className
-                ),
-                ...(isGroup && {
-                  color: 'secondary',
-                }),
-              }}
-            >
-              {item.title}
-            </Typography>
-          )}
-          {item.subtitle && (
-            <Typography
-              {...{
-                color: 'text.secondary',
-                ...subtitleProps,
-                className: clsx(
-                  'fuse-list-item-subtitle',
-                  'text-md leading-none truncate max-w-full opacity-75',
-                  subtitleProps?.className
-                ),
-              }}
-            >
-              {item.subtitle}
-            </Typography>
-          )}
-        </div>
-        {item.badge && <FuseNavBadge badge={item.badge} />}
-
-        {isCollapsable && (
-          <IconButton
-            disableRipple
-            className="h-6 w-6 p-0 transition-all duration-200 hover:bg-transparent focus:bg-transparent"
-            onClick={(ev) => {
-              ev.preventDefault();
-              ev.stopPropagation();
-              setOpen(!open);
-            }}
-            sx={{
-              '&:hover': {
-                transform: 'scale(1.1)',
-              },
-            }}
-          >
+          }}
+          color="inherit"
+          onClick={handleClick}
+          aria-label={item.title}
+          aria-expanded={open}
+          {...itemProps}
+        >
+          {!isGroup && showIcon && item.icon && (
             <FuseSvgIcon
-              size={16}
-              className="arrow-icon transition-transform duration-200"
-              color="inherit"
+              className={clsx('fuse-list-item-icon', 'shrink-0', item.iconClass)}
+              sx={{
+                fontSize: '1.25rem',
+                transition: 'all 0.2s ease-in-out',
+              }}
             >
-              {open ? 'lucide:chevron-down' : 'lucide:chevron-right'}
+              {item.icon}
             </FuseSvgIcon>
-          </IconButton>
-        )}
-      </Button>
+          )}
+          <div className="flex min-w-0 flex-auto flex-col items-start gap-2">
+            {item.title && (
+              <Typography
+                {...{
+                  ...primaryTitleProps,
+                  className: clsx(
+                    'fuse-list-item-title',
+                    ' max-w-full font-medium',
+                    isGroup && 'font-semibold text-xl',
+                    primaryTitleProps?.className
+                  ),
+                  ...(isGroup && {
+                    color: 'secondary',
+                  }),
+                }}
+              >
+                {item.title}
+              </Typography>
+            )}
+            {item.subtitle && (
+              <Typography
+                {...{
+                  color: 'text.secondary',
+                  ...subtitleProps,
+                  className: clsx(
+                    'fuse-list-item-subtitle',
+                    'text-md leading-none truncate max-w-full opacity-75',
+                    subtitleProps?.className
+                  ),
+                }}
+              >
+                {item.subtitle}
+              </Typography>
+            )}
+          </div>
+          {item.badge && <FuseNavBadge badge={item.badge} />}
+
+          {isCollapsable && (
+            <IconButton
+              disableRipple
+              className="h-6 w-6 p-0 transition-all duration-200 hover:bg-transparent focus:bg-transparent"
+              onClick={(ev) => {
+                ev.preventDefault();
+                ev.stopPropagation();
+                setOpen(!open);
+              }}
+              sx={{
+                '&:hover': {
+                  transform: 'scale(1.1)',
+                },
+              }}
+            >
+              <FuseSvgIcon
+                size={16}
+                className="arrow-icon transition-transform duration-200"
+                color="inherit"
+              >
+                {open ? 'lucide:chevron-down' : 'lucide:chevron-right'}
+              </FuseSvgIcon>
+            </IconButton>
+          )}
+        </Button>
+      )}
 
       {isCollapsable && (
         <Collapse

@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import moment from 'moment';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import AccessDeniedView from '@/components/AccessDeniedView';
@@ -229,7 +230,7 @@ function RolesView() {
 						permissions: buildPermissions()
 					}
 				});
-				enqueueSnackbar('Role updated.', { variant: 'success' });
+				enqueueSnackbar('Role updated successfully.', { variant: 'success' });
 			} else {
 				await createMutation.mutateAsync({
 					role_name: roleName.trim(),
@@ -237,7 +238,7 @@ function RolesView() {
 					scope,
 					permissions: buildPermissions()
 				});
-				enqueueSnackbar('Role created.', { variant: 'success' });
+				enqueueSnackbar('Role created successfully.', { variant: 'success' });
 			}
 			setDialogOpen(false);
 			setRoleErrors({});
@@ -264,7 +265,7 @@ function RolesView() {
 		setIsActionLoading(true);
 		try {
 			await deleteMutation.mutateAsync(roleId);
-			enqueueSnackbar(`Role "${confirmDeleteState.role.role_name}" has been deleted.`, {
+			enqueueSnackbar(`Role "${confirmDeleteState.role.role_name}" has been deleted successfully.`, {
 				variant: 'success',
 				autoHideDuration: 2000
 			});
@@ -286,30 +287,45 @@ function RolesView() {
 	const columns = useMemo<MRT_ColumnDef<Role>[]>(
 		() => [
 			{
+				accessorKey: 'createdAt',
+				header: 'DATE',
+				size: 160,
+				Cell: ({ cell }) => {
+					const val = cell.getValue<string>();
+					if (!val) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+					const m = moment(val);
+					if (!m.isValid()) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+					return (
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
+								{m.format('DD-MM-YYYY hh:mm A')}
+							</Typography>
+						</Tooltip>
+					);
+				}
+			},
+			{
 				accessorKey: 'role_name',
 				header: 'ROLE',
-				size: 170,
+				size: 180,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>() || '—';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-							<Box
-								sx={{
-									width: 26,
-									height: 26,
-									borderRadius: '6px',
-									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.15)' : 'rgba(79, 70, 229, 0.08)',
-									color: (t) => t.palette.mode === 'dark' ? '#818CF8' : '#4338CA',
-									border: '1px solid',
-									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(99, 102, 241, 0.3)' : 'rgba(79, 70, 229, 0.2)',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									shrink: 0,
-								}}
-							>
-								<FuseSvgIcon size={14}>heroicons-outline:shield-check</FuseSvgIcon>
-							</Box>
+							<FuseSvgIcon size={16} className="text-indigo-600 dark:text-indigo-400 shrink-0">
+								heroicons-outline:shield-check
+							</FuseSvgIcon>
 							<Tooltip title={val} arrow>
 								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
 									{val}
@@ -406,7 +422,7 @@ function RolesView() {
 					<DataTable
 						columns={columns}
 						data={roles}
-						tableId="roles-management-table"
+						tableId="roles-management-table-v2"
 						title="Roles"
 						icon="heroicons-outline:shield-check"
 						actionButtons={actionButtons}
@@ -417,25 +433,7 @@ function RolesView() {
 							'mrt-row-actions': {
 								size: 80,
 								minSize: 70,
-								maxSize: 90,
-								muiTableHeadCellProps: {
-									sx: {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-										color: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
-										borderColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
-										'&:before': {
-											backgroundColor: (theme: any) =>
-												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-										},
-										'&[data-pinned="true"]:before': {
-											backgroundColor: (theme: any) =>
-												theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-										},
-									}
-								}
+								maxSize: 90
 							}
 						}}
 						enableRowSelection={false}
@@ -444,9 +442,23 @@ function RolesView() {
 							showSkeletons: Boolean(isLoading || sectionsLoading)
 						}}
 						manualPagination={false}
+						muiTableBodyRowProps={{
+							sx: {
+								minHeight: '38px',
+								height: '38px'
+							}
+						}}
 						muiTableProps={{
 							sx: {
-								minWidth: { xs: '700px', lg: '100%' }
+								minWidth: { xs: '700px', lg: '100%' },
+								'& .MuiTableCell-root': {
+									padding: '6px 10px',
+									borderBottom: '1px solid',
+									borderColor: 'divider',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
+								}
 							}
 						}}
 						muiTableContainerProps={{

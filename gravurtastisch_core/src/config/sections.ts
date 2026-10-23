@@ -14,6 +14,7 @@ const ADMIN_SECTIONS = [
   { key: 'blogs', title: 'Blog Management' },
   { key: 'site-configuration', title: 'Site Configuration' },
   { key: 'plans', title: 'Plans' },
+  { key: 'settings', title: 'Settings' },
 ];
 
 const SELLER_SECTIONS = [

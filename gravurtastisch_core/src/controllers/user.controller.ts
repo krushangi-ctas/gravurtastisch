@@ -59,17 +59,22 @@ const deleteUser = catchAsync(async (req, res) => {
 });
 
 const uploadProfile = catchAsync(async (req, res) => {
-  const { status, message, data, picture } =
-    await userService.uploadProfileImage(req.user._id, req.files.file);
-  res.status(status).send({ status, message, data, picture });
+  const file =
+    (req.files && (req.files.file || req.files.image || req.files.avatar)) ||
+    req.file;
+  if (!file) {
+    return res.status(httpStatus.BAD_REQUEST).send({
+      status: httpStatus.BAD_REQUEST,
+      message: 'No file uploaded. Please select an image file.',
+    });
+  }
+  const result = await userService.uploadProfileImage(req.user._id, file);
+  res.status(result.status).send(result);
 });
 
 const deleteProfile = catchAsync(async (req, res) => {
-  await deleteFile(req.body.fileName, '');
-  return res.status(200).json({
-    status: httpStatus.OK,
-    message: 'Profile Picture has been deleted.',
-  });
+  const result = await userService.deleteProfileImage(req.user._id);
+  return res.status(result.status).send(result);
 });
 
 const getAdminSellers = catchAsync(async (req, res) => {

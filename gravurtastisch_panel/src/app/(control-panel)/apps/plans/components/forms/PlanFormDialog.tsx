@@ -157,10 +157,10 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					planId,
 					payload
 				});
-				enqueueSnackbar('Plan updated successfully', { variant: 'success', autoHideDuration: 2000 });
+				enqueueSnackbar('Plan updated successfully.', { variant: 'success', autoHideDuration: 2000 });
 			} else {
 				await createMutation.mutateAsync(payload);
-				enqueueSnackbar('Plan created successfully', { variant: 'success', autoHideDuration: 2000 });
+				enqueueSnackbar('Plan created successfully.', { variant: 'success', autoHideDuration: 2000 });
 			}
 			onClose();
 		} catch (err: unknown) {
@@ -298,8 +298,8 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 									(billingCycle === 3
 										? 'Total billed annually in EUR (€) — set full yearly price'
 										: billingCycle === 2
-										? 'Total billed quarterly in EUR (€) — set full 3-month price'
-										: 'Billed monthly in EUR (€)')
+											? 'Total billed quarterly in EUR (€) — set full 3-month price'
+											: 'Billed monthly in EUR (€)')
 								}
 							/>
 						</div>
@@ -325,8 +325,8 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 												{billingCycle === 3
 													? 'heroicons-outline:sparkles'
 													: billingCycle === 2
-													? 'heroicons-outline:clock'
-													: 'heroicons-outline:calendar'}
+														? 'heroicons-outline:clock'
+														: 'heroicons-outline:calendar'}
 											</FuseSvgIcon>
 										</InputAdornment>
 									)
@@ -511,11 +511,10 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 							<div className="flex items-center gap-2">
 								<span
-									className={`text-xs font-bold px-2.5 py-0.5 rounded-full transition-all ${
-										status === 1
+									className={`text-xs font-bold px-2.5 py-0.5 rounded-full transition-all ${status === 1
 											? 'bg-primary-50 text-primary-700 border border-primary-200'
 											: 'bg-red-50 text-red-600 border border-red-200'
-									}`}
+										}`}
 								>
 									{status === 1 ? 'Active' : 'Deactive'}
 								</span>

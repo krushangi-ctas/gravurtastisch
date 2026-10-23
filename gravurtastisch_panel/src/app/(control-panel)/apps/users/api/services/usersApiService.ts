@@ -55,18 +55,25 @@ export interface AssignPlanPayload {
 	customExpireAt?: string | null;
 }
 
-type ListParams = {
+export type ListParams = {
 	page?: number;
 	limit?: number;
 	search?: string;
 	sortBy?: string;
+	plans?: string[] | string;
+	from?: string;
+	to?: string;
 };
 
 const buildQueryUrl = (path: string, params: ListParams = {}) => {
 	const queryParams = new URLSearchParams();
 	Object.entries(params).forEach(([key, value]) => {
 		if (value !== undefined && value !== null && value !== '') {
-			queryParams.append(key, value.toString());
+			if (Array.isArray(value)) {
+				value.forEach((v) => queryParams.append(key, v.toString()));
+			} else {
+				queryParams.append(key, value.toString());
+			}
 		}
 	});
 	const queryString = queryParams.toString();

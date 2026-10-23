@@ -7,7 +7,8 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import { useEffect } from 'react';
+import IconButton from '@mui/material/IconButton';
+import { useState } from 'react';
 import { useUpdatePassword } from '../../api/hooks/security/useUpdateSecuritySettings';
 import FormControl from '@mui/material/FormControl';
 import type { UpdatePasswordData } from '../../api/types';
@@ -26,35 +27,33 @@ const defaultValues: FormType = {
 const schema = z
   .object({
     currentPassword: z
-      .string()
-      .max(20, 'Current password must be at most 20 characters'),
+      .string({ required_error: 'Current password is required' })
+      .min(1, 'Current password is required')
+      .max(40, 'Current password must be at most 40 characters'),
     password: z
-      .string()
-      .min(6, 'Password must be at least 6 characters')
-      .max(20, 'Password must be at most 20 characters')
-      .or(z.literal(''))
-      .optional(),
-    passwordConfirm: z.string().optional().or(z.literal('')),
+      .string({ required_error: 'New password is required' })
+      .min(8, 'New password must be at least 8 characters')
+      .max(40, 'New password must be at most 40 characters')
+      .regex(/[a-zA-Z]/, 'New password must contain at least one letter')
+      .regex(/\d/, 'New password must contain at least one number'),
+    passwordConfirm: z
+      .string({ required_error: 'Please confirm your new password' })
+      .min(1, 'Please confirm your new password'),
   })
-  .refine(
-    (data) => {
-      // If password is provided, passwordConfirm must match
-      if (data.password && data.password.length > 0) {
-        return data.password === data.passwordConfirm;
-      }
-      return true;
-    },
-    {
-      message: 'Passwords must match',
-      path: ['passwordConfirm'],
-    }
-  );
+  .refine((data) => data.password === data.passwordConfirm, {
+    message: 'New password and confirm password must match',
+    path: ['passwordConfirm'],
+  });
 
 type FormType = z.infer<typeof schema>;
 
 function SecurityTabView() {
   const { enqueueSnackbar } = useSnackbar();
-  const { mutate: updatePassword, isSuccess } = useUpdatePassword();
+  const { mutate: updatePassword, isPending } = useUpdatePassword();
+
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
   const { control, reset, handleSubmit, formState } = useForm<FormType>({
     defaultValues,
@@ -64,20 +63,10 @@ function SecurityTabView() {
 
   const { isValid, dirtyFields, errors } = formState;
 
-  useEffect(() => {
-    reset({
-      currentPassword: '',
-      password: '',
-      passwordConfirm: '',
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess]);
-
   /**
    * Form Submit
    */
   function onSubmit(formData: FormType) {
-    // Structure the data according to API expectations - only password fields
     const updateData: UpdatePasswordData = {
       currentPassword: formData.currentPassword,
       password: formData.password,
@@ -85,32 +74,25 @@ function SecurityTabView() {
     };
 
     updatePassword(updateData, {
-      onSettled: (data) => {
-        if (
-          data &&
-          data.status === 200 &&
-          data.data &&
-          data.data.success !== false
-        ) {
-          // API succeeded
-          enqueueSnackbar(
-            data?.data?.message || 'Password updated successfully!',
-            {
-              variant: 'success',
-              autoHideDuration: 2000,
-            }
-          );
-        } else {
-          // API responded but with error
-          enqueueSnackbar(
-            data?.data?.message ||
-            'Failed to update password. Please try again.',
-            {
-              variant: 'error',
-              autoHideDuration: 2000,
-            }
-          );
-        }
+      onSuccess: (data: any) => {
+        enqueueSnackbar(
+          data?.message || 'Password updated successfully!',
+          {
+            variant: 'success',
+            autoHideDuration: 2500,
+          }
+        );
+        reset(defaultValues);
+      },
+      onError: (error: any) => {
+        const errorMsg =
+          error?.data?.message ||
+          error?.message ||
+          'Failed to update password. Please check your current password.';
+        enqueueSnackbar(errorMsg, {
+          variant: 'error',
+          autoHideDuration: 3500,
+        });
       },
     });
   }
@@ -127,7 +109,7 @@ function SecurityTabView() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
-                  <FuseSvgIcon size={20}>lucide:shield-alert</FuseSvgIcon>
+                  <FuseSvgIcon size={20}>lucide:lock</FuseSvgIcon>
                 </div>
                 <div>
                   <Typography className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
@@ -150,7 +132,7 @@ function SecurityTabView() {
                   htmlFor="currentPassword"
                   className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                 >
-                  Current Password <span className="text-slate-400 font-normal normal-case">(default: changeme)</span>
+                  Current Password <span className="text-red-500">*</span>
                 </label>
                 <Controller
                   name="currentPassword"
@@ -160,13 +142,13 @@ function SecurityTabView() {
                       <TextField
                         {...field}
                         id="currentPassword"
-                        type="password"
+                        type={showCurrentPassword ? 'text' : 'password'}
                         error={!!errors.currentPassword}
                         helperText={errors?.currentPassword?.message}
                         variant="outlined"
                         placeholder="Enter your current password"
                         fullWidth
-                        inputProps={{ maxLength: 20 }}
+                        inputProps={{ maxLength: 40 }}
                         slotProps={{
                           input: {
                             className:
@@ -175,6 +157,17 @@ function SecurityTabView() {
                               <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
                                 <FuseSvgIcon size={18}>lucide:key</FuseSvgIcon>
                               </div>
+                            ),
+                            endAdornment: (
+                              <IconButton
+                                size="small"
+                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                              >
+                                <FuseSvgIcon size={18}>
+                                  {showCurrentPassword ? 'lucide:eye-off' : 'lucide:eye'}
+                                </FuseSvgIcon>
+                              </IconButton>
                             ),
                           },
                         }}
@@ -191,7 +184,7 @@ function SecurityTabView() {
                     htmlFor="password"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    New Password
+                    New Password <span className="text-red-500">*</span>
                   </label>
                   <Controller
                     name="password"
@@ -201,12 +194,12 @@ function SecurityTabView() {
                         <TextField
                           {...field}
                           id="password"
-                          type="password"
+                          type={showPassword ? 'text' : 'password'}
                           error={!!errors.password}
                           variant="outlined"
-                          placeholder="Min. 6 characters"
+                          placeholder="Min. 8 chars, 1 letter, 1 number"
                           fullWidth
-                          inputProps={{ maxLength: 20 }}
+                          inputProps={{ maxLength: 40 }}
                           slotProps={{
                             input: {
                               className:
@@ -215,6 +208,17 @@ function SecurityTabView() {
                                 <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
                                   <FuseSvgIcon size={18}>lucide:lock</FuseSvgIcon>
                                 </div>
+                              ),
+                              endAdornment: (
+                                <IconButton
+                                  size="small"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                >
+                                  <FuseSvgIcon size={18}>
+                                    {showPassword ? 'lucide:eye-off' : 'lucide:eye'}
+                                  </FuseSvgIcon>
+                                </IconButton>
                               ),
                             },
                           }}
@@ -231,7 +235,7 @@ function SecurityTabView() {
                     htmlFor="passwordConfirm"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Confirm New Password
+                    Confirm New Password <span className="text-red-500">*</span>
                   </label>
                   <Controller
                     name="passwordConfirm"
@@ -241,12 +245,12 @@ function SecurityTabView() {
                         <TextField
                           {...field}
                           id="passwordConfirm"
-                          type="password"
+                          type={showPasswordConfirm ? 'text' : 'password'}
                           error={!!errors.passwordConfirm}
                           helperText={errors?.passwordConfirm?.message as string}
                           fullWidth
                           variant="outlined"
-                          inputProps={{ maxLength: 20 }}
+                          inputProps={{ maxLength: 40 }}
                           placeholder="Re-enter new password"
                           slotProps={{
                             input: {
@@ -256,6 +260,17 @@ function SecurityTabView() {
                                 <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
                                   <FuseSvgIcon size={18}>lucide:shield-check</FuseSvgIcon>
                                 </div>
+                              ),
+                              endAdornment: (
+                                <IconButton
+                                  size="small"
+                                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                >
+                                  <FuseSvgIcon size={18}>
+                                    {showPasswordConfirm ? 'lucide:eye-off' : 'lucide:eye'}
+                                  </FuseSvgIcon>
+                                </IconButton>
                               ),
                             },
                           }}
@@ -274,10 +289,10 @@ function SecurityTabView() {
               </div>
               <div>
                 <Typography className="text-sm font-bold text-amber-950 dark:text-amber-200">
-                  Password Security Policy
+                  Password Requirements
                 </Typography>
                 <Typography className="text-md text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed font-medium">
-                  You can only change your password twice within 24 hours. Ensure your new password contains a mix of uppercase, lowercase, numbers, and special characters.
+                  Password must be at least 8 characters long and contain both letters and numbers. Ensure your new password is kept confidential.
                 </Typography>
               </div>
             </div>
@@ -291,12 +306,12 @@ function SecurityTabView() {
 
             <Button
               variant="contained"
-              disabled={_.isEmpty(dirtyFields) || !isValid}
+              disabled={_.isEmpty(dirtyFields) || !isValid || isPending}
               type="submit"
               className="w-full sm:w-auto bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-7 py-2.5 shadow-sm transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
               startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
             >
-              Update Password
+              {isPending ? 'Updating...' : 'Update Password'}
             </Button>
           </div>
         </form>

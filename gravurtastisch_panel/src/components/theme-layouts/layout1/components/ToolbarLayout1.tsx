@@ -4,6 +4,7 @@ import { memo } from 'react';
 import NavbarToggleButton from 'src/components/theme-layouts/components/navbar/NavbarToggleButton';
 import useFuseLayoutSettings from '@fuse/core/FuseLayout/useFuseLayoutSettings';
 import FullScreenToggle from '../../components/FullScreenToggle';
+import UserMenu from '../../components/UserMenu';
 import { Layout1ConfigDefaultsType } from '@/components/theme-layouts/layout1/Layout1Config';
 import useThemeMediaQuery from '../../../../@fuse/hooks/useThemeMediaQuery';
 import { AppBar, Divider } from '@mui/material';
@@ -29,9 +30,9 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
         id="fuse-toolbar"
         className={clsx('relative z-20 flex', className)}
         sx={(theme) => ({
-          backgroundColor: '#e0e0e0',
+          backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#0f172a' : '#ffffff'),
           color: theme.vars.palette.text.primary,
-          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+          boxShadow: 'none',
           borderBottom: `1px solid ${theme.vars.palette.divider}`,
         })}
       >
@@ -46,8 +47,9 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
             )}
           </div>
 
-          <div className="flex items-center overflow-x-auto">
+          <div className="flex items-center gap-1.5 shrink-0">
             <FullScreenToggle />
+            <UserMenu onlyAvatar dense />
           </div>
 
           {config.navbar.display && config.navbar.position === 'right' && (

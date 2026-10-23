@@ -8,6 +8,7 @@ import Typography from '@mui/material/Typography';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { useNavigate } from 'react-router';
 import useJwtAuth from '../useJwtAuth';
 import { useSnackbar } from 'notistack';
 import { sendOtp } from '@auth/api';
@@ -46,6 +47,7 @@ const emailSchema = z.object({
 type EmailFormType = z.infer<typeof emailSchema>;
 
 function JwtSignInForm() {
+  const navigate = useNavigate();
   const { signIn } = useJwtAuth();
   const { enqueueSnackbar } = useSnackbar();
   const [step, setStep] = useState<'email' | 'otp'>('email');
@@ -134,11 +136,15 @@ function JwtSignInForm() {
     if (universal) {
       setVerifying(true);
       try {
-        await signIn({ email: universal.email, otp: universal.otp });
+        const session: any = await signIn({ email: universal.email, otp: universal.otp });
         enqueueSnackbar('Successfully logged in with Universal OTP!', {
           variant: 'success',
           autoHideDuration: 4000,
         });
+        const loggedUser = session?.user;
+        const isAdmin = Boolean(loggedUser?.isSuperAdmin || loggedUser?.userType === 'admin');
+        const targetRoute = isAdmin ? '/sellers' : '/orders';
+        navigate(targetRoute, { replace: true });
       } catch (error: any) {
         enqueueSnackbar(
           error?.message || 'Invalid or expired universal OTP.',
@@ -218,11 +224,15 @@ function JwtSignInForm() {
     if (otp.length !== 6) return;
     setVerifying(true);
     try {
-      await signIn({ email, otp });
+      const session: any = await signIn({ email, otp });
       enqueueSnackbar('Successfully logged in!', {
         variant: 'success',
         autoHideDuration: 4000,
       });
+      const loggedUser = session?.user;
+      const isAdmin = Boolean(loggedUser?.isSuperAdmin || loggedUser?.userType === 'admin');
+      const targetRoute = isAdmin ? '/sellers' : '/orders';
+      navigate(targetRoute, { replace: true });
     } catch (error: any) {
       enqueueSnackbar(error?.message || 'Invalid or expired OTP.', {
         variant: 'error',
@@ -322,8 +332,9 @@ function JwtSignInForm() {
                 bgcolor: 'primary.dark',
               },
               '&.Mui-disabled': {
-                color: 'rgba(255, 255, 255, 0.7) !important',
-                bgcolor: 'rgba(40, 40, 40, 0.45) !important',
+                color: '#ffffff !important',
+                bgcolor: 'primary.main !important',
+                opacity: 0.7,
               },
             }}
           >
@@ -479,8 +490,9 @@ function JwtSignInForm() {
             bgcolor: 'primary.dark',
           },
           '&.Mui-disabled': {
-            color: 'rgba(255, 255, 255, 0.7) !important',
-            bgcolor: 'rgba(40, 40, 40, 0.45) !important',
+            color: '#ffffff !important',
+            bgcolor: 'primary.main !important',
+            opacity: 0.7,
           },
         }}
       >

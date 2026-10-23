@@ -14,6 +14,6 @@ export default function DefaultRedirect() {
 		return <Navigate to="/sign-in" replace />;
 	}
 
-	const target = getFirstAccessibleRoute(scope, can);
+	const target = scope === 'admin' ? '/sellers' : '/orders';
 	return <Navigate to={target} replace />;
 }

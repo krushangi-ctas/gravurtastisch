@@ -37,15 +37,14 @@ export const toast = {
       <button
         type="button"
         onClick={actionProps.onClick}
-        className={`rounded-lg px-2.5 py-1 text-xs font-semibold shadow-xs cursor-pointer ${
-          notistackVariant === 'success'
-            ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
-            : notistackVariant === 'error'
+        className={`rounded-lg px-2.5 py-1 text-xs font-semibold shadow-xs cursor-pointer ${notistackVariant === 'success'
+          ? 'bg-emerald-600 hover:bg-emerald-700 text-white'
+          : notistackVariant === 'error'
             ? 'bg-rose-600 hover:bg-rose-700 text-white'
             : notistackVariant === 'warning'
-            ? 'bg-amber-600 hover:bg-amber-700 text-white'
-            : 'bg-slate-900 hover:bg-slate-800 text-white'
-        } ${actionProps.className || ''}`}
+              ? 'bg-amber-600 hover:bg-amber-700 text-white'
+              : 'bg-slate-900 hover:bg-slate-800 text-white'
+          } ${actionProps.className || ''}`}
       >
         {actionProps.children}
       </button>

@@ -77,7 +77,7 @@ function ThemesPanel(props: ThemesPanelProps) {
 			const updatedUserData = await updateUserSettings(_newSettings);
 
 			if (updatedUserData) {
-				enqueueSnackbar('User settings saved.', {
+				enqueueSnackbar('User settings saved successfully.', {
 					variant: 'success'
 				});
 			}

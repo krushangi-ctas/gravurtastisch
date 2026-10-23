@@ -16,6 +16,7 @@ export type Role = {
 	status: number;
 	isSystem?: boolean;
 	ownerId?: string | null;
+	createdAt?: string;
 };
 
 export type SectionDefinition = {

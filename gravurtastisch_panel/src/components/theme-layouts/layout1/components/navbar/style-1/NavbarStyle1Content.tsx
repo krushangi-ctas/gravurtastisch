@@ -82,7 +82,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         <Navigation layout="vertical" />
       </StyledContent>
 
-      <div
+      {/* <div
         className="flex flex-col gap-3"
         style={{
           color: 'black',
@@ -91,7 +91,7 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
         }}
       >
         <UserMenu className="w-full" />
-      </div>
+      </div> */}
     </Root>
   );
 }

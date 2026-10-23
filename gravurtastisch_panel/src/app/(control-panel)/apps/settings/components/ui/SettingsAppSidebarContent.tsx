@@ -6,6 +6,9 @@ import clsx from 'clsx';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import SettingsAppNavigation from '../../lib/constants/SettingsAppNavigation';
 
+import usePermissions from '@/hooks/usePermissions';
+import { useMemo } from 'react';
+
 type SettingsAppSidebarContentProps = {
 	className?: string;
 	onSetSidebarOpen: (open: boolean) => void;
@@ -14,6 +17,16 @@ type SettingsAppSidebarContentProps = {
 function SettingsAppSidebarContent(props: SettingsAppSidebarContentProps) {
 	const { className, onSetSidebarOpen } = props;
 	const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
+	const { scope } = usePermissions();
+
+	const navigationItems = useMemo(() => {
+		if (scope === 'admin') {
+			return (SettingsAppNavigation.children || []).filter(
+				(item) => item.id !== 'settings.generalSetting'
+			);
+		}
+		return SettingsAppNavigation.children || [];
+	}, [scope]);
 
 	return (
 		<div>
@@ -29,7 +42,7 @@ function SettingsAppSidebarContent(props: SettingsAppSidebarContentProps) {
 					</IconButton>
 				)}
 			</div>
-			<FuseNavigation navigation={SettingsAppNavigation.children} />
+			<FuseNavigation navigation={navigationItems} />
 		</div>
 	);
 }

@@ -93,7 +93,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 	};
 
 	return (
-		<div className="flex w-full flex-col border-b border-slate-200 dark:border-slate-800 px-4 py-2 sm:py-2.5 bg-white dark:bg-slate-900">
+		<div className="flex w-full flex-col border-b border-slate-200 dark:border-slate-800 px-4 py-1 sm:py-1.5 bg-white dark:bg-slate-900">
 			<Box
 				className="flex w-full flex-col items-center"
 				{...toolbarProps}
@@ -131,7 +131,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 			>
 				{['both', 'top'].includes(positionToolbarDropZone ?? '') && <MRT_ToolbarDropZone table={table} />}
 
-				<div className="flex w-full flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 min-h-[40px]">
+				<div className="flex w-full flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 min-h-[38px]">
 					{/* Left: Icon & Title + optional custom actions */}
 					<div className="flex items-center gap-2.5 min-w-0 w-full lg:w-auto flex-1">
 						{isNavMobile && (
@@ -143,7 +143,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 							</NavbarToggleButton>
 						)}
 						{(icon || title) && (
-							<div className="flex items-center gap-2.5 sm:gap-3 shrink-0 py-0.5">
+							<div className="flex items-center gap-2.5 sm:gap-3 shrink-0 py-0">
 								{icon && (
 									<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
 										{typeof icon === 'string' ? (
@@ -185,7 +185,9 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 										maxHeight: '38px !important',
 										borderRadius: '8px !important',
 										backgroundColor: (theme) =>
-											theme.palette.mode === 'dark' ? '#1e293b' : '#f8fafc',
+											theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff',
+										boxShadow: (theme) =>
+											theme.palette.mode === 'dark' ? 'none' : '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
 										fontSize: '13px',
 										boxSizing: 'border-box'
 									},
@@ -286,7 +288,9 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 										maxHeight: '38px !important',
 										borderRadius: '8px !important',
 										backgroundColor: (theme) =>
-											theme.palette.mode === 'dark' ? '#1e293b' : '#f8fafc',
+											theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff',
+										boxShadow: (theme) =>
+											theme.palette.mode === 'dark' ? 'none' : '0 1px 2px 0 rgba(0, 0, 0, 0.03)',
 										fontSize: '13px',
 										boxSizing: 'border-box'
 									},

@@ -55,6 +55,9 @@ function usePermissions() {
 	const can = useCallback(
 		(section: string, action: PermissionAction = 'view') => {
 			if (!user) return false;
+			if (section === 'settings' && (action === 'view' || action === 'update')) {
+				return true;
+			}
 			if (isSuperAdmin) {
 				return (ADMIN_SECTION_KEYS as readonly string[]).includes(section);
 			}

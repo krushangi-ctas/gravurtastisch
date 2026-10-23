@@ -115,15 +115,15 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 					prev.map((item) =>
 						item.id === rowId
 							? {
-									...item,
-									relativePath: res.data.relativePath,
-									previewUrl: fullUrl,
-									isUploading: false
-								}
+								...item,
+								relativePath: res.data.relativePath,
+								previewUrl: fullUrl,
+								isUploading: false
+							}
 							: item
 					)
 				);
-				enqueueSnackbar('Image uploaded successfully', { variant: 'success', autoHideDuration: 2000 });
+				enqueueSnackbar('Image uploaded successfully.', { variant: 'success', autoHideDuration: 2000 });
 			}
 		} catch (error: any) {
 			const errMsg = error?.message || 'Failed to upload image';
@@ -211,7 +211,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 						description_images: relativeImagePaths
 					}
 				});
-				enqueueSnackbar('Blog updated successfully', { variant: 'success', autoHideDuration: 2000 });
+				enqueueSnackbar('Blog updated successfully.', { variant: 'success', autoHideDuration: 2000 });
 			} else {
 				await createMutation.mutateAsync({
 					blog_title: trimmedTitle,
@@ -220,7 +220,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 					description_images: relativeImagePaths,
 					status: 1
 				});
-				enqueueSnackbar('Blog created successfully', { variant: 'success', autoHideDuration: 2000 });
+				enqueueSnackbar('Blog created successfully.', { variant: 'success', autoHideDuration: 2000 });
 			}
 			onClose();
 		} catch (err: any) {

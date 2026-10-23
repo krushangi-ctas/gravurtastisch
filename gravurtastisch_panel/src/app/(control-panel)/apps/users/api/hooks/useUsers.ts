@@ -16,17 +16,29 @@ const sellersQueryKey = ['users-sellers'];
 const adminStaffQueryKey = ['users-admin-staff'];
 const teamQueryKey = ['users-team'];
 
-type ListParams = {
+export type ListParams = {
 	page?: number;
 	limit?: number;
 	search?: string;
 	sortBy?: string;
+	plans?: string[] | string;
+	from?: string;
+	to?: string;
 };
 
 export const useAdminSellers = (params: ListParams = {}, enabled = true) => {
 	return useQuery<PaginationResponse<User>>({
 		queryFn: () => getAdminSellers(params),
-		queryKey: [...sellersQueryKey, params.page, params.limit, params.search, params.sortBy],
+		queryKey: [
+			...sellersQueryKey,
+			params.page,
+			params.limit,
+			params.search,
+			params.sortBy,
+			params.plans,
+			params.from,
+			params.to
+		],
 		enabled,
 		refetchOnWindowFocus: true,
 		staleTime: 1500
@@ -36,7 +48,15 @@ export const useAdminSellers = (params: ListParams = {}, enabled = true) => {
 export const useAdminStaffUsers = (params: ListParams = {}, enabled = true) => {
 	return useQuery<PaginationResponse<User>>({
 		queryFn: () => getAdminStaffUsers(params),
-		queryKey: [...adminStaffQueryKey, params.page, params.limit, params.search, params.sortBy],
+		queryKey: [
+			...adminStaffQueryKey,
+			params.page,
+			params.limit,
+			params.search,
+			params.sortBy,
+			params.from,
+			params.to
+		],
 		enabled,
 		refetchOnWindowFocus: true,
 		staleTime: 1500
@@ -46,7 +66,15 @@ export const useAdminStaffUsers = (params: ListParams = {}, enabled = true) => {
 export const useTeamUsers = (params: ListParams = {}, enabled = true) => {
 	return useQuery<PaginationResponse<User>>({
 		queryFn: () => getTeamUsers(params),
-		queryKey: [...teamQueryKey, params.page, params.limit, params.search, params.sortBy],
+		queryKey: [
+			...teamQueryKey,
+			params.page,
+			params.limit,
+			params.search,
+			params.sortBy,
+			params.from,
+			params.to
+		],
 		enabled,
 		refetchOnWindowFocus: true,
 		staleTime: 1500

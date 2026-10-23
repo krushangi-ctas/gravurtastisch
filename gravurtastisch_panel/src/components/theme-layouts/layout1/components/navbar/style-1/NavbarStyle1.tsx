@@ -7,7 +7,7 @@ import NavbarStyle1Content from './NavbarStyle1Content';
 import { Layout1ConfigDefaultsType } from '@/components/theme-layouts/layout1/Layout1Config';
 import { useNavbarContext } from '@/components/theme-layouts/components/navbar/contexts/NavbarContext/useNavbarContext';
 
-const navbarWidth = 230;
+const navbarWidth = 235;
 
 type StyledNavBarProps = {
   theme?: Theme;
@@ -16,9 +16,10 @@ type StyledNavBarProps = {
 };
 
 const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
-  minWidth: navbarWidth,
-  width: navbarWidth,
-  maxWidth: navbarWidth,
+  minWidth: `${navbarWidth}px !important`,
+  width: `${navbarWidth}px !important`,
+  maxWidth: `${navbarWidth}px !important`,
+  flexShrink: '0 !important',
   variants: [
     {
       props: ({ open }) => !open,
@@ -32,13 +33,13 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
     {
       props: ({ open, position }) => !open && position === 'left',
       style: {
-        marginLeft: `-${navbarWidth}px`,
+        marginLeft: `-${navbarWidth}px !important`,
       },
     },
     {
       props: ({ open, position }) => !open && position === 'right',
       style: {
-        marginRight: `-${navbarWidth}px`,
+        marginRight: `-${navbarWidth}px !important`,
       },
     },
     {
@@ -67,8 +68,8 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
 
 const StyledNavBarMobile = styled(SwipeableDrawer)(() => ({
   '& .MuiDrawer-paper': {
-    minWidth: 280,
-    width: 280,
+    minWidth: 235,
+    width: 235,
     maxWidth: '85vw',
   },
 }));
@@ -100,7 +101,7 @@ function NavbarStyle1() {
     <>
       {!isMobile && (
         <StyledNavBar
-          className="max-w-auto sticky top-0 z-20 h-screen w-auto min-w-0 flex-auto shrink-0 flex-col"
+          className="sticky top-0 z-20 h-screen shrink-0 flex-col"
           open={isNavbarOpen}
           position={config.navbar.position}
         >

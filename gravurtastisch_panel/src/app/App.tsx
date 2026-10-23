@@ -19,14 +19,7 @@ import { NavigationContextProvider } from '@/components/theme-layouts/components
 import ShadcnToast from '@/components/ui/ShadcnToast';
 import useHealthKeepAlive from '@/hooks/useHealthKeepAlive';
 
-const queryClient = new QueryClient({
-	defaultOptions: {
-		queries: {
-			staleTime: 5 * 60 * 1000, // 5 minutes
-			retry: 1
-		}
-	}
-});
+import { queryClient } from './queryClient';
 
 /**
  * The main App component.

@@ -150,7 +150,7 @@ function PlansContent({
 					planId,
 					status: 2 // Soft delete
 				});
-				enqueueSnackbar(`Plan "${confirmState.plan.name}" has been deleted.`, {
+				enqueueSnackbar(`Plan "${confirmState.plan.name}" has been deleted successfully.`, {
 					variant: 'success',
 					autoHideDuration: 2000
 				});
@@ -186,23 +186,9 @@ function PlansContent({
 					const name = cell.getValue<string>() || '';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-							<Box
-								sx={{
-									width: 26,
-									height: 26,
-									borderRadius: '6px',
-									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 50, 171, 0.08)',
-									color: (t) => t.palette.mode === 'dark' ? '#60A5FA' : '#0032ab',
-									border: '1px solid',
-									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0, 50, 171, 0.2)',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									shrink: 0,
-								}}
-							>
-								<FuseSvgIcon size={14}>heroicons-outline:sparkles</FuseSvgIcon>
-							</Box>
+							<FuseSvgIcon size={16} className="text-blue-600 dark:text-blue-400 shrink-0">
+								heroicons-outline:sparkles
+							</FuseSvgIcon>
 							<Tooltip title={name} arrow>
 								<Typography sx={{ fontSize: 13, fontWeight: 700, color: 'text.primary' }}>
 									{name}
@@ -238,40 +224,17 @@ function PlansContent({
 			{
 				accessorKey: 'billingCycle',
 				header: 'BILLING CYCLE',
-				size: 155,
+				size: 140,
 				Cell: ({ cell }: { cell: any }) => {
 					const val = (cell.getValue() as number) ?? 1;
-					const config =
-						val === 3
-							? {
-								label: 'Yearly',
-								icon: 'heroicons-outline:sparkles',
-								badge: 'bg-[#FDF7EE] text-[#8E6B40] border-[#DFCBB0] shadow-2xs font-semibold',
-								iconColor: 'text-[#B38B5B]'
-							}
-							: val === 2
-								? {
-									label: 'Quarterly',
-									icon: 'heroicons-outline:clock',
-									badge: 'bg-[#F9F5EF] text-[#7A5B32] border-[#EADDCB] font-semibold',
-									iconColor: 'text-[#B38B5B]'
-								}
-								: {
-									label: 'Monthly',
-									icon: 'heroicons-outline:calendar',
-									badge: 'bg-[#FAF8F5] text-[#5C5346] border-[#EADDCB] font-semibold',
-									iconColor: 'text-[#B38B5B]'
-								};
+					const label = val === 3 ? 'Yearly' : val === 2 ? 'Quarterly' : 'Monthly';
 
 					return (
-						<div
-							className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs border transition-all ${config.badge}`}
+						<span
+							className="inline-flex items-center justify-center px-2 py-0.5 rounded-[3px] text-xs font-semibold bg-[#EBF1F7] text-[#0F2C59] dark:bg-slate-800 dark:text-slate-200 tracking-tight"
 						>
-							<FuseSvgIcon size={14} className={`${config.iconColor} shrink-0`}>
-								{config.icon}
-							</FuseSvgIcon>
-							<span className="tracking-tight">{config.label}</span>
-						</div>
+							{label}
+						</span>
 					);
 				}
 			},
@@ -327,7 +290,7 @@ function PlansContent({
 
 					if (!isValid) {
 						return (
-							<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">
+							<span className="inline-flex items-center gap-1 px-3 py-0.5 rounded-full text-xs font-medium bg-slate-100 text-slate-500 border border-slate-200">
 								<FuseSvgIcon size={14} className="text-slate-400">
 									heroicons-outline:minus-circle
 								</FuseSvgIcon>
@@ -363,7 +326,7 @@ function PlansContent({
 					return (
 						<Tooltip title={`${formatted} • ${tooltipSuffix}`} arrow>
 							<div
-								className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-lg text-xs font-semibold border ${badgeClasses}`}
+								className={`inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full text-xs font-semibold border ${badgeClasses}`}
 							>
 								<FuseSvgIcon size={14} className={`${iconColor} shrink-0`}>
 									{icon}
@@ -377,7 +340,7 @@ function PlansContent({
 			{
 				accessorKey: 'createdAt',
 				header: 'CREATED AT',
-				size: 150,
+				size: 160,
 				Cell: ({ cell, row }: { cell: any; row: MRT_Row<Plan> }) => {
 					const val = (cell.getValue?.() as string) || row.original?.createdAt;
 					if (!val || !moment(val).isValid()) {
@@ -385,15 +348,17 @@ function PlansContent({
 					}
 					const m = moment(val);
 					return (
-						<Tooltip title={m.format('DD MMM YYYY, hh:mm A')} arrow>
-							<Box sx={{ display: 'flex', flexDirection: 'column', lineHeight: 1.25 }}>
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
-									{m.format('DD MMM YYYY')}
-								</Typography>
-								<Typography sx={{ fontSize: 10.5, color: 'text.secondary' }}>
-									{m.format('hh:mm A')}
-								</Typography>
-							</Box>
+						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
+								{m.format('DD-MM-YYYY hh:mm A')}
+							</Typography>
 						</Tooltip>
 					);
 				}
@@ -500,25 +465,7 @@ function PlansContent({
 						'mrt-row-actions': {
 							size: 105,
 							minSize: 95,
-							maxSize: 115,
-							muiTableHeadCellProps: {
-								sx: {
-									backgroundColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									color: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#e2e8f0 !important' : '#1f2937 !important',
-									borderColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#334155 !important' : '#d1d5db !important',
-									'&:before': {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									},
-									'&[data-pinned="true"]:before': {
-										backgroundColor: (theme: any) =>
-											theme.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important',
-									},
-								}
-							}
+							maxSize: 115
 						}
 					}}
 					enableRowSelection={false}
@@ -536,9 +483,23 @@ function PlansContent({
 					manualSorting
 					rowCount={totalResults}
 					pageCount={totalPages}
+					muiTableBodyRowProps={{
+						sx: {
+							minHeight: '38px',
+							height: '38px'
+						}
+					}}
 					muiTableProps={{
 						sx: {
-							minWidth: { xs: '800px', lg: '100%' }
+							minWidth: { xs: '800px', lg: '100%' },
+							'& .MuiTableCell-root': {
+								padding: '6px 10px',
+								borderBottom: '1px solid',
+								borderColor: 'divider',
+								overflow: 'hidden',
+								textOverflow: 'ellipsis',
+								whiteSpace: 'nowrap'
+							}
 						}
 					}}
 					muiTableContainerProps={{

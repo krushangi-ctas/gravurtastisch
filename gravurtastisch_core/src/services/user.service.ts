@@ -8,6 +8,9 @@ const Role = require('../models/role.model');
 const ordermodel = require('../models/order.model');
 const PlanModel = require('../models/plan.model');
 const PaymentModel = require('../models/payment.model');
+const fs = require('fs');
+const path = require('path');
+const config = require('../config/config');
 const errorHandler = require('../utils/error.handler');
 const logger = require('../config/logger');
 const { systemLog } = require('../utils/system-log');
@@ -145,7 +148,7 @@ const createManagedUser = async (actor, body) => {
   }
 };
 
-const buildUserListQuery = (baseFilter, query = {}) => {
+const buildUserListQuery = async (baseFilter, query = {}) => {
   const filter = { ...baseFilter };
   const andParts = [];
 
@@ -168,16 +171,154 @@ const buildUserListQuery = (baseFilter, query = {}) => {
     filter.userType = query.userType;
   }
 
+  // 1. Search across: name, email, plan, brand (businessName), role, marketplace, and quota
   if (query.search) {
-    const searchRegex = new RegExp(String(query.search).trim(), 'i');
-    andParts.push({
-      $or: [
-        { name: searchRegex },
-        { email: searchRegex },
-        { businessName: searchRegex },
-        { contact_no: searchRegex },
-      ],
-    });
+    const rawSearch = String(query.search).trim();
+    const escapedSearch = rawSearch.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const searchRegex = new RegExp(escapedSearch, 'i');
+
+    // Matching roles
+    const matchingRoles = await Role.find({ role_name: searchRegex })
+      .select('_id')
+      .lean();
+    const matchingRoleIds = matchingRoles.map((r) => r._id);
+
+    // Matching plans
+    const matchingPlans = await PlanModel.find({ name: searchRegex })
+      .select('_id')
+      .lean();
+    const matchingPlanIds = matchingPlans.map((p) => p._id);
+
+    // Numeric search for marketplace and quota
+    const cleanNumStr = rawSearch.replace(/,/g, '');
+    const numVal = Number(cleanNumStr);
+    const isNumeric = !isNaN(numVal) && cleanNumStr !== '';
+
+    const orConditions = [
+      { name: searchRegex },
+      { email: searchRegex },
+      { businessName: searchRegex },
+      { contact_no: searchRegex },
+      { 'plans.name': searchRegex },
+    ];
+
+    if (matchingRoleIds.length > 0) {
+      orConditions.push({ role_id: { $in: matchingRoleIds } });
+    }
+    if (/seller/i.test(rawSearch)) {
+      orConditions.push(
+        { userType: 'seller' },
+        { isSellerAdmin: true },
+        { role_id: null },
+        { role_id: { $exists: false } }
+      );
+    }
+
+    if (matchingPlanIds.length > 0) {
+      orConditions.push(
+        { currentPlanId: { $in: matchingPlanIds } },
+        { 'plans.planId': { $in: matchingPlanIds } }
+      );
+    }
+
+    if (isNumeric) {
+      orConditions.push(
+        { 'planLimits.maxMarketplaces': numVal },
+        { 'plans.marketplace': numVal },
+        { 'planLimits.maxReviewRequestsPerMonth': numVal },
+        { 'plans.request_quota': numVal }
+      );
+    }
+
+    andParts.push({ $or: orConditions });
+  }
+
+  // 2. Plan filter (multi-select)
+  const plansParam = query.plans || query.plan;
+  if (plansParam !== undefined && plansParam !== null && plansParam !== '') {
+    if (plansParam === '__NONE__') {
+      andParts.push({ _id: null });
+    } else {
+      let plansList = [];
+      if (Array.isArray(plansParam)) {
+        plansList = plansParam
+          .flatMap((p) => String(p).split(','))
+          .map((p) => p.trim())
+          .filter(Boolean);
+      } else if (typeof plansParam === 'string') {
+        plansList = plansParam
+          .split(',')
+          .map((p) => p.trim())
+          .filter(Boolean);
+      }
+
+      if (plansList.length > 0) {
+        const validObjectIds = [];
+        const planNames = [];
+
+        for (const p of plansList) {
+          if (
+            mongoose.Types.ObjectId.isValid(p) &&
+            String(new mongoose.Types.ObjectId(p)) === p
+          ) {
+            validObjectIds.push(new mongoose.Types.ObjectId(p));
+          } else {
+            planNames.push(p);
+          }
+        }
+
+        const orPlanConditions = [];
+        if (validObjectIds.length > 0) {
+          orPlanConditions.push(
+            { currentPlanId: { $in: validObjectIds } },
+            { 'plans.planId': { $in: validObjectIds } }
+          );
+        }
+        if (planNames.length > 0) {
+          const matchingDbPlans = await PlanModel.find({
+            name: { $in: planNames },
+          })
+            .select('_id name')
+            .lean();
+          const foundIds = matchingDbPlans.map((p) => p._id);
+          if (foundIds.length > 0) {
+            orPlanConditions.push(
+              { currentPlanId: { $in: foundIds } },
+              { 'plans.planId': { $in: foundIds } }
+            );
+          }
+          orPlanConditions.push({ 'plans.name': { $in: planNames } });
+        }
+
+        if (orPlanConditions.length > 0) {
+          andParts.push({ $or: orPlanConditions });
+        }
+      }
+    }
+  }
+
+  // 3. Date range filter (createdAt)
+  const fromDateStr = query.from || query.startDate;
+  const toDateStr = query.to || query.endDate;
+  if (fromDateStr || toDateStr) {
+    const dateQuery = {};
+    if (fromDateStr) {
+      const fromD = new Date(fromDateStr);
+      if (!isNaN(fromD.getTime())) {
+        fromD.setHours(0, 0, 0, 0);
+        dateQuery.$gte = fromD;
+      }
+    }
+    if (toDateStr) {
+      const toD = new Date(toDateStr);
+      if (!isNaN(toD.getTime())) {
+        toD.setHours(23, 59, 59, 999);
+        dateQuery.$lte = toD;
+      }
+    }
+    if (Object.keys(dateQuery).length > 0) {
+      andParts.push({ createdAt: dateQuery });
+    }
   }
 
   if (andParts.length) {
@@ -191,7 +332,19 @@ const buildUserListQuery = (baseFilter, query = {}) => {
     const [rawKey, order] = String(query.sortBy).split(':');
     const keyMap = {
       role: 'role_id',
-      currentPlan: 'currentPlanId',
+      currentPlan: 'plans.name',
+      plan: 'plans.name',
+      expireDate: 'plans.expireAt',
+      expireAt: 'plans.expireAt',
+      'planLimits.maxMarketplaces': 'planLimits.maxMarketplaces',
+      'planLimits.maxReviewRequestsPerMonth': 'planLimits.maxReviewRequestsPerMonth',
+      quota: 'planLimits.maxReviewRequestsPerMonth',
+      marketplaces: 'planLimits.maxMarketplaces',
+      markets: 'planLimits.maxMarketplaces',
+      used: 'usedReviewRequests',
+      usedReviewRequests: 'usedReviewRequests',
+      mobile: 'contact_no',
+      brand: 'businessName',
     };
     const key = keyMap[rawKey] || rawKey;
     sort = { [key]: order === 'asc' ? 1 : -1 };
@@ -201,18 +354,65 @@ const buildUserListQuery = (baseFilter, query = {}) => {
 };
 
 const paginateUserList = async (baseFilter, query, okMessage) => {
-  const { filter, page, limit, sort } = buildUserListQuery(baseFilter, query);
+  const { filter, page, limit, sort } = await buildUserListQuery(
+    baseFilter,
+    query
+  );
 
-  const [totalResults, results] = await Promise.all([
-    User.countDocuments(filter),
-    User.find(filter)
-      .populate('role_id', 'role_name scope permissions status')
-      .populate('currentPlanId', 'name price marketplace request_quota billingCycle status')
-      .sort(sort)
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean(),
-  ]);
+  const [rawKey, orderStr] = query.sortBy ? String(query.sortBy).split(':') : ['', ''];
+  const isRoleSort = rawKey === 'role';
+  const roleOrder = orderStr === 'desc' ? -1 : 1;
+
+  let totalResults = 0;
+  let results = [];
+
+  if (isRoleSort) {
+    const [count, rawResults] = await Promise.all([
+      User.countDocuments(filter),
+      User.aggregate([
+        { $match: filter },
+        {
+          $lookup: {
+            from: 'tbl_roles',
+            localField: 'role_id',
+            foreignField: '_id',
+            as: 'role_info',
+          },
+        },
+        {
+          $addFields: {
+            role_name_sort: {
+              $toLower: {
+                $ifNull: [{ $arrayElemAt: ['$role_info.role_name', 0] }, ''],
+              },
+            },
+          },
+        },
+        { $sort: { role_name_sort: roleOrder, createdAt: -1 } },
+        { $skip: (page - 1) * limit },
+        { $limit: limit },
+        { $project: { role_info: 0, role_name_sort: 0 } },
+      ]),
+    ]);
+    totalResults = count;
+    results = await User.populate(rawResults, [
+      { path: 'role_id', select: 'role_name scope permissions status' },
+      { path: 'currentPlanId', select: 'name price marketplace request_quota billingCycle status' },
+    ]);
+  } else {
+    const [count, rawResults] = await Promise.all([
+      User.countDocuments(filter),
+      User.find(filter)
+        .populate('role_id', 'role_name scope permissions status')
+        .populate('currentPlanId', 'name price marketplace request_quota billingCycle status')
+        .sort(sort)
+        .skip((page - 1) * limit)
+        .limit(limit)
+        .lean(),
+    ]);
+    totalResults = count;
+    results = rawResults;
+  }
 
   if (Array.isArray(results) && results.length > 0) {
     const startOfMonth = moment().startOf('month').toDate();
@@ -300,7 +500,7 @@ const listSellerTeamUsers = async (actor, query = {}) => {
       );
     }
 
-    const { filter, page, limit, sort } = buildUserListQuery(
+    const { filter, page, limit, sort } = await buildUserListQuery(
       {
         parentId: ownerId,
         isSellerAdmin: { $ne: true },
@@ -703,7 +903,7 @@ const updateUserStatusById = async (userId) => {
   }
 };
 
-const uploadProfileImage = async (userId, data) => {
+const uploadProfileImage = async (userId, file) => {
   const userData = await User.findById(userId);
   if (!userData) {
     return {
@@ -712,16 +912,60 @@ const uploadProfileImage = async (userId, data) => {
     };
   }
 
-  const fileName = await uploadFile(data, '');
+  if (!file) {
+    return {
+      status: httpStatus.BAD_REQUEST,
+      message: 'Image file is required',
+    };
+  }
+
+  const uploadDir = path.join(__dirname, '../uploads/profiles');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const ext =
+    path
+      .extname(file.name || file.originalFilename || file.path || '')
+      .toLowerCase() || '.png';
+  const uniqueName = `profile-${Date.now()}-${Math.floor(
+    100000000 + Math.random() * 900000000
+  )}${ext}`;
+  const targetPath = path.join(uploadDir, uniqueName);
+
+  if (file.path && fs.existsSync(file.path)) {
+    fs.copyFileSync(file.path, targetPath);
+    try {
+      fs.unlinkSync(file.path);
+    } catch (e) {
+      // ignore
+    }
+  } else if (file.buffer) {
+    fs.writeFileSync(targetPath, file.buffer);
+  }
+
+  // Remove previous avatar file if exists
+  if (userData.avatar) {
+    const prevFile = userData.avatar.replace(/^(\/?uploads\/)?(\/?profiles\/)?/, '');
+    const oldPath = path.join(uploadDir, prevFile);
+    if (fs.existsSync(oldPath)) {
+      try {
+        fs.unlinkSync(oldPath);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  const relativePath = `profiles/${uniqueName}`;
+  const baseUrl = (config.site_url || process.env.BASE_URL || 'http://localhost:7051').replace(/\/+$/, '');
+  const avatarUrl = `${baseUrl}/${relativePath}`;
+
   const resData = await User.findByIdAndUpdate(
     userId,
-    { avatar: fileName },
+    { avatar: relativePath },
     { new: true }
   );
-
-  if (userData.avatar) {
-    await deleteFile(userData.avatar, '');
-  }
 
   if (resData) {
     await systemLog(
@@ -731,57 +975,98 @@ const uploadProfileImage = async (userId, data) => {
       'update-profile-image',
       userData
     );
-    const avatarUrl = `${process.env.BASE_URL}/uploads/${fileName}`;
     return {
       status: httpStatus.OK,
       data: resData,
-      picture: fileName,
+      picture: relativePath,
+      avatar: relativePath,
       avatarUrl: avatarUrl,
-      message: 'Profile Picture has been uploaded.',
+      message: 'Profile picture has been uploaded.',
     };
   } else {
-    errorHandler.errorM({
-      action_type: 'update-profile-image',
-      error_data: { message: 'occures while update profile image.' },
-    });
     return {
-      status: httpStatus.FORBIDDEN,
-      message: 'Something want wrong, Please try again',
+      status: httpStatus.INTERNAL_SERVER_ERROR,
+      message: 'Failed to update user profile image',
     };
   }
 };
 
+const deleteProfileImage = async (userId) => {
+  const userData = await User.findById(userId);
+  if (!userData) {
+    return {
+      status: httpStatus.NOT_FOUND,
+      message: 'User not found',
+    };
+  }
+
+  if (userData.avatar) {
+    const uploadDir = path.join(__dirname, '../uploads/profiles');
+    const prevFile = userData.avatar.replace(/^(\/?uploads\/)?(\/?profiles\/)?/, '');
+    const oldPath = path.join(uploadDir, prevFile);
+    if (fs.existsSync(oldPath)) {
+      try {
+        fs.unlinkSync(oldPath);
+      } catch (e) {
+        // ignore
+      }
+    }
+  }
+
+  const resData = await User.findByIdAndUpdate(
+    userId,
+    { avatar: '' },
+    { new: true }
+  );
+
+  return {
+    status: httpStatus.OK,
+    data: resData,
+    message: 'Profile picture has been removed.',
+  };
+};
+
 const updatePasswordById = async (userId, updateBody) => {
   try {
-    const user = await getUserById(userId);
+    const user = await User.findById(userId);
     if (!user) {
       return createResponse(httpStatus.NOT_FOUND, 'User not found');
     }
-    const data = {};
-    if (updateBody.password && updateBody.password !== '') {
-      data['password'] = updateBody.password;
-    }
-    let result;
-    if (
-      (await user.isPasswordMatch(updateBody.currentPassword)) &&
-      updateBody.password === updateBody.passwordConfirm
-    ) {
-      result = await User.findByIdAndUpdate(userId, data, { new: true });
+
+    if (!updateBody.currentPassword) {
+      return createResponse(httpStatus.BAD_REQUEST, 'Current password is required');
     }
 
-    if (result) {
-      return createResponse(httpStatus.OK, 'sucessfully password updated');
-    } else {
+    const isMatch = await user.isPasswordMatch(updateBody.currentPassword);
+    if (!isMatch) {
+      return createResponse(httpStatus.BAD_REQUEST, 'Current password is incorrect');
+    }
+
+    if (!updateBody.password || updateBody.password.length < 8) {
+      return createResponse(httpStatus.BAD_REQUEST, 'New password must be at least 8 characters long');
+    }
+
+    if (!updateBody.password.match(/\d/) || !updateBody.password.match(/[a-zA-Z]/)) {
       return createResponse(
         httpStatus.BAD_REQUEST,
-        'something want wrong, please try again'
+        'New password must contain at least one letter and one number'
       );
     }
+
+    if (updateBody.password !== updateBody.passwordConfirm) {
+      return createResponse(httpStatus.BAD_REQUEST, 'New password and confirm password do not match');
+    }
+
+    user.password = updateBody.password;
+    await user.save();
+
+    await systemLog('UPDATE', { _id: user._id }, userId, 'update-password');
+    return createResponse(httpStatus.OK, 'Password updated successfully');
   } catch (error) {
-    console.error('error: ');
+    console.error('Password update error:', error);
     return createResponse(
       httpStatus.INTERNAL_SERVER_ERROR,
-      'something want wrong, please try again'
+      error?.message || 'Failed to update password'
     );
   }
 };
@@ -1231,6 +1516,7 @@ module.exports = {
   deleteUserById,
   updateUserStatusById,
   uploadProfileImage,
+  deleteProfileImage,
   updatePasswordById,
   getUserDetailById,
   getChatUserList,

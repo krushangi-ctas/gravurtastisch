@@ -8,7 +8,8 @@ export const ADMIN_SECTION_KEYS = [
 	'support',
 	'blogs',
 	'site-configuration',
-	'plans'
+	'plans',
+	'settings'
 ] as const;
 
 /** Seller nav / redirect order. */
@@ -42,7 +43,8 @@ export const ADMIN_NAV_IDS = [
 	'support',
 	'blogs',
 	'site-configuration',
-	'plans'
+	'plans',
+	'settings'
 ] as const;
 
 export const SELLER_NAV_IDS = [
