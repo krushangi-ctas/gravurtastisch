@@ -95,10 +95,10 @@ async function verifySMTP() {
   }
 }
 
-/* istanbul ignore next */
-if (config.env !== 'test') {
-  verifySMTP();
-}
+// Disabled on startup so email service does not block or wait during server boot
+// if (config.env !== 'test') {
+//   verifySMTP();
+// }
 
 const getLogoAttachment = () => {
   const logoCandidatePaths = [

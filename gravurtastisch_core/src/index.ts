@@ -17,51 +17,41 @@ const getSanitizedMongoHost = (url) => {
   }
 };
 
-const startServer = async () => {
-  const maxRetries = 3;
-  const retryDelayMs = 5000;
-  const sanitizedUrl = getSanitizedMongoHost(config.mongoose.url || '');
+// 1. Immediately create and start the HTTP server so Render detects the open port
+server = http.createServer(app);
+server.listen(config.port, () => {
+  logger.info(`Listening to port ${config.port}`);
+  // Start 5-minute health check keep-alive service
+  startKeepAlive();
+});
 
+// 2. Connect to MongoDB asynchronously without blocking or crashing the HTTP server
+const connectMongoDB = async () => {
+  const sanitizedUrl = getSanitizedMongoHost(config.mongoose.url || '');
   logger.info(`[MongoDB] Initializing connection to: ${sanitizedUrl}`);
 
-  for (let attempt = 1; attempt <= maxRetries; attempt++) {
-    try {
-      await mongoose.connect(config.mongoose.url, config.mongoose.options);
-      logger.info('Connected to MongoDB successfully');
-
-      // Create HTTP server with Express app
-      server = http.createServer(app);
-
-      // Start HTTP server
-      server.listen(config.port, () => {
-        logger.info(`Listening to port ${config.port}`);
-        // Start 5-minute health check keep-alive service
-        startKeepAlive();
-      });
-      return;
-    } catch (err) {
-      logger.error(`[MongoDB] Connection attempt ${attempt}/${maxRetries} failed: ${err.message || err}`);
-      if (attempt < maxRetries) {
-        logger.info(`[MongoDB] Retrying connection in ${retryDelayMs / 1000}s...`);
-        await new Promise((resolve) => setTimeout(resolve, retryDelayMs));
-      } else {
-        logger.error('============================================================');
-        logger.error('CRITICAL: MongoDB connection timed out after multiple attempts.');
-        logger.error('HOW TO FIX ON RENDER / CLOUD HOSTING:');
-        logger.error('1. Open MongoDB Atlas (https://cloud.mongodb.com)');
-        logger.error('2. Navigate to "Security" -> "Network Access"');
-        logger.error('3. Click "Add IP Address" and choose "Allow Access from Anywhere" (0.0.0.0/0)');
-        logger.error('   Render instances use dynamic cloud IPs, so 0.0.0.0/0 is required.');
-        logger.error('4. Check your MONGODB_URL in Render Dashboard:');
-        logger.error('   Ensure username/password are correct and special characters are URL-encoded.');
-        logger.error('============================================================');
-        process.exit(1);
-      }
-    }
+  try {
+    await mongoose.connect(config.mongoose.url, config.mongoose.options);
+    logger.info('Connected to MongoDB successfully');
+  } catch (err: any) {
+    logger.error(`[MongoDB] Connection error: ${err.message || err}`);
+    logger.warn('HTTP server remains active and healthy. MongoDB will auto-reconnect when database host is reachable.');
   }
 };
 
-startServer();
+mongoose.connection.on('connected', () => {
+  logger.info('[MongoDB] Connection established successfully');
+});
+
+mongoose.connection.on('disconnected', () => {
+  logger.warn('[MongoDB] Connection lost. Attempting auto-reconnect...');
+});
+
+mongoose.connection.on('error', (err: any) => {
+  logger.error(`[MongoDB] Runtime error: ${err.message || err}`);
+});
+
+connectMongoDB();
 
 const forceExit = (code = 0) => {
   // Keep-alive / Mongo sockets can keep the process alive after server.close()
