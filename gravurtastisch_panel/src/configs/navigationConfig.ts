@@ -16,7 +16,7 @@ const navigationConfig: FuseNavItemType[] = [
 		children: [
 			{
 				id: 'user-management',
-				title: 'User Management',
+				title: 'Users',
 				type: 'item',
 				icon: 'lucide:user-cog',
 				url: '/user-management/users',
@@ -56,7 +56,7 @@ const navigationConfig: FuseNavItemType[] = [
 			},
 			{
 				id: 'support',
-				title: 'Customer Support',
+				title: 'Supports',
 				type: 'item',
 				icon: 'lucide:circle-help',
 				url: '/support',
@@ -64,7 +64,7 @@ const navigationConfig: FuseNavItemType[] = [
 			},
 			{
 				id: 'blogs',
-				title: 'Blog Management',
+				title: 'Blogs',
 				type: 'item',
 				icon: 'lucide:newspaper',
 				url: '/blogs',

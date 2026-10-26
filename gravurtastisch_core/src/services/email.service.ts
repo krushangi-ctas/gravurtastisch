@@ -5,8 +5,8 @@ const logger = require('../config/logger');
 const fs = require('fs');
 const path = require('path');
 const mongoose = require('mongoose');
-let db = mongoose.connection;
 const RoleModel = require('../models/role.model');
+const moment = require('moment');
 
 const smtpHost = config.email.smtp?.host || 'smtp.gmail.com';
 const smtpUser = config.email.smtp?.auth?.user || '';
@@ -252,6 +252,155 @@ const sendOtpEmail = async (to, otp) => {
   await sendEmail(to, subject, '', html);
 };
 
+/**
+ * Send subscription plan expiring tomorrow reminder email
+ * @param {Object} user User object with email, first_name, last_name
+ * @param {Object} plan Active plan subdocument
+ */
+const sendPlanExpiryReminderEmail = async (user, plan) => {
+  const sellerName =
+    `${user.first_name || ''} ${user.last_name || ''}`.trim() ||
+    user.email?.split('@')[0] ||
+    'Valued Seller';
+  const planName = plan.name || 'Subscription Plan';
+  const expireDateFormatted = plan.expireAt
+    ? moment(plan.expireAt).format('MMMM DD, YYYY')
+    : moment().add(1, 'day').format('MMMM DD, YYYY');
+
+  const billingCycleLabels = {
+    1: 'Monthly',
+    2: 'Quarterly',
+    3: 'Yearly',
+  };
+  const billingCycleText = billingCycleLabels[plan.billingCycle] || 'Monthly';
+  const requestQuotaText = plan.request_quota
+    ? `${plan.request_quota.toLocaleString()} requests / month`
+    : 'Standard';
+  const marketplaceText = plan.marketplace
+    ? `${plan.marketplace} marketplace(s)`
+    : '1 marketplace';
+
+  const subject = `Urgent: Your Gravurtastisch Plan Expires Tomorrow (${expireDateFormatted})`;
+  const preheader = `Your ${planName} plan expires tomorrow. Renew today to avoid interruption in Amazon reviews and solicitations.`;
+
+  const content = `
+    <!-- Expiry Notice Badge -->
+    <div style="margin-bottom:16px;">
+      <span style="display:inline-block; font-family:'Inter', Arial, sans-serif; font-size:11px; font-weight:700; color:#B45309; background-color:#FEF3C7; border:1px solid #FCD34D; padding:4px 12px; border-radius:999px; letter-spacing:0.4px; text-transform:uppercase;">
+        &#9888; Action Required &middot; Plan Expiring Tomorrow
+      </span>
+    </div>
+
+    <!-- Heading -->
+    <h1 style="margin:0 0 10px; font-family:'Montserrat', Arial, sans-serif; font-size:23px; font-weight:800; color:#0B132B; line-height:1.3;">
+      Your Subscription Expires Tomorrow
+    </h1>
+
+    <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:14.5px; line-height:1.6; color:#334155;">
+      Hello <strong>${sellerName}</strong>,
+    </p>
+
+    <p style="margin:0 0 18px; font-family:'Inter', Arial, sans-serif; font-size:14px; line-height:1.6; color:#334155;">
+      This is a friendly reminder that your <strong>${planName}</strong> subscription plan on <strong>Gravurtastisch</strong> is scheduled to expire tomorrow, on <strong style="color:#0B132B;">${expireDateFormatted}</strong>.
+    </p>
+
+    <!-- Plan Summary Box -->
+    <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:18px 20px; margin:0 0 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+      <p style="margin:0 0 12px; font-family:'Montserrat', Arial, sans-serif; font-size:12px; font-weight:700; color:#0032AB; text-transform:uppercase; letter-spacing:0.6px;">
+        Subscription Details
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B; width:45%;">
+            Plan Name:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:700; color:#0B132B;">
+            ${planName}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Expiration Date:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:700; color:#DC2626;">
+            ${expireDateFormatted} (Tomorrow)
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Billing Cycle:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:600; color:#334155;">
+            ${billingCycleText}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Review Quota:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:600; color:#334155;">
+            ${requestQuotaText}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Connected Marketplaces:
+          </td>
+          <td style="padding:7px 0; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:600; color:#334155;">
+            ${marketplaceText}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Callout Box -->
+    <div style="background-color:#EFF6FF; border-left:4px solid #0032AB; border-radius:0 8px 8px 0; padding:12px 16px; margin:0 0 22px;">
+      <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.55; color:#1E3A8A;">
+        <strong>Important:</strong> When your plan expires, automated review requests and solicitations will pause for your Amazon store until your subscription is renewed.
+      </p>
+    </div>
+
+    <!-- Point-wise instructions -->
+    <div style="margin:0 0 20px;">
+      <p style="margin:0 0 8px; font-family:'Inter', Arial, sans-serif; font-size:12px; font-weight:700; color:#0B132B; text-transform:uppercase; letter-spacing:0.5px;">
+        Why renew before expiration?
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="vertical-align:top; width:16px; font-size:14px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2713;</td>
+          <td style="font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#475569; padding-bottom:6px;">
+            <strong>Zero downtime:</strong> Your automated Amazon feedback requests continue without disruption.
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top; width:16px; font-size:14px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2713;</td>
+          <td style="font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#475569; padding-bottom:6px;">
+            <strong>Retain quota:</strong> Keep your monthly quota balance active across all integrated marketplaces.
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top; width:16px; font-size:14px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2713;</td>
+          <td style="font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#475569;">
+            <strong>Seamless management:</strong> Easily choose your preferred billing cycle (Monthly, Quarterly, or Yearly).
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.55; color:#64748B;">
+      If you have already renewed or updated your plan, please disregard this email. If you need any assistance, feel free to reply directly to this email or reach us at <a href="mailto:info@ctasis.com" style="color:#0032AB; font-weight:600; text-decoration:none;">info@ctasis.com</a>.
+    </p>
+
+    <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#64748B;">
+      Warm regards,<br/>
+      <strong style="color:#0032AB;">The Gravurtastisch Team</strong>
+    </p>
+  `;
+
+  const html = await getMailBody(content, preheader);
+  return sendEmail(user.email, subject, '', html);
+};
+
 async function getMailTemplateByKey(key) {
   return db
     .collection('tbl_email_templates')
@@ -350,6 +499,7 @@ module.exports = {
   sendResetPasswordEmail,
   sendVerificationEmail,
   sendOtpEmail,
+  sendPlanExpiryReminderEmail,
   sendEmailToTeam,
   getMailTemplateByKey,
   replaceContents,

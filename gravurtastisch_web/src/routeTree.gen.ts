@@ -11,10 +11,13 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AmazonSpApiRouteImport } from './routes/amazon-sp-api'
+import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GuideRouteImport } from './routes/guide'
 import { Route as OrderSyncRouteImport } from './routes/order-sync'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as RefundRouteImport } from './routes/refund'
+import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ReviewAnalyticsRouteImport } from './routes/review-analytics'
 import { Route as SmartSchedulingRouteImport } from './routes/smart-scheduling'
 import { Route as TermsRouteImport } from './routes/terms'
@@ -33,6 +36,11 @@ const AmazonSpApiRoute = AmazonSpApiRouteImport.update({
   path: '/amazon-sp-api',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GuideRoute = GuideRouteImport.update({
   id: '/guide',
   path: '/guide',
@@ -43,6 +51,11 @@ const OrderSyncRoute = OrderSyncRouteImport.update({
   path: '/order-sync',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -51,6 +64,11 @@ const PrivacyRoute = PrivacyRouteImport.update({
 const RefundRoute = RefundRouteImport.update({
   id: '/refund',
   path: '/refund',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReviewAnalyticsRoute = ReviewAnalyticsRouteImport.update({
@@ -92,10 +110,13 @@ const PaymentSuccessRoute = PaymentSuccessRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/amazon-sp-api': typeof AmazonSpApiRoute
+  '/contact': typeof ContactRoute
   '/guide': typeof GuideRoute
   '/order-sync': typeof OrderSyncRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/register': typeof RegisterRoute
   '/review-analytics': typeof ReviewAnalyticsRoute
   '/smart-scheduling': typeof SmartSchedulingRoute
   '/terms': typeof TermsRoute
@@ -107,10 +128,13 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/amazon-sp-api': typeof AmazonSpApiRoute
+  '/contact': typeof ContactRoute
   '/guide': typeof GuideRoute
   '/order-sync': typeof OrderSyncRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/register': typeof RegisterRoute
   '/review-analytics': typeof ReviewAnalyticsRoute
   '/smart-scheduling': typeof SmartSchedulingRoute
   '/terms': typeof TermsRoute
@@ -123,10 +147,13 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/amazon-sp-api': typeof AmazonSpApiRoute
+  '/contact': typeof ContactRoute
   '/guide': typeof GuideRoute
   '/order-sync': typeof OrderSyncRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/refund': typeof RefundRoute
+  '/register': typeof RegisterRoute
   '/review-analytics': typeof ReviewAnalyticsRoute
   '/smart-scheduling': typeof SmartSchedulingRoute
   '/terms': typeof TermsRoute
@@ -140,10 +167,13 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/amazon-sp-api'
+    | '/contact'
     | '/guide'
     | '/order-sync'
+    | '/pricing'
     | '/privacy'
     | '/refund'
+    | '/register'
     | '/review-analytics'
     | '/smart-scheduling'
     | '/terms'
@@ -155,10 +185,13 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/amazon-sp-api'
+    | '/contact'
     | '/guide'
     | '/order-sync'
+    | '/pricing'
     | '/privacy'
     | '/refund'
+    | '/register'
     | '/review-analytics'
     | '/smart-scheduling'
     | '/terms'
@@ -170,10 +203,13 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/amazon-sp-api'
+    | '/contact'
     | '/guide'
     | '/order-sync'
+    | '/pricing'
     | '/privacy'
     | '/refund'
+    | '/register'
     | '/review-analytics'
     | '/smart-scheduling'
     | '/terms'
@@ -186,10 +222,13 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AmazonSpApiRoute: typeof AmazonSpApiRoute
+  ContactRoute: typeof ContactRoute
   GuideRoute: typeof GuideRoute
   OrderSyncRoute: typeof OrderSyncRoute
+  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   RefundRoute: typeof RefundRoute
+  RegisterRoute: typeof RegisterRoute
   ReviewAnalyticsRoute: typeof ReviewAnalyticsRoute
   SmartSchedulingRoute: typeof SmartSchedulingRoute
   TermsRoute: typeof TermsRoute
@@ -215,6 +254,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AmazonSpApiRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/guide': {
       id: '/guide'
       path: '/guide'
@@ -229,6 +275,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof OrderSyncRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/privacy': {
       id: '/privacy'
       path: '/privacy'
@@ -241,6 +294,13 @@ declare module '@tanstack/react-router' {
       path: '/refund'
       fullPath: '/refund'
       preLoaderRoute: typeof RefundRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/review-analytics': {
@@ -298,10 +358,13 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AmazonSpApiRoute: AmazonSpApiRoute,
+  ContactRoute: ContactRoute,
   GuideRoute: GuideRoute,
   OrderSyncRoute: OrderSyncRoute,
+  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   RefundRoute: RefundRoute,
+  RegisterRoute: RegisterRoute,
   ReviewAnalyticsRoute: ReviewAnalyticsRoute,
   SmartSchedulingRoute: SmartSchedulingRoute,
   TermsRoute: TermsRoute,

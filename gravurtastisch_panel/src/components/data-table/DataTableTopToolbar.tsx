@@ -23,11 +23,13 @@ const defaultTableSubtitles: Record<string, string> = {
 	Team: 'Manage internal team members, departmental roles, and access controls.',
 	'Team Management': 'Manage internal team members, departmental roles, and access controls.',
 	'User Management': 'Manage administrative users, access privileges, and staff accounts.',
+	Users: 'Manage administrative users, access privileges, and staff accounts.',
 	Roles: 'Configure role definitions, operational permissions, and security policies.',
 	Sections: 'Configure dynamic section definitions, operational permissions, and access controls.',
 	Blogs: 'Create, publish, and manage website articles, categories, and SEO blog posts.',
 	Plans: 'Manage subscription tiers, feature allocations, pricing, and monthly limits.',
 	Support: 'Manage customer inquiries, support requests, and seller communications.',
+	Supports: 'Manage customer inquiries, support requests, and seller communications.',
 	'Support Tickets': 'Manage customer inquiries, support requests, and seller communications.'
 };
 

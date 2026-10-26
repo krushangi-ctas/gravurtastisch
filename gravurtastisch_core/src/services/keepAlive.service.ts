@@ -69,12 +69,16 @@ const startKeepAlive = () => {
       const {
         autoPromoteAllExpiredUserPlans,
         resetMonthlyUsageForAllUsers,
+        checkAndSendPlanExpiryReminders,
       } = require('./plan.service');
       autoPromoteAllExpiredUserPlans().catch((err) => {
         logger.warn(`[Plan-Sync] Initial plan sync error: ${err.message}`);
       });
       resetMonthlyUsageForAllUsers().catch((err) => {
         logger.warn(`[Usage-Sync] Initial monthly usage sync error: ${err.message}`);
+      });
+      checkAndSendPlanExpiryReminders().catch((err) => {
+        logger.warn(`[Plan-Reminder] Initial expiry reminder error: ${err.message}`);
       });
     } catch (_) {}
   }, 10000);
@@ -88,12 +92,16 @@ const startKeepAlive = () => {
       const {
         autoPromoteAllExpiredUserPlans,
         resetMonthlyUsageForAllUsers,
+        checkAndSendPlanExpiryReminders,
       } = require('./plan.service');
       autoPromoteAllExpiredUserPlans().catch((err) => {
         logger.warn(`[Plan-Sync] Scheduled plan sync error: ${err.message}`);
       });
       resetMonthlyUsageForAllUsers().catch((err) => {
         logger.warn(`[Usage-Sync] Scheduled monthly usage sync error: ${err.message}`);
+      });
+      checkAndSendPlanExpiryReminders().catch((err) => {
+        logger.warn(`[Plan-Reminder] Scheduled expiry reminder error: ${err.message}`);
       });
     } catch (_) {}
   });

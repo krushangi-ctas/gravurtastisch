@@ -198,22 +198,22 @@ export function Pricing() {
   return (
     <section id="pricing" className="relative py-12 lg:py-16 bg-[#f8f9fc]">
       <Container>
-        <Reveal>
-          <div className="max-w-3xl">
+        <Reveal className="max-w-3xl mx-auto text-center flex flex-col items-center">
+          <div className="max-w-3xl mx-auto text-center flex flex-col items-center">
             <span className="section-badge mb-3">
               {t("pricing.sectionLabel")}
             </span>
-            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-tight">
+            <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-foreground leading-tight text-center">
               {t("pricing.heading1")}
               <br />
               {t("pricing.heading2")}
             </h2>
-            <p className="mt-4 text-base sm:text-lg text-slate-body leading-relaxed max-w-2xl">
+            <p className="mt-4 text-base sm:text-lg text-slate-body leading-relaxed max-w-2xl mx-auto text-center">
               {t("pricing.description")}
             </p>
 
             {availableCycles.length > 1 && (
-              <div className="mt-8 flex items-center justify-start">
+              <div className="mt-8 flex items-center justify-center">
                 <div className="inline-flex items-center p-1.5 rounded-full bg-white border border-border shadow-xs gap-1">
                   <button
                     type="button"

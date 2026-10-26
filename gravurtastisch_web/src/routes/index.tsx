@@ -7,8 +7,6 @@ import { AmazonShowcase } from "@/components/site/AmazonShowcase";
 import { HowItWorks } from "@/components/site/HowItWorks";
 import { DashboardPreview } from "@/components/site/DashboardPreview";
 import { StackDiagram } from "@/components/site/StackDiagram";
-import { Pricing } from "@/components/site/Pricing";
-import { RegisterAndContact } from "@/components/site/RegisterAndContact";
 import { Footer } from "@/components/site/Footer";
 import { HomeSkeleton } from "@/components/skeletons/HomeSkeleton";
 
@@ -49,8 +47,6 @@ function Index() {
         <AmazonShowcase />
         <DashboardPreview />
         <StackDiagram />
-        <Pricing />
-        <RegisterAndContact />
       </main>
       <Footer />
     </div>

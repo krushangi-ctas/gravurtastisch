@@ -195,6 +195,10 @@ const userSchema = mongoose.Schema(
           type: Date,
           default: Date.now,
         },
+        expirationReminderSentAt: {
+          type: Date,
+          default: null,
+        },
       },
     ],
     stripeCustomerId: {
