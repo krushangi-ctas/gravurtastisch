@@ -3,14 +3,25 @@ const roleService = require('../services/role.service');
 
 const getSections = catchAsync(async (req, res) => {
   const { isSellerOwner } = require('../services/permission.service');
+  const isAdmin = Boolean(req.user.isSuperAdmin || req.user.userType === 'admin');
   const scope =
     req.query.scope ||
-    (req.user.isSuperAdmin || req.user.userType === 'admin'
+    (isAdmin
       ? 'admin'
       : isSellerOwner(req.user) || req.user.userType === 'seller'
         ? 'seller'
         : 'admin');
-  const result = await roleService.getSections(scope);
+
+  let ownerId = null;
+  if (scope === 'seller') {
+    if (isAdmin) {
+      ownerId = req.query.ownerId || null;
+    } else {
+      ownerId = isSellerOwner(req.user) ? req.user._id : req.user.parentId;
+    }
+  }
+
+  const result = await roleService.getSections(scope, ownerId, isAdmin);
   res.status(result.status).send(result);
 });
 

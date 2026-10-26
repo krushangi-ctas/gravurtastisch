@@ -74,7 +74,7 @@ function OrdersTable({
   const handleReset = () => {
     if (setSearchDate) setSearchDate({ from: null, to: null });
     if (setSearchText) setSearchText('');
-    setPagination({ pageIndex: 0, pageSize: pagination.pageSize || 20 });
+    setPagination({ pageIndex: 0, pageSize: pagination.pageSize || 100 });
     setSorting([{ id: 'purchaseDate', desc: true }]);
     const defaultMarketplace = marketplaces?.find(
       (item: any) =>
@@ -263,7 +263,7 @@ function OrdersTable({
     totalItems: paginationInfo?.length || 0,
     totalPages: paginationInfo?.lastPage || 1,
     currentPage: paginationInfo?.page || 0,
-    pageSize: paginationInfo?.size || 20,
+    pageSize: paginationInfo?.size || 100,
   };
 
   const columns = useMemo<MRT_ColumnDef<FlattenedOrder>[]>(
@@ -1023,7 +1023,7 @@ function OrdersTable({
         enableColumnFilters={false}
         enableSorting={true}
         initialState={{
-          pagination: { pageIndex: 0, pageSize: pagination.pageSize || 20 },
+          pagination: { pageIndex: 0, pageSize: pagination.pageSize || 100 },
           sorting: [],
           columnOrder: [
             'purchaseDate',

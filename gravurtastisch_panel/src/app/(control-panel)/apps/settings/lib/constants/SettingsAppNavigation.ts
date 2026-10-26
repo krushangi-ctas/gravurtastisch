@@ -13,6 +13,15 @@ const SettingsAppNavigation: FuseNavItemType = {
       title: 'Account',
       type: 'item',
       url: '/settings/account',
+      authSection: '/settings/account',
+    },
+    {
+      id: 'settings.siteConfiguration',
+      icon: 'lucide:globe',
+      title: 'Site Configuration',
+      type: 'item',
+      url: '/settings/site-configuration',
+      authSection: '/settings/site-configuration',
     },
     {
       id: 'settings.generalSetting',
@@ -20,6 +29,7 @@ const SettingsAppNavigation: FuseNavItemType = {
       title: 'General Setting',
       type: 'item',
       url: '/settings/generalSetting',
+      authSection: '/settings/generalsetting',
     },
   ],
 };

@@ -126,7 +126,7 @@ function QuickPanel() {
 					<ListItem
 						secondaryAction={
 							<Switch
-								color="secondary"
+								color="primary"
 								onChange={handleToggle('cloudSync')}
 								checked={checked.indexOf('cloudSync') !== -1}
 							/>

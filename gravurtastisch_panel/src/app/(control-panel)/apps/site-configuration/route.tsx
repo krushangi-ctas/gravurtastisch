@@ -1,26 +1,12 @@
-import { lazy } from 'react';
+import { Navigate } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
-import PermissionGuard from '@/components/PermissionGuard';
-
-const SiteConfigurationView = lazy(() => import('./components/views/SiteConfigurationView'));
 
 /**
- * The Site Configuration app Routes.
+ * Backward compatibility redirect for Site Configuration.
  */
 const Route: FuseRouteItemType = {
 	path: '/site-configuration',
-	element: <PermissionGuard section="site-configuration" title="Site Configuration" />,
-	children: [
-		{
-			path: '',
-			children: [
-				{
-					path: '',
-					element: <SiteConfigurationView />
-				}
-			]
-		}
-	]
+	element: <Navigate to="/settings/site-configuration" replace />
 };
 
 export default Route;

@@ -10,9 +10,10 @@ import {
 	CircularProgress,
 	InputAdornment,
 	IconButton,
-	MenuItem
+	MenuItem,
+	FormControlLabel,
+	Switch
 } from '@mui/material';
-import CustomStatusSwitch from '@/components/CustomSwitch';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useCreatePlan, useUpdatePlan } from '../../api/hooks/usePlans';
@@ -496,33 +497,34 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 							/>
 						</div>
 
-						{/* Status Toggle Switch */}
-						<div className="flex items-center justify-between p-3.5 rounded-xl border border-gray-200 bg-gray-50/70">
-							<div className="flex flex-col gap-0.5">
-								<Typography className="text-xs font-semibold text-gray-800">
+						{/* Status Switch Card with Primary Color */}
+						<div className="bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
+							<div>
+								<label className="text-xs font-bold text-gray-800 dark:text-gray-200 block">
 									Plan Status
-								</Typography>
-								<Typography className="text-[11px] text-gray-500">
+								</label>
+								<span className="text-xs text-slate-500 dark:text-slate-400">
 									{status === 1
 										? 'This plan is active and available for users'
 										: 'This plan is deactivated and hidden'}
-								</Typography>
-							</div>
-
-							<div className="flex items-center gap-2">
-								<span
-									className={`text-xs font-bold px-2.5 py-0.5 rounded-full transition-all ${status === 1
-											? 'bg-primary-50 text-primary-700 border border-primary-200'
-											: 'bg-red-50 text-red-600 border border-red-200'
-										}`}
-								>
-									{status === 1 ? 'Active' : 'Deactive'}
 								</span>
-								<CustomStatusSwitch
-									checked={status === 1}
-									onChange={(e) => setStatus(e.target.checked ? 1 : 0)}
-								/>
 							</div>
+							<FormControlLabel
+								control={
+									<Switch
+										checked={status === 1}
+										onChange={(e) => setStatus(e.target.checked ? 1 : 0)}
+										color="primary"
+										size="medium"
+									/>
+								}
+								label={
+									<span className={`text-xs font-semibold ${status === 1 ? 'text-primary' : 'text-slate-400'}`}>
+										{status === 1 ? 'Active' : 'Inactive'}
+									</span>
+								}
+								sx={{ m: 0 }}
+							/>
 						</div>
 					</div>
 				</DialogContent>
@@ -553,7 +555,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 						type="submit"
 						variant="contained"
 						disabled={isSubmitting}
-						className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
 							isSubmitting ? (
 								<CircularProgress size={16} color="inherit" />

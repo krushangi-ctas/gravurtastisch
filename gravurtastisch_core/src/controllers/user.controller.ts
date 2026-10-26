@@ -148,7 +148,7 @@ const adminUpdateUser = catchAsync(async (req, res) => {
 
   // Seller team updates must stay inside the seller org
   const { isSellerOwner } = require('../services/permission.service');
-  if (isSellerOwner(req.user) || req.user.userType === 'seller') {
+  if (!req.user?.isSuperAdmin && (isSellerOwner(req.user) || req.user.userType === 'seller')) {
     const ownerId = isSellerOwner(req.user) ? req.user._id : req.user.parentId;
     if (
       existing.isSellerAdmin ||

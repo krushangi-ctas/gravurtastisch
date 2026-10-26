@@ -6,12 +6,28 @@ export type RolePermission = SectionPermission & {
 	section: string;
 };
 
+export type RoleSectionItem = {
+	id?: string;
+	name: string;
+	title: string;
+	status: number;
+	permissions: {
+		add?: boolean;
+		delete?: boolean;
+		update?: boolean;
+		view?: boolean;
+	};
+	isAccessable?: boolean;
+};
+
 export type Role = {
 	_id?: string;
 	id?: string;
+	name?: string;
 	role_name: string;
 	description?: string;
 	scope: 'admin' | 'seller';
+	section_list?: RoleSectionItem[];
 	permissions: RolePermission[];
 	status: number;
 	isSystem?: boolean;
@@ -20,8 +36,18 @@ export type Role = {
 };
 
 export type SectionDefinition = {
+	id?: string;
 	key: string;
+	name?: string;
 	title: string;
+	status?: number;
+	isCustom?: boolean;
+	permissions?: {
+		add?: boolean;
+		delete?: boolean;
+		update?: boolean;
+		view?: boolean;
+	};
 };
 
 type ApiListResponse<T> = {
@@ -59,10 +85,12 @@ export const getRoles = async (params: {
 };
 
 export const createRole = async (payload: {
-	role_name: string;
+	role_name?: string;
+	name?: string;
 	description?: string;
 	scope?: 'admin' | 'seller';
-	permissions: RolePermission[];
+	permissions?: RolePermission[];
+	section_list?: RoleSectionItem[];
 }) => {
 	return fetchWithAuth(rolesUrl, {
 		method: 'POST',
@@ -75,8 +103,10 @@ export const updateRole = async (
 	roleId: string,
 	payload: Partial<{
 		role_name: string;
+		name: string;
 		description: string;
 		permissions: RolePermission[];
+		section_list: RoleSectionItem[];
 		status: number;
 	}>
 ) => {

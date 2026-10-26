@@ -9,6 +9,20 @@ const permissionItem = Joi.object({
   canDelete: Joi.boolean().default(false),
 });
 
+const sectionListItem = Joi.object({
+  id: Joi.string().allow('', null).optional(),
+  name: Joi.string().trim().required(),
+  title: Joi.string().trim().optional(),
+  status: Joi.number().optional(),
+  permissions: Joi.object({
+    add: Joi.boolean().optional(),
+    delete: Joi.boolean().optional(),
+    update: Joi.boolean().optional(),
+    view: Joi.boolean().optional(),
+  }).optional(),
+  isAccessable: Joi.boolean().optional(),
+});
+
 const getSections = {
   query: Joi.object().keys({
     scope: Joi.string().valid('admin', 'seller').optional(),
@@ -16,12 +30,16 @@ const getSections = {
 };
 
 const createRole = {
-  body: Joi.object().keys({
-    role_name: Joi.string().trim().required(),
-    description: Joi.string().trim().allow('').optional(),
-    scope: Joi.string().valid('admin', 'seller').optional(),
-    permissions: Joi.array().items(permissionItem).min(1).required(),
-  }),
+  body: Joi.object()
+    .keys({
+      role_name: Joi.string().trim().optional(),
+      name: Joi.string().trim().optional(),
+      description: Joi.string().trim().allow('').optional(),
+      scope: Joi.string().valid('admin', 'seller').optional(),
+      permissions: Joi.array().items(permissionItem).optional(),
+      section_list: Joi.array().items(sectionListItem).optional(),
+    })
+    .or('role_name', 'name'),
 };
 
 const updateRole = {
@@ -31,8 +49,10 @@ const updateRole = {
   body: Joi.object()
     .keys({
       role_name: Joi.string().trim().optional(),
+      name: Joi.string().trim().optional(),
       description: Joi.string().trim().allow('').optional(),
       permissions: Joi.array().items(permissionItem).optional(),
+      section_list: Joi.array().items(sectionListItem).optional(),
       status: Joi.number().valid(0, 1).optional(),
     })
     .min(1),

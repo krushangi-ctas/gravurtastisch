@@ -23,6 +23,7 @@ import type { UpdateUserData } from '../../api/types';
 import { useSnackbar } from 'notistack';
 import { AccountSettingsSkeleton } from '@/components/skeletons/SettingsFormSkeleton';
 import useUser from '@auth/useUser';
+import usePermissions from '@/hooks/usePermissions';
 import { Paper, Chip, LinearProgress } from '@mui/material';
 import moment from 'moment';
 import { generateSellerInvoicePDF } from '../../../users/utils/generateSellerInvoicePDF';
@@ -95,6 +96,8 @@ type FormType = z.infer<typeof accountSchema>;
 function AccountTabView() {
   const [activeTab, setActiveTab] = useState(0);
   const { data: authUser } = useUser();
+  const { canUpdate, scope } = usePermissions();
+  const canEdit = canUpdate('/settings/account');
   const { data: accountSettings, isLoading: isProfileLoading } = useProfile();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: updateAccountSettings, isPending } = useUpdateUser();
@@ -105,10 +108,9 @@ function AccountTabView() {
 
   const user = accountSettings?.data || (authUser as any);
   const isSeller =
-    user?.userType === 'seller' ||
-    user?.isSellerAdmin ||
-    (Array.isArray(user?.plans) && user.plans.length > 0) ||
-    Boolean(user?.currentPlanId);
+    scope === 'seller' &&
+    !user?.isSuperAdmin &&
+    user?.userType !== 'admin';
 
   const { control, handleSubmit, formState, reset, setError } = useForm<FormType>({
     defaultValues,
@@ -122,6 +124,12 @@ function AccountTabView() {
    * Form Submit
    */
   function onSubmit(data: FormType) {
+    if (!canEdit) {
+      enqueueSnackbar('You do not have permission to update account settings.', {
+        variant: 'error',
+      });
+      return;
+    }
     if (isSeller && (!data.businessName || data.businessName.trim().length < 2)) {
       setError('businessName', {
         type: 'manual',
@@ -162,6 +170,12 @@ function AccountTabView() {
   }
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!canEdit) {
+      enqueueSnackbar('You do not have permission to update avatar.', {
+        variant: 'error',
+      });
+      return;
+    }
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -202,6 +216,12 @@ function AccountTabView() {
   };
 
   const handleDeleteAvatar = () => {
+    if (!canEdit) {
+      enqueueSnackbar('You do not have permission to delete avatar.', {
+        variant: 'error',
+      });
+      return;
+    }
     deleteAvatar(undefined as any, {
       onSuccess: (res: any) => {
         enqueueSnackbar(res?.message || 'Profile image removed successfully!', {
@@ -243,7 +263,7 @@ function AccountTabView() {
     }
   }, [accountSettings, authUser, reset]);
 
-  const userAvatar = user?.avatar;
+  const userAvatar = user?.avatar || (authUser as any)?.avatar;
   const userInitials = (user?.name?.[0] || authUser?.name?.[0] || 'U').toUpperCase();
 
   const paidPlan =
@@ -367,6 +387,17 @@ function AccountTabView() {
           className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs overflow-hidden"
         >
           <form onSubmit={handleSubmit(onSubmit)}>
+            {!canEdit && (
+              <div className="mx-4 sm:mx-6 md:mx-8 mt-4 p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-3 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-medium">
+                <FuseSvgIcon size={20} className="text-amber-600 dark:text-amber-400 shrink-0">
+                  heroicons-outline:information-circle
+                </FuseSvgIcon>
+                <span>
+                  <strong>View-only mode:</strong> You do not have permission to modify account settings. All fields are read-only.
+                </span>
+              </div>
+            )}
+
             {/* Header Section */}
             <div className="px-4 sm:px-6 md:px-8 py-4 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50/80 via-white to-primary-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -437,9 +468,9 @@ function AccountTabView() {
                       type="button"
                       variant="outlined"
                       size="small"
-                      disabled={isUploadingAvatar || isDeletingAvatar}
+                      disabled={!canEdit || isUploadingAvatar || isDeletingAvatar}
                       onClick={() => fileInputRef.current?.click()}
-                      className="rounded-lg text-xs font-semibold px-3.5 py-1.5 border-primary-300 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-950/50 capitalize"
+                      className="rounded-lg text-xs font-semibold px-3.5 py-1.5 border-primary-300 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-950/50 capitalize disabled:opacity-50"
                       startIcon={
                         <FuseSvgIcon size={16}>
                           {isUploadingAvatar ? 'heroicons-outline:arrow-path' : 'lucide:upload'}
@@ -449,26 +480,26 @@ function AccountTabView() {
                       {isUploadingAvatar ? 'Uploading...' : 'Upload Image'}
                     </Button>
 
-                    {userAvatar && (
-                      <Button
-                        type="button"
-                        variant="outlined"
-                        size="small"
-                        disabled={isUploadingAvatar || isDeletingAvatar}
-                        onClick={handleDeleteAvatar}
-                        className="rounded-lg text-xs font-semibold px-3.5 py-1.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 capitalize"
-                        startIcon={
-                          <FuseSvgIcon size={16} className="text-red-600 dark:text-red-400">
-                            lucide:trash-2
-                          </FuseSvgIcon>
-                        }
-                      >
-                        {isDeletingAvatar ? 'Removing...' : 'Remove'}
-                      </Button>
-                    )}
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      size="small"
+                      disabled={!canEdit || !userAvatar || isUploadingAvatar || isDeletingAvatar}
+                      onClick={handleDeleteAvatar}
+                      className="rounded-lg text-xs font-semibold px-3.5 py-1.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 capitalize disabled:opacity-50"
+                      startIcon={
+                        <FuseSvgIcon size={16} className="text-red-600 dark:text-red-400">
+                          lucide:trash-2
+                        </FuseSvgIcon>
+                      }
+                    >
+                      {isDeletingAvatar ? 'Removing...' : 'Remove'}
+                    </Button>
                   </div>
                 </div>
               </div>
+
+              <fieldset disabled={!canEdit} className={!canEdit ? 'pointer-events-none opacity-80 border-0 p-0 m-0' : 'border-0 p-0 m-0'}>
 
               {/* Form Input Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -661,26 +692,31 @@ function AccountTabView() {
                   </Typography>
                 </div>
               </div>
+              </fieldset>
             </div>
 
             {/* Action Footer */}
             <div className="px-4 sm:px-6 md:px-8 py-4 bg-slate-50/70 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
               <Typography className="text-md text-slate-500 dark:text-slate-400 text-center sm:text-left">
-                {_.isEmpty(dirtyFields) ? 'No changes to save' : 'Unsaved changes detected'}
+                {!canEdit
+                  ? 'Read-only mode (Save disabled)'
+                  : _.isEmpty(dirtyFields)
+                  ? 'No changes to save'
+                  : 'Unsaved changes detected'}
               </Typography>
 
               <Button
                 variant="contained"
-                disabled={_.isEmpty(dirtyFields) || !isValid || isPending}
+                disabled={!canEdit || _.isEmpty(dirtyFields) || !isValid || isPending}
                 type="submit"
-                className="w-full sm:w-auto bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-7 py-2.5 shadow-sm transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
+                className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
                 startIcon={
                   <FuseSvgIcon size={18}>
                     {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
                   </FuseSvgIcon>
                 }
               >
-                {isPending ? 'Saving changes...' : 'Save Changes'}
+                {!canEdit ? 'Save Disabled' : isPending ? 'Saving changes...' : 'Save Changes'}
               </Button>
             </div>
           </form>

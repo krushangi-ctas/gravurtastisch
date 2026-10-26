@@ -393,7 +393,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 							<button
 								type="button"
 								onClick={handleAddImageRow}
-								className="flex items-center gap-1 px-3 py-1 bg-primary-700 hover:bg-primary-800 text-white text-xs font-semibold rounded-md border-0 transition-colors shadow-xs cursor-pointer"
+								className="flex items-center gap-1 px-3 py-1 bg-primary hover:bg-primary-dark text-white text-xs font-semibold rounded-md border-0 transition-colors shadow-xs cursor-pointer"
 							>
 								<FuseSvgIcon size={14}>heroicons-outline:plus</FuseSvgIcon>
 								<span>Add Image</span>
@@ -537,7 +537,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 						type="submit"
 						variant="contained"
 						disabled={isSubmitting}
-						className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
 							isSubmitting ? (
 								<CircularProgress size={16} color="inherit" />

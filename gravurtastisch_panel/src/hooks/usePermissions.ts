@@ -55,20 +55,68 @@ function usePermissions() {
 	const can = useCallback(
 		(section: string, action: PermissionAction = 'view') => {
 			if (!user) return false;
-			if (section === 'settings' && (action === 'view' || action === 'update')) {
+
+			const clean = section.replace(/^\//, '').toLowerCase();
+			const actionKey = ACTION_KEY[action];
+
+			// 1. Direct match (exact normalized key from DB permissions)
+			const directKey = Object.keys(permissions).find(
+				(k) => k.replace(/^\//, '').toLowerCase() === clean
+			);
+			if (directKey && permissions[directKey]) {
+				return Boolean(permissions[directKey][actionKey]);
+			}
+
+			// 2. Suffix match (e.g. 'roles' matches 'team/roles' or 'user-management/roles')
+			const suffixKey = Object.keys(permissions).find(
+				(k) => k.replace(/^\//, '').toLowerCase().endsWith('/' + clean)
+			);
+			if (suffixKey && permissions[suffixKey]) {
+				return Boolean(permissions[suffixKey][actionKey]);
+			}
+
+			// 3. Prefix match for grouped sections (e.g. 'team' matches if any 'team/*' has permission)
+			const hasPrefixMatch = Object.entries(permissions).some(
+				([k, v]) =>
+					k.replace(/^\//, '').toLowerCase().startsWith(clean + '/') &&
+					Boolean(v?.[actionKey])
+			);
+			if (hasPrefixMatch) {
 				return true;
 			}
-			if (isSuperAdmin) {
-				return (ADMIN_SECTION_KEYS as readonly string[]).includes(section);
+
+			// Scope-aware bypass for Super Admin
+			if (isSuperAdmin && scope === 'admin') {
+				const isSellerOnly = [
+					'orders',
+					'amazon-credentials',
+					'team',
+					'settings/generalsetting'
+				].some((sel) => clean === sel || clean.startsWith(sel + '/'));
+				if (!isSellerOnly) {
+					return true;
+				}
 			}
-			if (isSellerAdmin) {
-				return (SELLER_SECTION_KEYS as readonly string[]).includes(section);
+
+			// Scope-aware bypass for Seller Admin
+			if (isSellerAdmin && scope === 'seller') {
+				const isAdminOnly = [
+					'sellers',
+					'user-management',
+					'blogs',
+					'plans',
+					'support',
+					'site-configuration',
+					'settings/site-configuration'
+				].some((adm) => clean === adm || clean.startsWith(adm + '/'));
+				if (!isAdminOnly) {
+					return true;
+				}
 			}
-			const sectionPerm = permissions[section];
-			if (!sectionPerm) return false;
-			return Boolean(sectionPerm[ACTION_KEY[action]]);
+
+			return false;
 		},
-		[user, isSuperAdmin, isSellerAdmin, permissions]
+		[user, isSuperAdmin, isSellerAdmin, scope, permissions]
 	);
 
 	const canView = useCallback((section: string) => can(section, 'view'), [can]);

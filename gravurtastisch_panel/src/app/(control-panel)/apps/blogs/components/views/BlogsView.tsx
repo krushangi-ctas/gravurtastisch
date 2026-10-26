@@ -460,7 +460,8 @@ function BlogsContent({
 								<IconButton
 									size="small"
 									onClick={() => onPreviewBlog(row.original)}
-									className="text-blue-600 hover:text-blue-800 p-1"
+									className="text-amber-500 hover:text-amber-600 p-1"
+									sx={{ color: '#eab308', '&:hover': { color: '#ca8a04' } }}
 								>
 									<FuseSvgIcon size={18}>heroicons-outline:eye</FuseSvgIcon>
 								</IconButton>

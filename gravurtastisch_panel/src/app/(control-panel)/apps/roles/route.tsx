@@ -1,18 +1,16 @@
-import { lazy } from 'react';
+import { Navigate } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
-import PermissionGuard from '@/components/PermissionGuard';
+import usePermissions from '@/hooks/usePermissions';
 
-const RolesView = lazy(() => import('./components/views/RolesView'));
+function RolesRedirect() {
+	const { scope } = usePermissions();
+	const target = scope === 'seller' ? '/team/roles' : '/user-management/roles';
+	return <Navigate to={target} replace />;
+}
 
 const Route: FuseRouteItemType = {
 	path: '/roles',
-	element: <PermissionGuard section="roles" title="Roles" />,
-	children: [
-		{
-			path: '',
-			element: <RolesView />
-		}
-	]
+	element: <RolesRedirect />
 };
 
 export default Route;

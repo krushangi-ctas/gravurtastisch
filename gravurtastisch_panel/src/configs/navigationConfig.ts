@@ -15,20 +15,28 @@ const navigationConfig: FuseNavItemType[] = [
 		translate: 'APPLICATIONS',
 		children: [
 			{
+				id: 'user-management',
+				title: 'User Management',
+				type: 'item',
+				icon: 'lucide:user-cog',
+				url: '/user-management/users',
+				authSection: '/user-management'
+			},
+			{
+				id: 'team-management',
+				title: 'Team Management',
+				type: 'item',
+				icon: 'lucide:users',
+				url: '/team/members',
+				authSection: '/team'
+			},
+			{
 				id: 'sellers',
 				title: 'Sellers',
 				type: 'item',
 				icon: 'lucide:store',
 				url: '/sellers',
 				authSection: 'sellers'
-			},
-			{
-				id: 'admin-users',
-				title: 'Admin Users',
-				type: 'item',
-				icon: 'lucide:user-cog',
-				url: '/admin-users',
-				authSection: 'users'
 			},
 			{
 				id: 'orders',
@@ -47,22 +55,6 @@ const navigationConfig: FuseNavItemType[] = [
 				authSection: 'amazon-credentials'
 			},
 			{
-				id: 'users',
-				title: 'Team',
-				type: 'item',
-				icon: 'lucide:users',
-				url: '/users',
-				authSection: 'user'
-			},
-			{
-				id: 'roles',
-				title: 'Roles',
-				type: 'item',
-				icon: 'lucide:shield-check',
-				url: '/roles',
-				authSection: 'roles'
-			},
-			{
 				id: 'support',
 				title: 'Customer Support',
 				type: 'item',
@@ -77,14 +69,6 @@ const navigationConfig: FuseNavItemType[] = [
 				icon: 'lucide:newspaper',
 				url: '/blogs',
 				authSection: 'blogs'
-			},
-			{
-				id: 'site-configuration',
-				title: 'Site Configuration',
-				type: 'item',
-				icon: 'lucide:globe',
-				url: '/site-configuration',
-				authSection: 'site-configuration'
 			},
 			{
 				id: 'plans',
