@@ -39,7 +39,7 @@ export function Nav() {
       setScrolled(window.scrollY > 12);
 
       if (pathname === "/") {
-        const sectionIds = ["contact", "pricing", "how", "home"];
+        const sectionIds = ["how", "home"];
         const scrollPosition = window.scrollY + 140;
 
         for (const sectionId of sectionIds) {
@@ -95,17 +95,24 @@ export function Nav() {
     | { type?: undefined; href: string; hash?: string; label: string }
   > = [
     { href: "/#home", hash: "home", label: t("nav.home") },
-    { href: "/#pricing", hash: "pricing", label: t("nav.pricing") },
+    { href: "/pricing", label: t("nav.pricing") },
     { type: "services" },
     { href: "/#how", hash: "how", label: t("nav.howItWorks") },
-    { href: "/#contact", hash: "contact", label: t("nav.contact") },
+    { href: "/contact", label: t("nav.contact") },
     { href: "/guide", label: t("nav.guide") || "Guide" },
     { href: "/blogs", label: t("nav.blogs") || "Blogs" },
+    { href: "/register", label: t("nav.registration") || "Registration" },
   ];
 
   const checkIsActive = (item: (typeof mainLinks)[number]) => {
     if (item.type === "services") {
       return isServiceActive;
+    }
+    if (item.href === "/pricing") {
+      return pathname === "/pricing" || pathname.startsWith("/pricing");
+    }
+    if (item.href === "/contact") {
+      return pathname === "/contact" || pathname.startsWith("/contact");
     }
     if (item.href === "/blogs") {
       return pathname === "/blogs" || pathname.startsWith("/blogs");
@@ -113,11 +120,12 @@ export function Nav() {
     if (item.href === "/guide") {
       return pathname === "/guide" || pathname.startsWith("/guide");
     }
+    if (item.href === "/register") {
+      return pathname === "/register" || pathname.startsWith("/register");
+    }
     if (pathname === "/") {
       if (item.hash === "home") return activeSection === "home";
-      if (item.hash === "pricing") return activeSection === "pricing";
       if (item.hash === "how") return activeSection === "how";
-      if (item.hash === "contact") return activeSection === "contact";
     }
     return pathname === item.href;
   };
@@ -337,14 +345,14 @@ export function Nav() {
             </NavigationMenuList>
           </NavigationMenu>
 
-          <a
-            href="/#register"
+          <Link
+            to="/register"
             className="h-9 md:h-10 inline-flex items-center justify-center gap-1.5 rounded-full btn-glass-primary !py-0 px-4 md:px-5 text-xs md:text-sm font-semibold !text-white shadow-[0_4px_16px_rgba(0,50,171,0.3)] hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
           >
             <span className="hidden sm:inline">{t("nav.registerAsSeller")}</span>
             <span className="sm:hidden">{t("nav.registerShort") || "Register"}</span>
             <span aria-hidden>→</span>
-          </a>
+          </Link>
 
           {/* Mobile menu button */}
           <button

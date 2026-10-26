@@ -116,7 +116,7 @@ function Guide() {
               </p>
               <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
                 <a
-                  href="/#register"
+                  href="/register"
                   className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
                 >
                   {t('guide.heroCtaRegister')}

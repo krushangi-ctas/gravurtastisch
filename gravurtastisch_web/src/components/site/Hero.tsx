@@ -7,6 +7,7 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
+import { Link } from "@tanstack/react-router";
 import { Container } from "./Container";
 import {
   FlagGB,
@@ -105,18 +106,18 @@ export function Hero() {
 
           {/* CTA Buttons */}
           <div className="mt-8 flex flex-wrap justify-center items-center gap-3.5">
-            <a
-              href="#register"
+            <Link
+              to="/register"
               className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#1c22aa] via-[#2032b5] to-[#2563eb] shadow-[0_8px_24px_rgba(28,34,170,0.38)] hover:shadow-[0_12px_28px_rgba(28,34,170,0.48)] hover:-translate-y-0.5 transition-all duration-300"
             >
               <span>{t("hero.ctaRegister") || "Place Custom Order"} →</span>
-            </a>
-            <a
-              href="/#pricing"
+            </Link>
+            <Link
+              to="/pricing"
               className="inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 px-7 py-3 text-sm font-semibold text-slate-800 shadow-xs hover:border-slate-300 transition-all duration-300"
             >
               {t("hero.ctaPricing") || "See Pricing"}
-            </a>
+            </Link>
           </div>
 
           {/* 3D Bento Luxury Glass Cards */}

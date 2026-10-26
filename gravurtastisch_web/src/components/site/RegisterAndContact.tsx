@@ -18,13 +18,10 @@ import {
 } from "@/components/ui/select";
 
 export function RegisterAndContact() {
-  return (
-    <>
-      <RegisterSection />
-      <ContactSection />
-    </>
-  );
+  return <ContactSection />;
 }
+
+export { RegisterSection, ContactSection };
 
 const AVAILABLE_MARKETPLACES = [
   { code: "DE", name: "Germany" },

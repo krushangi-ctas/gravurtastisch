@@ -66,12 +66,13 @@ export function Footer() {
   ];
 
   const productLinks: [string, string][] = [
-    [t('footer.colProductLink1'), "/#pricing"],
+    [t('footer.colProductLink1'), "/pricing"],
     [t('footer.colProductLink2'), "/#how"],
     [t('footer.colProductLink3'), "/#dashboard"],
-    [t('footer.colProductLink4'), "/#register"],
+    [t('footer.colProductLink4'), "/register"],
     [t('footer.colProductLinkGuide') || t('nav.guide') || "Guide", "/guide"],
     [t('footer.colProductLinkBlogs') || t('nav.blogs') || "Blogs", "/blogs"],
+    [t('nav.contact') || "Contact", "/contact"],
   ];
 
   const platformLinks: [string, string][] = [

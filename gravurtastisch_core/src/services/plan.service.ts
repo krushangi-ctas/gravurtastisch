@@ -5,6 +5,7 @@ const moment = require('moment');
 const PlanModel = require('../models/plan.model');
 const ordermodel = require('../models/order.model');
 const User = require('../models/user.model');
+const { sendPlanExpiryReminderEmail } = require('./email.service');
 
 const createPlan = async (bodyData, userId) => {
   const payload = {
@@ -574,6 +575,80 @@ const getEffectivePlanLimits = async (userOrId) => {
   };
 };
 
+/**
+ * Scans all sellers whose active plan expires tomorrow (within tomorrow's calendar window),
+ * and sends an email reminder if not already sent.
+ * Safe to run periodically (every 5 mins or daily); tracks expirationReminderSentAt per plan.
+ */
+const checkAndSendPlanExpiryReminders = async () => {
+  try {
+
+    // Tomorrow calendar day window (from start of tomorrow to end of tomorrow)
+    const startOfTomorrow = moment().add(1, 'day').startOf('day').toDate();
+    const endOfTomorrow = moment().add(1, 'day').endOf('day').toDate();
+
+    const candidates = await User.find({
+      isEmailVerified: true,
+      plans: {
+        $elemMatch: {
+          status: 1, // Active plan
+          expireAt: { $gte: startOfTomorrow, $lte: endOfTomorrow },
+          $or: [
+            { expirationReminderSentAt: null },
+            { expirationReminderSentAt: { $exists: false } },
+          ],
+        },
+      },
+    });
+
+    if (!candidates || candidates.length === 0) {
+      return 0;
+    }
+
+    let sentCount = 0;
+    for (const user of candidates) {
+      // Find the active plan that expires tomorrow and hasn't had a reminder sent yet
+      const expiringPlan = (user.plans || []).find((p: any) => {
+        if (p.status !== 1 || !p.expireAt) return false;
+        const expDate = new Date(p.expireAt);
+        const isExpiringTomorrow =
+          expDate >= startOfTomorrow && expDate <= endOfTomorrow;
+        const reminderNotSent = !p.expirationReminderSentAt;
+        return isExpiringTomorrow && reminderNotSent;
+      });
+
+      if (!expiringPlan) continue;
+
+      try {
+        await sendPlanExpiryReminderEmail(user, expiringPlan);
+
+        // Mark expirationReminderSentAt on this subdocument
+        await User.updateOne(
+          { _id: user._id, 'plans._id': expiringPlan._id },
+          { $set: { 'plans.$.expirationReminderSentAt': new Date() } }
+        );
+        sentCount++;
+        console.log(
+          `[PlanExpiryReminder] Sent reminder email to ${user.email} for plan "${expiringPlan.name}" (Expires: ${moment(expiringPlan.expireAt).format('YYYY-MM-DD')})`
+        );
+      } catch (sendErr: any) {
+        console.error(
+          `[PlanExpiryReminder] Error sending email to ${user.email}:`,
+          sendErr?.message || sendErr
+        );
+      }
+    }
+
+    return sentCount;
+  } catch (err: any) {
+    console.error(
+      'Error checking and sending plan expiry reminders:',
+      err?.message || err
+    );
+    return 0;
+  }
+};
+
 module.exports = {
   createPlan,
   updatePlan,
@@ -585,4 +660,5 @@ module.exports = {
   autoPromoteAllExpiredUserPlans,
   syncUserMonthlyUsage,
   resetMonthlyUsageForAllUsers,
+  checkAndSendPlanExpiryReminders,
 };
