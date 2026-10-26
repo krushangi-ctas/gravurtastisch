@@ -24,7 +24,7 @@ console.log('---------------------------');
 
 const isSecure = Number(smtpPort) === 465;
 
-const transport = nodemailer.createTransport({
+let transport = nodemailer.createTransport({
   host: smtpHost,
   port: smtpPort,
   secure: isSecure,
@@ -58,8 +58,39 @@ async function verifySMTP() {
       address: error?.address,
       port: error?.port,
     });
+
+    // On cloud providers like Render, port 465 is often blocked or times out.
+    // Automatically try standard TLS port 587.
+    if (Number(smtpPort) === 465 && (error?.code === 'ETIMEDOUT' || error?.code === 'ECONNREFUSED' || error?.command === 'CONN')) {
+      console.log('[SMTP INFO] Port 465 timed out on cloud host. Trying fallback to port 587 with TLS...');
+      try {
+        const fallbackTransport = nodemailer.createTransport({
+          host: smtpHost,
+          port: 587,
+          secure: false,
+          auth: {
+            user: smtpUser,
+            pass: smtpPass,
+          },
+          tls: {
+            rejectUnauthorized: false,
+          },
+          connectionTimeout: 10000,
+          greetingTimeout: 10000,
+          socketTimeout: 15000,
+        });
+        await fallbackTransport.verify();
+        console.log('[SMTP SUCCESS] Connected to email server via fallback port 587!');
+        transport = fallbackTransport;
+        logger.info('Connected to email server via fallback port 587');
+        return;
+      } catch (fallbackErr: any) {
+        console.error('[SMTP FALLBACK FAILED] Port 587 fallback error:', fallbackErr?.message || fallbackErr);
+      }
+    }
+
     logger.warn(
-      `Unable to connect to email server: ${error?.message || error}. Make sure SMTP options are set in .env`
+      `Unable to connect to email server: ${error?.message || error}. Make sure SMTP options are set in .env (Use SMTP_PORT=587 on Render)`
     );
   }
 }

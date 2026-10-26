@@ -82,12 +82,17 @@ module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT,
   mongoose: {
-    url: envVars.MONGODB_URL + (envVars.NODE_ENV === 'test' ? '-test' : ''),
+    url:
+      (envVars.MONGODB_URL ? envVars.MONGODB_URL.trim().replace(/^["']|["']$/g, '') : '') +
+      (envVars.NODE_ENV === 'test' ? '-test' : ''),
     options: {
       useCreateIndex: true,
       useNewUrlParser: true,
       useUnifiedTopology: true,
       useFindAndModify: false,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 30000,
       // dbName: 'db_local',
     },
   },
