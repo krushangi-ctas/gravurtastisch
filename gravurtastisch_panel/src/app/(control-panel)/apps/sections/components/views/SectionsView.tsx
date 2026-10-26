@@ -325,7 +325,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 					);
 				}
 			},
-			{
+			/* {
 				accessorKey: 'name',
 				header: 'SECTION PATH',
 				size: 200,
@@ -346,7 +346,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 						</Tooltip>
 					);
 				}
-			},
+			}, */
 			{
 				accessorKey: 'status',
 				header: 'STATUS',
@@ -567,32 +567,32 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								}
 							}
 						}}
-						/* renderRowActions={({ row }) => (
-							<Box className="flex items-center gap-1">
-								{canUpdate('sections') && (
-									<Tooltip title="Edit section" arrow>
-										<IconButton
-											size="small"
-											onClick={() => openEdit(row.original)}
-											className="text-slate-600 hover:text-slate-900 p-1.5"
-										>
-											<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
-										</IconButton>
-									</Tooltip>
-								)}
-								{canDelete('sections') && (
-									<Tooltip title="Delete section" arrow>
-										<IconButton
-											size="small"
-											className="text-red-500 hover:text-red-700 p-1.5"
-											onClick={() => handleOpenDeleteConfirm(row.original)}
-										>
-											<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
-										</IconButton>
-									</Tooltip>
-								)}
-							</Box>
-						)} */
+					/* renderRowActions={({ row }) => (
+						<Box className="flex items-center gap-1">
+							{canUpdate('sections') && (
+								<Tooltip title="Edit section" arrow>
+									<IconButton
+										size="small"
+										onClick={() => openEdit(row.original)}
+										className="text-slate-600 hover:text-slate-900 p-1.5"
+									>
+										<FuseSvgIcon size={18}>heroicons-outline:pencil-square</FuseSvgIcon>
+									</IconButton>
+								</Tooltip>
+							)}
+							{canDelete('sections') && (
+								<Tooltip title="Delete section" arrow>
+									<IconButton
+										size="small"
+										className="text-red-500 hover:text-red-700 p-1.5"
+										onClick={() => handleOpenDeleteConfirm(row.original)}
+									>
+										<FuseSvgIcon size={18}>heroicons-outline:trash</FuseSvgIcon>
+									</IconButton>
+								</Tooltip>
+							)}
+						</Box>
+					)} */
 					/>
 
 					{/* Create / Edit Section Dialog */}
@@ -796,11 +796,10 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 						<div className="p-6 pb-5 bg-white dark:bg-slate-900 flex items-start justify-between gap-4">
 							<div className="flex items-start gap-3.5">
 								<div
-									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-										confirmState.type === 'delete'
+									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete'
 											? 'bg-red-100 text-red-500 dark:bg-red-950/40'
 											: 'bg-amber-100 text-amber-500 dark:bg-amber-950/40'
-									}`}
+										}`}
 								>
 									<FuseSvgIcon
 										size={24}
@@ -862,11 +861,10 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								type="button"
 								onClick={handleConfirmAction}
 								disabled={isActionLoading}
-								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${
-									confirmState.type === 'delete'
+								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${confirmState.type === 'delete'
 										? 'bg-red-600 hover:bg-red-700'
 										: 'bg-primary hover:bg-primary-dark'
-								}`}
+									}`}
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}
 								<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>
