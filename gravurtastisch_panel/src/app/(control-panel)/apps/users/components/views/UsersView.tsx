@@ -44,6 +44,7 @@ import DataTable from 'src/components/data-table/DataTable';
 import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
 import CustomStatusSwitch from '@/components/CustomSwitch';
 import usePermissions from '@/hooks/usePermissions';
+import ManagementTabs from '@/components/ManagementTabs';
 import { useRoles } from '../../../roles/api/hooks/useRoles';
 import { useAllPlans } from '../../../plans/api/hooks/usePlans';
 import {
@@ -311,8 +312,12 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 
 export type UsersViewVariant = 'sellers' | 'admin-users' | 'team';
 
+export type UsersViewProps = {
+	variant: UsersViewVariant;
+	managementTab?: 'members' | 'users';
+};
 
-function UsersAppView({ variant }: { variant: UsersViewVariant }) {
+function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	const {
 		canView,
 		canCreate,
@@ -327,10 +332,14 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 	const isTeamMode = variant === 'team';
 	const isSellersMode = variant === 'sellers';
 	const sectionKey =
-		variant === 'team' ? 'user' : variant === 'sellers' ? 'sellers' : 'users';
+		variant === 'team'
+			? '/team/members'
+			: variant === 'sellers'
+				? '/sellers'
+				: '/user-management/users';
 	const hasAccess = canView(sectionKey);
 
-	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 20 });
+	const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 100 });
 	const [globalFilter, setGlobalFilter] = useState('');
 	const [sorting, setSorting] = useState<MRT_SortingState>([]);
 
@@ -1437,12 +1446,19 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 		);
 	}
 
-	const title = isSellersMode ? 'Sellers' : isTeamMode ? 'Team' : 'Admin Users';
+	const isManagement = !isSellersMode;
+	const activeTabKey = managementTab || (isTeamMode ? 'members' : 'users');
+	const title = isSellersMode
+		? 'Sellers'
+		: isTeamMode
+			? 'Team Management'
+			: 'User Management';
 	const icon = isSellersMode
 		? 'lucide:store'
 		: isTeamMode
 			? 'lucide:users'
 			: 'lucide:user-cog';
+	const tabsNode = isManagement ? <ManagementTabs activeTab={activeTabKey} /> : undefined;
 
 	const handlePlanChange = (event: { target: { value: string | string[] } }) => {
 		const value = event.target.value;
@@ -1749,6 +1765,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						tableId={isSellersMode ? 'sellers-table-v6' : isTeamMode ? 'team-table-v2' : 'admin-users-table-v2'}
 						title={title}
 						icon={icon}
+						tabs={tabsNode}
 						actionButtons={actionButtons}
 						onRefresh={handleRefresh}
 						enableRowActions
@@ -1790,7 +1807,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						pageCount={totalPages}
 						muiTableBodyRowProps={({ row }: any) => {
 							const user = row.original;
-							const isPaymentCancelled = user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0;
+							const isPaymentCancelled = isSellersMode && (user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0);
 
 							const baseRowSx = {
 								minHeight: '38px',
@@ -2017,7 +2034,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 						}}
 						renderRowActions={({ row }: { row: MRT_Row<User> }) => {
 							const user = row.original;
-							const isPaymentCancelled = user.subscriptionStatus === 3 || user.subscriptionStatus === 0;
+							const isPaymentCancelled = isSellersMode && (user.subscriptionStatus === 3 || user.subscriptionStatus === 0);
 
 							return (
 								<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'nowrap', minWidth: 'max-content' }}>
@@ -2381,7 +2398,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 									variant="contained"
 									onClick={handleCreate}
 									disabled={!roles.length}
-									className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
 									sx={{
 										bgcolor: 'primary.main',
@@ -2714,7 +2731,7 @@ function UsersAppView({ variant }: { variant: UsersViewVariant }) {
 								<Button
 									variant="contained"
 									onClick={handleSaveEdit}
-									className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm"
+									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
 									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
 									sx={{
 										bgcolor: 'primary.main',

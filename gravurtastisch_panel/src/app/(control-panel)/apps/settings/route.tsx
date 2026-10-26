@@ -6,6 +6,9 @@ import PermissionGuard from '@/components/PermissionGuard';
 const SettingsAppView = lazy(() => import('./components/views/SettingsAppView'));
 const AccountTabView = lazy(() => import('./components/views/AccountTabView'));
 const GeneralSetAppView = lazy(() => import('./components/views/GeneralSetAppView'));
+const SiteConfigurationView = lazy(
+  () => import('../site-configuration/components/views/SiteConfigurationView')
+);
 
 /**
  * The Settings App Route.
@@ -23,6 +26,10 @@ const Route: FuseRouteItemType = {
     {
       path: 'account',
       element: <AccountTabView />,
+    },
+    {
+      path: 'site-configuration',
+      element: <SiteConfigurationView isInsideSettings />,
     },
     {
       path: 'generalSetting',

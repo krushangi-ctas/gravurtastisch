@@ -1099,7 +1099,7 @@ function AmazonCredentialsFormContent({
                 variant="contained"
                 onClick={handleNext}
                 disabled={!canMutate || !isStepValid()}
-                className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-6 py-2 shadow-xs hover:shadow transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800 h-10.5"
+                className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-6 py-2 shadow-xs hover:shadow transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800 h-10.5"
                 endIcon={<FuseSvgIcon size={18}>lucide:arrow-right</FuseSvgIcon>}
               >
                 Next Step
@@ -1122,7 +1122,7 @@ function AmazonCredentialsFormContent({
                   !!errors.seller_id ||
                   isPending
                 }
-                className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-7 py-2 shadow-xs hover:shadow transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700 h-10.5"
+                className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2 shadow-xs hover:shadow transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700 h-10.5"
                 startIcon={
                   <FuseSvgIcon size={18}>
                     {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
@@ -1234,7 +1234,7 @@ function AmazonCredentialsFormContent({
             <Button
               onClick={handleConfirmSubmit}
               variant="contained"
-              className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-6 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm"
+              className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-6 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
               sx={{
                 bgcolor: 'primary.main',
                 '&:hover': { bgcolor: 'primary.dark' },

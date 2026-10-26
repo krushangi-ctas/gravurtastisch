@@ -206,11 +206,19 @@ const defaultValues: SiteConfigFormType = {
 	}
 };
 
-function SiteConfigurationView() {
+type SiteConfigurationViewProps = {
+	isInsideSettings?: boolean;
+};
+
+function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationViewProps = {}) {
 	const { canView, canUpdate } = usePermissions();
-	const hasAccess = canView('site-configuration');
+	const hasAccess =
+		canView('/settings/site-configuration') ||
+		canView('site-configuration');
 	const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
-	const canMutate = canUpdate('site-configuration');
+	const canMutate =
+		canUpdate('/settings/site-configuration') ||
+		canUpdate('site-configuration');
 	const { enqueueSnackbar } = useSnackbar();
 	const [activeTab, setActiveTab] = useState<0 | 1 | 2>(0);
 
@@ -320,135 +328,112 @@ function SiteConfigurationView() {
 		}
 	};
 
+	const actionButtons = (
+		<div className="flex items-center gap-2 w-full lg:w-auto justify-start sm:justify-end flex-wrap sm:flex-nowrap shrink-0">
+			<Tooltip title="Reload configuration" arrow>
+				<button
+					type="button"
+					onClick={() => refetch()}
+					disabled={isRefetching}
+					style={{ height: '32px', width: '32px' }}
+					className="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-xs cursor-pointer border border-slate-200 dark:border-slate-700 shrink-0 disabled:opacity-50"
+				>
+					<FuseSvgIcon
+						size={16}
+						className={`text-slate-700 dark:text-slate-200 ${isRefetching ? 'animate-spin' : ''}`}
+					>
+						heroicons-outline:arrow-path
+					</FuseSvgIcon>
+				</button>
+			</Tooltip>
+
+			<button
+				type="button"
+				onClick={handleReset}
+				disabled={!canMutate || !isDirty || updateMutation.isPending}
+				style={{ height: '32px' }}
+				className="h-8 flex-1 sm:flex-initial px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
+			>
+				<span>Discard Changes</span>
+			</button>
+
+			<button
+				type="button"
+				onClick={handleSubmit(onSubmit)}
+				disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
+				style={{ height: '32px' }}
+				className="h-8 flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+			>
+				{updateMutation.isPending ? (
+					<CircularProgress size={14} color="inherit" />
+				) : (
+					<FuseSvgIcon size={15} className="text-white">
+						lucide:save
+					</FuseSvgIcon>
+				)}
+				<span>{updateMutation.isPending ? 'Saving...' : 'Save Configuration'}</span>
+			</button>
+		</div>
+	);
+
+	const segmentedTabs = (
+		<div className="flex items-center gap-1.5 p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-xl w-fit max-w-full overflow-x-auto custom-table-scrollbar">
+			<button
+				type="button"
+				onClick={() => setActiveTab(0)}
+				className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 0
+					? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
+					: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
+					}`}
+			>
+				<FuseSvgIcon size={15}>lucide:briefcase</FuseSvgIcon>
+				<span>Company Details</span>
+				{Boolean(errors.company && Object.keys(errors.company).length > 0) && (
+					<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+				)}
+			</button>
+
+			<button
+				type="button"
+				onClick={() => setActiveTab(1)}
+				className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 1
+					? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
+					: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
+					}`}
+			>
+				<FuseSvgIcon size={15}>lucide:map-pin</FuseSvgIcon>
+				<span>Contact & Location</span>
+				{Boolean(errors.contact && Object.keys(errors.contact).length > 0) && (
+					<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+				)}
+			</button>
+
+			<button
+				type="button"
+				onClick={() => setActiveTab(2)}
+				className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 2
+					? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
+					: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
+					}`}
+			>
+				<FuseSvgIcon size={15}>lucide:share-2</FuseSvgIcon>
+				<span>Social Media Links</span>
+				{Boolean(errors.social_links && Object.keys(errors.social_links).length > 0) && (
+					<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
+				)}
+			</button>
+		</div>
+	);
+
 	return (
-		<div className="w-full h-full flex flex-col min-h-0 bg-slate-50/50 dark:bg-slate-950/50 overflow-hidden">
-			{/* Top Header Bar */}
-			<div className="w-full bg-white dark:bg-slate-900 text-slate-900 dark:text-white px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 sm:gap-3 border-b border-slate-200 dark:border-slate-800 shadow-xs shrink-0 z-10">
-				{/* Left Title & Icon */}
-				<div className="flex items-center gap-2.5 sm:gap-3 w-full lg:w-auto min-w-0">
-					{isMobile && (
-						<NavbarToggleButton
-							className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0 -ml-1 border-0"
-							aria-label="open navigation menu"
-						>
-							<FuseSvgIcon size={20}>heroicons-outline:bars-3</FuseSvgIcon>
-						</NavbarToggleButton>
-					)}
-					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
-						<FuseSvgIcon size={20} className="text-primary">
-							heroicons-outline:globe-alt
-						</FuseSvgIcon>
-					</div>
-					<div className="flex flex-col min-w-0">
-						<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight">
-							Site Configuration
-						</h1>
-						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
-							Configure website contact details, company profile, and social media links.
-						</p>
-					</div>
-				</div>
-
-				{/* Right Actions: Reload, Discard, Save */}
-				<div className="flex items-center gap-2 w-full lg:w-auto justify-start sm:justify-end flex-wrap sm:flex-nowrap shrink-0">
-					<Tooltip title="Reload configuration" arrow>
-						<button
-							type="button"
-							onClick={() => refetch()}
-							disabled={isRefetching}
-							style={{ height: '32px', width: '32px' }}
-							className="h-8 w-8 flex items-center justify-center rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all shadow-xs cursor-pointer border border-slate-200 dark:border-slate-700 shrink-0 disabled:opacity-50"
-						>
-							<FuseSvgIcon
-								size={16}
-								className={`text-slate-700 dark:text-slate-200 ${isRefetching ? 'animate-spin' : ''}`}
-							>
-								heroicons-outline:arrow-path
-							</FuseSvgIcon>
-						</button>
-					</Tooltip>
-
-					<button
-						type="button"
-						onClick={handleReset}
-						disabled={!canMutate || !isDirty || updateMutation.isPending}
-						style={{ height: '32px' }}
-						className="h-8 flex-1 sm:flex-initial px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-					>
-						<span>Discard Changes</span>
-					</button>
-
-					<button
-						type="button"
-						onClick={handleSubmit(onSubmit)}
-						disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
-						style={{ height: '32px' }}
-						className="h-8 flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-					>
-						{updateMutation.isPending ? (
-							<CircularProgress size={14} color="inherit" />
-						) : (
-							<FuseSvgIcon size={15} className="text-white">
-								lucide:save
-							</FuseSvgIcon>
-						)}
-						<span>{updateMutation.isPending ? 'Saving...' : 'Save Configuration'}</span>
-					</button>
-				</div>
-			</div>
-
-			{/* Main Scrollable Content */}
-			<div className="w-full flex-1 overflow-y-auto p-3 sm:p-4 md:p-5 min-h-0">
+		<div className="w-full flex flex-col min-h-0">
 				{isConfigLoading ? (
 					<SiteConfigurationSkeleton />
 				) : (
-					<form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-3.5 pb-10">
-						{/* Slim Compact Segmented Tabs */}
-						<div className="flex items-center gap-1.5 p-1 bg-slate-200/70 dark:bg-slate-800/80 rounded-xl w-fit max-w-full overflow-x-auto custom-table-scrollbar">
-							<button
-								type="button"
-								onClick={() => setActiveTab(0)}
-								className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 0
-									? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
-									: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
-									}`}
-							>
-								<FuseSvgIcon size={15}>lucide:briefcase</FuseSvgIcon>
-								<span>Company Details</span>
-								{Boolean(errors.company && Object.keys(errors.company).length > 0) && (
-									<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-								)}
-							</button>
-
-							<button
-								type="button"
-								onClick={() => setActiveTab(1)}
-								className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 1
-									? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
-									: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
-									}`}
-							>
-								<FuseSvgIcon size={15}>lucide:map-pin</FuseSvgIcon>
-								<span>Contact & Location</span>
-								{Boolean(errors.contact && Object.keys(errors.contact).length > 0) && (
-									<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-								)}
-							</button>
-
-							<button
-								type="button"
-								onClick={() => setActiveTab(2)}
-								className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 2
-									? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
-									: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
-									}`}
-							>
-								<FuseSvgIcon size={15}>lucide:share-2</FuseSvgIcon>
-								<span>Social Media Links</span>
-								{Boolean(errors.social_links && Object.keys(errors.social_links).length > 0) && (
-									<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
-								)}
-							</button>
+					<form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-4 pb-10">
+						<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+							{segmentedTabs}
+							{actionButtons}
 						</div>
 
 						{/* TAB 0: Company Details */}
@@ -1108,7 +1093,7 @@ function SiteConfigurationView() {
 									type="submit"
 									disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
 									style={{ height: '34px' }}
-									className="w-full sm:w-auto px-5 bg-primary-700 hover:bg-primary-800 text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-sm cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border-0"
+									className="w-full sm:w-auto px-5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border-0"
 								>
 									{updateMutation.isPending ? (
 										<CircularProgress size={14} color="inherit" />
@@ -1124,7 +1109,6 @@ function SiteConfigurationView() {
 					</form>
 				)}
 			</div>
-		</div>
 	);
 }
 

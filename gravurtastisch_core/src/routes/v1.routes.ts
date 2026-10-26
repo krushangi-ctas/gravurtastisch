@@ -19,6 +19,7 @@ const websiteConfigurationRoute = require('./v1/website-configuration.route');
 const planRoute = require('./v1/plan.route');
 const paymentRoute = require('./v1/payment.route');
 const roleRoute = require('./v1/role.route');
+const sectionRoute = require('./v1/section.route');
 
 const router = express.Router();
 
@@ -34,6 +35,10 @@ const defaultRoutes = [
   {
     path: '/roles',
     route: roleRoute,
+  },
+  {
+    path: '/sections',
+    route: sectionRoute,
   },
   {
     path: '/ip',

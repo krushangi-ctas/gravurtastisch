@@ -5,11 +5,13 @@ import moment from 'moment';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import AccessDeniedView from '@/components/AccessDeniedView';
+import ManagementTabs from '@/components/ManagementTabs';
 import { styled } from '@mui/material/styles';
 import {
 	Box,
 	Button,
 	Checkbox,
+	Chip,
 	CircularProgress,
 	Dialog,
 	DialogActions,
@@ -39,7 +41,7 @@ import {
 	useUpdateRole
 } from '../../api/hooks/useRoles';
 import { getErrorMessage } from '@/utils/errorMessage';
-import { Role, RolePermission } from '../../api/services/rolesApiService';
+import { Role, RolePermission, RoleSectionItem } from '../../api/services/rolesApiService';
 
 const Root = styled(FusePageCarded)(() => ({
 	padding: '0!important',
@@ -80,7 +82,11 @@ const emptyFlags = () => ({
 });
 
 
-function RolesView() {
+export type RolesViewProps = {
+	managementTab?: 'roles';
+};
+
+function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 	const { canView, canCreate, canUpdate, canDelete, scope } = usePermissions();
 	const { enqueueSnackbar } = useSnackbar();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
@@ -176,12 +182,44 @@ function RolesView() {
 
 	const openEdit = (role: Role) => {
 		setEditing(role);
-		setRoleName(role.role_name);
+		setRoleName(role.name || role.role_name);
 		setDescription(role.description || '');
 		setRoleErrors({});
 		const next: Record<string, ReturnType<typeof emptyFlags>> = {};
 		sections.forEach((section) => {
-			const found = role.permissions?.find((p) => p.section === section.key);
+			const secKey = section.key || '';
+			const cleanKey = secKey.replace(/^\//, '');
+
+			// First look in section_list
+			const foundInList = role.section_list?.find((s) => {
+				if (s.name === secKey || (section.id && s.id === section.id)) return true;
+				const cleanS = (s.name || '').replace(/^\//, '');
+				return cleanS === cleanKey;
+			});
+
+			if (foundInList && foundInList.permissions) {
+				next[section.key] = {
+					canView: Boolean(foundInList.permissions.view),
+					canCreate: Boolean(foundInList.permissions.add),
+					canUpdate: Boolean(foundInList.permissions.update),
+					canDelete: Boolean(foundInList.permissions.delete)
+				};
+				return;
+			}
+
+			// Fallback to legacy permissions
+			const found = role.permissions?.find((p) => {
+				if (p.section === secKey) return true;
+				const cleanP = (p.section || '').replace(/^\//, '');
+				if (cleanP === cleanKey) return true;
+				if (
+					(cleanP === 'user' || cleanP === 'users') &&
+					(cleanKey === 'users' || cleanKey === 'admin-users')
+				) {
+					return true;
+				}
+				return false;
+			});
 			next[section.key] = {
 				canView: Boolean(found?.canView),
 				canCreate: Boolean(found?.canCreate),
@@ -203,11 +241,52 @@ function RolesView() {
 		}));
 	};
 
+	const toggleAll = (sectionKey: string) => {
+		setMatrix((prev) => {
+			const current = prev[sectionKey];
+			const isAllSelected = Boolean(
+				current?.canView &&
+				current?.canCreate &&
+				current?.canUpdate &&
+				current?.canDelete
+			);
+			const target = !isAllSelected;
+			return {
+				...prev,
+				[sectionKey]: {
+					canView: target,
+					canCreate: target,
+					canUpdate: target,
+					canDelete: target
+				}
+			};
+		});
+	};
+
 	const buildPermissions = (): RolePermission[] =>
 		Object.entries(matrix).map(([section, flags]) => ({
 			section,
 			...flags
 		}));
+
+	const buildSectionList = (): RoleSectionItem[] =>
+		sections.map((sec) => {
+			const flags = matrix[sec.key] || emptyFlags();
+			const isAccessable = Boolean(flags.canView || flags.canCreate || flags.canUpdate || flags.canDelete);
+			return {
+				id: sec.id,
+				name: sec.name || sec.key,
+				title: sec.title,
+				status: sec.status !== undefined ? sec.status : 1,
+				permissions: {
+					add: Boolean(flags.canCreate),
+					delete: Boolean(flags.canDelete),
+					update: Boolean(flags.canUpdate),
+					view: Boolean(flags.canView)
+				},
+				isAccessable
+			};
+		});
 
 	const handleSave = async () => {
 		const errs = validateRole(roleName, description, matrix);
@@ -225,18 +304,22 @@ function RolesView() {
 				await updateMutation.mutateAsync({
 					roleId,
 					payload: {
+						name: roleName.trim(),
 						role_name: roleName.trim(),
 						description: description.trim(),
-						permissions: buildPermissions()
+						permissions: buildPermissions(),
+						section_list: buildSectionList()
 					}
 				});
 				enqueueSnackbar('Role updated successfully.', { variant: 'success' });
 			} else {
 				await createMutation.mutateAsync({
+					name: roleName.trim(),
 					role_name: roleName.trim(),
 					description: description.trim(),
 					scope,
-					permissions: buildPermissions()
+					permissions: buildPermissions(),
+					section_list: buildSectionList()
 				});
 				enqueueSnackbar('Role created successfully.', { variant: 'success' });
 			}
@@ -425,6 +508,7 @@ function RolesView() {
 						tableId="roles-management-table-v2"
 						title="Roles"
 						icon="heroicons-outline:shield-check"
+						tabs={<ManagementTabs activeTab={managementTab} />}
 						actionButtons={actionButtons}
 						onRefresh={handleRefresh}
 						enableRowActions
@@ -645,6 +729,9 @@ function RolesView() {
 														Section
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
+														All
+													</TableCell>
+													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
 														View
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
@@ -659,29 +746,67 @@ function RolesView() {
 												</TableRow>
 											</TableHead>
 											<TableBody>
-												{sections.map((section) => (
-													<TableRow key={section.key} className="hover:bg-slate-50 transition-colors">
-														<TableCell sx={{ fontSize: 12.5, fontWeight: 500, color: 'text.primary' }}>
-															{section.title}
-														</TableCell>
-														{(['canView', 'canCreate', 'canUpdate', 'canDelete'] as const).map(
-															(flag) => (
-																<TableCell key={flag} align="center" sx={{ py: 0.5 }}>
-																	<Checkbox
-																		checked={Boolean(matrix[section.key]?.[flag])}
-																		onChange={() => toggleFlag(section.key, flag)}
-																		size="small"
-																		color="primary"
-																		sx={{
-																			p: 0.5,
-																			'& .MuiSvgIcon-root': { fontSize: 18 }
-																		}}
-																	/>
-																</TableCell>
-															)
-														)}
-													</TableRow>
-												))}
+												{sections.map((section) => {
+													const flags = matrix[section.key];
+													const isAllSelected = Boolean(
+														flags?.canView &&
+														flags?.canCreate &&
+														flags?.canUpdate &&
+														flags?.canDelete
+													);
+
+													return (
+														<TableRow key={section.key} className="hover:bg-slate-50 transition-colors">
+															<TableCell sx={{ fontSize: 12.5, fontWeight: 500, color: 'text.primary' }}>
+																<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+																	<span>{section.title}</span>
+																	{section.isCustom && (
+																		<Chip
+																			label="Custom"
+																			size="small"
+																			sx={{
+																				height: 18,
+																				fontSize: 10,
+																				fontWeight: 600,
+																				bgcolor: 'rgba(59, 130, 246, 0.1)',
+																				color: 'primary.main',
+																				border: '1px solid rgba(59, 130, 246, 0.2)'
+																			}}
+																		/>
+																	)}
+																</Box>
+															</TableCell>
+															<TableCell align="center" sx={{ py: 0.5 }}>
+																<Checkbox
+																	checked={isAllSelected}
+																	onChange={() => toggleAll(section.key)}
+																	size="small"
+																	color="primary"
+																	sx={{
+																		p: 0.5,
+																		'& .MuiSvgIcon-root': { fontSize: 18 }
+																	}}
+																/>
+															</TableCell>
+															{(['canView', 'canCreate', 'canUpdate', 'canDelete'] as const).map(
+																(flag) => (
+																	<TableCell key={flag} align="center" sx={{ py: 0.5 }}>
+																		<Checkbox
+																			checked={Boolean(matrix[section.key]?.[flag])}
+																			onChange={() => toggleFlag(section.key, flag)}
+																			size="small"
+																			color="primary"
+																			sx={{
+																				p: 0.5,
+																				'& .MuiSvgIcon-root': { fontSize: 18 }
+																			}}
+																		/>
+																	</TableCell>
+																)
+															)}
+														</TableRow>
+													);
+												})}
 											</TableBody>
 										</Table>
 									</div>
@@ -717,7 +842,7 @@ function RolesView() {
 								<Button
 									variant="contained"
 									onClick={handleSave}
-									className="bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm transition-all capitalize text-xs sm:text-sm"
+									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
 									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
 									sx={{
 										bgcolor: 'primary.main',

@@ -13,6 +13,7 @@ import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import usePermissions from '@/hooks/usePermissions';
 import { GeneralSettingFormType } from './GeneralSetAppView';
 
 function GeneralSetting({
@@ -23,6 +24,8 @@ function GeneralSetting({
   generalSetting: any;
 }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { canUpdate } = usePermissions();
+  const canEdit = canUpdate('/settings/generalsetting');
 
   const { control, formState, handleSubmit, setValue, watch } =
     useFormContext<GeneralSettingFormType>();
@@ -32,6 +35,12 @@ function GeneralSetting({
   const selectedDay = watch('day');
 
   const onSubmit = async (data: GeneralSettingFormType) => {
+    if (!canEdit) {
+      enqueueSnackbar('You do not have permission to update general settings.', {
+        variant: 'error',
+      });
+      return;
+    }
     try {
       const response = await generalSettingMutation.mutateAsync({
         data: data,
@@ -94,6 +103,17 @@ function GeneralSetting({
         className="w-full rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs overflow-hidden"
       >
         <form onSubmit={handleSubmit(onSubmit)}>
+          {!canEdit && (
+            <div className="mx-4 sm:mx-6 md:mx-8 mt-4 p-3.5 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-xl flex items-center gap-3 text-amber-900 dark:text-amber-200 text-xs sm:text-sm font-medium">
+              <FuseSvgIcon size={20} className="text-amber-600 dark:text-amber-400 shrink-0">
+                heroicons-outline:information-circle
+              </FuseSvgIcon>
+              <span>
+                <strong>View-only mode:</strong> You do not have permission to modify general settings. All controls are read-only.
+              </span>
+            </div>
+          )}
+
           {/* Header Section */}
           <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50/80 via-white to-primary-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -122,6 +142,8 @@ function GeneralSetting({
               </div>
             </div>
           </div>
+
+          <fieldset disabled={!canEdit} className={!canEdit ? 'pointer-events-none opacity-80 border-0 p-0 m-0' : 'border-0 p-0 m-0'}>
 
           <div className="p-4 sm:p-6 md:p-8 space-y-8 divide-y divide-slate-100 dark:divide-slate-800">
             {/* Section 1: Target Orders & Fulfillment Channel */}
@@ -497,11 +519,14 @@ function GeneralSetting({
               </div>
             </div>
           </div>
+          </fieldset>
 
           {/* Action Footer */}
           <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 bg-slate-50/70 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
             <Typography className="text-[13px] text-slate-500 dark:text-slate-400 text-center sm:text-left">
-              {Object.keys(dirtyFields).length === 0
+              {!canEdit
+                ? 'Read-only mode (Save disabled)'
+                : Object.keys(dirtyFields).length === 0
                 ? 'No changes to save'
                 : 'Unsaved changes detected'}
             </Typography>
@@ -509,15 +534,15 @@ function GeneralSetting({
             <Button
               type="submit"
               variant="contained"
-              disabled={!isValid || Object.keys(dirtyFields).length === 0 || isPending}
-              className="w-full sm:w-auto bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-8 py-2.5 shadow-sm transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700"
+              disabled={!canEdit || !isValid || Object.keys(dirtyFields).length === 0 || isPending}
+              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-8 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700"
               startIcon={
                 <FuseSvgIcon size={18}>
                   {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
                 </FuseSvgIcon>
               }
             >
-              {isPending ? 'Saving changes...' : 'Save Settings'}
+              {!canEdit ? 'Save Disabled' : isPending ? 'Saving changes...' : 'Save Settings'}
             </Button>
           </div>
         </form>

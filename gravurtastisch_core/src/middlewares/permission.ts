@@ -1,28 +1,17 @@
 const httpStatus = require('http-status');
 const ApiError = require('../utils/ApiError');
 const {
-  ADMIN_SECTIONS,
-  SELLER_SECTIONS,
-} = require('../config/sections');
-const {
   getPermissionsForUser,
   can,
   isSellerOwner,
 } = require('../services/permission.service');
 
-const ADMIN_SECTION_KEYS = ADMIN_SECTIONS.map((s) => s.key);
-const SELLER_SECTION_KEYS = SELLER_SECTIONS.map((s) => s.key);
-
 const hasBypassForSection = (user, section) => {
   if (!user) return false;
   if (user.isSuperAdmin) {
-    return ADMIN_SECTION_KEYS.includes(section);
+    return true;
   }
-  if (
-    user.userType !== 'admin' &&
-    isSellerOwner(user) &&
-    SELLER_SECTION_KEYS.includes(section)
-  ) {
+  if (user.userType !== 'admin' && isSellerOwner(user)) {
     return true;
   }
   return false;
@@ -43,7 +32,7 @@ const requirePermission =
         return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
       }
 
-      if (hasBypassForSection(req.user, section)) {
+      if (req.user.isSuperAdmin || hasBypassForSection(req.user, section)) {
         return next();
       }
 
@@ -77,6 +66,10 @@ const requireAnyPermission =
     try {
       if (!req.user) {
         return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
+      }
+
+      if (req.user.isSuperAdmin) {
+        return next();
       }
 
       for (const [section] of requirements) {

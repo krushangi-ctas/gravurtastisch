@@ -1,4 +1,5 @@
 import FuseNavigation from '@fuse/core/FuseNavigation/FuseNavigation';
+import { FuseNavItemType } from '@fuse/core/FuseNavigation/types/FuseNavItemType';
 import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -14,19 +15,21 @@ type SettingsAppSidebarContentProps = {
 	onSetSidebarOpen: (open: boolean) => void;
 };
 
+type NavItemWithSection = FuseNavItemType & { authSection?: string };
+
 function SettingsAppSidebarContent(props: SettingsAppSidebarContentProps) {
 	const { className, onSetSidebarOpen } = props;
 	const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
-	const { scope } = usePermissions();
+	const { canView } = usePermissions();
 
 	const navigationItems = useMemo(() => {
-		if (scope === 'admin') {
-			return (SettingsAppNavigation.children || []).filter(
-				(item) => item.id !== 'settings.generalSetting'
-			);
-		}
-		return SettingsAppNavigation.children || [];
-	}, [scope]);
+		const items = SettingsAppNavigation.children || [];
+		return items.filter((item) => {
+			const sectionKey =
+				(item as NavItemWithSection).authSection || item.url || item.id || '';
+			return canView(sectionKey);
+		});
+	}, [canView]);
 
 	return (
 		<div>

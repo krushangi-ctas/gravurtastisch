@@ -308,7 +308,7 @@ function SecurityTabView() {
               variant="contained"
               disabled={_.isEmpty(dirtyFields) || !isValid || isPending}
               type="submit"
-              className="w-full sm:w-auto bg-primary-700 hover:bg-primary-800 text-white font-semibold rounded-xl px-7 py-2.5 shadow-sm transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
+              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
               startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
             >
               {isPending ? 'Updating...' : 'Update Password'}

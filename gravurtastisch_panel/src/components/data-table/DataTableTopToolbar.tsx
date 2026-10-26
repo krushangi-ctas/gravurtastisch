@@ -21,7 +21,10 @@ const defaultTableSubtitles: Record<string, string> = {
 	Sellers: 'View registered sellers, manage store profiles, subscriptions, and quota limits.',
 	'Admin Users': 'Manage administrative users, access privileges, and staff accounts.',
 	Team: 'Manage internal team members, departmental roles, and access controls.',
+	'Team Management': 'Manage internal team members, departmental roles, and access controls.',
+	'User Management': 'Manage administrative users, access privileges, and staff accounts.',
 	Roles: 'Configure role definitions, operational permissions, and security policies.',
+	Sections: 'Configure dynamic section definitions, operational permissions, and access controls.',
 	Blogs: 'Create, publish, and manage website articles, categories, and SEO blog posts.',
 	Plans: 'Manage subscription tiers, feature allocations, pricing, and monthly limits.',
 	Support: 'Manage customer inquiries, support requests, and seller communications.',
@@ -35,6 +38,7 @@ export interface DataTableTopToolbarProps<TData extends MRT_RowData> {
 	icon?: string | React.ReactNode;
 	actionButtons?: React.ReactNode;
 	onRefresh?: () => void;
+	tabs?: React.ReactNode;
 }
 
 function DataTableTopToolbar<TData extends MRT_RowData>({
@@ -43,7 +47,8 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 	subtitle,
 	icon,
 	actionButtons,
-	onRefresh
+	onRefresh,
+	tabs
 }: DataTableTopToolbarProps<TData>) {
 	const {
 		getState,
@@ -93,9 +98,17 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 	};
 
 	return (
-		<div className="flex w-full flex-col border-b border-slate-200 dark:border-slate-800 px-4 py-1 sm:py-1.5 bg-white dark:bg-slate-900">
-			<Box
-				className="flex w-full flex-col items-center"
+		<div className="flex w-full flex-col border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900">
+			{/* Full-width Header for Tabs */}
+			{tabs && (
+				<div className="w-full bg-gray-100 dark:bg-gray-800 px-4 py-1 sm:py-1.5 border-b border-gray-200 dark:border-gray-700 shadow-2xs flex items-center overflow-x-auto custom-table-scrollbar">
+					{tabs}
+				</div>
+			)}
+
+			<div className="flex w-full flex-col px-4 py-1.5 sm:py-2">
+				<Box
+					className="flex w-full flex-col items-center"
 				{...toolbarProps}
 				ref={(ref: HTMLDivElement) => {
 					topToolbarRef.current = ref;
@@ -391,6 +404,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 					}
 				}}
 			/>
+			</div>
 		</div>
 	);
 }

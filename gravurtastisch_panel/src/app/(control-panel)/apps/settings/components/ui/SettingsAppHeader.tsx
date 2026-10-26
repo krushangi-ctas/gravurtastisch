@@ -44,7 +44,11 @@ function SettingsAppHeader(props: SettingsAppHeaderProps) {
 					)}
 					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary">
 						<FuseSvgIcon size={20} className="text-primary">
-							heroicons-outline:cog-6-tooth
+							{currentNavigation?.id === 'settings.siteConfiguration'
+								? 'heroicons-outline:globe-alt'
+								: currentNavigation?.id === 'settings.generalSetting'
+								? 'heroicons-outline:cog-6-tooth'
+								: 'heroicons-outline:user-circle'}
 						</FuseSvgIcon>
 					</div>
 					<div className="flex flex-col min-w-0">
@@ -52,7 +56,11 @@ function SettingsAppHeader(props: SettingsAppHeaderProps) {
 							{currentNavigation?.title || 'Settings'}
 						</h1>
 						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
-							Manage your account settings, security preferences, and profile details.
+							{currentNavigation?.id === 'settings.siteConfiguration'
+								? 'Configure website contact details, company profile, and social media links.'
+								: currentNavigation?.id === 'settings.generalSetting'
+								? 'Manage default marketplace rules, order matching, and automated requests.'
+								: 'Manage your account settings, security preferences, and profile details.'}
 						</p>
 					</div>
 				</div>

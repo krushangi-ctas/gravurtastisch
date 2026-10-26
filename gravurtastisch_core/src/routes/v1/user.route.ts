@@ -43,7 +43,7 @@ router
   .route('/')
   .post(
     auth(),
-    requirePermission('users', 'create'),
+    requirePermission('/user-management/users', 'create'),
     validate(userValidation.createUser),
     userController.createManagedUser
   )
@@ -52,7 +52,7 @@ router
 router.post(
   '/team',
   auth(),
-  requirePermission('user', 'create'),
+  requirePermission('/team/members', 'create'),
   validate(userValidation.createTeamUser),
   userController.createManagedUser
 );
@@ -60,25 +60,31 @@ router.post(
 router.get(
   '/team',
   auth(),
-  requirePermission('user', 'view'),
+  requirePermission('/team/members', 'view'),
   validate(userValidation.getUsers),
   userController.getTeamUsers
 );
 
 router
   .route('/upload-image')
-  .post(auth(), multipartMiddleware, userController.uploadProfile);
+  .post(
+    auth(),
+    requirePermission('/settings/account', 'update'),
+    multipartMiddleware,
+    userController.uploadProfile
+  );
 
 router.post(
   '/profile/delete-image',
   auth(),
+  requirePermission('/settings/account', 'update'),
   userController.deleteProfile
 );
 
 router.get(
   '/sellers',
   auth(),
-  requirePermission('sellers', 'view'),
+  requirePermission('/sellers', 'view'),
   validate(userValidation.getUsers),
   userController.getAdminSellers
 );
@@ -86,7 +92,7 @@ router.get(
 router.get(
   '/admin-staff',
   auth(),
-  requirePermission('users', 'view'),
+  requirePermission('/user-management/users', 'view'),
   validate(userValidation.getUsers),
   userController.getAdminStaffUsers
 );
@@ -96,25 +102,29 @@ router.put(
   auth(),
   async (req, res, next) => {
     try {
+      if (req.user?.isSuperAdmin) {
+        return next();
+      }
+
       const target = await User.findById(req.params.userId)
         .select('userType isSellerAdmin parentId isSuperAdmin')
         .lean();
 
       if (target?.isSuperAdmin) {
-        return requirePermission('users', 'update')(req, res, next);
+        return requirePermission('/user-management/users', 'update')(req, res, next);
       }
 
       if (isSellerOwner(req.user) || req.user.userType === 'seller') {
-        return requirePermission('user', 'update')(req, res, next);
+        return requirePermission('/team/members', 'update')(req, res, next);
       }
 
-      let section = 'users';
+      let section = '/user-management/users';
       const isSellerTarget =
         target?.userType === 'seller' ||
         target?.isSellerAdmin ||
         (!target?.parentId && target?.userType !== 'admin');
       if (isSellerTarget) {
-        section = 'sellers';
+        section = '/sellers';
       }
 
       const action = req.body?.status === 2 ? 'delete' : 'update';
@@ -160,7 +170,12 @@ router.post(
 
 router.get('/get-chats/:userId', auth(), userController.getUserForChat);
 
-router.put('/update-profile', auth(), userController.updateUser);
+router.put(
+  '/update-profile',
+  auth(),
+  requirePermission('/settings/account', 'update'),
+  userController.updateUser
+);
 router.put('/update-password', auth(), userController.updateUserPassword);
 
 router.post(

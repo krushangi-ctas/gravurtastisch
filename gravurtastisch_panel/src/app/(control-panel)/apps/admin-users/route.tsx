@@ -1,18 +1,9 @@
-import { lazy } from 'react';
+import { Navigate } from 'react-router';
 import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
-import PermissionGuard from '@/components/PermissionGuard';
-
-const UsersView = lazy(() => import('../users/components/views/UsersView'));
 
 const Route: FuseRouteItemType = {
 	path: '/admin-users',
-	element: <PermissionGuard section="users" title="Admin Users" />,
-	children: [
-		{
-			path: '',
-			element: <UsersView variant="admin-users" />
-		}
-	]
+	element: <Navigate to="/user-management/users" replace />
 };
 
 export default Route;

@@ -87,6 +87,7 @@ function DataTable<TData>({
   icon,
   actionButtons,
   onRefresh,
+  tabs,
   ...rest
 }: any) {
   const getColumnOrderFromLocalStorage = (id: string) => {
@@ -145,7 +146,7 @@ function DataTable<TData>({
             right: ['mrt-row-actions'],
           },
           pagination: {
-            pageSize: 20,
+            pageSize: 100,
             pageIndex: 0,
           },
           enableFullScreenToggle: false,
@@ -584,11 +585,12 @@ function DataTable<TData>({
             icon={icon}
             actionButtons={actionButtons}
             onRefresh={onRefresh}
+            tabs={tabs}
           />
         ),
         icons: tableIcons,
       } as Partial<MaterialReactTableProps<TData>>),
-    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh]
+    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh, tabs]
   );
 
   const tableOptions = useMemo(

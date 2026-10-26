@@ -20,6 +20,7 @@ export const supportUrl = `${baseBackendApiUrl}/support`;
 export const blogsUrl = `${baseBackendApiUrl}/blogs`;
 export const websiteConfigurationUrl = `${baseBackendApiUrl}/website-configuration`;
 export const plansUrl = `${baseBackendApiUrl}/plans`;
+export const sectionsUrl = `${baseBackendApiUrl}/sections`;
 
 const sanitizeEnvUrl = (url?: string): string => {
 	if (!url) return '';

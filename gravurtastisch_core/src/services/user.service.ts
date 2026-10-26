@@ -326,7 +326,7 @@ const buildUserListQuery = async (baseFilter, query = {}) => {
   }
 
   const page = Number(query.page) > 0 ? Number(query.page) : 1;
-  const limit = Number(query.limit) > 0 ? Number(query.limit) : 20;
+  const limit = Number(query.limit) > 0 ? Number(query.limit) : 100;
   let sort = { createdAt: -1 };
   if (query.sortBy) {
     const [rawKey, order] = String(query.sortBy).split(':');
@@ -492,21 +492,27 @@ const listAdminStaffUsers = async (query = {}) => {
 const listSellerTeamUsers = async (actor, query = {}) => {
   try {
     const { isSellerOwner } = require('./permission.service');
-    const ownerId = isSellerOwner(actor) ? actor._id : actor.parentId;
-    if (!ownerId) {
+    const ownerId = isSellerOwner(actor)
+      ? actor._id
+      : (actor.parentId || (actor.isSuperAdmin ? query.ownerId || query.parentId : null));
+    if (!ownerId && !actor.isSuperAdmin) {
       return createResponse(
         httpStatus.FORBIDDEN,
         'You do not have permission to view team members.'
       );
     }
 
+    const baseFilter = {
+      isSellerAdmin: { $ne: true },
+      isSuperAdmin: { $ne: true },
+      userType: { $ne: 'admin' },
+    };
+    if (ownerId) {
+      baseFilter.parentId = ownerId;
+    }
+
     const { filter, page, limit, sort } = await buildUserListQuery(
-      {
-        parentId: ownerId,
-        isSellerAdmin: { $ne: true },
-        isSuperAdmin: { $ne: true },
-        userType: { $ne: 'admin' },
-      },
+      baseFilter,
       query
     );
 

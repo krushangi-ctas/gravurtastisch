@@ -18,8 +18,29 @@ const permissionSchema = mongoose.Schema(
   { _id: false }
 );
 
+const sectionItemSchema = mongoose.Schema(
+  {
+    id: { type: String, default: null },
+    name: { type: String, required: true, trim: true },
+    title: { type: String, required: true, trim: true },
+    status: { type: Number, default: 1 },
+    permissions: {
+      add: { type: Boolean, default: false },
+      delete: { type: Boolean, default: false },
+      update: { type: Boolean, default: false },
+      view: { type: Boolean, default: false },
+    },
+    isAccessable: { type: Boolean, default: false },
+  },
+  { _id: false }
+);
+
 const roleSchema = mongoose.Schema(
   {
+    name: {
+      type: String,
+      trim: true,
+    },
     role_name: {
       type: String,
       required: true,
@@ -46,6 +67,10 @@ const roleSchema = mongoose.Schema(
       ref: 'tbl_users',
       default: null,
       index: true,
+    },
+    section_list: {
+      type: [sectionItemSchema],
+      default: [],
     },
     permissions: {
       type: [permissionSchema],
