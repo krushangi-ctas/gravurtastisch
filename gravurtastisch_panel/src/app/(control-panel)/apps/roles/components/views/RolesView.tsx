@@ -373,6 +373,8 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 				accessorKey: 'createdAt',
 				header: 'DATE',
 				size: 160,
+				minSize: 140,
+				maxSize: 170,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) {
@@ -388,7 +390,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								sx={{
 									fontSize: 12,
 									fontWeight: 400,
-									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									color: 'text.secondary',
 									whiteSpace: 'nowrap'
 								}}
 							>
@@ -401,16 +403,26 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 			{
 				accessorKey: 'role_name',
 				header: 'ROLE',
-				size: 180,
+				size: 150,
+				minSize: 130,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>() || '—';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-							<FuseSvgIcon size={16} className="text-indigo-600 dark:text-indigo-400 shrink-0">
+							<FuseSvgIcon size={16} className="text-primary shrink-0">
 								heroicons-outline:shield-check
 							</FuseSvgIcon>
 							<Tooltip title={val} arrow>
-								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary' }}>
+								<Typography
+									sx={{
+										fontSize: 12,
+										fontWeight: 600,
+										color: 'text.primary',
+										whiteSpace: 'nowrap',
+										overflow: 'hidden',
+										textOverflow: 'ellipsis'
+									}}
+								>
 									{val}
 								</Typography>
 							</Tooltip>
@@ -421,6 +433,8 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 			{
 				accessorKey: 'description',
 				header: 'DESCRIPTION',
+				size: 200,
+				minSize: 150,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					return (
@@ -428,12 +442,13 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 							<Typography
 								sx={{
 									fontSize: 12,
-									color: val ? 'text.secondary' : 'text.disabled',
+									fontWeight: 400,
+									color: val ? 'text.primary' : 'text.disabled',
 									fontStyle: val ? 'normal' : 'italic',
 									overflow: 'hidden',
 									textOverflow: 'ellipsis',
 									whiteSpace: 'nowrap',
-									maxWidth: 380,
+									maxWidth: 220
 								}}
 							>
 								{val || 'No description'}
@@ -443,21 +458,78 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 				}
 			},
 			{
-				accessorKey: 'scope',
-				header: 'SCOPE',
-				size: 120,
-				Cell: ({ cell }) => {
-					const val = cell.getValue<string>() || '—';
+				id: 'section_list',
+				header: 'SECTIONS',
+				size: 680,
+				minSize: 450,
+				accessorFn: (row) => {
+					const list = row.section_list
+						?.filter((s) => s.isAccessable || (s.permissions && (s.permissions.view || s.permissions.add || s.permissions.update || s.permissions.delete)))
+						.map((s) => s.title || s.name) || [];
+					return list.join(', ');
+				},
+				Cell: ({ row }) => {
+					const role = row.original;
+					const accessibleSections: string[] = [];
+					const seen = new Set<string>();
+
+					if (Array.isArray(role.section_list)) {
+						role.section_list.forEach((item) => {
+							const hasPerm =
+								Boolean(item.isAccessable) ||
+								Boolean(
+									item.permissions?.view ||
+									item.permissions?.add ||
+									item.permissions?.update ||
+									item.permissions?.delete
+								);
+							if (hasPerm) {
+								const title = item.title || item.name;
+								if (title && !seen.has(title)) {
+									seen.add(title);
+									accessibleSections.push(title);
+								}
+							}
+						});
+					}
+
+					if (accessibleSections.length === 0 && Array.isArray(role.permissions)) {
+						role.permissions.forEach((perm) => {
+							const hasPerm = Boolean(perm.canView || perm.canCreate || perm.canUpdate || perm.canDelete);
+							if (hasPerm && perm.section) {
+								const matchedSec = sections.find(
+									(s) => s.key === perm.section || s.name === perm.section || (s.id && s.id === perm.section)
+								);
+								const title = matchedSec?.title || perm.section.replace(/^\//, '').replace(/-/g, ' ');
+								const formatted = title.charAt(0).toUpperCase() + title.slice(1);
+								if (!seen.has(formatted)) {
+									seen.add(formatted);
+									accessibleSections.push(formatted);
+								}
+							}
+						});
+					}
+
+					if (accessibleSections.length === 0) {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					}
+
 					return (
-						<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[11.5px] font-semibold bg-slate-100 text-slate-700 border border-slate-200 uppercase tracking-tight dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
-							<FuseSvgIcon size={12} className="text-slate-500">heroicons-outline:adjustments-horizontal</FuseSvgIcon>
-							{val}
-						</span>
+						<div className="flex items-center gap-1.5 py-0 w-full overflow-x-auto no-scrollbar">
+							{accessibleSections.map((secTitle) => (
+								<span
+									key={secTitle}
+									className="inline-flex items-center px-1.5 py-[2px] rounded text-[12px] font-medium leading-none whitespace-nowrap shrink-0 border bg-blue-50 text-blue-800 border-blue-200 dark:bg-blue-950/40 dark:text-blue-300 dark:border-blue-800/50"
+								>
+									{secTitle}
+								</span>
+							))}
+						</div>
 					);
 				}
 			}
 		],
-		[]
+		[sections]
 	);
 
 	if (!canAccessRoles) {
@@ -469,8 +541,8 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 		<button
 			type="button"
 			onClick={openCreate}
-			style={{ height: '38px' }}
-			className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
+			style={{ height: '36px' }}
+			className="h-[36px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
 		>
 			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
@@ -505,7 +577,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 					<DataTable
 						columns={columns}
 						data={roles}
-						tableId="roles-management-table-v2"
+						tableId="roles-management-table-v3"
 						title="Roles"
 						icon="heroicons-outline:shield-check"
 						tabs={<ManagementTabs activeTab={managementTab} />}
@@ -528,15 +600,15 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 						manualPagination={false}
 						muiTableBodyRowProps={{
 							sx: {
-								minHeight: '38px',
-								height: '38px'
+								minHeight: '34px',
+								height: '34px'
 							}
 						}}
 						muiTableProps={{
 							sx: {
 								minWidth: { xs: '700px', lg: '100%' },
 								'& .MuiTableCell-root': {
-									padding: '6px 10px',
+									padding: '4px 10px',
 									borderBottom: '1px solid',
 									borderColor: 'divider',
 									overflow: 'hidden',
@@ -555,8 +627,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								overflowX: 'auto',
 								overflowY: 'auto',
 								WebkitOverflowScrolling: 'touch',
-								backgroundColor: (theme: any) =>
-									theme.palette?.mode === 'dark' ? '#0f172a' : '#ffffff',
+								backgroundColor: 'background.paper',
 								'&::-webkit-scrollbar': { height: 8, width: 8 },
 								'&::-webkit-scrollbar-track': {
 									backgroundColor: 'background.default',
@@ -820,11 +891,12 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 
 							{/* Bottom Action Footer */}
 							<DialogActions
-								className="px-4 sm:px-6 py-3 bg-slate-50/90 border-t border-slate-200 flex justify-end gap-3 shrink-0"
+								className="px-4 sm:px-6 py-3 bg-slate-50 dark:bg-slate-800/90 border-t border-slate-200 dark:border-slate-700 flex justify-end gap-3 shrink-0"
 								sx={{
 									flexShrink: 0,
-									borderTop: '1px solid #e2e8f0',
-									bgcolor: '#f8fafc',
+									borderTop: '1px solid',
+									borderColor: 'divider',
+									bgcolor: 'background.default',
 									px: { xs: 2, sm: 3 },
 									py: 1.5
 								}}

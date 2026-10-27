@@ -293,7 +293,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								sx={{
 									fontSize: 12,
 									fontWeight: 400,
-									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									color: 'text.secondary',
 									whiteSpace: 'nowrap'
 								}}
 							>
@@ -313,10 +313,13 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 						<Tooltip title={val} arrow>
 							<Typography
 								sx={{
-									fontSize: 12.5,
+									fontSize: 12,
 									fontWeight: 600,
 									color: 'text.primary',
-									textTransform: 'capitalize'
+									textTransform: 'capitalize',
+									whiteSpace: 'nowrap',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis'
 								}}
 							>
 								{val}
@@ -384,8 +387,8 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								/>
 								<Typography
 									sx={{
-										fontSize: 11.5,
-										fontWeight: 600,
+										fontSize: 12,
+										fontWeight: 500,
 										color: isActive ? 'primary.main' : 'text.disabled'
 									}}
 								>
@@ -553,8 +556,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								overflowX: 'auto',
 								overflowY: 'auto',
 								WebkitOverflowScrolling: 'touch',
-								backgroundColor: (theme: any) =>
-									theme.palette?.mode === 'dark' ? '#0f172a' : '#ffffff',
+								backgroundColor: 'background.paper',
 								'&::-webkit-scrollbar': { height: 8, width: 8 },
 								'&::-webkit-scrollbar-track': {
 									backgroundColor: 'background.default',
@@ -730,11 +732,12 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 
 							{/* Bottom Action Footer */}
 							<DialogActions
-								className="px-4 sm:px-6 py-3 bg-slate-50/90 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 shrink-0"
+								className="px-4 sm:px-6 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 shrink-0"
 								sx={{
 									flexShrink: 0,
-									borderTop: '1px solid #e2e8f0',
-									bgcolor: '#f8fafc',
+									borderTop: '1px solid',
+									borderColor: 'divider',
+									bgcolor: 'background.default',
 									px: { xs: 2, sm: 3 },
 									py: 1.5
 								}}
@@ -797,8 +800,8 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 							<div className="flex items-start gap-3.5">
 								<div
 									className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.type === 'delete'
-											? 'bg-red-100 text-red-500 dark:bg-red-950/40'
-											: 'bg-amber-100 text-amber-500 dark:bg-amber-950/40'
+										? 'bg-red-100 text-red-500 dark:bg-red-950/40'
+										: 'bg-amber-100 text-amber-500 dark:bg-amber-950/40'
 										}`}
 								>
 									<FuseSvgIcon
@@ -862,8 +865,8 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								onClick={handleConfirmAction}
 								disabled={isActionLoading}
 								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${confirmState.type === 'delete'
-										? 'bg-red-600 hover:bg-red-700'
-										: 'bg-primary hover:bg-primary-dark'
+									? 'bg-red-600 hover:bg-red-700'
+									: 'bg-primary hover:bg-primary-dark'
 									}`}
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}

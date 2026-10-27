@@ -20,9 +20,9 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
   width: `${navbarWidth}px !important`,
   maxWidth: `${navbarWidth}px !important`,
   flexShrink: '0 !important',
-  background: 'linear-gradient(180deg, #edf4fe 0%, #e2edfc 50%, #edf4fe 100%)',
+  backgroundColor: theme.palette.grey[200],
   ...theme.applyStyles('dark', {
-    background: theme.vars.palette.background.default,
+    backgroundColor: theme.vars.palette.background.default,
   }),
   variants: [
     {
@@ -75,9 +75,9 @@ const StyledNavBarMobile = styled(SwipeableDrawer)(({ theme }) => ({
     minWidth: 235,
     width: 235,
     maxWidth: '85vw',
-    background: 'linear-gradient(180deg, #edf4fe 0%, #e2edfc 50%, #edf4fe 100%)',
+    backgroundColor: theme.palette.grey[200],
     ...theme.applyStyles('dark', {
-      background: theme.vars.palette.background.paper,
+      backgroundColor: theme.vars.palette.background.paper,
     }),
   },
 }));
@@ -109,7 +109,7 @@ function NavbarStyle1() {
     <>
       {!isMobile && (
         <StyledNavBar
-          className="sticky top-0 z-20 h-screen shrink-0 flex-col"
+          className="sticky top-0 z-20 h-screen shrink-0 flex-col bg-gray-200 dark:bg-slate-900"
           open={isNavbarOpen}
           position={config.navbar.position}
         >
@@ -120,13 +120,13 @@ function NavbarStyle1() {
       {isMobile && (
         <StyledNavBarMobile
           classes={{
-            paper: 'flex-col flex-auto h-full',
+            paper: 'flex-col flex-auto h-full bg-gray-200 dark:bg-slate-900',
           }}
           anchor={config.navbar.position as 'left' | 'top' | 'right' | 'bottom'}
           variant="temporary"
           open={isNavbarMobileOpen}
           onClose={() => closeMobileNavbar()}
-          onOpen={() => {}}
+          onOpen={() => { }}
           disableSwipeToOpen
           ModalProps={{
             keepMounted: true, // Better open performance on mobile.

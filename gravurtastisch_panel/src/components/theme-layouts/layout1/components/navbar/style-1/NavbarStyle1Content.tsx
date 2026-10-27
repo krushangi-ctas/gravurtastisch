@@ -11,12 +11,11 @@ import UserMenu from 'src/components/theme-layouts/components/UserMenu';
 import { useNavbarContext } from '@/components/theme-layouts/components/navbar/contexts/NavbarContext/useNavbarContext';
 
 const Root = styled('div')(({ theme }) => ({
-  backgroundColor: '#edf4fe',
-  background: 'linear-gradient(180deg, #edf4fe 0%, #e2edfc 50%, #edf4fe 100%)',
+  backgroundColor: theme.palette.grey[200],
   color: theme.vars.palette.text.primary,
   ...theme.applyStyles('dark', {
     backgroundColor: theme.vars.palette.background.default,
-    background: theme.vars.palette.background.default,
+    color: theme.vars.palette.text.primary,
   }),
   '& ::-webkit-scrollbar-thumb': {
     boxShadow: `inset 0 0 0 20px ${'rgba(255, 255, 255, 0.24)'}`,
@@ -57,13 +56,13 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
   return (
     <Root
       className={clsx(
-        'flex h-full flex-auto flex-col overflow-hidden',
+        'flex h-full flex-auto flex-col overflow-hidden bg-gray-200 dark:bg-slate-900',
         className
       )}
     >
       <div
         className={clsx(
-          'flex h-20 shrink-0 items-center px-4 border-b border-black/5',
+          'flex h-20 shrink-0 items-center px-4 border-b border-gray-300 dark:border-slate-800',
           isMobile ? 'justify-between' : 'justify-center'
         )}
       >
