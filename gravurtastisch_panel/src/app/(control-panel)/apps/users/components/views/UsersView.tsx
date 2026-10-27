@@ -1451,8 +1451,8 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	const title = isSellersMode
 		? 'Sellers'
 		: isTeamMode
-			? 'Team Management'
-			: 'User Management';
+			? 'Team'
+			: 'Users';
 	const icon = isSellersMode
 		? 'lucide:store'
 		: isTeamMode
