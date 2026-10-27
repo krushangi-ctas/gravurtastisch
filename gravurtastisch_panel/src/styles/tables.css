@@ -60,11 +60,11 @@ table.simple.borderless {
     border: none;
 }
 
-table.simple.borderless tbody tr td{
+table.simple.borderless tbody tr td {
     border: none;
 }
 
-table.simple.borderless thead tr th{
+table.simple.borderless thead tr th {
     border: none;
 }
 
@@ -165,10 +165,6 @@ th[data-column-id="mrt-row-select"],
 th[data-column-id="mrt-row-expand"],
 .MRT_TableHeadCell-pinned-right,
 th.MRT_TableHeadCell-pinned-right {
-    background-color: #f3f4f6 !important;
-    background: #f3f4f6 !important;
-    border-color: #e5e7eb !important;
-    opacity: 1 !important;
     box-shadow: none !important;
 }
 
@@ -189,51 +185,10 @@ th[data-column-id="mrt-row-expand"]:before,
 th[data-column-id="mrt-row-expand"]:after,
 .MRT_TableHeadCell-pinned-right:before,
 .MRT_TableHeadCell-pinned-right:after {
-    background-color: #f3f4f6 !important;
-    background: #f3f4f6 !important;
+    background-color: inherit !important;
+    background: inherit !important;
     box-shadow: none !important;
-    opacity: 1 !important;
-}
-
-/* Dark mode Table Headers */
-.dark .MuiTableHead-root,
-.dark .MuiTableHead-root th,
-.dark .MuiTableHead-root .MuiTableCell-root,
-.dark .MuiTableHead-root tr,
-.dark th.MRT_TableHeadCell-pinned,
-.dark th[data-pinned="true"],
-.dark th[data-column-id="mrt-row-actions"],
-.dark th[data-column-id="mrt-row-select"],
-.dark th[data-column-id="mrt-row-expand"],
-.dark .MRT_TableHeadCell-pinned-right,
-.dark th.MRT_TableHeadCell-pinned-right {
-    background-color: #1f2937 !important;
-    background: #1f2937 !important;
-    border-color: #374151 !important;
-    opacity: 1 !important;
-    box-shadow: none !important;
-}
-
-.dark .MuiTableHead-root th:before,
-.dark .MuiTableHead-root th:after,
-.dark .MuiTableHead-root .MuiTableCell-root:before,
-.dark .MuiTableHead-root .MuiTableCell-root:after,
-.dark th.MRT_TableHeadCell-pinned:before,
-.dark th.MRT_TableHeadCell-pinned:after,
-.dark th[data-pinned="true"]:before,
-.dark th[data-pinned="true"]:after,
-.dark th[data-column-id="mrt-row-actions"]:before,
-.dark th[data-column-id="mrt-row-actions"]:after,
-.dark th[data-column-id="mrt-row-select"]:before,
-.dark th[data-column-id="mrt-row-select"]:after,
-.dark th[data-column-id="mrt-row-expand"]:before,
-.dark th[data-column-id="mrt-row-expand"]:after,
-.dark .MRT_TableHeadCell-pinned-right:before,
-.dark .MRT_TableHeadCell-pinned-right:after {
-    background-color: #1f2937 !important;
-    background: #1f2937 !important;
-    box-shadow: none !important;
-    opacity: 1 !important;
+    border: none !important;
 }
 
 /* Bottom Toolbar & Pagination */
@@ -250,21 +205,21 @@ div[class*="MRT_BottomToolbar-root"],
 }
 
 /* Table Body Rows - Default White */
-.MuiTableBody-root tr:not([data-selected="true"]) > td,
-.MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned,
-.MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"] {
+.MuiTableBody-root tr:not([data-selected="true"])>td,
+.MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned,
+.MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"] {
     background-color: #ffffff;
 }
 
-.MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"]:before,
-.MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned:before {
+.MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"]:before,
+.MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned:before {
     background-color: #ffffff !important;
 }
 
 /* Neutralize MRT's default dark overlay pseudo-element on hover */
 .MuiTableBody-root tr td:after,
 .MuiTableBody-root tr:hover td:after,
-.MuiTableBody-root tr:hover > td:after,
+.MuiTableBody-root tr:hover>td:after,
 .MuiTableBody-root tr:hover td[data-pinned="true"]:after,
 .MuiTableBody-root tr:hover td.MRT_TableBodyCell-pinned:after {
     background-color: transparent !important;
@@ -273,43 +228,43 @@ div[class*="MRT_BottomToolbar-root"],
 
 /* Row Hover - pure gray-100 (#f3f4f6) across row and all cells including pinned cells */
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover,
-.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td,
-.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"],
-.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned {
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"],
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned {
     background-color: #f3f4f6 !important;
     background: #f3f4f6 !important;
 }
 
-.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td:before,
-.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"]:before,
-.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned:before {
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td:before,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"]:before,
+.MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned:before {
     background-color: #f3f4f6 !important;
     background: #f3f4f6 !important;
 }
 
 /* Dark mode Table Body Rows & Hover */
-.dark .MuiTableBody-root tr:not([data-selected="true"]) > td,
-.dark .MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned,
-.dark .MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"] {
+.dark .MuiTableBody-root tr:not([data-selected="true"])>td,
+.dark .MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned,
+.dark .MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"] {
     background-color: #0f172a;
 }
 
-.dark .MuiTableBody-root tr:not([data-selected="true"]) > td[data-pinned="true"]:before,
-.dark .MuiTableBody-root tr:not([data-selected="true"]) > td.MRT_TableBodyCell-pinned:before {
+.dark .MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"]:before,
+.dark .MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned:before {
     background-color: #0f172a !important;
 }
 
 .dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"],
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned {
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"],
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned {
     background-color: #1f2937 !important;
     background: #1f2937 !important;
 }
 
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td:before,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td[data-pinned="true"]:before,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover > td.MRT_TableBodyCell-pinned:before {
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td:before,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"]:before,
+.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned:before {
     background-color: #1f2937 !important;
     background: #1f2937 !important;
 }

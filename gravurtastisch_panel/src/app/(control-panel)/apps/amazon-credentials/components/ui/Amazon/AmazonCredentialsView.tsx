@@ -52,7 +52,7 @@ const amazonCredentialsSchema = z.object({
   client_id: z
     .string()
     .trim()
-    .min(1, 'You must enter a Client ID')
+    .min(1, 'Client ID is required!')
     .min(50, 'Client ID must be at least 50 characters (typically 60-75 characters)')
     .max(90, 'Client ID cannot exceed 90 characters')
     .regex(
@@ -62,14 +62,14 @@ const amazonCredentialsSchema = z.object({
   client_secret: z
     .string()
     .trim()
-    .min(1, 'You must enter a Client Secret')
+    .min(1, 'Client Secret is required!')
     .min(64, 'Client Secret must be at least 64 characters (standard is 78 characters)')
     .max(85, 'Client Secret cannot exceed 85 characters')
     .regex(/^\S+$/, 'Client Secret cannot contain spaces'),
   refresh_token: z
     .string()
     .trim()
-    .min(1, 'You must enter a Refresh Token (LWA)')
+    .min(1, 'Refresh Token is required!')
     .min(250, 'Refresh Token must be at least 250 characters')
     .max(1200, 'Refresh Token cannot exceed 1200 characters')
     .regex(
@@ -79,7 +79,7 @@ const amazonCredentialsSchema = z.object({
   seller_id: z
     .string()
     .trim()
-    .min(1, 'You must enter a Seller ID (Merchant Token)')
+    .min(1, 'Seller ID is required!')
     .min(13, 'Seller ID is typically 14 characters (13-18 characters)')
     .max(18, 'Seller ID cannot exceed 18 characters')
     .regex(
@@ -88,7 +88,7 @@ const amazonCredentialsSchema = z.object({
     ),
   marketplace_ids: z
     .array(z.string().nonempty())
-    .min(1, 'You must select at least one marketplace'),
+    .min(1, 'Marketplaces is required!'),
 });
 
 type AmazonCredentialsFormType = z.infer<typeof amazonCredentialsSchema>;
@@ -641,7 +641,7 @@ function AmazonCredentialsFormContent({
                 <div className="flex flex-col">
                   <label
                     htmlFor="client_id"
-                    className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
+                    className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
                     Client ID <span className="text-red-500">*</span>
                   </label>
@@ -685,7 +685,7 @@ function AmazonCredentialsFormContent({
                 <div className="flex flex-col">
                   <label
                     htmlFor="client_secret"
-                    className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
+                    className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
                     Client Secret <span className="text-red-500">*</span>
                   </label>
@@ -740,7 +740,7 @@ function AmazonCredentialsFormContent({
                 <div className="flex flex-col">
                   <label
                     htmlFor="seller_id"
-                    className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
+                    className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
                     Seller ID (Merchant Token) <span className="text-red-500">*</span>
                   </label>
@@ -796,7 +796,7 @@ function AmazonCredentialsFormContent({
                 <div className="md:col-span-2 flex flex-col">
                   <label
                     htmlFor="refresh_token"
-                    className="text-[13px] sm:text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
+                    className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
                     Refresh Token (LWA) <span className="text-red-500">*</span>
                   </label>

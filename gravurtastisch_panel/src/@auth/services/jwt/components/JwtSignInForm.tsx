@@ -33,7 +33,7 @@ export const parseUniversalLogin = (
 const emailSchema = z.object({
   email: z
     .string()
-    .min(1, 'Email is required')
+    .min(1, 'Email is required!')
     .refine(
       (val) => {
         if (!val) return false;
@@ -281,7 +281,7 @@ function JwtSignInForm() {
         >
           {/* OTP 6 Digit Inputs */}
           <div className="mb-6">
-            <label className="block text-center text-xs font-semibold uppercase tracking-wider text-slate-500 mb-3">
+            <label className="block text-center text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3">
               Enter 6-Digit Code
             </label>
             <div className="flex justify-center gap-2 sm:gap-2.5">
@@ -401,7 +401,7 @@ function JwtSignInForm() {
 
       {/* Explicit Clean Label to avoid overlap/cut-off */}
       <div className="mb-5">
-        <label className="mb-1.5 block text-xs font-semibold tracking-wide text-slate-700">
+        <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-100">
           Email Address <span className="text-red-500">*</span>
         </label>
 

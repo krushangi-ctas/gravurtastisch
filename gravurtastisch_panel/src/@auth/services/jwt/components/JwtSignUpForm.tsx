@@ -16,13 +16,13 @@ import { useNavigate } from 'react-router';
  */
 const schema = z
 	.object({
-		name: z.string().nonempty('You must enter your name'),
-		email: z.string().email('You must enter a valid email').nonempty('You must enter an email'),
+		name: z.string().nonempty('Name is required!'),
+		email: z.string().email('You must enter a valid email').nonempty('Email is required!'),
 		password: z
 			.string()
-			.nonempty('Please enter your password.')
+			.nonempty('Password is required!')
 			.min(8, 'Password is too short - should be 8 chars minimum.'),
-		passwordConfirm: z.string().nonempty('Password confirmation is required'),
+		passwordConfirm: z.string().nonempty('Password confirmation is required!'),
 		acceptTermsConditions: z.boolean().refine((val) => val === true, 'The terms and conditions must be accepted.')
 	})
 	.refine((data) => data.password === data.passwordConfirm, {

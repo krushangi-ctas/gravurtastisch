@@ -20,6 +20,10 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
   width: `${navbarWidth}px !important`,
   maxWidth: `${navbarWidth}px !important`,
   flexShrink: '0 !important',
+  background: 'linear-gradient(180deg, #edf4fe 0%, #e2edfc 50%, #edf4fe 100%)',
+  ...theme.applyStyles('dark', {
+    background: theme.vars.palette.background.default,
+  }),
   variants: [
     {
       props: ({ open }) => !open,
@@ -66,11 +70,15 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
   ],
 }));
 
-const StyledNavBarMobile = styled(SwipeableDrawer)(() => ({
+const StyledNavBarMobile = styled(SwipeableDrawer)(({ theme }) => ({
   '& .MuiDrawer-paper': {
     minWidth: 235,
     width: 235,
     maxWidth: '85vw',
+    background: 'linear-gradient(180deg, #edf4fe 0%, #e2edfc 50%, #edf4fe 100%)',
+    ...theme.applyStyles('dark', {
+      background: theme.vars.palette.background.paper,
+    }),
   },
 }));
 

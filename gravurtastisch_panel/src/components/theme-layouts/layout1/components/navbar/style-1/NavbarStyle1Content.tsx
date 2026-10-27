@@ -11,8 +11,13 @@ import UserMenu from 'src/components/theme-layouts/components/UserMenu';
 import { useNavbarContext } from '@/components/theme-layouts/components/navbar/contexts/NavbarContext/useNavbarContext';
 
 const Root = styled('div')(({ theme }) => ({
-  backgroundColor: theme.vars.palette.background.default,
+  backgroundColor: '#edf4fe',
+  background: 'linear-gradient(180deg, #edf4fe 0%, #e2edfc 50%, #edf4fe 100%)',
   color: theme.vars.palette.text.primary,
+  ...theme.applyStyles('dark', {
+    backgroundColor: theme.vars.palette.background.default,
+    background: theme.vars.palette.background.default,
+  }),
   '& ::-webkit-scrollbar-thumb': {
     boxShadow: `inset 0 0 0 20px ${'rgba(255, 255, 255, 0.24)'}`,
     ...theme.applyStyles('light', {

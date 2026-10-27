@@ -38,7 +38,7 @@ export const useAllBlogs = (
 /**
  * Hook to retrieve single blog details
  */
-const useBlogDetails = (blogId?: string) => {
+export const useBlogDetails = (blogId?: string) => {
 	return useQuery({
 		queryFn: () => (blogId ? getBlogById(blogId) : Promise.reject('No blogId')),
 		queryKey: [...blogDetailQueryKey, blogId],

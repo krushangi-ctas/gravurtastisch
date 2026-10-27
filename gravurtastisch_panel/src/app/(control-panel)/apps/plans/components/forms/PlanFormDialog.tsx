@@ -84,39 +84,39 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 		const trimmedName = name.trim();
 		if (!trimmedName) {
-			newErrors.name = 'Plan name is required';
+			newErrors.name = 'Plan Name is required!';
 		} else if (trimmedName.length < 2) {
-			newErrors.name = 'Plan name must be at least 2 characters';
-		} else if (trimmedName.length > 50) {
-			newErrors.name = 'Plan name must not exceed 50 characters';
+			newErrors.name = 'Plan Name must be at least 2 characters';
+		} else if (trimmedName.length > 100) {
+			newErrors.name = 'Plan Name must not exceed 100 characters';
 		}
 
 		if (price === '' || price === null || price === undefined) {
-			newErrors.price = 'Price is required';
+			newErrors.price = 'Price is required!';
 		} else if (isNaN(Number(price)) || Number(price) <= 0) {
-			newErrors.price = 'Must be greater than 0';
+			newErrors.price = 'Price must be greater than 0!';
 		} else if (Number(price) > 9999999) {
-			newErrors.price = 'Price cannot exceed €9,999,999';
+			newErrors.price = 'Price cannot exceed 9,999,999';
 		}
 
 		if (marketplace === '' || marketplace === null || marketplace === undefined) {
-			newErrors.marketplace = 'Marketplace count is required';
+			newErrors.marketplace = 'Marketplaces is required!';
 		} else if (isNaN(Number(marketplace)) || Number(marketplace) <= 0) {
-			newErrors.marketplace = 'Must be greater than 0';
+			newErrors.marketplace = 'Marketplaces must be greater than 0!';
 		} else if (!Number.isInteger(Number(marketplace))) {
 			newErrors.marketplace = 'Please enter a valid whole number';
-		} else if (Number(marketplace) > 9999999) {
-			newErrors.marketplace = 'Marketplaces allowed cannot exceed 9,999,999';
+		} else if (Number(marketplace) > 999) {
+			newErrors.marketplace = 'Marketplaces cannot exceed 999';
 		}
 
 		if (requestQuota === '' || requestQuota === null || requestQuota === undefined) {
-			newErrors.requestQuota = 'Request quota is required';
+			newErrors.requestQuota = 'Request Quota is required!';
 		} else if (isNaN(Number(requestQuota)) || Number(requestQuota) <= 0) {
-			newErrors.requestQuota = 'Must be greater than 0';
+			newErrors.requestQuota = 'Request Quota must be greater than 0!';
 		} else if (!Number.isInteger(Number(requestQuota))) {
 			newErrors.requestQuota = 'Please enter a valid whole number';
-		} else if (Number(requestQuota) > 10000000) {
-			newErrors.requestQuota = 'Request quota cannot exceed 10,000,000';
+		} else if (Number(requestQuota) > 9999999) {
+			newErrors.requestQuota = 'Request Quota cannot exceed 9,999,999';
 		}
 
 		if (expireAt) {
@@ -224,7 +224,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					{/* Plan Name */}
 					<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 						<div>
-							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+							<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 								Plan Name <span className="text-red-500">*</span>
 							</label>
 							<TextField
@@ -233,11 +233,11 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								placeholder="e.g., Basic, Professional, Enterprise"
 								value={name}
 								onChange={(e) => {
-									const val = e.target.value.slice(0, 50);
+									const val = e.target.value.slice(0, 100);
 									setName(val);
 									if (errors.name) setErrors((prev) => ({ ...prev, name: undefined }));
 								}}
-								inputProps={{ maxLength: 50 }}
+								inputProps={{ maxLength: 100 }}
 								error={Boolean(errors.name)}
 								helperText={errors.name}
 								variant="outlined"
@@ -256,7 +256,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Price */}
 						<div>
-							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+							<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 								Price (in EUR €) <span className="text-red-500">*</span>
 							</label>
 							<TextField
@@ -276,9 +276,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 									setPrice(val);
 									const num = Number(val);
 									if (val !== '' && (isNaN(num) || num <= 0)) {
-										setErrors((prev) => ({ ...prev, price: 'Must be greater than 0' }));
+										setErrors((prev) => ({ ...prev, price: 'Price must be greater than 0!' }));
 									} else if (num > 9999999) {
-										setErrors((prev) => ({ ...prev, price: 'Price cannot exceed €9,999,999' }));
+										setErrors((prev) => ({ ...prev, price: 'Price cannot exceed 9,999,999' }));
 									} else if (errors.price) {
 										setErrors((prev) => ({ ...prev, price: undefined }));
 									}
@@ -307,7 +307,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Billing Cycle */}
 						<div>
-							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+							<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 								Billing Cycle <span className="text-red-500">*</span>
 							</label>
 							<TextField
@@ -371,14 +371,14 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 						{/* Marketplaces Allowed */}
 						<div>
-							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+							<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 								Marketplace Accounts Allowed <span className="text-red-500">*</span>
 							</label>
 							<TextField
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 1, max: 9999999, step: 1 }}
+								inputProps={{ min: 1, max: 999, step: 1 }}
 								placeholder="e.g., 5"
 								value={marketplace}
 								onKeyDown={(e) => {
@@ -391,9 +391,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 									setMarketplace(val);
 									const num = Number(val);
 									if (val !== '' && (isNaN(num) || num <= 0)) {
-										setErrors((prev) => ({ ...prev, marketplace: 'Must be greater than 0' }));
-									} else if (num > 9999999) {
-										setErrors((prev) => ({ ...prev, marketplace: 'Marketplaces allowed cannot exceed 9,999,999' }));
+										setErrors((prev) => ({ ...prev, marketplace: 'Marketplaces must be greater than 0!' }));
+									} else if (num > 999) {
+										setErrors((prev) => ({ ...prev, marketplace: 'Marketplaces cannot exceed 999' }));
 									} else if (errors.marketplace) {
 										setErrors((prev) => ({ ...prev, marketplace: undefined }));
 									}
@@ -411,20 +411,20 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText={errors.marketplace || 'Maximum connected marketplaces supported under this plan (min: 1, max: 9,999,999)'}
+								helperText={errors.marketplace || 'Maximum connected marketplaces supported under this plan (min: 1, max: 999)'}
 							/>
 						</div>
 
 						{/* Request Quota */}
 						<div>
-							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+							<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 								Monthly Request Quota <span className="text-red-500">*</span>
 							</label>
 							<TextField
 								fullWidth
 								required
 								type="number"
-								inputProps={{ min: 1, max: 10000000, step: 1 }}
+								inputProps={{ min: 1, max: 9999999, step: 1 }}
 								placeholder="e.g., 2000"
 								value={requestQuota}
 								onKeyDown={(e) => {
@@ -435,8 +435,11 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								onChange={(e) => {
 									const val = e.target.value;
 									setRequestQuota(val);
-									if (val !== '' && (isNaN(Number(val)) || Number(val) <= 0)) {
-										setErrors((prev) => ({ ...prev, requestQuota: 'Must be greater than 0' }));
+									const num = Number(val);
+									if (val !== '' && (isNaN(num) || num <= 0)) {
+										setErrors((prev) => ({ ...prev, requestQuota: 'Request Quota must be greater than 0!' }));
+									} else if (num > 9999999) {
+										setErrors((prev) => ({ ...prev, requestQuota: 'Request Quota cannot exceed 9,999,999' }));
 									} else if (errors.requestQuota) {
 										setErrors((prev) => ({ ...prev, requestQuota: undefined }));
 									}
@@ -454,13 +457,13 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 										</InputAdornment>
 									)
 								}}
-								helperText={errors.requestQuota || 'Allowed monthly solicitation / review requests quota (e.g. 2000 requests/month)'}
+								helperText={errors.requestQuota || 'Allowed monthly solicitation / review requests quota (1 - 9,999,999 requests/month)'}
 							/>
 						</div>
 
 						{/* Plan Expiry Date (Optional) */}
 						<div>
-							<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+							<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 								Expire At (Optional)
 							</label>
 							<TextField
@@ -500,7 +503,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 						{/* Status Switch Card with Primary Color */}
 						<div className="bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 shadow-xs flex items-center justify-between">
 							<div>
-								<label className="text-xs font-bold text-gray-800 dark:text-gray-200 block">
+								<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 block">
 									Plan Status
 								</label>
 								<span className="text-xs text-slate-500 dark:text-slate-400">

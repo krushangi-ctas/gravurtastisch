@@ -176,15 +176,15 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 		const newErrors: { blogTitle?: string; shortDescription?: string } = {};
 
 		if (!trimmedTitle) {
-			newErrors.blogTitle = 'Blog title is required';
+			newErrors.blogTitle = 'Blog Title is required!';
 		} else if (trimmedTitle.length < 3) {
-			newErrors.blogTitle = 'Blog title must be at least 3 characters';
-		} else if (trimmedTitle.length > 200) {
-			newErrors.blogTitle = 'Blog title must not exceed 200 characters';
+			newErrors.blogTitle = 'Blog Title must be at least 3 characters';
+		} else if (trimmedTitle.length > 50) {
+			newErrors.blogTitle = 'Blog Title must not exceed 50 characters';
 		}
 
-		if (trimmedShortDesc.length > 500) {
-			newErrors.shortDescription = 'Short description must not exceed 500 characters';
+		if (trimmedShortDesc.length > 200) {
+			newErrors.shortDescription = 'Short Description must not exceed 200 characters';
 		}
 
 		if (Object.keys(newErrors).length > 0) {
@@ -299,7 +299,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 
 						<div className="flex flex-col gap-4">
 							<div>
-								<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+								<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 									Blog Title <span className="text-red-500">*</span>
 								</label>
 								<TextField
@@ -311,7 +311,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 										setBlogTitle(e.target.value);
 										if (errors.blogTitle) setErrors((prev) => ({ ...prev, blogTitle: undefined }));
 									}}
-									inputProps={{ maxLength: 200 }}
+									inputProps={{ maxLength: 50 }}
 									error={Boolean(errors.blogTitle)}
 									helperText={errors.blogTitle}
 									variant="outlined"
@@ -329,7 +329,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 							</div>
 
 							<div>
-								<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+								<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 									Short Description (Excerpt)
 								</label>
 								<TextField
@@ -342,7 +342,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 										setShortDescription(e.target.value);
 										if (errors.shortDescription) setErrors((prev) => ({ ...prev, shortDescription: undefined }));
 									}}
-									inputProps={{ maxLength: 500 }}
+									inputProps={{ maxLength: 200 }}
 									error={Boolean(errors.shortDescription)}
 									helperText={errors.shortDescription}
 									variant="outlined"

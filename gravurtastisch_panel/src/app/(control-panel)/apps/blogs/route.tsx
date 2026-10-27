@@ -3,6 +3,7 @@ import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
 
 const BlogsView = lazy(() => import('./components/views/BlogsView'));
+const BlogFormView = lazy(() => import('./components/views/BlogFormView'));
 
 /**
  * The Blogs app Routes.
@@ -13,12 +14,15 @@ const Route: FuseRouteItemType = {
 	children: [
 		{
 			path: '',
-			children: [
-				{
-					path: '',
-					element: <BlogsView />
-				}
-			]
+			element: <BlogsView />
+		},
+		{
+			path: 'new',
+			element: <BlogFormView />
+		},
+		{
+			path: ':blogId',
+			element: <BlogFormView />
 		}
 	]
 };

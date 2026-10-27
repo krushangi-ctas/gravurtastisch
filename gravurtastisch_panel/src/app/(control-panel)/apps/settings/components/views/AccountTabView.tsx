@@ -44,9 +44,9 @@ const PHONE_CHARS_REGEX = /^[+0-9\s()]+$/;
  */
 const accountSchema = z.object({
   name: z
-    .string({ required_error: 'Full name is required' })
+    .string({ required_error: 'Full name is required!' })
     .trim()
-    .min(1, 'Full name is required')
+    .min(1, 'Full name is required!')
     .min(2, 'Name must be at least 2 characters')
     .max(60, 'Name must be at most 60 characters')
     .regex(
@@ -55,9 +55,9 @@ const accountSchema = z.object({
     ),
   businessName: z.string().optional().or(z.literal('')),
   contact_no: z
-    .string({ required_error: 'Contact number is required' })
+    .string({ required_error: 'Contact number is required!' })
     .trim()
-    .min(1, 'Contact number is required')
+    .min(1, 'Contact number is required!')
     .max(20, 'Contact number cannot exceed 20 characters')
     .regex(
       PHONE_CHARS_REGEX,
@@ -85,10 +85,10 @@ const accountSchema = z.object({
       }
     ),
   email: z
-    .string({ required_error: 'Email is required' })
+    .string({ required_error: 'Email is required!' })
     .trim()
     .email('You must enter a valid email address')
-    .min(1, 'Email is required'),
+    .min(1, 'Email is required!'),
 });
 
 type FormType = z.infer<typeof accountSchema>;
@@ -422,64 +422,64 @@ function AccountTabView() {
             )}
 
             {/* Header Section */}
-            <div className="px-4 sm:px-6 md:px-8 py-4 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50/80 via-white to-primary-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
-                    <FuseSvgIcon size={20}>lucide:circle-user</FuseSvgIcon>
+            <div className="px-5 sm:px-8 py-5 border-b border-slate-100 dark:border-slate-800 bg-linear-to-r from-slate-50/90 via-white to-primary/5 dark:from-slate-900 dark:via-slate-900 dark:to-primary/10">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0 shadow-xs">
+                    <FuseSvgIcon size={22}>lucide:circle-user</FuseSvgIcon>
                   </div>
                   <div>
                     <Typography className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                       Personal Information
                     </Typography>
-                    <Typography className="text-md text-slate-500 dark:text-slate-400">
+                    <Typography className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
                       Update your personal profile details, photo, and contact information.
                     </Typography>
                   </div>
                 </div>
                 <div className="self-start sm:self-auto">
-                  <Chip
-                    label="Active Account"
-                    size="small"
-                    className="bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-semibold border border-emerald-300 dark:border-emerald-700 text-xs px-2.5 py-0.5"
-                  />
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 shadow-xs">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Active Account
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Form Fields Section */}
-            <div className="p-4 sm:p-6 md:p-8 space-y-6">
-              {/* Profile Photo / Avatar Upload Section */}
-              <div className="flex flex-col sm:flex-row items-center gap-4 p-3.5 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/30">
-                <div className="relative group">
+            <div className="p-5 sm:p-8 space-y-6">
+              {/* Profile Photo / Avatar Hero Card */}
+              <div className="p-5 sm:p-6 rounded-2xl border border-slate-200/80 dark:border-slate-800 bg-linear-to-br from-slate-50/70 via-white to-primary/5 dark:from-slate-800/40 dark:via-slate-850 dark:to-primary-950/20 shadow-xs flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div className="relative group shrink-0">
                   <Avatar
                     src={userAvatar ? getImageUrl(userAvatar) : undefined}
                     alt={user?.name || 'Profile Image'}
-                    className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl border-2 border-primary-200 dark:border-primary-800 shadow-xs text-lg sm:text-xl font-bold bg-primary-100 dark:bg-primary-950 text-primary-700 dark:text-primary-300"
-                    variant="rounded"
+                    variant="circular"
+                    className="w-18 h-18 sm:w-20 sm:h-20 border-2 border-primary-200/90 dark:border-primary-800 shadow-xs text-2xl font-bold bg-primary-50 dark:bg-primary-950/70 text-primary-700 dark:text-primary-300 flex items-center justify-center transition-all"
                   >
                     {userInitials}
                   </Avatar>
                   {(isUploadingAvatar || isDeletingAvatar) && (
-                    <div className="absolute inset-0 bg-black/40 rounded-xl flex items-center justify-center">
-                      <FuseSvgIcon size={18} className="text-white animate-spin">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-xs rounded-full flex items-center justify-center">
+                      <FuseSvgIcon size={20} className="text-white animate-spin">
                         heroicons-outline:arrow-path
                       </FuseSvgIcon>
                     </div>
                   )}
                 </div>
 
-                <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2">
+                <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2.5 flex-1 min-w-0">
                   <div>
-                    <Typography className="text-sm font-bold text-slate-900 dark:text-white">
-                      Profile Picture
-                    </Typography>
-                    <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                      Upload a profile avatar. JPG, PNG, or WEBP (Max 5MB).
-                    </Typography>
+                    <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0">
+                      {user?.name || 'Account User'}
+                    </h3>
                   </div>
 
-                  <div className="flex items-center gap-2.5 pt-1">
+                  <Typography className="text-xs text-slate-500 dark:text-slate-400">
+                    Upload a high-resolution avatar photo. JPG, PNG, or WEBP (Max 5MB).
+                  </Typography>
+
+                  <div className="flex items-center gap-2.5 pt-1 flex-wrap justify-center sm:justify-start">
                     <input
                       type="file"
                       ref={fileInputRef}
@@ -489,11 +489,12 @@ function AccountTabView() {
                     />
                     <Button
                       type="button"
-                      variant="outlined"
+                      variant="contained"
+                      color="primary"
                       size="small"
                       disabled={!canEdit || isUploadingAvatar || isDeletingAvatar}
                       onClick={() => fileInputRef.current?.click()}
-                      className="rounded-lg text-xs font-semibold px-3.5 py-1.5 border-primary-300 dark:border-primary-700 text-primary-700 dark:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-950/50 capitalize disabled:opacity-50"
+                      className="normal-case font-semibold text-xs px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all"
                       startIcon={
                         <FuseSvgIcon size={16}>
                           {isUploadingAvatar ? 'heroicons-outline:arrow-path' : 'lucide:upload'}
@@ -509,7 +510,7 @@ function AccountTabView() {
                       size="small"
                       disabled={!canEdit || !userAvatar || isUploadingAvatar || isDeletingAvatar}
                       onClick={handleDeleteAvatar}
-                      className="rounded-lg text-xs font-semibold px-3.5 py-1.5 border border-red-300 dark:border-red-700 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 capitalize disabled:opacity-50"
+                      className="normal-case font-semibold text-xs px-3.5 py-2 rounded-lg border-red-200 dark:border-red-900/60 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 shadow-2xs transition-all disabled:opacity-50"
                       startIcon={
                         <FuseSvgIcon size={16} className="text-red-600 dark:text-red-400">
                           lucide:trash-2
@@ -524,15 +525,15 @@ function AccountTabView() {
 
               <fieldset disabled={!canEdit} className={!canEdit ? 'pointer-events-none opacity-80 border-0 p-0 m-0' : 'border-0 p-0 m-0'}>
 
-              {/* Form Input Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              {/* Form Input Grid (3 columns in a single row) */}
+              <div className={`grid grid-cols-1 ${isSeller ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'} gap-5`}>
                 {/* Name Field */}
                 <div className="flex flex-col">
                   <label
                     htmlFor="name"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Full Name <span className="text-red-500">*</span>
+                    Full Name <span className="text-red-500 font-bold ml-0.5">*</span>
                   </label>
                   <Controller
                     control={control}
@@ -551,9 +552,9 @@ function AccountTabView() {
                           slotProps={{
                             input: {
                               className:
-                                'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl h-11 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
+                                'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
                               startAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
+                                <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
                                   <FuseSvgIcon size={18}>lucide:user</FuseSvgIcon>
                                 </div>
                               ),
@@ -572,7 +573,7 @@ function AccountTabView() {
                       htmlFor="businessName"
                       className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                     >
-                      Business / Brand Name <span className="text-red-500">*</span>
+                      Business / Brand Name <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
                     <Controller
                       control={control}
@@ -591,9 +592,9 @@ function AccountTabView() {
                             slotProps={{
                               input: {
                                 className:
-                                  'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl h-11 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
+                                  'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
                                 startAdornment: (
-                                  <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
+                                  <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
                                     <FuseSvgIcon size={18}>lucide:building-2</FuseSvgIcon>
                                   </div>
                                 ),
@@ -612,7 +613,7 @@ function AccountTabView() {
                     htmlFor="contact_no"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Contact Number <span className="text-red-500">*</span>
+                    Contact Number <span className="text-red-500 font-bold ml-0.5">*</span>
                   </label>
                   <Controller
                     control={control}
@@ -639,9 +640,9 @@ function AccountTabView() {
                           slotProps={{
                             input: {
                               className:
-                                'bg-slate-50/50 dark:bg-slate-800/50 rounded-xl h-11 text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors',
+                                'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
                               startAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
+                                <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
                                   <FuseSvgIcon size={18}>lucide:phone</FuseSvgIcon>
                                 </div>
                               ),
@@ -662,7 +663,10 @@ function AccountTabView() {
                     >
                       Email Address
                     </label>
-                    <span className="text-md text-slate-400 font-medium">Primary Login</span>
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                      <FuseSvgIcon size={12} className="text-slate-400">lucide:lock</FuseSvgIcon>
+                      Primary Login
+                    </span>
                   </div>
                   <Controller
                     control={control}
@@ -681,9 +685,9 @@ function AccountTabView() {
                           slotProps={{
                             input: {
                               className:
-                                'bg-slate-100/70 dark:bg-slate-800/30 rounded-xl h-11 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-not-allowed',
+                                'bg-slate-100/70 dark:bg-slate-800/30 rounded-xl h-11 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-not-allowed border border-slate-200/80 dark:border-slate-700/60',
                               startAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 mr-2 flex items-center">
+                                <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
                                   <FuseSvgIcon size={18}>lucide:mail</FuseSvgIcon>
                                 </div>
                               ),
@@ -701,16 +705,16 @@ function AccountTabView() {
                 </div>
               </div>
 
-              {/* Quick Tips Box */}
-              <div className="rounded-lg border border-primary-100 dark:border-primary-900/50 bg-primary-50/70 dark:bg-primary-950/30 p-3.5 flex items-start gap-3">
-                <div className="text-primary-600 dark:text-primary-400 mt-0.5 shrink-0">
+              {/* Security & Privacy Notice Banner */}
+              <div className="rounded-2xl border border-sky-100 dark:border-sky-900/40 bg-linear-to-r from-sky-50/70 via-blue-50/30 to-indigo-50/20 dark:from-slate-800/60 dark:to-slate-900/60 p-4 sm:p-5 flex items-start gap-4 shadow-xs">
+                <div className="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-400/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
                   <FuseSvgIcon size={20}>lucide:shield-check</FuseSvgIcon>
                 </div>
                 <div>
-                  <Typography className="text-sm font-bold text-primary-950 dark:text-primary-200">
-                    Security & Privacy
+                  <Typography className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                    Security & Privacy Protection
                   </Typography>
-                  <Typography className="text-md text-slate-600 dark:text-slate-400 mt-0.5 leading-relaxed font-medium">
+                  <Typography className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
                     Your profile name and avatar will appear across reports, notifications, and communications. Your data is encrypted and securely stored.
                   </Typography>
                 </div>
@@ -719,20 +723,31 @@ function AccountTabView() {
             </div>
 
             {/* Action Footer */}
-            <div className="px-4 sm:px-6 md:px-8 py-4 bg-slate-50/70 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
-              <Typography className="text-md text-slate-500 dark:text-slate-400 text-center sm:text-left">
-                {!canEdit
-                  ? 'Read-only mode (Save disabled)'
-                  : _.isEmpty(dirtyFields)
-                  ? 'No changes to save'
-                  : 'Unsaved changes detected'}
-              </Typography>
+            <div className="px-5 sm:px-8 py-4 bg-slate-50/80 dark:bg-slate-900/90 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <div className="text-center sm:text-left">
+                {!canEdit ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+                    <FuseSvgIcon size={14}>heroicons-outline:exclamation-circle</FuseSvgIcon>
+                    Read-only mode (Save disabled)
+                  </span>
+                ) : _.isEmpty(dirtyFields) ? (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                    <FuseSvgIcon size={14} className="text-emerald-500">heroicons-outline:check-circle</FuseSvgIcon>
+                    All profile details are up to date
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800">
+                    <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+                    Unsaved changes detected
+                  </span>
+                )}
+              </div>
 
               <Button
                 variant="contained"
                 disabled={!canEdit || _.isEmpty(dirtyFields) || !isValid || isPending}
                 type="submit"
-                className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
+                className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all capitalize text-sm disabled:opacity-50 disabled:shadow-none"
                 startIcon={
                   <FuseSvgIcon size={18}>
                     {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}

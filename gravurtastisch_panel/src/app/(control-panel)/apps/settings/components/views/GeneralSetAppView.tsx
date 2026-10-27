@@ -8,10 +8,10 @@ import { useGeneralSettingMutation } from '../../api/hooks/generalDetailsSetting
 
 const generalSettingSchema = z.object({
   marketplace_id: z.string().optional(),
-  order_status: z.string().nonempty('Order status is required'),
+  order_status: z.string().nonempty('Order status is required!'),
   fba: z.boolean().default(false),
   fbm: z.boolean().default(false),
-  order_matching_rules: z.string().nonempty('Order matching rule is required'),
+  order_matching_rules: z.string().nonempty('Order matching rule is required!'),
   autoSendRequest: z.boolean().default(false),
   hour: z.number().min(0).max(23),
   minute: z.number().min(0).max(59),
