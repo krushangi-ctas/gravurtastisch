@@ -430,7 +430,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 										borderRadius: 2
 									}}
 								>
-									<Typography sx={{ fontSize: 11.5, fontWeight: 700, color: '#475569', mb: 1.25, textTransform: 'uppercase', letterSpacing: 0.6 }}>
+									<Typography className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 										Plan Assignment Summary
 									</Typography>
 									<div className="grid grid-cols-2 gap-2.5 text-xs">

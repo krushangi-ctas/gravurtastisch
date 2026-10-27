@@ -161,13 +161,13 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 		const trimmedName = name.trim().toLowerCase();
 
 		if (!trimmedTitle) {
-			nextErrors.title = 'Section name is required.';
+			nextErrors.title = 'Section name is required!';
 		} else if (trimmedTitle.length < 2) {
 			nextErrors.title = 'Section name must be at least 2 characters.';
 		}
 
 		if (!trimmedName) {
-			nextErrors.name = 'Section path is required.';
+			nextErrors.name = 'Section path is required!';
 		} else if (!/^[a-z0-9_/.-]+$/.test(trimmedName)) {
 			nextErrors.name = 'Section path can only contain lowercase alphanumeric characters, slashes, dashes, or underscores.';
 		}
@@ -647,7 +647,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								{/* Section Basic Details Card */}
 								<div className="bg-white dark:bg-slate-900 border border-gray-200/90 dark:border-slate-800 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Section Name <span className="text-red-500">*</span>
 										</label>
 										<TextField
@@ -673,7 +673,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 									</div>
 
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Section Path <span className="text-red-500">*</span>
 										</label>
 										<TextField

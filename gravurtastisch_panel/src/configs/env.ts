@@ -2,6 +2,7 @@ import { baseBackendApiUrl } from '@/utils/apiFetch';
 
 export const sendOtpUrl = `${baseBackendApiUrl}/auth/send-otp`;
 export const verifyOtpUrl = `${baseBackendApiUrl}/auth/verify-otp`;
+export const logoutUrl = `${baseBackendApiUrl}/auth/logout`;
 export const registerUrl = `${baseBackendApiUrl}/auth/register`;
 export const updateProfileUrl = `${baseBackendApiUrl}/users/update-profile`;
 export const updatePasswordUrl = `${baseBackendApiUrl}/users/update-password`;

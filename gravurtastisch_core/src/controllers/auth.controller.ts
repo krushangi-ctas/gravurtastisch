@@ -4,6 +4,7 @@ const authService = require('../services/auth.service');
 const userService = require('../services/user.service');
 const tokenService = require('../services/token.service');
 const emailService = require('../services/email.service');
+const config = require('../config/config');
 
 const register = catchAsync(async (req, res) => {
   const user = await userService.createUser(req.body);
@@ -15,18 +16,50 @@ const sendOtp = catchAsync(async (req, res) => {
   res.status(status).send({ status, message });
 });
 
+
+
+const getCookieOptions = (maxAgeMs?: number) => {
+  const isProduction = config.env === 'production';
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? 'none' : 'lax',
+    path: '/',
+    ...(maxAgeMs ? { maxAge: maxAgeMs } : {}),
+  };
+};
+
 const verifyOtp = catchAsync(async (req, res) => {
   const { message, status, user, tokens } = await authService.verifyOtp(
     req.body
   );
   if (user && tokens && status === 200) {
+    if (tokens.access?.token) {
+      res.cookie(
+        'jwt_access_token',
+        tokens.access.token,
+        getCookieOptions((config.jwt?.accessExpirationMinutes || 1440) * 60 * 1000)
+      );
+    }
+    if (tokens.refresh?.token) {
+      res.cookie(
+        'jwt_refresh_token',
+        tokens.refresh.token,
+        getCookieOptions((config.jwt?.refreshExpirationDays || 30) * 24 * 60 * 60 * 1000)
+      );
+    }
     return res.status(status).send({ user, tokens, status, message });
   }
   return res.status(status).send({ status, message });
 });
 
 const logout = catchAsync(async (req, res) => {
-  await authService.logout(req.body.refreshToken);
+  res.clearCookie('jwt_access_token', getCookieOptions());
+  res.clearCookie('jwt_refresh_token', getCookieOptions());
+  const tokenToRevoke = req.body?.refreshToken || req.cookies?.jwt_refresh_token;
+  if (tokenToRevoke) {
+    await authService.logout(tokenToRevoke);
+  }
   res.status(httpStatus.NO_CONTENT).send();
 });
 
@@ -40,10 +73,18 @@ const changePassword = catchAsync(async (req, res) => {
 });
 
 const refreshTokens = catchAsync(async (req, res) => {
+  const incomingToken = req.body?.refreshToken || req.cookies?.jwt_refresh_token;
   const { message, status, tokens, user } = await authService.refreshAuth(
-    req.body.refreshToken
+    incomingToken
   );
   if (tokens && status === 200) {
+    if (tokens.access?.token) {
+      res.cookie(
+        'jwt_access_token',
+        tokens.access.token,
+        getCookieOptions((config.jwt?.accessExpirationMinutes || 1440) * 60 * 1000)
+      );
+    }
     return res.status(status).send({ tokens, status, user });
   } else {
     return res.status(status).send({ status, message });

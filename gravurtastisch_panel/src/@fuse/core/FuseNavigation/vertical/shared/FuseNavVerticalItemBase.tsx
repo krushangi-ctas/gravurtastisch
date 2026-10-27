@@ -141,8 +141,12 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
             '&.active': {
               backgroundColor: (theme) =>
                 theme.palette.mode === 'light'
-                  ? `${alpha(theme.palette.primary.main, 0.08)} !important`
+                  ? '#ffffff !important'
                   : `${alpha(theme.palette.primary.main, 0.16)} !important`,
+              boxShadow: (theme) =>
+                theme.palette.mode === 'light'
+                  ? '0 2px 8px rgba(37, 99, 235, 0.08) !important'
+                  : 'none !important',
               color: (theme) => `${theme.palette.primary.main} !important`,
               borderLeft: (theme) => `4px solid ${theme.palette.primary.main} !important`,
               borderTopLeftRadius: '8px !important',
@@ -157,14 +161,14 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
               '&:hover': {
                 backgroundColor: (theme) =>
                   theme.palette.mode === 'light'
-                    ? `${alpha(theme.palette.primary.main, 0.12)} !important`
+                    ? '#ffffff !important'
                     : `${alpha(theme.palette.primary.main, 0.22)} !important`,
               },
             },
             '&:hover': {
               backgroundColor: (theme) =>
                 theme.palette.mode === 'light'
-                  ? 'rgba(0, 0, 0, 0.04)!important'
+                  ? 'rgba(255, 255, 255, 0.65)!important'
                   : 'rgba(255, 255, 255, 0.08)!important',
               transform: 'translateX(2px)',
             },

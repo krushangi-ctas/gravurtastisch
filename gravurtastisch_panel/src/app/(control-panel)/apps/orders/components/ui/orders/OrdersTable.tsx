@@ -1077,11 +1077,6 @@ function OrdersTable({
               fontSize: 11,
               letterSpacing: 0.3,
               textTransform: 'uppercase',
-              color: (t: any) => (t.palette?.mode === 'dark' ? '#e2e8f0' : '#1f2937'),
-              backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1e293b' : '#e5e7eb'),
-              borderTop: '1px solid',
-              borderBottom: '1px solid',
-              borderColor: (t: any) => (t.palette?.mode === 'dark' ? '#334155' : '#d1d5db'),
               whiteSpace: 'nowrap',
               overflow: 'visible',
               textOverflow: 'clip',
@@ -1095,20 +1090,17 @@ function OrdersTable({
                 whiteSpace: 'nowrap',
                 maxWidth: '100%',
               },
-              '& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
-                backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1e293b !important' : '#e5e7eb !important'),
-              },
             },
           },
         }}
         muiTableHeadProps={{
-          className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700',
+          className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
         }}
         muiTableHeadRowProps={{
-          className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700',
+          className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
         }}
         muiTableHeadCellProps={{
-          className: 'bg-gray-200 dark:bg-slate-800 border-t border-b border-gray-300 dark:border-slate-700',
+          className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
         }}
         muiTableContainerProps={{
           className: 'flex-auto custom-table-scrollbar',

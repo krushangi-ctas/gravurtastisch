@@ -3,6 +3,7 @@ import { FuseRouteItemType } from '@fuse/utils/FuseUtils';
 import PermissionGuard from '@/components/PermissionGuard';
 
 const PlansView = lazy(() => import('./components/views/PlansView'));
+const PlanFormView = lazy(() => import('./components/views/PlanFormView'));
 
 /**
  * The Plans app Routes.
@@ -13,12 +14,15 @@ const Route: FuseRouteItemType = {
 	children: [
 		{
 			path: '',
-			children: [
-				{
-					path: '',
-					element: <PlansView />
-				}
-			]
+			element: <PlansView />
+		},
+		{
+			path: 'new',
+			element: <PlanFormView />
+		},
+		{
+			path: ':planId',
+			element: <PlanFormView />
 		}
 	]
 };

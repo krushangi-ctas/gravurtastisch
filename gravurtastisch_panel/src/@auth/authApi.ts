@@ -22,9 +22,10 @@ export async function authRefreshToken(): Promise<Response> {
 /**
  * Sign in with token
  */
-export async function authSignInWithToken(accessToken: string): Promise<any> {
+export async function authSignInWithToken(accessToken?: string): Promise<any> {
+	const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
 	return fetchWithAuth(`${baseBackendApiUrl}/users/sign-in-with-token`, {
-		headers: { Authorization: `Bearer ${accessToken}` }
+		...(headers ? { headers } : {})
 	}).then((data) => ({
 		user: {
 			...data,
@@ -32,7 +33,7 @@ export async function authSignInWithToken(accessToken: string): Promise<any> {
 			_id: data.id,
 			displayName: data.name || data.displayName || data.email
 		},
-		access_token: accessToken
+		access_token: accessToken || ''
 	}));
 }
 

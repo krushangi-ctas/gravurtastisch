@@ -1,18 +1,11 @@
 export async function fetchWithAuth(url: string, options: RequestInit = {}, isFile = false): Promise<any> {
-	let token = localStorage.getItem('jwt_access_token');
-
-	if (token) {
-		token = token.replace(/['"]+/g, '');
-	}
-
 	const isFormData = options.body instanceof FormData;
 
 	const passedAuth = (options.headers as any)?.Authorization || (options.headers as any)?.authorization;
-	const authHeader = passedAuth || (token ? `Bearer ${token}` : '');
 
 	const headers: HeadersInit = {
 		...(options.headers || {}),
-		...(authHeader ? { Authorization: authHeader } : {}),
+		...(passedAuth ? { Authorization: passedAuth } : {}),
 	};
 
 	if (!isFormData && options.body) {
@@ -20,6 +13,7 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}, isFi
 	}
 
 	const config: RequestInit = {
+		credentials: 'include',
 		...options,
 		headers
 	};
@@ -27,6 +21,16 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}, isFi
 	try {
 		const response = await fetch(url, config);
 		if (!response.ok) {
+			if (
+				response.status === 401 &&
+				typeof window !== 'undefined' &&
+				!url.includes('/auth/verify-otp') &&
+				!url.includes('/auth/send-otp') &&
+				!url.includes('/users/sign-in-with-token')
+			) {
+				window.dispatchEvent(new CustomEvent('auth:unauthorized'));
+			}
+
 			let errorData: any = null;
 			try {
 				errorData = await response.json();

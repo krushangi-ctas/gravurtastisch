@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -622,14 +623,15 @@ export default function BlogsView() {
 	const [previewBlog, setPreviewBlog] = useState<Blog | null>(null);
 	const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
 
+	const navigate = useNavigate();
+
 	const handleOpenCreate = () => {
-		setSelectedBlog(null);
-		setFormDialogOpen(true);
+		navigate('/blogs/new');
 	};
 
 	const handleOpenEdit = (blog: Blog) => {
-		setSelectedBlog(blog);
-		setFormDialogOpen(true);
+		const id = (blog._id || blog.id) as string;
+		navigate(`/blogs/${id}`, { state: { blog } });
 	};
 
 	const handleCloseForm = () => {

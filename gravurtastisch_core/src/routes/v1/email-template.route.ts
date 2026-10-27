@@ -1,5 +1,6 @@
 const router = require('express').Router();
 const auth = require('../../middlewares/auth');
+const { requirePermission } = require('../../middlewares/permission');
 const emailTemplateController = require('../../controllers/email-template.controller');
 const validate = require('../../middlewares/validate');
 const emailTemplateValidation = require('../../validations/email-template.validation');
@@ -7,6 +8,7 @@ const emailTemplateValidation = require('../../validations/email-template.valida
 router.post(
   '/add-email-template',
   auth(),
+  // requirePermission('settings', 'create'),
   validate(emailTemplateValidation.addEmailTemplate),
   emailTemplateController.addEmailTemplate
 );
@@ -14,6 +16,7 @@ router.post(
 router.put(
   '/update-email-template/:emailTemplateId/:userId',
   auth(),
+  // requirePermission('settings', 'update'),
   validate(emailTemplateValidation.updateEmailTemplate),
   emailTemplateController.updateEmailTemplate
 );
@@ -21,6 +24,7 @@ router.put(
 router.get(
   '/get-email-templates',
   auth(),
+  // requirePermission('settings', 'view'),
   validate(emailTemplateValidation.getAllEmailTemplate),
   emailTemplateController.getAllEmailTemplate
 );
@@ -28,6 +32,7 @@ router.get(
 router.get(
   '/get-subject-content-list',
   auth(),
+  // requirePermission('settings', 'view'),
   emailTemplateController.getAllEmailTemplateList
 );
 

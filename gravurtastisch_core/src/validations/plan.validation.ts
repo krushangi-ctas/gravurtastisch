@@ -9,14 +9,29 @@ const objectIdValidator = (value, helpers) => {
 
 const createPlan = {
   body: Joi.object().keys({
-    name: Joi.string().required().trim(),
-    price: Joi.number().min(0).required(),
+    name: Joi.string().max(100).required().trim().messages({
+      'any.required': 'Plan Name is required!',
+      'string.empty': 'Plan Name is required!',
+      'string.max': 'Plan Name must not exceed 100 characters',
+    }),
+    price: Joi.number().greater(0).max(9999999).required().messages({
+      'any.required': 'Price is required!',
+      'number.greater': 'Price must be greater than 0!',
+      'number.max': 'Price cannot exceed 9,999,999',
+    }),
     currency: Joi.string().trim().lowercase().allow('', null),
-    marketplace: Joi.number().integer().min(0),
-    marketplce: Joi.number().integer().min(0),
-    request_quota: Joi.number().integer().min(0).required(),
+    marketplace: Joi.number().integer().greater(0).max(999).messages({
+      'number.greater': 'Marketplaces must be greater than 0!',
+      'number.max': 'Marketplaces cannot exceed 999',
+    }),
+    marketplce: Joi.number().integer().greater(0).max(999),
+    request_quota: Joi.number().integer().greater(0).max(9999999).required().messages({
+      'any.required': 'Request Quota is required!',
+      'number.greater': 'Request Quota must be greater than 0!',
+      'number.max': 'Request Quota cannot exceed 9,999,999',
+    }),
     expireAt: Joi.date().iso().allow(null, ''),
-    billingCycle: Joi.number().valid(1, 2, 3).default(1),
+    billingCycle: Joi.number().valid(1, 2, 3, 12).default(1),
     status: Joi.number().valid(0, 1, 2).default(1),
   }).or('marketplace', 'marketplce'),
 };
@@ -43,14 +58,26 @@ const updatePlan = {
   }),
   body: Joi.object()
     .keys({
-      name: Joi.string().trim(),
-      price: Joi.number().min(0),
+      name: Joi.string().max(100).trim().messages({
+        'string.empty': 'Plan Name cannot be empty',
+        'string.max': 'Plan Name must not exceed 100 characters',
+      }),
+      price: Joi.number().greater(0).max(9999999).messages({
+        'number.greater': 'Price must be greater than 0!',
+        'number.max': 'Price cannot exceed 9,999,999',
+      }),
       currency: Joi.string().trim().lowercase().allow('', null),
-      marketplace: Joi.number().integer().min(0),
-      marketplce: Joi.number().integer().min(0),
-      request_quota: Joi.number().integer().min(0),
+      marketplace: Joi.number().integer().greater(0).max(999).messages({
+        'number.greater': 'Marketplaces must be greater than 0!',
+        'number.max': 'Marketplaces cannot exceed 999',
+      }),
+      marketplce: Joi.number().integer().greater(0).max(999),
+      request_quota: Joi.number().integer().greater(0).max(9999999).messages({
+        'number.greater': 'Request Quota must be greater than 0!',
+        'number.max': 'Request Quota cannot exceed 9,999,999',
+      }),
       expireAt: Joi.date().iso().allow(null, ''),
-      billingCycle: Joi.number().valid(1, 2, 3),
+      billingCycle: Joi.number().valid(1, 2, 3, 12),
       status: Joi.number().valid(0, 1, 2),
     })
     .min(1),

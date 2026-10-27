@@ -1,5 +1,6 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -704,14 +705,15 @@ export default function PlansView() {
 		return plansData?.pagination?.totalPages || Math.ceil(totalResults / pagination.pageSize) || 1;
 	}, [plansData, totalResults, pagination.pageSize]);
 
+	const navigate = useNavigate();
+
 	const handleOpenCreate = () => {
-		setSelectedPlan(null);
-		setFormDialogOpen(true);
+		navigate('/plans/new');
 	};
 
 	const handleOpenEdit = (plan: Plan) => {
-		setSelectedPlan(plan);
-		setFormDialogOpen(true);
+		const id = (plan._id || plan.id) as string;
+		navigate(`/plans/${id}`, { state: { plan } });
 	};
 
 	const handleCloseForm = () => {

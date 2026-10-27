@@ -137,7 +137,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 
 		const trimmedName = nameVal.trim();
 		if (!trimmedName) {
-			errs.roleName = 'Role name is required.';
+			errs.roleName = 'Role name is required!';
 		} else if (trimmedName.length < 2) {
 			errs.roleName = 'Role name must be at least 2 characters.';
 		} else if (trimmedName.length > 60) {
@@ -649,7 +649,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								{/* Role Details Card */}
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Role Name <span className="text-red-500">*</span>
 										</label>
 										<TextField
@@ -679,7 +679,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 									</div>
 
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Description
 										</label>
 										<TextField
@@ -723,7 +723,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 
 									<div className="border border-gray-200 rounded-lg overflow-x-auto">
 										<Table size="small">
-											<TableHead className="bg-gray-100">
+											<TableHead className="bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700">
 												<TableRow>
 													<TableCell sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
 														Section

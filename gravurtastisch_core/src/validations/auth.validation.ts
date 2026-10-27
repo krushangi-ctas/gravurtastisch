@@ -30,13 +30,13 @@ const verifyOtp = {
 
 const logout = {
   body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
+    refreshToken: Joi.string().allow('', null),
   }),
 };
 
 const refreshTokens = {
   body: Joi.object().keys({
-    refreshToken: Joi.string().required(),
+    refreshToken: Joi.string().allow('', null),
   }),
 };
 

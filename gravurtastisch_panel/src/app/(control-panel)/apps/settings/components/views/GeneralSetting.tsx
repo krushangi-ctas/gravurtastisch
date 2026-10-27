@@ -160,7 +160,7 @@ function GeneralSetting({
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 {/* Target Order Status */}
                 <div className="flex flex-col">
-                  <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 mb-1.5 block">
+                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                     Order Status
                   </label>
                   <Controller
@@ -199,7 +199,7 @@ function GeneralSetting({
 
                 {/* Fulfillment Channels */}
                 <div className="md:col-span-2 flex flex-col">
-                  <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 mb-1.5 block">
+                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                     Fulfillment Channel
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -312,7 +312,7 @@ function GeneralSetting({
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                   {/* Day Picker */}
                   <div className="flex flex-col">
-                    <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                       Delay (Days)
                     </label>
                     <Controller
@@ -349,7 +349,7 @@ function GeneralSetting({
 
                   {/* Hour */}
                   <div className="flex flex-col">
-                    <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                       Hour
                     </label>
                     <Controller
@@ -380,7 +380,7 @@ function GeneralSetting({
 
                   {/* Minute */}
                   <div className="flex flex-col">
-                    <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                       Minute
                     </label>
                     <Controller
@@ -411,7 +411,7 @@ function GeneralSetting({
 
                   {/* Second */}
                   <div className="flex flex-col">
-                    <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-300 mb-1.5 block">
+                    <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                       Second
                     </label>
                     <Controller
@@ -471,7 +471,7 @@ function GeneralSetting({
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 <div className="flex flex-col">
-                  <label className="text-[13px] font-semibold text-slate-700 dark:text-slate-200 mb-1.5 block">
+                  <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
                     Target Inventory
                   </label>
                   <Controller

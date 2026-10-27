@@ -16,11 +16,11 @@ import FormLabel from '@mui/material/FormLabel';
  * Form Validation Schema
  */
 const schema = z.object({
-	email: z.string().email('You must enter a valid email').nonempty('You must enter an email'),
+	email: z.string().email('You must enter a valid email').nonempty('Email is required!'),
 	password: z
 		.string()
 		.min(8, 'Password is too short - must be at least 8 chars.')
-		.nonempty('Please enter your password.'),
+		.nonempty('Password is required!'),
 	remember: z.boolean().optional()
 });
 

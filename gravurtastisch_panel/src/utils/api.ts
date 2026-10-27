@@ -11,6 +11,7 @@ let globalHeaders: Record<string, string> = {};
 
 export const api: KyInstance = ky.create({
 	prefixUrl: `${API_BASE_URL}/api`,
+	credentials: 'include',
 	hooks: {
 		beforeRequest: [
 			(request) => {

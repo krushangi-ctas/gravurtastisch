@@ -392,10 +392,10 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 		sortBy,
 		...(isSellersMode
 			? {
-					plans: plansParam,
-					from: fromParam,
-					to: toParam
-				}
+				plans: plansParam,
+				from: fromParam,
+				to: toParam
+			}
 			: {})
 	};
 
@@ -493,7 +493,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 		const trimmedName = nameVal.trim();
 		if (!trimmedName) {
-			errs.name = 'Full name is required.';
+			errs.name = 'Full name is required!';
 		} else if (trimmedName.length < 2) {
 			errs.name = 'Full name must be at least 2 characters.';
 		} else if (trimmedName.length > 60) {
@@ -504,7 +504,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 		const trimmedEmail = emailVal.trim();
 		if (!trimmedEmail) {
-			errs.email = 'Email address is required.';
+			errs.email = 'Email address is required!';
 		} else if (trimmedEmail.length > 100) {
 			errs.email = 'Email address cannot exceed 100 characters.';
 		} else if (!EMAIL_REGEX.test(trimmedEmail)) {
@@ -525,7 +525,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 		// Role is only required for Admin Users and Team (not Sellers)
 		if (!isSellersMode && !roleVal) {
-			errs.roleId = 'Please select a role.';
+			errs.roleId = 'Role is required!';
 		}
 
 		return errs;
@@ -548,7 +548,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 		const trimmedName = nameVal.trim();
 		if (!trimmedName) {
-			errs.name = 'Full name is required.';
+			errs.name = 'Full name is required!';
 		} else if (trimmedName.length < 2) {
 			errs.name = 'Full name must be at least 2 characters.';
 		} else if (trimmedName.length > 60) {
@@ -1776,6 +1776,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								minSize: isSellersMode ? 180 : 105,
 								maxSize: isSellersMode ? 210 : 125,
 								muiTableHeadCellProps: {
+									className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
 									sx: {
 										width: isSellersMode ? '190px !important' : '115px !important',
 										minWidth: isSellersMode ? '180px !important' : '105px !important'
@@ -1874,12 +1875,6 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									fontSize: 12,
 									letterSpacing: 'normal',
 									textTransform: 'none',
-									color: (t: any) => (t.palette?.mode === 'dark' ? '#cbd5e1' : '#334155'),
-									backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6'),
-									borderTop: '1px solid',
-									borderBottom: '1px solid',
-									borderColor: (t: any) =>
-										t.palette.mode === 'dark' ? '#374151' : '#e5e7eb',
 									whiteSpace: 'nowrap !important',
 									overflow: 'visible !important',
 									textOverflow: 'clip !important',
@@ -1898,10 +1893,6 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									'& .Mui-TableHeadCell-Content-Labels': {
 										overflow: 'visible !important',
 										whiteSpace: 'nowrap !important'
-									},
-									'& .MuiTableCell-root[data-pinned="true"]:before, & th[data-pinned="true"]:before, & th:before': {
-										backgroundColor: (t: any) =>
-											t.palette?.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important'
 									}
 								}
 							}
@@ -2206,7 +2197,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 							>
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Full Name <span className="text-red-500">*</span>
 										</label>
 										<TextField
@@ -2240,7 +2231,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									</div>
 
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Email Address <span className="text-red-500">*</span>
 										</label>
 										<TextField
@@ -2275,7 +2266,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									</div>
 
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Phone Number
 										</label>
 										<TextField
@@ -2321,7 +2312,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 									{!isSellersMode && (
 										<div>
-											<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 												Role <span className="text-red-500">*</span>
 											</label>
 											<FormControl fullWidth size="small" required error={!!createErrors.roleId}>
@@ -2466,7 +2457,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 							>
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Full Name <span className="text-red-500">*</span>
 										</label>
 										<TextField
@@ -2496,7 +2487,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									</div>
 
 									<div>
-										<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Phone Number
 										</label>
 										<TextField
@@ -2547,7 +2538,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 									{!isSellersMode && (
 										<div>
-											<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 												Role
 											</label>
 											<FormControl fullWidth size="small">
@@ -2589,7 +2580,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									{isSellersMode && (
 										<>
 											<div>
-												<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+												<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 													Brand Name
 												</label>
 												<TextField
@@ -2620,7 +2611,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 											{(isSuperAdmin || selectedUser?.userType === 'seller') && (
 												<>
 													<div>
-														<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+														<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 															Maximum Active Marketplaces
 														</label>
 														<TextField
@@ -2661,7 +2652,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 													</div>
 
 													<div>
-														<label className="text-[11px] font-bold tracking-wider text-slate-700 dark:text-slate-300 uppercase mb-1.5 block">
+														<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 															Monthly Review Request Quota
 														</label>
 														<TextField

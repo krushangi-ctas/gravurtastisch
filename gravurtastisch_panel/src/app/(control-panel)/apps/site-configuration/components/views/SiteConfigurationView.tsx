@@ -57,7 +57,7 @@ const isValidPostalCode = (val?: string) => {
 const siteConfigSchema = z.object({
 	company: z.object({
 		name: z
-			.string({ required_error: 'Company name is required' })
+			.string({ required_error: 'Company name is required!' })
 			.trim()
 			.min(2, 'Company name must be at least 2 characters')
 			.max(100, 'Company name must not exceed 100 characters'),
@@ -329,7 +329,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 	};
 
 	const actionButtons = (
-		<div className="flex items-center gap-2 w-full lg:w-auto justify-start sm:justify-end flex-wrap sm:flex-nowrap shrink-0">
+		<div className="flex items-center gap-2 shrink-0">
 			<Tooltip title="Reload configuration" arrow>
 				<button
 					type="button"
@@ -346,33 +346,6 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 					</FuseSvgIcon>
 				</button>
 			</Tooltip>
-
-			<button
-				type="button"
-				onClick={handleReset}
-				disabled={!canMutate || !isDirty || updateMutation.isPending}
-				style={{ height: '32px' }}
-				className="h-8 flex-1 sm:flex-initial px-3 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 disabled:opacity-40 disabled:cursor-not-allowed whitespace-nowrap"
-			>
-				<span>Discard Changes</span>
-			</button>
-
-			<button
-				type="button"
-				onClick={handleSubmit(onSubmit)}
-				disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
-				style={{ height: '32px' }}
-				className="h-8 flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg shadow-xs transition-all cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
-			>
-				{updateMutation.isPending ? (
-					<CircularProgress size={14} color="inherit" />
-				) : (
-					<FuseSvgIcon size={15} className="text-white">
-						lucide:save
-					</FuseSvgIcon>
-				)}
-				<span>{updateMutation.isPending ? 'Saving...' : 'Save Configuration'}</span>
-			</button>
 		</div>
 	);
 
@@ -459,7 +432,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
 									{/* Company Name */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Company Name <span className="text-red-500">*</span>
 										</label>
 										<Controller
@@ -492,7 +465,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Website URL */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Website URL
 										</label>
 										<Controller
@@ -525,7 +498,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Tagline */}
 									<div className="md:col-span-2">
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Tagline
 										</label>
 										<Controller
@@ -558,7 +531,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* About / Description */}
 									<div className="md:col-span-2">
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											About / Description
 										</label>
 										<Controller
@@ -585,7 +558,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Copyright Text */}
 									<div className="md:col-span-2">
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Copyright Text
 										</label>
 										<Controller
@@ -642,7 +615,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
 									{/* Email */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Official Email Address
 										</label>
 										<Controller
@@ -675,7 +648,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Phone */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Phone Number
 										</label>
 										<Controller
@@ -708,7 +681,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Full Address */}
 									<div className="md:col-span-2">
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Street Address
 										</label>
 										<Controller
@@ -741,7 +714,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* City */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											City
 										</label>
 										<Controller
@@ -767,7 +740,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* State */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											State / Province
 										</label>
 										<Controller
@@ -793,7 +766,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Country */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Country
 										</label>
 										<Controller
@@ -819,7 +792,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Postal Code */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Postal / ZIP Code
 										</label>
 										<Controller
@@ -845,7 +818,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Working Hours */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Working Hours
 										</label>
 										<Controller
@@ -878,7 +851,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Timezone */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Default Timezone
 										</label>
 										<Controller
@@ -935,7 +908,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								<div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 sm:gap-4">
 									{/* Facebook */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Facebook
 										</label>
 										<Controller
@@ -968,7 +941,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* Instagram */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											Instagram
 										</label>
 										<Controller
@@ -1001,7 +974,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* LinkedIn */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											LinkedIn
 										</label>
 										<Controller
@@ -1034,7 +1007,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 									{/* YouTube */}
 									<div>
-										<label className="text-[12px] font-semibold text-slate-700 dark:text-slate-300 mb-1 block">
+										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 											YouTube
 										</label>
 										<Controller
