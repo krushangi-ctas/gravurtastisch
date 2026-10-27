@@ -24,7 +24,7 @@ const navigationConfig: FuseNavItemType[] = [
 			},
 			{
 				id: 'team-management',
-				title: 'Team Management',
+				title: 'Team',
 				type: 'item',
 				icon: 'lucide:users',
 				url: '/team/members',

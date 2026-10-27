@@ -298,7 +298,30 @@ function AccountTabView() {
   const remainingRequests = Math.max(0, maxQuota - usedRequests);
   const usagePercent = Math.min(100, Math.round((usedRequests / (maxQuota || 1)) * 100));
 
-  const expiryDate = paidPlan?.expireAt;
+  const expiryDate =
+    paidPlan?.expireAt ||
+    paidPlan?.expiresAt ||
+    (typeof user?.currentPlanId === 'object' ? user?.currentPlanId?.expireAt : null);
+
+  const hasExpiry = Boolean(expiryDate && moment(expiryDate).isValid());
+  const expiryMoment = hasExpiry ? moment(expiryDate) : null;
+  const isExpired = expiryMoment ? expiryMoment.isBefore(moment(), 'day') : false;
+  const daysLeft = expiryMoment ? expiryMoment.diff(moment(), 'days') : null;
+
+  const formattedExpiryDate = hasExpiry
+    ? expiryMoment!.format('DD MMM YYYY')
+    : 'No Expiration';
+
+  const expirySubtitle = hasExpiry
+    ? isExpired
+      ? 'Plan has expired'
+      : daysLeft === 0
+      ? 'Expires today'
+      : daysLeft === 1
+      ? 'Expires tomorrow'
+      : `${daysLeft} days remaining`
+    : 'Continuous access';
+
   const expiryDateText = expiryDate
     ? `Renews / Expires: ${moment(expiryDate).format('DD MMM YYYY')}`
     : 'Auto-renews per cycle';
@@ -756,8 +779,8 @@ function AccountTabView() {
           </div>
 
           <div className="p-4 sm:p-6 md:p-8 space-y-6">
-            {/* Top Stats Grid: Active Plan Details */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Top Stats Grid: Active Plan Details (4 Cards) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {/* Plan Card */}
               <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
                 <div className="flex items-center justify-between mb-2">
@@ -790,7 +813,7 @@ function AccountTabView() {
                   {cycleText}
                 </Typography>
                 <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  {expiryDateText}
+                  Auto-renews per cycle
                 </Typography>
               </div>
 
@@ -809,6 +832,24 @@ function AccountTabView() {
                 </Typography>
                 <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-1">
                   Amazon store channels allowed
+                </Typography>
+              </div>
+
+              {/* 4th Card: Expires At (Light Red Background) */}
+              <div className="p-4 rounded-xl border border-red-200/80 dark:border-red-900/60 bg-red-50/80 dark:bg-red-950/30">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">
+                    Expires At
+                  </span>
+                  <FuseSvgIcon size={18} className="text-red-600 dark:text-red-400">
+                    lucide:calendar-clock
+                  </FuseSvgIcon>
+                </div>
+                <Typography className="text-base font-bold text-red-950 dark:text-red-100 truncate">
+                  {formattedExpiryDate}
+                </Typography>
+                <Typography className="text-xs font-semibold text-red-700/90 dark:text-red-400/90 mt-1 truncate">
+                  {expirySubtitle}
                 </Typography>
               </div>
             </div>
