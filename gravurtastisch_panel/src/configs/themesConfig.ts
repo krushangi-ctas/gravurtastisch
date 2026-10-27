@@ -140,14 +140,14 @@ const themesConfig: FuseThemesType = {
 			primary: { main: '#0032ab', light: '#2563eb', dark: '#00227a', contrastText: '#FFFFFF' },
 			secondary: { main: '#155dfc', light: '#3080ff', dark: '#0032ab', contrastText: '#FFFFFF' },
 			text: { primary: '#0f172a', secondary: '#475569', disabled: '#94a3b8' },
-			background: { default: '#edf4fe', paper: '#edf4fe' },
-			divider: '#d2e3f8',
+			background: { default: neutralsLightTheme.grey[200], paper: neutralsLightTheme.grey[200] },
+			divider: neutralsLightTheme.grey[300],
 			action: {
 				active: '#334155',
 				hover: 'rgba(255, 255, 255, 0.65)',
 				selected: '#ffffff',
 				disabled: '#cbd5e1',
-				disabledBackground: '#edf4fe',
+				disabledBackground: neutralsLightTheme.grey[200],
 				focus: '#ffffff'
 			}
 		}

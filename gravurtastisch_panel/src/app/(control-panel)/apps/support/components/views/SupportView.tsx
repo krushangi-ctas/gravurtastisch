@@ -158,25 +158,9 @@ function SupportContent({
 					const initials = val !== 'N/A' ? val.slice(0, 2).toUpperCase() : 'U';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-							<Box
-								sx={{
-									width: 22,
-									height: 22,
-									borderRadius: '50%',
-									bgcolor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.15)' : 'rgba(0, 50, 171, 0.08)',
-									color: (t) => t.palette.mode === 'dark' ? '#60A5FA' : '#0032ab',
-									border: '1px solid',
-									borderColor: (t) => t.palette.mode === 'dark' ? 'rgba(59, 130, 246, 0.3)' : 'rgba(0, 50, 171, 0.2)',
-									display: 'flex',
-									alignItems: 'center',
-									justifyContent: 'center',
-									fontSize: '9.5px',
-									fontWeight: 700,
-									shrink: 0,
-								}}
-							>
+							<span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800">
 								{initials}
-							</Box>
+							</span>
 							<Tooltip title={val} arrow>
 								<Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
 									{val}
@@ -196,19 +180,7 @@ function SupportContent({
 					const val = cell.getValue<string>();
 					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>N/A</Typography>;
 					return (
-						<Box
-							sx={{
-								display: 'inline-flex',
-								alignItems: 'center',
-								gap: 0.75,
-								px: 1,
-								py: 0.35,
-								borderRadius: '6px',
-								bgcolor: (t) => (t.palette.mode === 'dark' ? 'rgba(147, 51, 234, 0.25)' : '#F3E8FF'),
-								color: (t) => (t.palette.mode === 'dark' ? '#C084FC' : '#7E22CE'),
-								maxWidth: '100%'
-							}}
-						>
+						<div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md max-w-full bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800">
 							<Tooltip title={val} arrow>
 								<Typography
 									component="span"
@@ -285,39 +257,18 @@ function SupportContent({
 					const isResolved = row.original.status === 'resolved';
 					return (
 						<Tooltip title={isResolved ? 'Status: Resolved' : 'Status: Pending'} arrow>
-							<Box
-								sx={{
-									display: 'inline-flex',
-									alignItems: 'center',
-									gap: 0.5,
-									px: 1.25,
-									py: 0.3,
-									borderRadius: '6px',
-									fontSize: 11.5,
-									fontWeight: 400,
-									height: 24,
-									boxSizing: 'border-box',
-									bgcolor: (t) =>
-										isResolved
-											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.22)' : '#DCFCE7'
-											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.22)' : '#FEF3C7',
-									color: (t) =>
-										isResolved
-											? t.palette.mode === 'dark' ? '#4ADE80' : '#15803D'
-											: t.palette.mode === 'dark' ? '#FBBF24' : '#B45309',
-									border: '1px solid',
-									borderColor: (t) =>
-										isResolved
-											? t.palette.mode === 'dark' ? 'rgba(34, 197, 94, 0.45)' : '#86EFAC'
-											: t.palette.mode === 'dark' ? 'rgba(245, 158, 11, 0.45)' : '#FCD34D',
-									lineHeight: 1,
-								}}
+							<div
+								className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${
+									isResolved
+										? 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800'
+										: 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800'
+								}`}
 							>
 								<FuseSvgIcon size={13}>
 									{isResolved ? 'heroicons-outline:check-circle' : 'lucide:clock'}
 								</FuseSvgIcon>
 								<span>{isResolved ? 'Resolved' : 'Pending'}</span>
-							</Box>
+							</div>
 						</Tooltip>
 					);
 				}
@@ -335,16 +286,9 @@ function SupportContent({
 					if (!m.isValid()) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
-							<Typography
-								sx={{
-									fontSize: 12,
-									fontWeight: 400,
-									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
-									whiteSpace: 'nowrap'
-								}}
-							>
+							<span className="text-xs font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">
 								{m.format('DD-MM-YYYY hh:mm A')}
-							</Typography>
+							</span>
 						</Tooltip>
 					);
 				}
@@ -519,8 +463,7 @@ function SupportContent({
 							overflowX: 'auto',
 							overflowY: 'auto',
 							WebkitOverflowScrolling: 'touch',
-							backgroundColor: (theme: any) =>
-								theme.palette?.mode === 'dark' ? '#0f172a' : '#ffffff',
+							backgroundColor: 'background.paper',
 							'&::-webkit-scrollbar': { height: 8, width: 8 },
 							'&::-webkit-scrollbar-track': {
 								backgroundColor: 'background.default',

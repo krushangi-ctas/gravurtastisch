@@ -20,7 +20,7 @@ function Logo(props: LogoProps) {
 	return (
 		<Root className={clsx('flex w-full items-center justify-center', className)}>
 			<img
-				className="h-12 w-auto max-w-[195px] object-contain block mx-auto"
+				className="h-12 w-auto max-w-[195px] object-contain block mx-auto dark:brightness-0 dark:invert"
 				src="/gravurtastich.png"
 				alt="Gravurtastisch"
 			/>

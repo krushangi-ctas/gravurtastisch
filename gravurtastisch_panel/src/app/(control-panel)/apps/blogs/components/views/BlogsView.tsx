@@ -264,16 +264,9 @@ function BlogsContent({
 					const m = moment(val);
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
-							<Typography
-								sx={{
-									fontSize: 12,
-									fontWeight: 400,
-									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
-									whiteSpace: 'nowrap'
-								}}
-							>
+							<span className="text-xs font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">
 								{m.format('DD-MM-YYYY hh:mm A')}
-							</Typography>
+							</span>
 						</Tooltip>
 					);
 				}
@@ -425,8 +418,7 @@ function BlogsContent({
 							overflowX: 'auto',
 							overflowY: 'auto',
 							WebkitOverflowScrolling: 'touch',
-							backgroundColor: (theme: any) =>
-								theme.palette?.mode === 'dark' ? '#0f172a' : '#ffffff',
+							backgroundColor: 'background.paper',
 							'&::-webkit-scrollbar': { height: 8, width: 8 },
 							'&::-webkit-scrollbar-track': {
 								backgroundColor: 'background.default',
@@ -462,7 +454,6 @@ function BlogsContent({
 									size="small"
 									onClick={() => onPreviewBlog(row.original)}
 									className="text-amber-500 hover:text-amber-600 p-1"
-									sx={{ color: '#eab308', '&:hover': { color: '#ca8a04' } }}
 								>
 									<FuseSvgIcon size={18}>heroicons-outline:eye</FuseSvgIcon>
 								</IconButton>

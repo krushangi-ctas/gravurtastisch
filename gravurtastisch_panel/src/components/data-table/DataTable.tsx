@@ -175,11 +175,9 @@ function DataTable<TData>({
           className:
             'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 overflow-x-auto',
           sx: {
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6',
+            backgroundColor: 'background.default',
             borderTop: '1px solid',
-            borderColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#374151' : '#e5e7eb',
+            borderColor: 'divider',
             flexShrink: 0,
             minHeight: '46px !important',
             height: '46px !important',
@@ -209,8 +207,7 @@ function DataTable<TData>({
             '& .MuiTablePagination-selectLabel': {
               fontSize: { xs: '11px', sm: '13px' },
               fontWeight: 600,
-              color: (theme: Theme) =>
-                theme.palette.mode === 'dark' ? '#e2e8f0' : '#1f2937',
+              color: 'text.primary',
               margin: '0 !important',
               lineHeight: '1.2 !important',
               display: 'inline-flex',
@@ -258,8 +255,8 @@ function DataTable<TData>({
               alignItems: 'center',
               justifyContent: 'center',
               '&.Mui-selected': {
-                backgroundColor: '#0032ab !important',
-                color: '#ffffff !important',
+                backgroundColor: 'primary.main',
+                color: 'primary.contrastText',
                 fontWeight: 600,
               },
             },
@@ -283,8 +280,7 @@ function DataTable<TData>({
             minHeight: 0,
             overflowX: 'auto',
             WebkitOverflowScrolling: 'touch',
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+            backgroundColor: 'background.paper',
           },
         },
         enableStickyHeader: true,
@@ -311,8 +307,7 @@ function DataTable<TData>({
             minWidth: { xs: '160px', sm: '220px', md: '280px' },
             minHeight: '32px !important',
             '& .MuiInputBase-root': {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff',
+              backgroundColor: 'background.paper',
             },
             '& input': {
               fontStyle: 'italic',
@@ -320,7 +315,7 @@ function DataTable<TData>({
             },
             '& input::placeholder': {
               fontStyle: 'italic',
-              color: '#94a3b8',
+              color: 'text.disabled',
               opacity: 1,
             },
           },
@@ -343,7 +338,7 @@ function DataTable<TData>({
             },
             '& input::placeholder': {
               fontStyle: 'italic',
-              color: '#94a3b8',
+              color: 'text.disabled',
               opacity: 1,
             },
           },
@@ -363,23 +358,14 @@ function DataTable<TData>({
               borderColor: 'divider',
             },
             '& .MuiTableRow-root:hover': {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937 !important'
-                  : '#f3f4f6 !important',
+              backgroundColor: 'action.hover',
               transition: 'background-color 0.15s ease',
             },
             '& .MuiTableRow-root:hover td': {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937 !important'
-                  : '#f3f4f6 !important',
+              backgroundColor: 'action.hover',
             },
             '& .MuiTableRow-root:hover td:before': {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937 !important'
-                  : '#f3f4f6 !important',
+              backgroundColor: 'action.hover',
             },
             '& .MuiTableRow-root:hover td:after': {
               backgroundColor: 'transparent !important',
@@ -403,8 +389,7 @@ function DataTable<TData>({
         muiTableBodyRowProps: ({ row, table }) => {
           return {
             sx: {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark' ? '#0f172a !important' : '#ffffff !important',
+              backgroundColor: 'background.paper',
               opacity: 1,
               boxShadow: 'none',
               minHeight: '48px',
@@ -412,14 +397,10 @@ function DataTable<TData>({
               borderColor: 'divider',
               transition: 'background-color 0.15s ease',
               '& td, & td:before': {
-                backgroundColor: (theme: Theme) =>
-                  theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+                backgroundColor: 'background.paper',
               },
               '&:hover, &:hover td, &:hover td:before': {
-                backgroundColor: (theme: Theme) =>
-                  theme.palette.mode === 'dark'
-                    ? '#1f2937 !important'
-                    : '#f3f4f6 !important',
+                backgroundColor: 'action.hover',
               },
               '&:hover td:after': {
                 backgroundColor: 'transparent !important',
@@ -472,10 +453,10 @@ function DataTable<TData>({
           },
         }),
         mrtTheme: (theme) => ({
-          baseBackgroundColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          baseBackgroundColor: theme.palette.background.paper,
           menuBackgroundColor: theme.palette.background.paper,
-          pinnedRowBackgroundColor: theme.palette.mode === 'dark' ? '#1f2937' : '#f3f4f6',
-          pinnedColumnBackgroundColor: theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          pinnedRowBackgroundColor: theme.palette.background.default,
+          pinnedColumnBackgroundColor: theme.palette.background.paper,
         }),
         muiTableBodyCellProps: {
           sx: {
@@ -520,8 +501,7 @@ function DataTable<TData>({
         ...(defaults.muiTableProps || {}),
         ...(rest.muiTableProps || {}),
         sx: {
-          backgroundColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          backgroundColor: 'background.paper',
           ...((defaults.muiTableProps as any)?.sx || {}),
           ...((rest.muiTableProps as any)?.sx || {}),
           '& .MuiTableHead-root, & .MuiTableHead-root .MuiTableCell-root': {
@@ -541,8 +521,7 @@ function DataTable<TData>({
         sx: {
           borderRadius: '0px !important',
           boxShadow: 'none !important',
-          backgroundColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          backgroundColor: 'background.paper',
           ...((defaults.muiTablePaperProps as any)?.sx || {}),
           ...((rest.muiTablePaperProps as any)?.sx || {}),
         },
@@ -552,8 +531,7 @@ function DataTable<TData>({
         ...(rest.muiTableContainerProps || {}),
         className: 'flex-auto custom-table-scrollbar',
         sx: {
-          backgroundColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+          backgroundColor: 'background.paper',
           ...((defaults.muiTableContainerProps as any)?.sx || {}),
           ...((rest.muiTableContainerProps as any)?.sx || {}),
         },
@@ -577,17 +555,12 @@ function DataTable<TData>({
             borderBottom: '1px solid',
             borderColor: 'divider',
             transition: 'background-color 0.15s ease',
-            backgroundColor: (theme: Theme) =>
-              theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+            backgroundColor: 'background.paper',
             '& td, & td:before': {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark' ? '#0f172a' : '#ffffff',
+              backgroundColor: 'background.paper',
             },
             '&:hover, &:hover td, &:hover td:before': {
-              backgroundColor: (theme: Theme) =>
-                theme.palette.mode === 'dark'
-                  ? '#1f2937 !important'
-                  : '#f3f4f6 !important',
+              backgroundColor: 'action.hover',
             },
             '&:hover td:after': {
               backgroundColor: 'transparent !important',
@@ -628,13 +601,9 @@ function DataTable<TData>({
         sx: {
           ...((defaults.muiBottomToolbarProps as any)?.sx || {}),
           ...((rest.muiBottomToolbarProps as any)?.sx || {}),
-          backgroundColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important',
-          background: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#1f2937 !important' : '#f3f4f6 !important',
+          backgroundColor: 'background.default',
           borderTop: '1px solid',
-          borderColor: (theme: Theme) =>
-            theme.palette.mode === 'dark' ? '#374151 !important' : '#e5e7eb !important',
+          borderColor: 'divider',
           flexShrink: 0,
           marginTop: 'auto',
           position: 'sticky',

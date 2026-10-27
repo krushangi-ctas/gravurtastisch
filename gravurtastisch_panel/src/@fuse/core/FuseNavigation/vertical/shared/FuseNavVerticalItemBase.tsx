@@ -122,6 +122,39 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
     return null;
   }
 
+  const isItemActive = useMemo(() => {
+    if (item.active) return true;
+    if (!pathname || !item.url) return false;
+
+    // Exact match
+    if (pathname === item.url) return true;
+
+    // Admin user-management tabs: Users, Section, Role
+    if (item.id === 'user-management' || item.url === '/user-management/users') {
+      return (
+        pathname.startsWith('/user-management') ||
+        pathname.startsWith('/sections') ||
+        pathname.startsWith('/roles') ||
+        pathname.startsWith('/users')
+      );
+    }
+
+    // Seller team-management tabs: Team/Members, Section, Role
+    if (item.id === 'team-management' || item.url === '/team/members') {
+      return pathname.startsWith('/team');
+    }
+
+    // General prefix match for nested routes (e.g. /sellers/*, /support/*, /blogs/*, /settings/*)
+    if (item.url !== '/') {
+      const baseUrl = item.url.split('?')[0].replace(/\/$/, '');
+      if (pathname === baseUrl || pathname.startsWith(`${baseUrl}/`)) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [item.active, item.id, item.url, pathname]);
+
   return (
     <>
       {(!isGroup || Boolean(item.title)) && (
@@ -129,7 +162,7 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
           component={buttonComponent}
           className={clsx(
             'mb-1 flex w-full items-center justify-start gap-3 rounded-lg py-2 px-3 transition-all duration-200 hover:shadow-sm',
-            item.active && 'active',
+            (item.active || isItemActive) && 'active',
             item.subtitle && 'items-start',
             className,
             isGroup && 'my-2',
