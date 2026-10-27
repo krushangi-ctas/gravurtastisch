@@ -40,6 +40,10 @@ app.use(express.json({ limit: '500mb' }));
 // parse urlencoded request body
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 
+// parse cookies from request headers
+const cookieParser = require('cookie-parser');
+app.use(cookieParser());
+
 // sanitize request data
 app.use(mongoSanitize());
 
@@ -47,7 +51,11 @@ app.use(mongoSanitize());
 app.use(compression());
 
 const corsOptions = {
-  origin: '*',
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps, curl) or any browser origin
+    if (!origin) return callback(null, true);
+    callback(null, origin);
+  },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS', 'HEAD'],
   allowedHeaders: [
     'Origin',
@@ -62,7 +70,7 @@ const corsOptions = {
     'X-Keep-Alive-Client',
   ],
   exposedHeaders: ['Content-Range', 'X-Content-Range', 'Authorization'],
-  credentials: false,
+  credentials: true,
   maxAge: 86400,
 };
 
@@ -72,7 +80,13 @@ app.options('*', cors(corsOptions));
 
 // Explicit CORS headers and preflight interceptor
 app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  if (origin) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  res.header('Access-Control-Allow-Credentials', 'true');
   res.header(
     'Access-Control-Allow-Methods',
     'GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD'

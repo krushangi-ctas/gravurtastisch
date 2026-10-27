@@ -5,36 +5,35 @@
  * and never hardcoded in component files.
  */
 
-const getBaseUrl = (): string => {
+const getBaseUrl = (): any => {
   const envUrl = (
     import.meta.env.VITE_API_BASE_URL ||
     import.meta.env.VITE_API_BACKEND_BASE_URL ||
     ""
   ).trim();
 
-  if (typeof window !== "undefined") {
-    const host = window.location.hostname;
-    if (host === "localhost" || host === "127.0.0.1") {
-      if (envUrl) {
-        const clean = envUrl.replace(/\/+$/, "");
-        return clean.endsWith("/v1") ? clean.slice(0, -3) : clean;
-      }
-      return "http://localhost:7051";
-    }
+  // if (typeof window !== "undefined") {
+  //   const host = window.location.hostname;
+  //   if (host === "localhost" || host === "127.0.0.1") {
+  //     if (envUrl) {
+  //       const clean = envUrl.replace(/\/+$/, "");
+  //       return clean.endsWith("/v1") ? clean.slice(0, -3) : clean;
+  //     }
+  //     return "http://localhost:7051";
+  //   }
 
-    if (
-      /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host) ||
-      host.endsWith(".local")
-    ) {
-      return `http://${host}:7051`;
-    }
-  }
+  //   if (
+  //     /^(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[0-1])\.)/.test(host) ||
+  //     host.endsWith(".local")
+  //   ) {
+  //     return `http://${host}:7051`;
+  //   }
+  // }
 
   if (envUrl) {
     const clean = envUrl.replace(/\/+$/, "");
     return clean.endsWith("/v1") ? clean.slice(0, -3) : clean;
   }
-
   if (
     typeof window !== "undefined" &&
     window.location.hostname !== "localhost" &&
@@ -50,9 +49,10 @@ const BASE_URL = getBaseUrl();
 
 /** The v1 prefix used by every backend route */
 export const API_V1 = `${BASE_URL}/v1`;
+import { getCookie } from "./cookies";
 
 /**
- * Thin wrapper around `fetch` that sets JSON headers by default.
+ * Thin wrapper around `fetch` that sets JSON headers and sends secure cookies by default.
  * Returns the parsed JSON body on success or throws an Error with
  * the server's message on non-2xx responses.
  */
@@ -61,11 +61,14 @@ export async function apiFetch<T = unknown>(
   init: RequestInit = {}
 ): Promise<T> {
   const isFormData = init.body instanceof FormData;
+  const token = getCookie("jwt_access_token") || getCookie("token");
 
   const response = await fetch(`${BASE_URL}${path}`, {
     ...init,
+    ...(init.credentials ? { credentials: init.credentials } : token ? { credentials: "include" } : {}),
     headers: {
       ...(isFormData ? {} : { "Content-Type": "application/json" }),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(init.headers ?? {}),
     },
   });

@@ -3,11 +3,10 @@ import { FuseAuthProviderComponentProps, FuseAuthProviderState } from '@fuse/cor
 import { authRefreshToken, authSignInWithToken, authUpdateDbUser } from '@auth/authApi';
 import { User } from '../../user';
 import { removeGlobalHeaders, setGlobalHeaders } from '@/utils/api';
-import { isTokenValid } from './utils/jwtUtils';
 import JwtAuthContext from '@auth/services/jwt/JwtAuthContext';
 import { JwtAuthContextType } from '@auth/services/jwt/JwtAuthContext';
 import { HTTPError } from 'ky';
-import { verifyOtp, register } from '@auth/api';
+import { verifyOtp, register, logout } from '@auth/api';
 import { queryClient } from '@/app/queryClient';
 
 export type JwtSignInPayload = {
@@ -19,34 +18,6 @@ export type JwtSignUpPayload = {
 	name: string;
 	email: string;
 	password: string;
-};
-
-const getStoredAccessToken = (): string | null => {
-	try {
-		const raw = window.localStorage.getItem('jwt_access_token');
-		if (!raw) return null;
-		try {
-			const parsed = JSON.parse(raw);
-			return typeof parsed === 'string' ? parsed.replace(/['"]+/g, '') : null;
-		} catch {
-			return raw.replace(/['"]+/g, '');
-		}
-	} catch {
-		return null;
-	}
-};
-
-const setStoredAccessToken = (token: string | null) => {
-	try {
-		if (token) {
-			const clean = token.replace(/['"]+/g, '');
-			window.localStorage.setItem('jwt_access_token', clean);
-		} else {
-			window.localStorage.removeItem('jwt_access_token');
-		}
-	} catch (e) {
-		console.error('Error saving token:', e);
-	}
 };
 
 const clearAuthStorage = () => {
@@ -86,32 +57,24 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 	}, [authState]);
 
 	/**
-	 * Attempt to auto login with the stored token
+	 * Attempt to auto login with the HttpOnly cookie
 	 */
 	useEffect(() => {
 		const attemptAutoLogin = async () => {
-			const accessToken = getStoredAccessToken();
-
-			if (accessToken && isTokenValid(accessToken)) {
-				try {
-					const response = await authSignInWithToken(accessToken);
-					return { response, accessToken };
-				} catch (error) {
-					if (error instanceof HTTPError) {
-						console.error('Auto login failed:', error.response.status);
-					}
-
-					return false;
+			try {
+				const response = await authSignInWithToken();
+				return { response };
+			} catch (error) {
+				if (error instanceof HTTPError) {
+					console.error('Auto login failed:', error.response.status);
 				}
+				return false;
 			}
-
-			return false;
 		};
 
 		if (!authState.isAuthenticated) {
 			attemptAutoLogin().then((result) => {
 				if (result && result.response) {
-					setGlobalHeaders({ Authorization: `Bearer ${result.accessToken}` });
 					setAuthState({
 						authStatus: 'authenticated',
 						isAuthenticated: true,
@@ -129,7 +92,7 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 			});
 		}
 		// eslint-disable-next-line
-  }, [authState.isAuthenticated]);
+	}, [authState.isAuthenticated]);
 
 	/**
 	 * Sign in
@@ -146,8 +109,6 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 					throw new Error(data.message);
 				}
 
-				const cleanToken = data.tokens.access.token.replace(/['"]+/g, '');
-
 				const session = {
 					user: {
 						...data.user,
@@ -155,11 +116,10 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 						displayName: data.user?.name || data.user?.displayName || data.user?.email
 					},
 					message: data.message,
-					access_token: cleanToken
+					access_token: ''
 				};
 
-				setStoredAccessToken(cleanToken);
-				setGlobalHeaders({ Authorization: `Bearer ${cleanToken}` });
+				clearAuthStorage();
 
 				setAuthState({
 					authStatus: 'authenticated',
@@ -186,9 +146,7 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 		async (data) => {
 			try {
 				const session = await register(data);
-				const cleanToken = session.access_token.replace(/['"]+/g, '');
-				setStoredAccessToken(cleanToken);
-				setGlobalHeaders({ Authorization: `Bearer ${cleanToken}` });
+				clearAuthStorage();
 				setAuthState({
 					authStatus: 'authenticated',
 					isAuthenticated: true,
@@ -210,6 +168,7 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 	 * Sign out
 	 */
 	const signOut: JwtAuthContextType['signOut'] = useCallback(() => {
+		logout();
 		clearAuthStorage();
 		removeGlobalHeaders(['Authorization']);
 		setAuthState({
@@ -285,13 +244,6 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 			const [resource, config] = args;
 			try {
 				const response = await originalFetch(resource, config);
-				const newAccessToken = response.headers.get('New-Access-Token');
-
-				if (newAccessToken) {
-					const clean = newAccessToken.replace(/['"]+/g, '');
-					setGlobalHeaders({ Authorization: `Bearer ${clean}` });
-					setStoredAccessToken(clean);
-				}
 
 				if (response.status === 401) {
 					signOut();
@@ -315,6 +267,17 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 			interceptFetch();
 		}
 	}, [authState.isAuthenticated, interceptFetch]);
+
+	useEffect(() => {
+		const handleUnauthorized = () => {
+			signOut();
+		};
+
+		window.addEventListener('auth:unauthorized', handleUnauthorized);
+		return () => {
+			window.removeEventListener('auth:unauthorized', handleUnauthorized);
+		};
+	}, [signOut]);
 
 	return <JwtAuthContext value={authContextValue}>{children}</JwtAuthContext>;
 }

@@ -5,7 +5,18 @@ const User = require('../models/user.model');
 const Customer = require('../models/customer.model');
 
 const jwtFromRequest = (req) => {
-  let token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+  let token = null;
+
+  // 1. Primary: Extract from secure HttpOnly Cookie
+  if (req && req.cookies) {
+    token = req.cookies['jwt_access_token'] || req.cookies['token'];
+  }
+
+  // 2. Secondary fallback: Extract from Authorization Bearer header
+  if (!token) {
+    token = ExtractJwt.fromAuthHeaderAsBearerToken()(req);
+  }
+
   if (token) {
     token = token.replace(/^["']+|["']+$/g, '').trim();
   }

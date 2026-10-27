@@ -38,7 +38,13 @@ const errorHandler = (err, req, res, next) => {
     logger.error(err);
   }
 
-  res.header('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  if (origin) {
+    res.header('Access-Control-Allow-Origin', origin);
+  } else {
+    res.header('Access-Control-Allow-Origin', '*');
+  }
+  res.header('Access-Control-Allow-Credentials', 'true');
   res.status(statusCode).send(response);
 };
 

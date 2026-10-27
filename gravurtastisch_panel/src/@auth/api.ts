@@ -1,6 +1,7 @@
 import {
   sendOtpUrl,
   verifyOtpUrl,
+  logoutUrl,
   registerUrl,
 } from '@/configs/env';
 import { fetchWithAuth } from '@/utils/fetchWithAuth';
@@ -8,6 +9,7 @@ import { fetchWithAuth } from '@/utils/fetchWithAuth';
 export const sendOtp = async (payload: any) => {
   const response = await fetch(`${sendOtpUrl}`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
@@ -24,6 +26,7 @@ export const sendOtp = async (payload: any) => {
 export const verifyOtp = async (payload: any) => {
   const response = await fetch(`${verifyOtpUrl}`, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   });
@@ -44,4 +47,17 @@ export const register = async (payload) => {
     body: JSON.stringify(payload),
   });
 };
+
+export const logout = async () => {
+  try {
+    await fetch(`${logoutUrl}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+    });
+  } catch (error) {
+    console.error('Logout error:', error);
+  }
+};
+
 
