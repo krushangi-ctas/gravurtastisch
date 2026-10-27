@@ -212,7 +212,7 @@ function SupportContent({
 									</FuseSvgIcon>
 								</button>
 							</Tooltip>
-						</Box>
+						</div>
 					);
 				}
 			},
