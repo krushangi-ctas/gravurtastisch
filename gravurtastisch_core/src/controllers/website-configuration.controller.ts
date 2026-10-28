@@ -12,8 +12,10 @@ const getWebsiteConfiguration = catchAsync(async (req, res) => {
 
 const updateWebsiteConfiguration = catchAsync(async (req, res) => {
   const updateData = req.body;
-  const result =
-    await websiteConfigurationService.updateWebsiteConfiguration(updateData);
+  const result = await websiteConfigurationService.updateWebsiteConfiguration(
+    updateData,
+    req.user ? req.user._id : null
+  );
   return res.status(result.status).json({
     status: result.status === 200,
     message: result.message,

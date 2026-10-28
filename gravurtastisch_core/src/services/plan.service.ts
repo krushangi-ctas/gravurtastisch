@@ -6,194 +6,283 @@ const PlanModel = require('../models/plan.model');
 const ordermodel = require('../models/order.model');
 const User = require('../models/user.model');
 const { sendPlanExpiryReminderEmail } = require('./email.service');
+const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 
 const createPlan = async (bodyData, userId) => {
-  const payload = {
-    name: bodyData.name,
-    price: Number(bodyData.price),
-    currency: bodyData.currency || 'eur',
-    marketplace: Number(bodyData.marketplace ?? bodyData.marketplce ?? 0),
-    request_quota: Number(bodyData.request_quota ?? 0),
-    expireAt: bodyData.expireAt ? new Date(bodyData.expireAt) : null,
-    billingCycle: bodyData.billingCycle !== undefined ? Number(bodyData.billingCycle) : 1,
-    status: bodyData.status !== undefined ? Number(bodyData.status) : 1,
-    createdBy: userId || null,
-  };
+  try {
+    const payload = {
+      name: bodyData.name,
+      price: Number(bodyData.price),
+      currency: bodyData.currency || 'eur',
+      marketplace: Number(bodyData.marketplace ?? bodyData.marketplce ?? 0),
+      request_quota: Number(bodyData.request_quota ?? 0),
+      expireAt: bodyData.expireAt ? new Date(bodyData.expireAt) : null,
+      billingCycle: bodyData.billingCycle !== undefined ? Number(bodyData.billingCycle) : 1,
+      status: bodyData.status !== undefined ? Number(bodyData.status) : 1,
+      createdBy: userId || null,
+    };
 
-  const plan = await PlanModel.create(payload);
-  return {
-    status: httpStatus.CREATED,
-    message: 'Plan created successfully.',
-    data: plan,
-  };
+    const plan = await PlanModel.create(payload);
+
+    await systemLog(
+      'CREATE',
+      plan.toObject ? plan.toObject() : plan,
+      userId,
+      'create-plan'
+    );
+
+    return {
+      status: httpStatus.CREATED,
+      message: 'Plan created successfully.',
+      data: plan,
+    };
+  } catch (error) {
+    errorHandler.errorM({ action_type: 'create-plan', error_data: error });
+    return {
+      status: httpStatus.BAD_REQUEST,
+      message: error.message || 'Error creating plan',
+    };
+  }
 };
 
 const updatePlan = async (planId, updateData, userId) => {
-  const existingPlan = await PlanModel.findById(planId);
-  if (!existingPlan || existingPlan.status === 2) {
+  try {
+    const existingPlan = await PlanModel.findById(planId);
+    if (!existingPlan || existingPlan.status === 2) {
+      return {
+        status: httpStatus.NOT_FOUND,
+        message: 'Plan not found.',
+      };
+    }
+
+    const existingData = existingPlan.toObject
+      ? existingPlan.toObject()
+      : JSON.parse(JSON.stringify(existingPlan));
+
+    const payload = {
+      ...updateData,
+      updatedBy: userId || null,
+    };
+
+    if (updateData.marketplce !== undefined && updateData.marketplace === undefined) {
+      payload.marketplace = Number(updateData.marketplce);
+      delete payload.marketplce;
+    }
+    if (updateData.price !== undefined) {
+      payload.price = Number(updateData.price);
+    }
+    if (updateData.marketplace !== undefined) {
+      payload.marketplace = Number(updateData.marketplace);
+    }
+    if (updateData.request_quota !== undefined) {
+      payload.request_quota = Number(updateData.request_quota);
+    }
+    if (updateData.expireAt !== undefined) {
+      payload.expireAt = updateData.expireAt ? new Date(updateData.expireAt) : null;
+    }
+    if (updateData.billingCycle !== undefined) {
+      payload.billingCycle = Number(updateData.billingCycle);
+    }
+
+    const updatedPlan = await PlanModel.findByIdAndUpdate(
+      planId,
+      { $set: payload },
+      { new: true }
+    );
+
+    await systemLog(
+      'UPDATE',
+      updatedPlan.toObject ? updatedPlan.toObject() : updatedPlan,
+      userId,
+      'update-plan',
+      existingData
+    );
+
     return {
-      status: httpStatus.NOT_FOUND,
-      message: 'Plan not found.',
+      status: httpStatus.OK,
+      message: 'Plan updated successfully.',
+      data: updatedPlan,
+    };
+  } catch (error) {
+    errorHandler.errorM({ action_type: 'update-plan', error_data: error });
+    return {
+      status: httpStatus.BAD_REQUEST,
+      message: error.message || 'Error updating plan',
     };
   }
-
-  const payload = {
-    ...updateData,
-    updatedBy: userId || null,
-  };
-
-  if (updateData.marketplce !== undefined && updateData.marketplace === undefined) {
-    payload.marketplace = Number(updateData.marketplce);
-    delete payload.marketplce;
-  }
-  if (updateData.price !== undefined) {
-    payload.price = Number(updateData.price);
-  }
-  if (updateData.marketplace !== undefined) {
-    payload.marketplace = Number(updateData.marketplace);
-  }
-  if (updateData.request_quota !== undefined) {
-    payload.request_quota = Number(updateData.request_quota);
-  }
-  if (updateData.expireAt !== undefined) {
-    payload.expireAt = updateData.expireAt ? new Date(updateData.expireAt) : null;
-  }
-  if (updateData.billingCycle !== undefined) {
-    payload.billingCycle = Number(updateData.billingCycle);
-  }
-
-  const updatedPlan = await PlanModel.findByIdAndUpdate(
-    planId,
-    { $set: payload },
-    { new: true }
-  );
-
-  return {
-    status: httpStatus.OK,
-    message: 'Plan updated successfully.',
-    data: updatedPlan,
-  };
 };
 
 const getPlans = async (filter = {}, options = {}) => {
-  const query = {};
+  try {
+    const query = {};
 
-  if (
-    filter.status !== undefined &&
-    filter.status !== null &&
-    filter.status !== ''
-  ) {
-    query.status = Number(filter.status);
-  } else {
-    // Default: exclude soft-deleted plans (status = 2)
-    query.status = { $ne: 2 };
-  }
-
-  if (filter.search) {
-    const searchTrimmed = filter.search.trim();
-    const searchRegex = { $regex: searchTrimmed, $options: 'i' };
-    const orConditions = [{ name: searchRegex }];
-
-    const numericVal = Number(searchTrimmed);
-    if (!isNaN(numericVal)) {
-      orConditions.push(
-        { price: numericVal },
-        { marketplace: numericVal },
-        { request_quota: numericVal }
-      );
+    if (
+      filter.status !== undefined &&
+      filter.status !== null &&
+      filter.status !== ''
+    ) {
+      query.status = Number(filter.status);
+    } else {
+      // Default: exclude soft-deleted plans (status = 2)
+      query.status = { $ne: 2 };
     }
-    query.$or = orConditions;
+
+    if (filter.search) {
+      const searchTrimmed = filter.search.trim();
+      const searchRegex = { $regex: searchTrimmed, $options: 'i' };
+      const orConditions = [{ name: searchRegex }];
+
+      const numericVal = Number(searchTrimmed);
+      if (!isNaN(numericVal)) {
+        orConditions.push(
+          { price: numericVal },
+          { marketplace: numericVal },
+          { request_quota: numericVal }
+        );
+      }
+      query.$or = orConditions;
+    }
+
+    const limit =
+      options.limit && parseInt(options.limit, 10) > 0
+        ? parseInt(options.limit, 10)
+        : 10;
+    const page =
+      options.page && parseInt(options.page, 10) > 0
+        ? parseInt(options.page, 10)
+        : 1;
+    const skip = (page - 1) * limit;
+
+    let sort = { createdAt: -1 };
+    if (options.sortBy) {
+      const parts = options.sortBy.split(':');
+      sort = { [parts[0]]: parts[1] === 'desc' ? -1 : 1 };
+    }
+
+    const [totalResults, docs] = await Promise.all([
+      PlanModel.countDocuments(query),
+      PlanModel.find(query).sort(sort).skip(skip).limit(limit).lean(),
+    ]);
+
+    const totalPages = Math.ceil(totalResults / limit);
+
+    return {
+      status: httpStatus.OK,
+      message: 'Plans retrieved successfully.',
+      data: docs,
+      pagination: {
+        totalResults,
+        totalPages,
+        page,
+        limit,
+      },
+    };
+  } catch (error) {
+    errorHandler.errorM({
+      action_type: 'get-plans',
+      error_data: error,
+      scope: 'admin',
+    });
+    return {
+      status: httpStatus.BAD_REQUEST,
+      message: error.message || 'Error retrieving plans',
+      data: [],
+    };
   }
-
-  const limit =
-    options.limit && parseInt(options.limit, 10) > 0
-      ? parseInt(options.limit, 10)
-      : 10;
-  const page =
-    options.page && parseInt(options.page, 10) > 0
-      ? parseInt(options.page, 10)
-      : 1;
-  const skip = (page - 1) * limit;
-
-  let sort = { createdAt: -1 };
-  if (options.sortBy) {
-    const parts = options.sortBy.split(':');
-    sort = { [parts[0]]: parts[1] === 'desc' ? -1 : 1 };
-  }
-
-  const [totalResults, docs] = await Promise.all([
-    PlanModel.countDocuments(query),
-    PlanModel.find(query).sort(sort).skip(skip).limit(limit).lean(),
-  ]);
-
-  const totalPages = Math.ceil(totalResults / limit);
-
-  return {
-    status: httpStatus.OK,
-    message: 'Plans retrieved successfully.',
-    data: docs,
-    pagination: {
-      totalResults,
-      totalPages,
-      page,
-      limit,
-    },
-  };
 };
 
 const getPlanById = async (planId) => {
-  if (!mongoose.Types.ObjectId.isValid(planId)) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(planId)) {
+      return {
+        status: httpStatus.BAD_REQUEST,
+        message: 'Invalid Plan ID.',
+      };
+    }
+
+    const plan = await PlanModel.findById(planId);
+    if (!plan || plan.status === 2) {
+      return {
+        status: httpStatus.NOT_FOUND,
+        message: 'Plan not found.',
+      };
+    }
+
+    return {
+      status: httpStatus.OK,
+      message: 'Plan details retrieved successfully.',
+      data: plan,
+    };
+  } catch (error) {
+    errorHandler.errorM({
+      action_type: 'get-plan-by-id',
+      error_data: error,
+      scope: 'admin',
+    });
     return {
       status: httpStatus.BAD_REQUEST,
-      message: 'Invalid Plan ID.',
+      message: error.message || 'Error retrieving plan details',
     };
   }
-
-  const plan = await PlanModel.findById(planId);
-  if (!plan || plan.status === 2) {
-    return {
-      status: httpStatus.NOT_FOUND,
-      message: 'Plan not found.',
-    };
-  }
-
-  return {
-    status: httpStatus.OK,
-    message: 'Plan details retrieved successfully.',
-    data: plan,
-  };
 };
 
 const updatePlanStatus = async (planId, status, userId) => {
-  if (!mongoose.Types.ObjectId.isValid(planId)) {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(planId)) {
+      return {
+        status: httpStatus.BAD_REQUEST,
+        message: 'Invalid Plan ID.',
+      };
+    }
+
+    const plan = await PlanModel.findById(planId);
+    if (!plan) {
+      return {
+        status: httpStatus.NOT_FOUND,
+        message: 'Plan not found.',
+      };
+    }
+
+    const previousStatus = plan.status;
+    plan.status = Number(status);
+    if (userId) {
+      plan.updatedBy = userId;
+    }
+    await plan.save();
+
+    if (Number(status) === 2) {
+      await systemLog(
+        'DELETE',
+        plan.toObject ? plan.toObject() : plan,
+        userId,
+        'delete-plan'
+      );
+    } else {
+      await systemLog(
+        'UPDATE',
+        plan.toObject ? plan.toObject() : plan,
+        userId,
+        'active-deactive-plan',
+        { status: previousStatus }
+      );
+    }
+
+    return {
+      status: httpStatus.OK,
+      message:
+        Number(status) === 2
+          ? 'Plan deleted successfully.'
+          : 'Plan status updated successfully.',
+      data: plan,
+    };
+  } catch (error) {
+    errorHandler.errorM({ action_type: 'update-plan-status', error_data: error });
     return {
       status: httpStatus.BAD_REQUEST,
-      message: 'Invalid Plan ID.',
+      message: error.message || 'Error updating plan status',
     };
   }
-
-  const plan = await PlanModel.findById(planId);
-  if (!plan) {
-    return {
-      status: httpStatus.NOT_FOUND,
-      message: 'Plan not found.',
-    };
-  }
-
-  plan.status = Number(status);
-  if (userId) {
-    plan.updatedBy = userId;
-  }
-  await plan.save();
-
-  return {
-    status: httpStatus.OK,
-    message:
-      Number(status) === 2
-        ? 'Plan deleted successfully.'
-        : 'Plan status updated successfully.',
-    data: plan,
-  };
 };
 
 /**

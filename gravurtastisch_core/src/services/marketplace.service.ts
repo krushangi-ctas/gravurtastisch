@@ -1,6 +1,7 @@
 // @ts-nocheck
 const MarketplaceModel = require('../models/marketplace.model');
 const httpStatus = require('http-status');
+const errorHandler = require('../utils/error.handler');
 
 const getMarketplaces = async () => {
   try {
@@ -15,6 +16,11 @@ const getMarketplaces = async () => {
     };
   } catch (error) {
     console.error('Error fetching marketplaces:', error);
+    errorHandler.errorM({
+      action_type: 'get-marketplaces',
+      error_data: error,
+      scope: 'seller',
+    });
     return {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to fetch marketplaces',

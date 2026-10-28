@@ -10,7 +10,8 @@ const updateGeneralSetting = catchAsync(async (req, res) => {
     const { status, data, message } =
       await generalSettings.generalSettingsByUpdate(
         resolveSellerOwnerId(req.user),
-        updateData
+        updateData,
+        req.user?._id
       );
 
     return res.status(status).json({

@@ -11,6 +11,8 @@ const getSystemLogByDate = {
     endDate: Joi.string().allow(''),
     operation_by: Joi.string().allow(''),
     operation: Joi.string().allow(''),
+    scope: Joi.string().allow(''),
+    role: Joi.string().allow(''),
   }),
 };
 

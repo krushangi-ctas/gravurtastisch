@@ -130,8 +130,11 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 		return Object.keys(newErrors).length === 0;
 	};
 
+	const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending;
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (isPending) return;
 
 		if (!validateForm()) {
 			enqueueSnackbar('Please correct the highlighted errors in the form', { variant: 'error' });
@@ -175,7 +178,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 	return (
 		<Dialog
 			open={open}
-			onClose={onClose}
+			onClose={() => !isPending && onClose()}
 			disableRestoreFocus
 			maxWidth="sm"
 			fullWidth
@@ -206,6 +209,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					<IconButton
 						size="small"
 						onClick={onClose}
+						disabled={isPending}
 						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 						aria-label="Close"
 					>
@@ -545,7 +549,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 				>
 					<Button
 						onClick={onClose}
-						disabled={isSubmitting}
+						disabled={isPending}
 						className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
 						sx={{
 							borderRadius: '12px',
@@ -557,14 +561,12 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					<Button
 						type="submit"
 						variant="contained"
-						disabled={isSubmitting}
+						disabled={isPending}
 						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
-							isSubmitting ? (
-								<CircularProgress size={16} color="inherit" />
-							) : (
-								<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>
-							)
+							<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+								{isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+							</FuseSvgIcon>
 						}
 						sx={{
 							bgcolor: 'primary.main',
@@ -575,7 +577,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 							py: 1
 						}}
 					>
-						{isSubmitting ? 'Saving...' : isEdit ? 'Update Plan' : 'Create Plan'}
+						{isPending ? 'Saving...' : isEdit ? 'Update Plan' : 'Create Plan'}
 					</Button>
 				</DialogActions>
 			</form>

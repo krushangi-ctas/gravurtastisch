@@ -167,8 +167,11 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 	};
 
 	// Handle form submission
+	const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending;
+
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
+		if (isPending) return;
 
 		const trimmedTitle = blogTitle.trim();
 		const trimmedShortDesc = shortDescription.trim();
@@ -179,8 +182,8 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 			newErrors.blogTitle = 'Blog Title is required!';
 		} else if (trimmedTitle.length < 3) {
 			newErrors.blogTitle = 'Blog Title must be at least 3 characters';
-		} else if (trimmedTitle.length > 50) {
-			newErrors.blogTitle = 'Blog Title must not exceed 50 characters';
+		} else if (trimmedTitle.length > 100) {
+			newErrors.blogTitle = 'Blog Title must not exceed 100 characters';
 		}
 
 		if (trimmedShortDesc.length > 200) {
@@ -234,7 +237,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 	return (
 		<Dialog
 			open={open}
-			onClose={onClose}
+			onClose={() => !isPending && onClose()}
 			disableRestoreFocus
 			maxWidth="lg"
 			fullWidth
@@ -272,6 +275,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 					<IconButton
 						size="small"
 						onClick={onClose}
+						disabled={isPending}
 						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 						aria-label="Close"
 					>
@@ -311,7 +315,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 										setBlogTitle(e.target.value);
 										if (errors.blogTitle) setErrors((prev) => ({ ...prev, blogTitle: undefined }));
 									}}
-									inputProps={{ maxLength: 50 }}
+									inputProps={{ maxLength: 100 }}
 									error={Boolean(errors.blogTitle)}
 									helperText={errors.blogTitle}
 									variant="outlined"
@@ -524,7 +528,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 				>
 					<Button
 						onClick={onClose}
-						disabled={isSubmitting}
+						disabled={isPending}
 						className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
 						sx={{
 							borderRadius: '12px',
@@ -536,14 +540,12 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 					<Button
 						type="submit"
 						variant="contained"
-						disabled={isSubmitting}
+						disabled={isPending}
 						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
-							isSubmitting ? (
-								<CircularProgress size={16} color="inherit" />
-							) : (
-								<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>
-							)
+							<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+								{isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+							</FuseSvgIcon>
 						}
 						sx={{
 							bgcolor: 'primary.main',
@@ -554,7 +556,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 							py: 1
 						}}
 					>
-						{isSubmitting ? 'Saving...' : isEdit ? 'Update Blog' : 'Create Blog'}
+						{isPending ? 'Saving...' : isEdit ? 'Update Blog' : 'Create Blog'}
 					</Button>
 				</DialogActions>
 			</form>

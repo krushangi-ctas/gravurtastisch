@@ -308,8 +308,12 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 									onChange={(e) => setSelectedPlanId(e.target.value)}
 									disabled={isSubmitting}
 									sx={{
-										bgcolor: '#FFFFFF',
-										borderRadius: 1.5,
+										bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.4)' : '#f8fafc',
+										borderRadius: 2.5,
+										transition: 'all 0.15s ease',
+										'&:hover, &.Mui-focused': {
+											bgcolor: (theme) => theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff'
+										},
 										'& .MuiSelect-select': {
 											display: 'flex',
 											alignItems: 'center',
@@ -540,11 +544,9 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 						disabled={isSubmitting || isLoadingPlans || plans.length === 0}
 						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
-							isSubmitting ? (
-								<CircularProgress size={16} color="inherit" />
-							) : (
-								<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>
-							)
+							<FuseSvgIcon size={18} className={isSubmitting ? 'animate-spin' : ''}>
+								{isSubmitting ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+							</FuseSvgIcon>
 						}
 						sx={{
 							bgcolor: 'primary.main',

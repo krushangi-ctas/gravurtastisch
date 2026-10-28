@@ -10,8 +10,15 @@ const getSystemLogByDate = catchAsync(async (req, res) => {
     'endDate',
     'operation_by',
     'operation',
+    'scope',
+    'role',
   ]);
   const options = pick(req.query, ['sortBy', 'limit', 'page']);
+
+  // If authenticated user is a seller, restrict scope to seller
+  if (!req.user?.isSuperAdmin && (req.user?.userType === 'seller' || req.user?.isSellerAdmin)) {
+    filter.scope = 'seller';
+  }
 
   const result = await systemLogService.getSystemLogByDate(filter, options);
 

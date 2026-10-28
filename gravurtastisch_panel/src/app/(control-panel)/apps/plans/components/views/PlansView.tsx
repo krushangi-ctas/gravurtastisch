@@ -137,6 +137,7 @@ function PlansContent({
 	}, []);
 
 	const handleConfirmAction = useCallback(async () => {
+		if (isActionLoading) return;
 		if (!confirmState.plan) return;
 		const planId = (confirmState.plan._id || confirmState.plan.id) as string;
 		if (!planId) {
@@ -639,7 +640,7 @@ function PlansContent({
 							: 'bg-primary-800 hover:bg-primary-900'
 							}`}
 					>
-						{isActionLoading && <CircularProgress size={14} color="inherit" />}
+						{isActionLoading && <FuseSvgIcon size={16} className="animate-spin text-white">heroicons-outline:arrow-path</FuseSvgIcon>}
 						<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>
 					</button>
 				</div>

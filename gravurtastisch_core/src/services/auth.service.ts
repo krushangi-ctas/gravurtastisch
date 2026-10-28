@@ -180,7 +180,12 @@ const logout = async (refreshToken) => {
     throw new ApiError(httpStatus.NOT_FOUND, 'Not found');
   }
   await refreshTokenDoc.remove();
-  await systemLog('LOGOUT');
+  await systemLog(
+    'LOGOUT',
+    { userId: refreshTokenDoc.user },
+    refreshTokenDoc.user,
+    'logout-user'
+  );
 };
 
 /**

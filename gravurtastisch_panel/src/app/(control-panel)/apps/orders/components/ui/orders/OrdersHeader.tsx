@@ -63,7 +63,9 @@ function CustomDateRangePicker({
       setTempRange({ from: date, to: null });
     } else {
       // Complete the range
-      if (isAfter(date, tempRange.from)) {
+      if (isSameDay(date, tempRange.from)) {
+        setTempRange({ from: tempRange.from, to: tempRange.from });
+      } else if (isAfter(date, tempRange.from)) {
         setTempRange({ ...tempRange, to: date });
       } else {
         setTempRange({ from: date, to: tempRange.from });
@@ -73,7 +75,18 @@ function CustomDateRangePicker({
 
   const handleApply = () => {
     if (tempRange.from && tempRange.to) {
-      onChange(tempRange);
+      const from = new Date(tempRange.from);
+      from.setHours(0, 0, 0, 0);
+      const to = new Date(tempRange.to);
+      to.setHours(23, 59, 59, 999);
+      onChange({ from, to });
+      onClose();
+    } else if (tempRange.from && !tempRange.to) {
+      const from = new Date(tempRange.from);
+      from.setHours(0, 0, 0, 0);
+      const to = new Date(tempRange.from);
+      to.setHours(23, 59, 59, 999);
+      onChange({ from, to });
       onClose();
     }
   };
@@ -232,7 +245,7 @@ function CustomDateRangePicker({
         <Button
           onClick={handleApply}
           variant="contained"
-          disabled={!tempRange.from || !tempRange.to}
+          disabled={!tempRange.from}
         >
           Apply
         </Button>
@@ -294,14 +307,16 @@ function OrdersHeader({
 
 
   const formatDateRange = () => {
-    if (!searchDate.from && !searchDate.to) return 'Select date range';
+    if (!searchDate.from && !searchDate.to) return 'Date Range';
     if (searchDate.from && searchDate.to) {
-      return `${format(searchDate.from, 'MMM dd')} - ${format(searchDate.to, 'MMM dd, yyyy')}`;
+      if (isSameDay(searchDate.from, searchDate.to)) {
+        return format(searchDate.from, 'dd MMM yyyy');
+      }
+      return `${format(searchDate.from, 'dd MMM')} - ${format(searchDate.to, 'dd MMM')}`;
     }
-    if (searchDate.from)
-      return `From ${format(searchDate.from, 'MMM dd, yyyy')}`;
-    if (searchDate.to) return `Until ${format(searchDate.to, 'MMM dd, yyyy')}`;
-    return 'Select date range';
+    if (searchDate.from) return format(searchDate.from, 'dd MMM yyyy');
+    if (searchDate.to) return format(searchDate.to, 'dd MMM yyyy');
+    return 'Date Range';
   };
 
   const hasValidDateRange =
@@ -804,11 +819,13 @@ export function OrdersFilters({
   const formatDateRange = () => {
     if (!searchDate.from && !searchDate.to) return 'Date Range';
     if (searchDate.from && searchDate.to) {
-      return `${format(searchDate.from, 'MMM dd')} - ${format(searchDate.to, 'MMM dd')}`;
+      if (isSameDay(searchDate.from, searchDate.to)) {
+        return format(searchDate.from, 'dd MMM yyyy');
+      }
+      return `${format(searchDate.from, 'dd MMM')} - ${format(searchDate.to, 'dd MMM')}`;
     }
-    if (searchDate.from)
-      return `From ${format(searchDate.from, 'MMM dd')}`;
-    if (searchDate.to) return `Until ${format(searchDate.to, 'MMM dd')}`;
+    if (searchDate.from) return format(searchDate.from, 'dd MMM yyyy');
+    if (searchDate.to) return format(searchDate.to, 'dd MMM yyyy');
     return 'Date Range';
   };
 

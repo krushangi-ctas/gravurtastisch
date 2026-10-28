@@ -3,6 +3,7 @@ const httpStatus = require('http-status');
 const Section = require('../models/section.model');
 const { createResponse } = require('./common.service');
 const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 const { isSellerOwner } = require('./permission.service');
 
 const resolveScopeAndOwner = (actor, requestedScope) => {
@@ -63,6 +64,15 @@ const createSection = async (actor, body) => {
       permissions,
       status: body.status !== undefined ? Number(body.status) : 1,
     });
+
+    await systemLog(
+      'CREATE',
+      section.toObject ? section.toObject() : section,
+      actor._id,
+      'create-section',
+      {},
+      section.scope
+    );
 
     return createResponse(
       httpStatus.CREATED,
@@ -182,6 +192,10 @@ const updateSection = async (actor, sectionId, body) => {
       return createResponse(httpStatus.NOT_FOUND, 'Section not found.');
     }
 
+    const existingData = section.toObject
+      ? section.toObject()
+      : JSON.parse(JSON.stringify(section));
+
     // If name is changing, check uniqueness
     if (body.name) {
       const normalizedName = String(body.name).trim().toLowerCase();
@@ -235,6 +249,15 @@ const updateSection = async (actor, sectionId, body) => {
 
     await section.save();
 
+    await systemLog(
+      'UPDATE',
+      section.toObject ? section.toObject() : section,
+      actor._id,
+      'update-section',
+      existingData,
+      section.scope
+    );
+
     return createResponse(
       httpStatus.OK,
       'Section updated successfully.',
@@ -260,6 +283,15 @@ const deleteSection = async (actor, sectionId) => {
     section.status = 2; // soft-delete
     await section.save();
 
+    await systemLog(
+      'DELETE',
+      section.toObject ? section.toObject() : section,
+      actor._id,
+      'delete-section',
+      {},
+      section.scope
+    );
+
     return createResponse(
       httpStatus.OK,
       'Section deleted successfully.',
@@ -282,8 +314,18 @@ const toggleStatus = async (actor, sectionId, status) => {
       return createResponse(httpStatus.NOT_FOUND, 'Section not found.');
     }
 
+    const previousStatus = section.status;
     section.status = Number(status) === 1 ? 1 : 0;
     await section.save();
+
+    await systemLog(
+      'UPDATE',
+      section.toObject ? section.toObject() : section,
+      actor._id,
+      'active-deactive-section',
+      { status: previousStatus },
+      section.scope
+    );
 
     return createResponse(
       httpStatus.OK,

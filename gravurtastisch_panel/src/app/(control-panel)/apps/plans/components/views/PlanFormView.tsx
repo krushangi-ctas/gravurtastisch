@@ -131,8 +131,11 @@ export default function PlanFormView() {
 		return Object.keys(newErrors).length === 0;
 	};
 
+	const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending;
+
 	const handleSubmit = async (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
+		if (isPending) return;
 
 		if (!validateForm()) {
 			enqueueSnackbar('Please correct the highlighted errors in the form', { variant: 'error' });
@@ -577,7 +580,7 @@ export default function PlanFormView() {
 							variant="outlined"
 							color="inherit"
 							onClick={() => navigate('/plans')}
-							disabled={isSubmitting}
+							disabled={isPending}
 							className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
 						>
 							Cancel
@@ -586,19 +589,19 @@ export default function PlanFormView() {
 							variant="contained"
 							color="primary"
 							onClick={() => handleSubmit()}
-							disabled={isSubmitting}
+							disabled={isPending}
 							startIcon={
-								isSubmitting ? (
-									<CircularProgress size={16} color="inherit" />
-								) : (
-									<FuseSvgIcon size={18}>
-										{isEdit ? 'heroicons-outline:check' : 'heroicons-outline:plus'}
-									</FuseSvgIcon>
-								)
+								<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+									{isPending
+										? 'heroicons-outline:arrow-path'
+										: isEdit
+											? 'heroicons-outline:check'
+											: 'heroicons-outline:plus'}
+								</FuseSvgIcon>
 							}
 							className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
 						>
-							{isSubmitting ? (isEdit ? 'Updating Plan...' : 'Creating Plan...') : isEdit ? 'Update Plan' : 'Create Plan'}
+							{isPending ? (isEdit ? 'Updating Plan...' : 'Creating Plan...') : isEdit ? 'Update Plan' : 'Create Plan'}
 						</Button>
 					</div>
 				</div>

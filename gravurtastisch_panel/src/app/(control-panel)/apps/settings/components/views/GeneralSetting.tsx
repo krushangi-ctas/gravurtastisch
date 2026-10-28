@@ -27,7 +27,7 @@ function GeneralSetting({
   const { canUpdate } = usePermissions();
   const canEdit = canUpdate('/settings/generalsetting');
 
-  const { control, formState, handleSubmit, setValue, watch } =
+  const { control, formState, handleSubmit, setValue, watch, reset } =
     useFormContext<GeneralSettingFormType>();
   const { isValid, dirtyFields } = formState;
 
@@ -66,24 +66,21 @@ function GeneralSetting({
 
   useEffect(() => {
     if (generalSetting) {
-      setValue(
-        'marketplace_id',
-        generalSetting?.marketplace_id || 'A21TJRUUN4KGV'
-      );
-      setValue('order_status', generalSetting?.order_status || 'shipped');
-      setValue('fba', Boolean(generalSetting?.fba));
-      setValue('fbm', Boolean(generalSetting?.fbm));
-      setValue(
-        'order_matching_rules',
-        generalSetting?.order_matching_rules || 'all products'
-      );
-      setValue('autoSendRequest', Boolean(generalSetting?.autoSendRequest));
-      setValue('hour', typeof generalSetting?.hour === 'number' ? generalSetting.hour : 0);
-      setValue('minute', typeof generalSetting?.minute === 'number' ? generalSetting.minute : 0);
-      setValue('second', typeof generalSetting?.second === 'number' ? generalSetting.second : 0);
-      setValue('day', typeof generalSetting?.day === 'number' ? generalSetting.day : 0);
+      reset({
+        marketplace_id: generalSetting?.marketplace_id || 'A21TJRUUN4KGV',
+        order_status: generalSetting?.order_status || 'shipped',
+        fba: Boolean(generalSetting?.fba),
+        fbm: Boolean(generalSetting?.fbm),
+        order_matching_rules:
+          generalSetting?.order_matching_rules || 'all products',
+        autoSendRequest: Boolean(generalSetting?.autoSendRequest),
+        hour: typeof generalSetting?.hour === 'number' ? generalSetting.hour : 0,
+        minute: typeof generalSetting?.minute === 'number' ? generalSetting.minute : 0,
+        second: typeof generalSetting?.second === 'number' ? generalSetting.second : 0,
+        day: typeof generalSetting?.day === 'number' ? generalSetting.day : 0,
+      });
     }
-  }, [generalSetting, setValue]);
+  }, [generalSetting, reset]);
 
   // Days array 0–31
   const days = Array.from({ length: 32 }, (_, i) => i);
@@ -118,7 +115,7 @@ function GeneralSetting({
           <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50/80 via-white to-primary-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
                   <FuseSvgIcon size={22}>lucide:sliders-horizontal</FuseSvgIcon>
                 </div>
                 <div>
@@ -526,15 +523,15 @@ function GeneralSetting({
             <Typography className="text-[13px] text-slate-500 dark:text-slate-400 text-center sm:text-left">
               {!canEdit
                 ? 'Read-only mode (Save disabled)'
-                : Object.keys(dirtyFields).length === 0
-                ? 'No changes to save'
-                : 'Unsaved changes detected'}
+                : Object.keys(dirtyFields).length > 0
+                ? 'Unsaved changes detected'
+                : 'Configure settings and click Save Settings to apply.'}
             </Typography>
 
             <Button
               type="submit"
               variant="contained"
-              disabled={!canEdit || !isValid || Object.keys(dirtyFields).length === 0 || isPending}
+              disabled={!canEdit || isPending}
               className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-8 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700"
               startIcon={
                 <FuseSvgIcon size={18}>

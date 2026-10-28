@@ -24,6 +24,8 @@ export type ListParams = {
 	plans?: string[] | string;
 	from?: string;
 	to?: string;
+	includeSuperAdmin?: string | boolean;
+	includeOwner?: string | boolean;
 };
 
 export const useAdminSellers = (params: ListParams = {}, enabled = true) => {
@@ -55,7 +57,8 @@ export const useAdminStaffUsers = (params: ListParams = {}, enabled = true) => {
 			params.search,
 			params.sortBy,
 			params.from,
-			params.to
+			params.to,
+			params.includeSuperAdmin
 		],
 		enabled,
 		refetchOnWindowFocus: true,
@@ -73,7 +76,8 @@ export const useTeamUsers = (params: ListParams = {}, enabled = true) => {
 			params.search,
 			params.sortBy,
 			params.from,
-			params.to
+			params.to,
+			params.includeOwner
 		],
 		enabled,
 		refetchOnWindowFocus: true,

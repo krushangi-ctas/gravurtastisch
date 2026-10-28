@@ -51,11 +51,13 @@ const getSystemLogByDate = async (filter, options) => {
       searchData.$or = [
         { operation: searchvalue },
         { key: searchvalue },
+        { scope: searchvalue },
         { ip_address: searchvalue },
         { 'userDetails.first_name': searchvalue },
         { 'userDetails.last_name': searchvalue },
+        { 'userDetails.name': searchvalue },
+        { 'userDetails.email': searchvalue },
         { 'role.role_name': searchvalue },
-        { 'role.role_name': 'Super Admin' },
       ];
     }
     if (filter.operation_by) {
@@ -64,9 +66,48 @@ const getSystemLogByDate = async (filter, options) => {
     if (filter.operation) {
       searchData.operation = filter.operation;
     }
+    if (filter.scope) {
+      const scopeVal = String(filter.scope).toLowerCase().trim();
+      if (scopeVal === 'admin') {
+        searchData.$and = searchData.$and || [];
+        searchData.$and.push({
+          $or: [
+            { scope: 'admin' },
+            { scope: { $exists: false } },
+            { scope: null },
+            { scope: '' },
+          ],
+        });
+      } else {
+        searchData.scope = scopeVal;
+      }
+    }
+    if (filter.role) {
+      const roleStr = String(filter.role).trim();
+      if (roleStr.toLowerCase() === 'super admin') {
+        searchData.$and = searchData.$and || [];
+        searchData.$and.push({
+          $or: [
+            { 'role.role_name': { $regex: '^super admin$', $options: 'i' } },
+            { 'role.role_name': { $exists: false } },
+            { role: { $size: 0 } },
+          ],
+        });
+      } else {
+        searchData['role.role_name'] = { $regex: '^' + roleStr + '$', $options: 'i' };
+      }
+    }
 
-    const { startDate, endDate } = getStartAndEndDate(filter);
-    searchData.createdAt = { $gte: startDate, $lte: endDate };
+    if (filter.startDate || filter.endDate) {
+      const createdAtFilter: any = {};
+      if (filter.startDate) {
+        createdAtFilter.$gte = new Date(new Date(filter.startDate).setHours(0, 0, 0, 0));
+      }
+      if (filter.endDate) {
+        createdAtFilter.$lte = new Date(new Date(filter.endDate).setHours(23, 59, 59, 999));
+      }
+      searchData.createdAt = createdAtFilter;
+    }
 
     const { limit, page, skip, sort } = paginationOprator(options);
     const countPromise = SystemLogsModel.aggregate([
@@ -88,13 +129,33 @@ const getSystemLogByDate = async (filter, options) => {
           operation: 1,
           operation_by: 1,
           key: 1,
+          scope: 1,
           ip_address: 1,
           first_name: { $arrayElemAt: ['$userDetails.first_name', 0] },
           last_name: { $arrayElemAt: ['$userDetails.last_name', 0] },
+          name: { $arrayElemAt: ['$userDetails.name', 0] },
+          email: { $arrayElemAt: ['$userDetails.email', 0] },
           role_name: {
-            $ifNull: [{ $arrayElemAt: ['$role.role_name', 0] }, 'Super Admin'],
+            $switch: {
+              branches: [
+                {
+                  case: { $eq: [{ $arrayElemAt: ['$userDetails.isSuperAdmin', 0] }, true] },
+                  then: 'Super Admin',
+                },
+                {
+                  case: { $gt: [{ $size: '$role' }, 0] },
+                  then: { $arrayElemAt: ['$role.role_name', 0] },
+                },
+                {
+                  case: { $eq: [{ $arrayElemAt: ['$userDetails.isSellerAdmin', 0] }, true] },
+                  then: 'Seller Admin',
+                },
+              ],
+              default: '—',
+            },
           },
           operation_data: 1,
+          existing_data: 1,
           createdAt: 1,
           updatedAt: 1,
         },
@@ -250,7 +311,7 @@ const getSystemLogById = async (id, key, operation, type) => {
     'delete-store-detail',
   ];
 
-  const roleData = ['create-role', 'update-role'];
+  const roleData = ['create-role', 'update-role', 'delete-role'];
 
   const loginData = ['login-user'];
 
@@ -1161,6 +1222,8 @@ const getSystemLogById = async (id, key, operation, type) => {
         updatedAt: 1,
         first_name: { $arrayElemAt: ['$userDetails.first_name', 0] },
         last_name: { $arrayElemAt: ['$userDetails.last_name', 0] },
+        name: { $arrayElemAt: ['$userDetails.name', 0] },
+        email: { $arrayElemAt: ['$userDetails.email', 0] },
         role_name: {
           $ifNull: [{ $arrayElemAt: ['$role.role_name', 0] }, 'Super Admin'],
         },
@@ -1253,6 +1316,7 @@ async function generateExportSystemLogReport(filter, userId) {
         { operation: regex },
         { key: regex },
         { ip_address: regex },
+        { 'userDetails.name': regex },
         { 'userDetails.first_name': regex },
         { 'userDetails.last_name': regex },
         { 'role.role_name': regex },
@@ -1309,6 +1373,7 @@ async function generateExportSystemLogReport(filter, userId) {
         $addFields: {
           first_name: { $arrayElemAt: ['$userDetails.first_name', 0] },
           last_name: { $arrayElemAt: ['$userDetails.last_name', 0] },
+          name: { $arrayElemAt: ['$userDetails.name', 0] },
           role_name: {
             $ifNull: [{ $arrayElemAt: ['$role.role_name', 0] }, 'Super Admin'],
           },
@@ -1323,6 +1388,7 @@ async function generateExportSystemLogReport(filter, userId) {
           ip_address: 1,
           first_name: 1,
           last_name: 1,
+          name: 1,
           role_name: 1,
         },
       },
@@ -1380,7 +1446,7 @@ async function generateExportSystemLogReport(filter, userId) {
         operation: doc.operation || '-',
         key: doc.key || '-',
         ip_address: doc.ip_address || '-',
-        first_name: `${doc.first_name || '-'} ${doc.last_name || ''}`.trim(),
+        first_name: (doc.name || `${doc.first_name || ''} ${doc.last_name || ''}`.trim() || '-'),
         role_name: doc.role_name || '-',
       });
       currentRecordCount++;

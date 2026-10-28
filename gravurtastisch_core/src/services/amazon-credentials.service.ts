@@ -4,6 +4,8 @@ const User = require('../models/user.model');
 const logger = require('../config/logger');
 const mongoose = require('mongoose');
 const { getEffectivePlanLimits } = require('./plan.service');
+const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 
 const handleWithCredentialResponse = (credentials, id) => {
   if (!credentials) {
@@ -37,6 +39,11 @@ const getAmazonCredentialsById = async (id) => {
     return handleWithCredentialResponse(credentials, id);
   } catch (error) {
     logger.error(`Error fetching Amazon credentials by ID ${id}:`, error);
+    errorHandler.errorM({
+      action_type: 'get-amazon-credentials',
+      error_data: error,
+      scope: 'seller',
+    });
     return {
       status: 500,
       message: error.message,
@@ -57,6 +64,12 @@ const getAmazonCredentialsByUserId = async (id) => {
     return handleWithCredentialResponse(credentials, id);
   } catch (error) {
     logger.error(`Error fetching Amazon credentials by ID ${id}:`, error);
+    errorHandler.errorM({
+      action_type: 'get-amazon-credentials-by-user',
+      error_data: error,
+      scope: 'seller',
+      userId: id,
+    });
     return {
       status: 500,
       message: error.message,
@@ -68,7 +81,7 @@ const getAmazonCredentialsByUserId = async (id) => {
  * @param {Object} credentialsData - The credentials data
  * @returns {Promise<Object>} Result object
  */
-const upsertAmazonCredentials = async (credentialsData, userId) => {
+const upsertAmazonCredentials = async (credentialsData, userId, performerId = null) => {
   try {
     const planLimits = await getEffectivePlanLimits(userId);
     console.log('--- [upsertAmazonCredentials] userId:', userId, 'planLimits:', planLimits);
@@ -99,6 +112,10 @@ const upsertAmazonCredentials = async (credentialsData, userId) => {
       };
     }
 
+    const existingCreds = await AmazonCredentialsModel.findOne({
+      userId: new mongoose.Types.ObjectId(userId),
+    }).lean();
+
     const result = await AmazonCredentialsModel.findOneAndUpdate(
       { userId: new mongoose.Types.ObjectId(userId) },
       {
@@ -115,6 +132,15 @@ const upsertAmazonCredentials = async (credentialsData, userId) => {
       }
     );
 
+    await systemLog(
+      'UPDATE',
+      result.toObject ? result.toObject() : result,
+      performerId || userId,
+      'update-amazon-authorisation',
+      existingCreds,
+      'seller'
+    );
+
     return {
       status: 200,
       message: 'Amazon credentials updated successfully',
@@ -128,6 +154,10 @@ const upsertAmazonCredentials = async (credentialsData, userId) => {
     };
   } catch (error) {
     logger.error('Error updating Amazon credentials:', error);
+    errorHandler.errorM({
+      action_type: 'update-amazon-credentials',
+      error_data: error,
+    });
     return {
       status: 500,
       message: error.message,

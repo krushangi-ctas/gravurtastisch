@@ -140,6 +140,7 @@ function BlogsContent({
 	}, []);
 
 	const handleConfirmAction = useCallback(async () => {
+		if (isActionLoading) return;
 		if (!confirmState.blog) return;
 		const blogId = (confirmState.blog._id || confirmState.blog.id) as string;
 		if (!blogId) {
@@ -264,9 +265,16 @@ function BlogsContent({
 					const m = moment(val);
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
-							<span className="text-xs font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
 								{m.format('DD-MM-YYYY hh:mm A')}
-							</span>
+							</Typography>
 						</Tooltip>
 					);
 				}
@@ -544,7 +552,7 @@ function BlogsContent({
 						disabled={isActionLoading}
 						className="h-9 px-5 rounded-lg bg-primary-800 hover:bg-primary-900 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5"
 					>
-						{isActionLoading && <CircularProgress size={14} color="inherit" />}
+						{isActionLoading && <FuseSvgIcon size={16} className="animate-spin text-white">heroicons-outline:arrow-path</FuseSvgIcon>}
 						<span>
 							{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}
 						</span>

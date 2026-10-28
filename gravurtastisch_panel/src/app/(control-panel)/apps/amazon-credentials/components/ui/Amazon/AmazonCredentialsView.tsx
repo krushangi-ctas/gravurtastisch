@@ -233,6 +233,7 @@ function AmazonCredentialsFormContent({
         await updateGeneralSettingMutation.mutateAsync({
           data: {
             activeMarketplaces: sanitizedActive,
+            actionKey: 'update-amazon-authorisation',
           },
         });
         setSavedActiveMarketplaces([...sanitizedActive]);
@@ -281,6 +282,7 @@ function AmazonCredentialsFormContent({
       await updateGeneralSettingMutation.mutateAsync({
         data: {
           activeMarketplaces: sanitizedActive,
+          actionKey: 'update-amazon-authorisation',
         },
       });
 
@@ -469,7 +471,7 @@ function AmazonCredentialsFormContent({
             <div className="p-4 sm:p-5 md:p-6 space-y-4">
               {/* Step Header */}
               <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
-                <div className="w-8 h-8 rounded-lg bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
                   <FuseSvgIcon size={16}>lucide:globe</FuseSvgIcon>
                 </div>
                 <div>
@@ -623,7 +625,7 @@ function AmazonCredentialsFormContent({
             <div className="p-4 sm:p-5 md:p-6 space-y-4">
               {/* Step Header */}
               <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
-                <div className="w-8 h-8 rounded-lg bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
                   <FuseSvgIcon size={18}>lucide:key</FuseSvgIcon>
                 </div>
                 <div>
@@ -840,7 +842,7 @@ function AmazonCredentialsFormContent({
             <div className="p-4 sm:p-5 md:p-6 space-y-4">
               {/* Step Header */}
               <div className="flex items-center gap-2.5 pb-2 border-b border-slate-100 dark:border-slate-800">
-                <div className="w-8 h-8 rounded-lg bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
                   <FuseSvgIcon size={16}>lucide:shield-check</FuseSvgIcon>
                 </div>
                 <div>

@@ -1,6 +1,7 @@
-// @ts-nocheck
 const httpStatus = require('http-status');
 const WebsiteConfigurationModel = require('../models/website-configuration.model');
+const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 
 /**
  * Get website configuration
@@ -17,6 +18,11 @@ const getWebsiteConfiguration = async () => {
     };
   } catch (error) {
     console.error('Error fetching website configuration:', error.message);
+    errorHandler.errorM({
+      action_type: 'get-website-configuration',
+      error_data: error,
+      scope: 'admin',
+    });
     return {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to retrieve website configuration.',
@@ -28,11 +34,17 @@ const getWebsiteConfiguration = async () => {
 /**
  * Update website configuration
  * @param {Object} updateData
+ * @param {string} userId
  * @returns {Promise<Object>}
  */
-const updateWebsiteConfiguration = async (updateData) => {
+const updateWebsiteConfiguration = async (updateData, userId) => {
   try {
     let config = await WebsiteConfigurationModel.findOne().sort({ createdAt: -1 });
+    const existingConfig = config
+      ? config.toObject
+        ? config.toObject()
+        : JSON.parse(JSON.stringify(config))
+      : {};
 
     if (!config) {
       config = await WebsiteConfigurationModel.create(updateData);
@@ -49,6 +61,14 @@ const updateWebsiteConfiguration = async (updateData) => {
       );
     }
 
+    await systemLog(
+      'UPDATE',
+      config.toObject ? config.toObject() : config,
+      userId,
+      'update-website-configuration',
+      existingConfig
+    );
+
     return {
       status: httpStatus.OK,
       message: 'Website configuration updated successfully.',
@@ -56,6 +76,10 @@ const updateWebsiteConfiguration = async (updateData) => {
     };
   } catch (error) {
     console.error('Error updating website configuration:', error.message);
+    errorHandler.errorM({
+      action_type: 'update-website-configuration',
+      error_data: error,
+    });
     return {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to update website configuration.',

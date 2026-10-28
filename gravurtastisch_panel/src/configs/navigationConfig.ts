@@ -79,6 +79,14 @@ const navigationConfig: FuseNavItemType[] = [
 				authSection: 'plans'
 			},
 			{
+				id: 'system-logs',
+				title: 'System Logs',
+				type: 'item',
+				icon: 'lucide:scroll-text',
+				url: '/system-logs',
+				authSection: 'system-logs'
+			},
+			{
 				...SettingsAppNavigation,
 				type: 'item',
 				authSection: 'settings'

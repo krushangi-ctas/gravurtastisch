@@ -416,7 +416,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-4"
 							>
 								<div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-									<div className="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+									<div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
 										<FuseSvgIcon size={16}>lucide:briefcase</FuseSvgIcon>
 									</div>
 									<div>
@@ -599,7 +599,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-4"
 							>
 								<div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-									<div className="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+									<div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
 										<FuseSvgIcon size={16}>lucide:map-pin</FuseSvgIcon>
 									</div>
 									<div>
@@ -892,7 +892,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								className="p-4 sm:p-5 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs space-y-4"
 							>
 								<div className="flex items-center gap-3 border-b border-slate-100 dark:border-slate-800 pb-3">
-									<div className="w-8 h-8 rounded-lg bg-primary-50 dark:bg-primary-950/60 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+									<div className="w-8 h-8 rounded-lg bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
 										<FuseSvgIcon size={16}>lucide:share-2</FuseSvgIcon>
 									</div>
 									<div>
