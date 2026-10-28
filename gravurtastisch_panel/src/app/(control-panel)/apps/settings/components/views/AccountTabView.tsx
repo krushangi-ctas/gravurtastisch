@@ -455,7 +455,7 @@ function AccountTabView() {
                     src={userAvatar ? getImageUrl(userAvatar) : undefined}
                     alt={user?.name || 'Profile Image'}
                     variant="circular"
-                    className="w-18 h-18 sm:w-20 sm:h-20 border-2 border-primary-200/90 dark:border-primary-800 shadow-xs text-2xl font-bold bg-primary-50 dark:bg-primary-950/70 text-primary-700 dark:text-primary-300 flex items-center justify-center transition-all"
+                    className="w-18 h-18 sm:w-20 sm:h-20 border-2 border-primary/20 dark:border-primary/40 shadow-xs text-2xl font-bold bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary-400 flex items-center justify-center transition-all"
                   >
                     {userInitials}
                   </Avatar>
@@ -771,7 +771,7 @@ function AccountTabView() {
           <div className="px-4 sm:px-6 md:px-8 py-4 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50/80 via-white to-primary-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
                   <FuseSvgIcon size={20}>lucide:credit-card</FuseSvgIcon>
                 </div>
                 <div>

@@ -308,8 +308,12 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 									onChange={(e) => setSelectedPlanId(e.target.value)}
 									disabled={isSubmitting}
 									sx={{
-										bgcolor: '#FFFFFF',
-										borderRadius: 1.5,
+										bgcolor: (theme) => theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.4)' : '#f8fafc',
+										borderRadius: 2.5,
+										transition: 'all 0.15s ease',
+										'&:hover, &.Mui-focused': {
+											bgcolor: (theme) => theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff'
+										},
 										'& .MuiSelect-select': {
 											display: 'flex',
 											alignItems: 'center',

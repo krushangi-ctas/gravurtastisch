@@ -115,7 +115,7 @@ function GeneralSetting({
           <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 border-b border-slate-100 dark:border-slate-800 bg-gradient-to-r from-slate-50/80 via-white to-primary-50/30 dark:from-slate-900 dark:via-slate-900 dark:to-primary-950/20">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-center gap-3.5">
-                <div className="w-11 h-11 rounded-xl bg-primary-600/10 dark:bg-primary-500/20 border border-primary-200 dark:border-primary-800 flex items-center justify-center text-primary-600 dark:text-primary-400 shrink-0">
+                <div className="w-11 h-11 rounded-xl bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/40 flex items-center justify-center text-primary dark:text-primary-400 shrink-0">
                   <FuseSvgIcon size={22}>lucide:sliders-horizontal</FuseSvgIcon>
                 </div>
                 <div>

@@ -107,6 +107,23 @@ function roleLabel(user: User) {
 	}
 }
 
+const dialogInputSx = {
+	'& .MuiOutlinedInput-root': {
+		backgroundColor: (theme: any) =>
+			theme.palette.mode === 'dark' ? 'rgba(30, 41, 59, 0.4)' : '#f8fafc',
+		borderRadius: '10px',
+		transition: 'all 0.15s ease',
+		'&:hover': {
+			backgroundColor: (theme: any) =>
+				theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff'
+		},
+		'&.Mui-focused': {
+			backgroundColor: (theme: any) =>
+				theme.palette.mode === 'dark' ? '#1e293b' : '#ffffff'
+		}
+	}
+};
+
 function TableCopyButton({ text }: { text: string }) {
 	const [copied, setCopied] = useState(false);
 
@@ -2227,6 +2244,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										<TextField
 											fullWidth
 											required
+											sx={dialogInputSx}
 											placeholder="e.g., Alex Wright"
 											value={formName}
 											onChange={(e) => {
@@ -2262,6 +2280,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 											fullWidth
 											required
 											type="email"
+											sx={dialogInputSx}
 											placeholder="e.g., alex@gravurtastisch.de"
 											value={formEmail}
 											onChange={(e) => {
@@ -2295,6 +2314,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										</label>
 										<TextField
 											fullWidth
+											sx={dialogInputSx}
 											placeholder="e.g., +49 151 2345001"
 											value={formPhone}
 											onKeyDown={(e) => {
@@ -2339,7 +2359,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 												Role <span className="text-red-500">*</span>
 											</label>
-											<FormControl fullWidth size="small" required error={!!createErrors.roleId}>
+											<FormControl fullWidth size="small" required error={!!createErrors.roleId} sx={dialogInputSx}>
 												<Select
 													value={formRoleId}
 													onChange={(e) => {
@@ -2493,6 +2513,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										<TextField
 											fullWidth
 											required
+											sx={dialogInputSx}
 											placeholder="Full Name"
 											value={formName}
 											onChange={(e) => {
@@ -2522,6 +2543,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										</label>
 										<TextField
 											fullWidth
+											sx={dialogInputSx}
 											placeholder="Phone Number"
 											value={formPhone}
 											onKeyDown={(e) => {
@@ -2571,7 +2593,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
 												Role
 											</label>
-											<FormControl fullWidth size="small">
+											<FormControl fullWidth size="small" sx={dialogInputSx}>
 												<Select
 													value={formRoleId}
 													onChange={(e) => {
@@ -2614,6 +2636,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 													Brand Name
 												</label>
 												<TextField
+													sx={dialogInputSx}
 													placeholder="Brand Name"
 													value={editBusinessName}
 													onChange={(e) => {
@@ -2647,6 +2670,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 														<TextField
 															type="number"
 															fullWidth
+															sx={dialogInputSx}
 															variant="outlined"
 															size="small"
 															inputProps={{ min: 1 }}
@@ -2688,6 +2712,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 														<TextField
 															type="number"
 															fullWidth
+															sx={dialogInputSx}
 															variant="outlined"
 															size="small"
 															inputProps={{ min: 1 }}

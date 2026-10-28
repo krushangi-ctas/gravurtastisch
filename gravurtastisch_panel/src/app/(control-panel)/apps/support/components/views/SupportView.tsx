@@ -158,7 +158,7 @@ function SupportContent({
 					const initials = val !== 'N/A' ? val.slice(0, 2).toUpperCase() : 'U';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-							<span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-blue-50 text-blue-700 border border-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:border-blue-800">
+							<span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold shrink-0 bg-primary/10 text-primary border border-primary/20 dark:bg-primary/20 dark:text-primary-300 dark:border-primary/40">
 								{initials}
 							</span>
 							<Tooltip title={val} arrow>
@@ -286,9 +286,16 @@ function SupportContent({
 					if (!m.isValid()) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
-							<span className="text-xs font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
 								{m.format('DD-MM-YYYY hh:mm A')}
-							</span>
+							</Typography>
 						</Tooltip>
 					);
 				}

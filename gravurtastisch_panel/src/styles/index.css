@@ -40,7 +40,7 @@ Custom variants
 Theme variables
 */
 @theme {
-    --color-primary-50: #eff6ff;
+    --color-primary-50: #e6ebf7;
     --color-primary-100: #dbeafe;
     --color-primary-200: #bfdbfe;
     --color-primary-300: #93c5fd;
@@ -55,7 +55,7 @@ Theme variables
     --color-primary-light: #2563eb;
     --color-primary-dark: #00227a;
 
-    --color-secondary-50: #eff6ff;
+    --color-secondary-50: #e6ebf7;
     --color-secondary-100: #dbeafe;
     --color-secondary-200: #bfdbfe;
     --color-secondary-300: #93c5fd;

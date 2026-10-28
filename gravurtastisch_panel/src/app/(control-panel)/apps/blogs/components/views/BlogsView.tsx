@@ -265,9 +265,16 @@ function BlogsContent({
 					const m = moment(val);
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
-							<span className="text-xs font-normal text-slate-600 dark:text-slate-400 whitespace-nowrap">
+							<Typography
+								sx={{
+									fontSize: 12,
+									fontWeight: 400,
+									color: (t) => (t.palette.mode === 'dark' ? '#94A3B8' : '#475569'),
+									whiteSpace: 'nowrap'
+								}}
+							>
 								{m.format('DD-MM-YYYY hh:mm A')}
-							</span>
+							</Typography>
 						</Tooltip>
 					);
 				}
