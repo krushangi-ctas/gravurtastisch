@@ -14,6 +14,11 @@ const systemLogsSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    scope: {
+      type: String,
+      trim: true,
+      default: 'admin',
+    },
     operation_data: {
       type: Array,
     },

@@ -156,7 +156,9 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 		if (!tempRange.from || (tempRange.from && tempRange.to)) {
 			setTempRange({ from: date, to: null });
 		} else {
-			if (isAfter(date, tempRange.from)) {
+			if (isSameDay(date, tempRange.from)) {
+				setTempRange({ from: tempRange.from, to: tempRange.from });
+			} else if (isAfter(date, tempRange.from)) {
 				setTempRange({ ...tempRange, to: date });
 			} else {
 				setTempRange({ from: date, to: tempRange.from });
@@ -167,6 +169,9 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 	const handleApply = () => {
 		if (tempRange.from && tempRange.to) {
 			onChange(tempRange);
+			onClose();
+		} else if (tempRange.from && !tempRange.to) {
+			onChange({ from: tempRange.from, to: tempRange.from });
 			onClose();
 		}
 	};
@@ -249,7 +254,7 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 					const isSelected = isInRange(date);
 					const isStart = isRangeStart(date);
 					const isEnd = isRangeEnd(date);
-					const isHoverRange = isInHoverRange(date);
+					const isHovered = isInHoverRange(date);
 
 					return (
 						<Box
@@ -258,53 +263,64 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 							onMouseEnter={() => setHoveredDate(date)}
 							onMouseLeave={() => setHoveredDate(null)}
 							sx={{
-								aspectRatio: '1',
-								display: 'flex',
-								alignItems: 'center',
-								justifyContent: 'center',
-								cursor: 'pointer',
+								textAlign: 'center',
+								py: 1,
 								fontSize: '0.875rem',
-								fontWeight: isStart || isEnd ? 'bold' : 'normal',
-								color: isCurrentMonth ? 'text.primary' : 'text.disabled',
-								backgroundColor:
-									isStart || isEnd
-										? 'rgba(25, 118, 210, 0.15)'
-										: isHoverRange
-											? 'rgba(25, 118, 210, 0.08)'
-											: isSelected
-												? 'rgba(25, 118, 210, 0.05)'
-												: 'transparent',
-								borderRadius: isStart
-									? '50% 0 0 50%'
-									: isEnd
-										? '0 50% 50% 0'
-										: '0',
+								cursor: 'pointer',
+								bgcolor: isStart || isEnd
+									? 'primary.main'
+									: isSelected || isHovered
+										? 'primary.light'
+										: 'transparent',
+								color: isStart || isEnd
+									? 'primary.contrastText'
+									: isCurrentMonth
+										? 'text.primary'
+										: 'text.disabled',
+								borderRadius: isStart && isEnd
+									? '6px'
+									: isStart
+										? '6px 0 0 6px'
+										: isEnd
+											? '0 6px 6px 0'
+											: '0',
 								'&:hover': {
-									backgroundColor: isStart || isEnd ? 'primary.100' : 'action.hover'
-								},
-								border: isStart || isEnd ? '1px solid' : 'none',
-								borderColor: 'primary.main'
+									bgcolor: isStart || isEnd ? 'primary.main' : 'action.hover'
+								}
 							}}
 						>
-							{format(date, 'd')}
+							{date.getDate()}
 						</Box>
 					);
 				})}
 			</Box>
 
-			{/* Actions */}
-			<Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'flex-end' }}>
-				<Button onClick={handleCancel} color="inherit" size="small">
-					Cancel
-				</Button>
+			{/* Footer Actions */}
+			<Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 2 }}>
 				<Button
-					onClick={handleApply}
-					variant="contained"
 					size="small"
-					disabled={!tempRange.from || !tempRange.to}
+					color="inherit"
+					onClick={() => {
+						onChange({ from: null, to: null });
+						onClose();
+					}}
+					sx={{ textTransform: 'none', fontSize: '12px', color: 'text.secondary' }}
 				>
-					Apply
+					All Dates
 				</Button>
+				<Box sx={{ display: 'flex', gap: 1 }}>
+					<Button size="small" onClick={handleCancel}>
+						Cancel
+					</Button>
+					<Button
+						size="small"
+						variant="contained"
+						onClick={handleApply}
+						disabled={!tempRange.from}
+					>
+						Apply
+					</Button>
+				</Box>
 			</Box>
 		</Paper>
 	);
@@ -422,6 +438,9 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	const createAdminMutation = useCreateAdminUser();
 	const createTeamMutation = useCreateTeamUser();
 	const cancelPlanMutation = useCancelPlanForUser();
+
+	const isCreatingUser = createAdminMutation.isPending || createTeamMutation.isPending;
+	const isUpdatingUser = updateMutation.isPending;
 
 	const [createOpen, setCreateOpen] = useState(false);
 	const [editOpen, setEditOpen] = useState(false);
@@ -650,6 +669,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	};
 
 	const handleCreate = async () => {
+		if (isCreatingUser) return;
 		const errs = validateCreateUser(formName, formEmail, formPhone, formRoleId);
 		setCreateErrors(errs);
 		if (Object.keys(errs).length > 0) {
@@ -754,6 +774,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	};
 
 	const handleSaveEdit = async () => {
+		if (isUpdatingUser) return;
 		if (!selectedUser) return;
 		const userId = selectedUser._id ?? selectedUser.id;
 		if (!userId) return;
@@ -1488,10 +1509,13 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	const formatDateRange = () => {
 		if (!searchDate.from && !searchDate.to) return 'Date Range';
 		if (searchDate.from && searchDate.to) {
-			return `${format(searchDate.from, 'MMM dd')} - ${format(searchDate.to, 'MMM dd, yyyy')}`;
+			if (isSameDay(searchDate.from, searchDate.to)) {
+				return format(searchDate.from, 'dd MMM yyyy');
+			}
+			return `${format(searchDate.from, 'dd MMM')} - ${format(searchDate.to, 'dd MMM')}`;
 		}
-		if (searchDate.from) return `From ${format(searchDate.from, 'MMM dd, yyyy')}`;
-		if (searchDate.to) return `Until ${format(searchDate.to, 'MMM dd, yyyy')}`;
+		if (searchDate.from) return format(searchDate.from, 'dd MMM yyyy');
+		if (searchDate.to) return format(searchDate.to, 'dd MMM yyyy');
 		return 'Date Range';
 	};
 
@@ -1503,17 +1527,16 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					type="button"
 					onClick={(e) => setDateAnchorEl(dateAnchorEl ? null : e.currentTarget)}
 					style={{ height: '38px', minHeight: '38px', maxHeight: '38px' }}
-					className="h-[38px] flex items-center justify-between gap-2 px-3 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 text-xs font-medium rounded-lg border border-slate-200 dark:border-slate-700 outline-none hover:bg-slate-50 dark:hover:bg-slate-700 cursor-pointer shadow-xs transition-colors shrink-0"
+					className={`h-[38px] flex items-center gap-2 px-3 text-xs font-semibold rounded-lg border outline-none cursor-pointer shadow-xs transition-colors shrink-0 ${
+						searchDate.from && searchDate.to
+							? 'border-primary/40 bg-primary/5 text-primary'
+							: 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700'
+					}`}
 				>
-					<div className="flex items-center gap-1.5">
-						<FuseSvgIcon size={15} className="text-slate-500 dark:text-slate-400">
-							heroicons-outline:calendar
-						</FuseSvgIcon>
-						<span className="text-slate-700 dark:text-slate-200">{formatDateRange()}</span>
-					</div>
-					<FuseSvgIcon size={14} className="text-slate-400">
-						heroicons-outline:calendar-days
+					<FuseSvgIcon size={15} className={searchDate.from && searchDate.to ? 'text-primary' : 'text-slate-500 dark:text-slate-400'}>
+						heroicons-outline:calendar
 					</FuseSvgIcon>
+					<span>{formatDateRange()}</span>
 				</button>
 
 				<Popover
@@ -2149,7 +2172,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					{/* Create User Dialog */}
 					<Dialog
 						open={createOpen}
-						onClose={() => setCreateOpen(false)}
+						onClose={() => !isCreatingUser && setCreateOpen(false)}
 						disableRestoreFocus
 						maxWidth="sm"
 						fullWidth
@@ -2180,6 +2203,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								<IconButton
 									size="small"
 									onClick={() => setCreateOpen(false)}
+									disabled={isCreatingUser}
 									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
@@ -2377,6 +2401,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 							>
 								<Button
 									onClick={() => setCreateOpen(false)}
+									disabled={isCreatingUser}
 									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
 									sx={{
 										borderRadius: '12px',
@@ -2388,9 +2413,13 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								<Button
 									variant="contained"
 									onClick={handleCreate}
-									disabled={!roles.length}
+									disabled={!roles.length || isCreatingUser}
 									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
-									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+									startIcon={
+										<FuseSvgIcon size={18} className={isCreatingUser ? 'animate-spin' : ''}>
+											{isCreatingUser ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+										</FuseSvgIcon>
+									}
 									sx={{
 										bgcolor: 'primary.main',
 										'&:hover': { bgcolor: 'primary.dark' },
@@ -2400,7 +2429,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										py: 1
 									}}
 								>
-									Create User
+									{isCreatingUser ? 'Creating...' : 'Create User'}
 								</Button>
 							</DialogActions>
 						</div>
@@ -2409,7 +2438,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					{/* Edit User Dialog */}
 					<Dialog
 						open={editOpen}
-						onClose={() => setEditOpen(false)}
+						onClose={() => !isUpdatingUser && setEditOpen(false)}
 						disableRestoreFocus
 						maxWidth="sm"
 						fullWidth
@@ -2440,6 +2469,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								<IconButton
 									size="small"
 									onClick={() => setEditOpen(false)}
+									disabled={isUpdatingUser}
 									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
@@ -2711,6 +2741,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 							>
 								<Button
 									onClick={() => setEditOpen(false)}
+									disabled={isUpdatingUser}
 									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
 									sx={{
 										borderRadius: '12px',
@@ -2722,8 +2753,13 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								<Button
 									variant="contained"
 									onClick={handleSaveEdit}
-									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
-									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+									disabled={isUpdatingUser}
+									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+									startIcon={
+										<FuseSvgIcon size={18} className={isUpdatingUser ? 'animate-spin' : ''}>
+											{isUpdatingUser ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+										</FuseSvgIcon>
+									}
 									sx={{
 										bgcolor: 'primary.main',
 										'&:hover': { bgcolor: 'primary.dark' },
@@ -2733,7 +2769,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										py: 1
 									}}
 								>
-									Save Changes
+									{isUpdatingUser ? 'Saving...' : 'Save Changes'}
 								</Button>
 							</DialogActions>
 						</div>

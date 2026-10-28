@@ -30,7 +30,8 @@ const defaultTableSubtitles: Record<string, string> = {
 	Plans: 'Manage subscription tiers, feature allocations, pricing, and monthly limits.',
 	Support: 'Manage customer inquiries, support requests, and seller communications.',
 	Supports: 'Manage customer inquiries, support requests, and seller communications.',
-	'Support Tickets': 'Manage customer inquiries, support requests, and seller communications.'
+	'Support Tickets': 'Manage customer inquiries, support requests, and seller communications.',
+	'System Logs': 'Track and audit user actions, state changes, and system events with detailed operational history.'
 };
 
 export interface DataTableTopToolbarProps<TData extends MRT_RowData> {
@@ -149,16 +150,16 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 					<div className="flex w-full flex-col lg:flex-row items-stretch lg:items-center justify-between gap-2.5 min-h-[38px]">
 						{/* Left: Icon & Title + optional custom actions */}
 						<div className="flex items-center gap-2.5 min-w-0 w-full lg:w-auto flex-1">
-							{isNavMobile && (
+							{/* {isNavMobile && (
 								<NavbarToggleButton
 									className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0 -ml-1 border-0"
 									aria-label="open navigation menu"
 								>
 									<FuseSvgIcon size={20}>heroicons-outline:bars-3</FuseSvgIcon>
 								</NavbarToggleButton>
-							)}
+							)} */}
 							{(icon || title) && (
-								<div className="flex items-center gap-2.5 sm:gap-3 shrink-0 py-0">
+								<div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1 py-0">
 									{icon && (
 										<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0 shadow-2xs">
 											{typeof icon === 'string' ? (
@@ -171,12 +172,12 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 										</div>
 									)}
 									{title && (
-										<div className="flex flex-col min-w-0">
+										<div className="flex flex-col min-w-0 flex-1">
 											<h1 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 m-0 truncate leading-tight">
 												{title}
 											</h1>
 											{(subtitle || (typeof title === 'string' && defaultTableSubtitles[title])) && (
-												<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium whitespace-normal sm:truncate lg:whitespace-nowrap leading-tight mt-0.5 sm:mt-1">
+												<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium whitespace-normal leading-normal mt-0.5 sm:mt-1 break-words">
 													{subtitle || (typeof title === 'string' && defaultTableSubtitles[title])}
 												</p>
 											)}

@@ -791,24 +791,29 @@ export const defaultThemeOptions: DefaultThemeOptions = {
 		MuiMenu: {
 			styleOverrides: {
 				paper: {
-					padding: `0 ${spacing(4)}`, // 0px 4px
-					borderRadius: spacing(6)
+					padding: `${spacing(4)} ${spacing(4)}`, // 4px 4px
+					borderRadius: spacing(8), // 8px
+					boxShadow: '0 10px 25px -5px rgba(0,0,0,0.12), 0 8px 10px -6px rgba(0,0,0,0.08)'
 				},
 				list: {
 					gap: spacing(2),
-					display: 'grid'
+					display: 'grid',
+					padding: `${spacing(2)} 0`
 				}
 			}
 		},
 		MuiMenuItem: {
 			styleOverrides: {
 				root: {
-					borderRadius: spacing(4),
-					padding: `${spacing(6)} ${spacing(8)}`, // 6px 8px
+					borderRadius: spacing(6),
+					fontSize: '13.5px',
+					fontWeight: 500,
+					minHeight: '38px',
+					padding: `${spacing(8)} ${spacing(14)}`, // 8px 14px
 					'& .MuiListItemIcon-root': {
-						minWidth: spacing(24),
+						minWidth: spacing(26),
 						'& svg': {
-							fontSize: spacing(16)
+							fontSize: spacing(18)
 						}
 					}
 				}

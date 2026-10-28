@@ -104,6 +104,8 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 	const updateMutation = useUpdateRole();
 	const deleteMutation = useDeleteRole();
 
+	const isSavingRole = createMutation.isPending || updateMutation.isPending;
+
 	const sections = useMemo(() => sectionsRes?.data || [], [sectionsRes?.data]);
 	const roles = useMemo(() => rolesRes?.data || [], [rolesRes?.data]);
 
@@ -289,6 +291,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 		});
 
 	const handleSave = async () => {
+		if (isSavingRole) return;
 		const errs = validateRole(roleName, description, matrix);
 		setRoleErrors(errs);
 		if (Object.keys(errs).length > 0) {
@@ -671,7 +674,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 					{/* Create / Edit Role Dialog */}
 					<Dialog
 						open={dialogOpen}
-						onClose={() => setDialogOpen(false)}
+						onClose={() => !isSavingRole && setDialogOpen(false)}
 						disableRestoreFocus
 						maxWidth="md"
 						fullWidth
@@ -702,6 +705,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								<IconButton
 									size="small"
 									onClick={() => setDialogOpen(false)}
+									disabled={isSavingRole}
 									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
 									aria-label="Close"
 								>
@@ -903,6 +907,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 							>
 								<Button
 									onClick={() => setDialogOpen(false)}
+									disabled={isSavingRole}
 									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
 									sx={{
 										borderRadius: '12px',
@@ -914,8 +919,13 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								<Button
 									variant="contained"
 									onClick={handleSave}
-									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
-									startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+									disabled={isSavingRole}
+									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+									startIcon={
+										<FuseSvgIcon size={18} className={isSavingRole ? 'animate-spin' : ''}>
+											{isSavingRole ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+										</FuseSvgIcon>
+									}
 									sx={{
 										bgcolor: 'primary.main',
 										'&:hover': { bgcolor: 'primary.dark' },
@@ -925,7 +935,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 										py: 1
 									}}
 								>
-									{editing ? 'Save Changes' : 'Create Role'}
+									{isSavingRole ? 'Saving...' : editing ? 'Save Changes' : 'Create Role'}
 								</Button>
 							</DialogActions>
 						</div>

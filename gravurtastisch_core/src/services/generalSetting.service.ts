@@ -5,8 +5,10 @@ const GeneralSettingModel = require('../models/generalSetting.model');
 const UserModel = require('../models/user.model');
 const AmazonCredentialsModel = require('../models/amazon-credentials.model');
 const { getEffectivePlanLimits } = require('./plan.service');
+const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 
-const generalSettingsByUpdate = async (userId, updateData = {}) => {
+const generalSettingsByUpdate = async (userId, updateData = {}, performerId = null) => {
   try {
     const user = await UserModel.findById(userId);
     if (!user) {
@@ -93,12 +95,38 @@ const generalSettingsByUpdate = async (userId, updateData = {}) => {
       }
     );
 
+    const isAmazonAuthSource =
+      updateData.actionKey === 'update-amazon-authorisation' ||
+      updateData.source === 'amazon-authorisation' ||
+      (updateData.activeMarketplaces !== undefined && updateData.order_status === undefined);
+
+    const logKey = isAmazonAuthSource
+      ? 'update-amazon-authorisation'
+      : (updateData.actionKey || 'update-general-settings');
+
+    await systemLog(
+      'UPDATE',
+      updatedDoc.toObject ? updatedDoc.toObject() : updatedDoc,
+      performerId || userId,
+      logKey,
+      existingSettings
+        ? existingSettings.toObject
+          ? existingSettings.toObject()
+          : existingSettings
+        : {},
+      'seller'
+    );
+
     return {
       data: updatedDoc,
       status: httpStatus.OK,
     };
   } catch (error) {
     console.error('Error in generalSettings update:', error.message);
+    errorHandler.errorM({
+      action_type: 'update-general-settings',
+      error_data: error,
+    });
     return {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to update or insert general settings.',
@@ -129,6 +157,12 @@ const generalSettingsByGet = async (userId) => {
     };
   } catch (error) {
     console.error('Error in generalSettings get:', error.message);
+    errorHandler.errorM({
+      action_type: 'get-general-settings',
+      error_data: error,
+      scope: 'seller',
+      userId,
+    });
     return {
       status: httpStatus.INTERNAL_SERVER_ERROR,
       message: 'Failed to get general settings.',

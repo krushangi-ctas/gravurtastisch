@@ -63,6 +63,8 @@ export type ListParams = {
 	plans?: string[] | string;
 	from?: string;
 	to?: string;
+	includeSuperAdmin?: string | boolean;
+	includeOwner?: string | boolean;
 };
 
 const buildQueryUrl = (path: string, params: ListParams = {}) => {

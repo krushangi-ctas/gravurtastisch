@@ -540,11 +540,9 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 						disabled={isSubmitting || isLoadingPlans || plans.length === 0}
 						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
-							isSubmitting ? (
-								<CircularProgress size={16} color="inherit" />
-							) : (
-								<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>
-							)
+							<FuseSvgIcon size={18} className={isSubmitting ? 'animate-spin' : ''}>
+								{isSubmitting ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+							</FuseSvgIcon>
 						}
 						sx={{
 							bgcolor: 'primary.main',

@@ -20,7 +20,11 @@ const getAmazonCredentialsById = catchAsync(async (req, res) => {
 const upsertAmazonCredentials = catchAsync(async (req, res) => {
   const ownerId = resolveSellerOwnerId(req.user);
   const { status, message, data } =
-    await amazonCredentialsService.upsertAmazonCredentials(req.body, ownerId);
+    await amazonCredentialsService.upsertAmazonCredentials(
+      req.body,
+      ownerId,
+      req.user?._id
+    );
   res.status(status).send({ status, message, data });
 });
 

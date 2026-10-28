@@ -9,10 +9,10 @@ const objectIdValidator = (value, helpers) => {
 
 const createBlog = {
   body: Joi.object().keys({
-    blog_title: Joi.string().max(50).required().trim().messages({
+    blog_title: Joi.string().max(100).required().trim().messages({
       'any.required': 'Blog Title is required!',
       'string.empty': 'Blog Title is required!',
-      'string.max': 'Blog Title must not exceed 50 characters',
+      'string.max': 'Blog Title must not exceed 100 characters',
     }),
     slug: Joi.string().allow('', null).trim(),
     short_description: Joi.string().max(200).allow('', null).trim().messages({
@@ -48,9 +48,9 @@ const updateBlog = {
   }),
   body: Joi.object()
     .keys({
-      blog_title: Joi.string().max(50).trim().messages({
+      blog_title: Joi.string().max(100).trim().messages({
         'string.empty': 'Blog Title cannot be empty',
-        'string.max': 'Blog Title must not exceed 50 characters',
+        'string.max': 'Blog Title must not exceed 100 characters',
       }),
       slug: Joi.string().allow('', null).trim(),
       short_description: Joi.string().max(200).allow('', null).trim().messages({

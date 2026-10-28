@@ -8,6 +8,8 @@ const PaymentModel = require('../models/payment.model');
 const PlanModel = require('../models/plan.model');
 const User = require('../models/user.model');
 const emailService = require('./email.service');
+const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 
 const getStripe = () => {
   if (!config.stripe.secretKey) {
@@ -39,197 +41,225 @@ const getSellerPanelSignInUrl = () => {
  * Create a Stripe Checkout Session for a plan and persist a pending payment row.
  */
 const createCheckoutSession = async ({ planId, email, name, userId, currency: requestedCurrency }: any) => {
-  const plan = await PlanModel.findById(planId);
-  if (!plan || plan.status !== 1) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Plan not found or inactive.');
-  }
+  try {
+    const plan = await PlanModel.findById(planId);
+    if (!plan || plan.status !== 1) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Plan not found or inactive.');
+    }
 
-  const normalizedEmail = String(email).trim().toLowerCase();
-  const displayName = (name || '').trim();
-  const rawCurrency = (requestedCurrency || plan.currency || 'eur').toString().toLowerCase().trim();
-  const currency = ['eur', 'inr'].includes(rawCurrency) ? rawCurrency : 'eur';
-  const currencySymbol = currency === 'inr' ? '₹' : '€';
+    const normalizedEmail = String(email).trim().toLowerCase();
+    const displayName = (name || '').trim();
+    const rawCurrency = (requestedCurrency || plan.currency || 'eur').toString().toLowerCase().trim();
+    const currency = ['eur', 'inr'].includes(rawCurrency) ? rawCurrency : 'eur';
+    const currencySymbol = currency === 'inr' ? '₹' : '€';
 
-  const amountCents = Math.round(Number(plan.price) * 100);
-  if (!Number.isFinite(amountCents) || amountCents < 50) {
-    throw new ApiError(
-      httpStatus.BAD_REQUEST,
-      `Plan price must be at least ${currencySymbol}0.50 for Stripe Checkout.`
-    );
-  }
+    const amountCents = Math.round(Number(plan.price) * 100);
+    if (!Number.isFinite(amountCents) || amountCents < 50) {
+      throw new ApiError(
+        httpStatus.BAD_REQUEST,
+        `Plan price must be at least ${currencySymbol}0.50 for Stripe Checkout.`
+      );
+    }
 
-  const existingUser = userId
-    ? await User.findById(userId)
-    : await User.findOne({ email: normalizedEmail, status: { $ne: 2 } });
+    const existingUser = userId
+      ? await User.findById(userId)
+      : await User.findOne({ email: normalizedEmail, status: { $ne: 2 } });
 
-  const payment = await PaymentModel.create({
-    email: normalizedEmail,
-    name: displayName,
-    planId: plan._id,
-    planName: plan.name,
-    amount: Number(plan.price),
-    currency: currency,
-    mode: 'subscription',
-    billingCycle: Number(plan.billingCycle) || 1,
-    status: 'pending',
-    userId: existingUser ? existingUser._id : null,
-  });
-
-  const frontend = (config.stripe.frontendUrl || '').replace(
-    /\/$/,
-    ''
-  );
-  const successUrl =
-    config.stripe.successUrl ||
-    `${frontend}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
-  let cancelUrl = config.stripe.cancelUrl;
-  if (!cancelUrl) {
-    cancelUrl = `${frontend}/payment/cancel?session_id={CHECKOUT_SESSION_ID}&plan=${plan._id}`;
-  } else if (!cancelUrl.includes('{CHECKOUT_SESSION_ID}')) {
-    const separator = cancelUrl.includes('?') ? '&' : '?';
-    cancelUrl = `${cancelUrl}${separator}session_id={CHECKOUT_SESSION_ID}&plan=${plan._id}`;
-  }
-
-  const stripe = getStripe();
-  const session = await stripe.checkout.sessions.create({
-    mode: 'subscription',
-    customer_email: normalizedEmail,
-    client_reference_id: String(payment._id),
-    success_url: successUrl,
-    cancel_url: cancelUrl,
-    allow_promotion_codes: true,
-    metadata: {
-      paymentId: String(payment._id),
-      planId: String(plan._id),
-      planName: plan.name,
+    const payment = await PaymentModel.create({
       email: normalizedEmail,
-    },
-    subscription_data: {
+      name: displayName,
+      planId: plan._id,
+      planName: plan.name,
+      amount: Number(plan.price),
+      currency: currency,
+      mode: 'subscription',
+      billingCycle: Number(plan.billingCycle) || 1,
+      status: 'pending',
+      userId: existingUser ? existingUser._id : null,
+    });
+
+    const frontend = (config.stripe.frontendUrl || '').replace(
+      /\/$/,
+      ''
+    );
+    const successUrl =
+      config.stripe.successUrl ||
+      `${frontend}/payment/success?session_id={CHECKOUT_SESSION_ID}`;
+    let cancelUrl = config.stripe.cancelUrl;
+    if (!cancelUrl) {
+      cancelUrl = `${frontend}/payment/cancel?session_id={CHECKOUT_SESSION_ID}&plan=${plan._id}`;
+    } else if (!cancelUrl.includes('{CHECKOUT_SESSION_ID}')) {
+      const separator = cancelUrl.includes('?') ? '&' : '?';
+      cancelUrl = `${cancelUrl}${separator}session_id={CHECKOUT_SESSION_ID}&plan=${plan._id}`;
+    }
+
+    const stripe = getStripe();
+    const session = await stripe.checkout.sessions.create({
+      mode: 'subscription',
+      customer_email: normalizedEmail,
+      client_reference_id: String(payment._id),
+      success_url: successUrl,
+      cancel_url: cancelUrl,
+      allow_promotion_codes: true,
       metadata: {
         paymentId: String(payment._id),
         planId: String(plan._id),
+        planName: plan.name,
         email: normalizedEmail,
       },
-    },
-    line_items: [
-      {
-        quantity: 1,
-        price_data: {
-          currency: currency,
-          unit_amount: amountCents,
-          recurring:
-            Number(plan.billingCycle) === 3
-              ? { interval: 'year', interval_count: 1 }
-              : Number(plan.billingCycle) === 2
-                ? { interval: 'month', interval_count: 3 }
-                : { interval: 'month', interval_count: 1 },
-          product_data: {
-            name: `Gravurtastisch - ${plan.name}`,
-            description: `${plan.request_quota || 0} units/${Number(plan.billingCycle) === 3
-              ? 'yr'
-              : Number(plan.billingCycle) === 2
-                ? 'quarter'
-                : 'mo'
-              } · ${plan.marketplace || 0} channels`,
-            metadata: {
-              planId: String(plan._id),
-              billingCycle: String(plan.billingCycle || 1),
+      subscription_data: {
+        metadata: {
+          paymentId: String(payment._id),
+          planId: String(plan._id),
+          email: normalizedEmail,
+        },
+      },
+      line_items: [
+        {
+          quantity: 1,
+          price_data: {
+            currency: currency,
+            unit_amount: amountCents,
+            recurring:
+              Number(plan.billingCycle) === 3
+                ? { interval: 'year', interval_count: 1 }
+                : Number(plan.billingCycle) === 2
+                  ? { interval: 'month', interval_count: 3 }
+                  : { interval: 'month', interval_count: 1 },
+            product_data: {
+              name: `Gravurtastisch - ${plan.name}`,
+              description: `${plan.request_quota || 0} units/${Number(plan.billingCycle) === 3
+                ? 'yr'
+                : Number(plan.billingCycle) === 2
+                  ? 'quarter'
+                  : 'mo'
+                } · ${plan.marketplace || 0} channels`,
+              metadata: {
+                planId: String(plan._id),
+                billingCycle: String(plan.billingCycle || 1),
+              },
             },
           },
         },
-      },
-    ],
-  });
+      ],
+    });
 
-  payment.stripeSessionId = session.id;
-  payment.metadata = {
-    ...(payment.metadata || {}),
-    checkoutUrl: session.url,
-  };
-  await payment.save();
+    payment.stripeSessionId = session.id;
+    payment.metadata = {
+      ...(payment.metadata || {}),
+      checkoutUrl: session.url,
+    };
+    await payment.save();
 
-  if (existingUser && Array.isArray(existingUser.plans)) {
-    const pendingPlan = existingUser.plans.find(
-      (p: any) =>
-        String(p.planId) === String(plan._id) &&
-        (p.status === 0 || p.status === 'pending_payment')
+    await systemLog(
+      'CREATE',
+      payment.toObject ? payment.toObject() : payment,
+      payment.userId,
+      'create-checkout-session',
+      {},
+      'admin'
     );
-    if (pendingPlan) {
-      pendingPlan.stripeSessionId = session.id;
-      await existingUser.save();
-    }
-  }
 
-  return {
-    status: httpStatus.OK,
-    message: 'Checkout session created.',
-    data: {
-      sessionId: session.id,
-      url: session.url,
-      paymentId: payment._id,
-    },
-  };
+    if (existingUser && Array.isArray(existingUser.plans)) {
+      const pendingPlan = existingUser.plans.find(
+        (p: any) =>
+          String(p.planId) === String(plan._id) &&
+          (p.status === 0 || p.status === 'pending_payment')
+      );
+      if (pendingPlan) {
+        pendingPlan.stripeSessionId = session.id;
+        await existingUser.save();
+      }
+    }
+
+    return {
+      status: httpStatus.OK,
+      message: 'Checkout session created.',
+      data: {
+        sessionId: session.id,
+        url: session.url,
+        paymentId: payment._id,
+      },
+    };
+  } catch (error) {
+    errorHandler.errorM({
+      action_type: 'create-checkout-session',
+      error_data: error,
+      scope: 'admin',
+      userId,
+    });
+    throw error;
+  }
 };
 
 const getSessionStatus = async (sessionId) => {
-  if (!sessionId) {
-    throw new ApiError(httpStatus.BAD_REQUEST, 'sessionId is required.');
-  }
-
-  const payment = await PaymentModel.findOne({ stripeSessionId: sessionId }).lean();
-  if (!payment) {
-    throw new ApiError(httpStatus.NOT_FOUND, 'Payment not found for this session.');
-  }
-
-  const planObj = payment.planId ? await PlanModel.findById(payment.planId).lean() : null;
-  const envPanelUrl = getSellerPanelBaseUrl();
-  const sellerPanelSignInUrl = getSellerPanelSignInUrl();
-
-  // Auto-complete mock payments or poll Stripe for real payments
-  if (payment.status === 'pending' && config.stripe.secretKey) {
-    try {
-      const stripe = getStripe();
-      const session = await stripe.checkout.sessions.retrieve(sessionId);
-      if (session.payment_status === 'paid' || session.status === 'complete') {
-        await markPaymentPaid(payment._id, {
-          stripeCustomerId: session.customer,
-          stripeSubscriptionId: session.subscription,
-          stripePaymentIntentId: session.payment_intent,
-          eventId: `session-poll:${sessionId}`,
-        });
-        const refreshed = await PaymentModel.findById(payment._id).lean();
-
-        return {
-          status: httpStatus.OK,
-          message: 'Payment status retrieved.',
-          data: {
-            ...refreshed,
-            billingCycle: refreshed.billingCycle || (planObj && planObj.billingCycle) || 1,
-            siteUrl: envPanelUrl,
-            sellerPanelUrl: sellerPanelSignInUrl,
-          },
-        };
-      } else if (session.status === 'expired' || session.status === 'canceled') {
-        await handleCancelPayment({
-          sessionId,
-          eventId: `session-poll-cancel:${sessionId}`,
-        });
-      }
-    } catch (err) {
-      logger.warn(`Stripe session poll failed: ${err.message}`);
+  try {
+    if (!sessionId) {
+      throw new ApiError(httpStatus.BAD_REQUEST, 'sessionId is required.');
     }
-  }
 
-  return {
-    status: httpStatus.OK,
-    message: 'Payment status retrieved.',
-    data: {
-      ...payment,
-      billingCycle: payment.billingCycle || (planObj && planObj.billingCycle) || 1,
-      siteUrl: envPanelUrl,
-      sellerPanelUrl: sellerPanelSignInUrl,
-    },
-  };
+    const payment = await PaymentModel.findOne({ stripeSessionId: sessionId }).lean();
+    if (!payment) {
+      throw new ApiError(httpStatus.NOT_FOUND, 'Payment not found for this session.');
+    }
+
+    const planObj = payment.planId ? await PlanModel.findById(payment.planId).lean() : null;
+    const envPanelUrl = getSellerPanelBaseUrl();
+    const sellerPanelSignInUrl = getSellerPanelSignInUrl();
+
+    // Auto-complete mock payments or poll Stripe for real payments
+    if (payment.status === 'pending' && config.stripe.secretKey) {
+      try {
+        const stripe = getStripe();
+        const session = await stripe.checkout.sessions.retrieve(sessionId);
+        if (session.payment_status === 'paid' || session.status === 'complete') {
+          await markPaymentPaid(payment._id, {
+            stripeCustomerId: session.customer,
+            stripeSubscriptionId: session.subscription,
+            stripePaymentIntentId: session.payment_intent,
+            eventId: `session-poll:${sessionId}`,
+          });
+          const refreshed = await PaymentModel.findById(payment._id).lean();
+
+          return {
+            status: httpStatus.OK,
+            message: 'Payment status retrieved.',
+            data: {
+              ...refreshed,
+              billingCycle: refreshed.billingCycle || (planObj && planObj.billingCycle) || 1,
+              siteUrl: envPanelUrl,
+              sellerPanelUrl: sellerPanelSignInUrl,
+            },
+          };
+        } else if (session.status === 'expired' || session.status === 'canceled') {
+          await handleCancelPayment({
+            sessionId,
+            eventId: `session-poll-cancel:${sessionId}`,
+          });
+        }
+      } catch (err) {
+        logger.warn(`Stripe session poll failed: ${err.message}`);
+      }
+    }
+
+    return {
+      status: httpStatus.OK,
+      message: 'Payment status retrieved.',
+      data: {
+        ...payment,
+        billingCycle: payment.billingCycle || (planObj && planObj.billingCycle) || 1,
+        siteUrl: envPanelUrl,
+        sellerPanelUrl: sellerPanelSignInUrl,
+      },
+    };
+  } catch (error) {
+    errorHandler.errorM({
+      action_type: 'get-payment-session',
+      error_data: error,
+      scope: 'admin',
+    });
+    throw error;
+  }
 };
 
 const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
@@ -254,6 +284,15 @@ const markPaymentPaid = async (paymentId: any, extras: any = {}) => {
     payment.processedEventIds = [...(payment.processedEventIds || []), extras.eventId];
   }
   await payment.save();
+
+  await systemLog(
+    'UPDATE',
+    payment.toObject ? payment.toObject() : payment,
+    payment.userId,
+    'payment-paid',
+    {},
+    'admin'
+  );
 
   // Apply plan limits to matching user account if one exists
   const plan = await PlanModel.findById(payment.planId);
@@ -565,9 +604,10 @@ const handleCancelPayment = async ({
   stripePaymentIntentId,
   eventId,
 }: any = {}) => {
-  logger.info(
-    `Handling payment cancellation: session=${sessionId || 'none'}, planId=${planId || 'none'}, email=${email || 'none'}`
-  );
+  try {
+    logger.info(
+      `Handling payment cancellation: session=${sessionId || 'none'}, planId=${planId || 'none'}, email=${email || 'none'}`
+    );
 
   let payment: any = null;
   if (sessionId) {
@@ -633,6 +673,15 @@ const handleCancelPayment = async ({
       payment.processedEventIds = [...(payment.processedEventIds || []), eventId];
     }
     await payment.save();
+
+    await systemLog(
+      'UPDATE',
+      payment.toObject ? payment.toObject() : payment,
+      payment.userId,
+      'cancel-payment',
+      {},
+      'admin'
+    );
   }
 
   const plan = effectivePlanId ? await PlanModel.findById(effectivePlanId) : null;
@@ -748,6 +797,14 @@ const handleCancelPayment = async ({
       user,
     },
   };
+  } catch (error) {
+    errorHandler.errorM({
+      action_type: 'cancel-payment',
+      error_data: error,
+      scope: 'admin',
+    });
+    throw error;
+  }
 };
 
 const handleWebhook = async (rawBody, signature) => {

@@ -23,7 +23,7 @@ const { syncUserSubscriptionPlans, syncUserMonthlyUsage } = require('./plan.serv
  * @param {Object} userBody
  * @returns {Promise<User>}
  */
-const createUser = async (userBody) => {
+const createUser = async (userBody, creatorId = null) => {
   try {
     if (userBody.isSuperAdmin) {
       return createResponse(
@@ -46,7 +46,7 @@ const createUser = async (userBody) => {
       );
     }
     const userData = await User.create(userBody);
-    await systemLog('CREATE', userData, userData._id, 'create-user');
+    await systemLog('CREATE', userData, creatorId || userData._id, 'create-user');
     return createResponse(httpStatus.OK, 'User created', userData);
   } catch (error) {
     if (error.code === 11000) {
@@ -141,7 +141,7 @@ const createManagedUser = async (actor, body) => {
       payload.password = body.password;
     }
 
-    return createUser(payload);
+    return createUser(payload, actor?._id);
   } catch (error) {
     errorHandler.errorM({ action_type: 'create-managed-user', error_data: error });
     return createResponse(httpStatus.BAD_REQUEST, error.message);
@@ -472,11 +472,14 @@ const listAdminSellers = async (query = {}) => {
  */
 const listAdminStaffUsers = async (query = {}) => {
   try {
+    const baseFilter = {
+      userType: 'admin',
+    };
+    if (query.includeSuperAdmin !== 'true' && query.includeSuperAdmin !== true) {
+      baseFilter.isSuperAdmin = { $ne: true };
+    }
     return await paginateUserList(
-      {
-        isSuperAdmin: { $ne: true },
-        userType: 'admin',
-      },
+      baseFilter,
       query,
       'Admin users fetched'
     );
@@ -502,13 +505,19 @@ const listSellerTeamUsers = async (actor, query = {}) => {
       );
     }
 
-    const baseFilter = {
-      isSellerAdmin: { $ne: true },
+    const baseFilter: any = {
       isSuperAdmin: { $ne: true },
       userType: { $ne: 'admin' },
     };
     if (ownerId) {
-      baseFilter.parentId = ownerId;
+      if (query.includeOwner === 'true' || query.includeOwner === true) {
+        baseFilter.$or = [{ parentId: ownerId }, { _id: ownerId }];
+      } else {
+        baseFilter.isSellerAdmin = { $ne: true };
+        baseFilter.parentId = ownerId;
+      }
+    } else {
+      baseFilter.isSellerAdmin = { $ne: true };
     }
 
     const { filter, page, limit, sort } = await buildUserListQuery(

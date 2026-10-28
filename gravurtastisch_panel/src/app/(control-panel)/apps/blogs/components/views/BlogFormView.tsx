@@ -160,8 +160,8 @@ export default function BlogFormView() {
 			newErrors.blogTitle = 'Blog Title is required!';
 		} else if (trimmedTitle.length < 3) {
 			newErrors.blogTitle = 'Title must be at least 3 characters long';
-		} else if (trimmedTitle.length > 50) {
-			newErrors.blogTitle = 'Blog Title must not exceed 50 characters';
+		} else if (trimmedTitle.length > 100) {
+			newErrors.blogTitle = 'Blog Title must not exceed 100 characters';
 		}
 
 		const trimmedShortDesc = shortDescription.trim();
@@ -173,8 +173,11 @@ export default function BlogFormView() {
 		return Object.keys(newErrors).length === 0;
 	};
 
+	const isPending = isSubmitting || createMutation.isPending || updateMutation.isPending;
+
 	const handleSubmit = async (e?: React.FormEvent) => {
 		if (e) e.preventDefault();
+		if (isPending) return;
 
 		if (!validateForm()) {
 			enqueueSnackbar('Please fix the highlighted errors before saving.', { variant: 'error' });
@@ -313,13 +316,13 @@ export default function BlogFormView() {
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
 												Blog Title <span className="text-red-500 font-bold ml-0.5">*</span>
 											</label>
-											<span className="text-xs text-slate-400 font-mono">{blogTitle.length}/50</span>
+											<span className="text-xs text-slate-400 font-mono">{blogTitle.length}/100</span>
 										</div>
 										<TextField
 											fullWidth
 											placeholder="e.g. How to Automate Amazon Product Review Requests in 2026"
 											value={blogTitle}
-											inputProps={{ maxLength: 50 }}
+											inputProps={{ maxLength: 100 }}
 											onChange={(e) => {
 												setBlogTitle(e.target.value);
 												if (errors.blogTitle) setErrors((prev) => ({ ...prev, blogTitle: undefined }));
@@ -613,7 +616,7 @@ export default function BlogFormView() {
 							variant="outlined"
 							color="inherit"
 							onClick={() => navigate('/blogs')}
-							disabled={isSubmitting}
+							disabled={isPending}
 							className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
 						>
 							Cancel
@@ -622,19 +625,19 @@ export default function BlogFormView() {
 							variant="contained"
 							color="primary"
 							onClick={() => handleSubmit()}
-							disabled={isSubmitting}
+							disabled={isPending}
 							startIcon={
-								isSubmitting ? (
-									<CircularProgress size={16} color="inherit" />
-								) : (
-									<FuseSvgIcon size={18}>
-										{isEdit ? 'heroicons-outline:check' : 'heroicons-outline:arrow-up-tray'}
-									</FuseSvgIcon>
-								)
+								<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+									{isPending
+										? 'heroicons-outline:arrow-path'
+										: isEdit
+											? 'heroicons-outline:check'
+											: 'heroicons-outline:arrow-up-tray'}
+								</FuseSvgIcon>
 							}
 							className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
 						>
-							{isSubmitting ? (isEdit ? 'Updating Article...' : 'Publishing Article...') : isEdit ? 'Update Article' : 'Publish Article'}
+							{isPending ? (isEdit ? 'Updating Article...' : 'Publishing Article...') : isEdit ? 'Update Article' : 'Publish Article'}
 						</Button>
 					</div>
 				</div>

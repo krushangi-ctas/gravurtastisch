@@ -5,6 +5,7 @@ const Section = require('../models/section.model');
 const User = require('../models/user.model');
 const { createResponse } = require('./common.service');
 const errorHandler = require('../utils/error.handler');
+const { systemLog } = require('../utils/system-log');
 const {
   normalizePermissions,
 } = require('../config/sections');
@@ -197,6 +198,15 @@ const createRole = async (actor, body) => {
       isSystem: false,
     });
 
+    await systemLog(
+      'CREATE',
+      role.toObject ? role.toObject() : role,
+      actor._id,
+      'create-role',
+      {},
+      role.scope
+    );
+
     return createResponse(httpStatus.OK, 'Role created', role);
   } catch (error) {
     errorHandler.errorM({ action_type: 'create-role', error_data: error });
@@ -305,6 +315,10 @@ const updateRole = async (actor, roleId, body) => {
       }
     }
 
+    const existingData = role.toObject
+      ? role.toObject()
+      : JSON.parse(JSON.stringify(role));
+
     if (body.name || body.role_name) {
       const roleName = String(body.name || body.role_name).trim();
       role.name = roleName;
@@ -330,6 +344,16 @@ const updateRole = async (actor, roleId, body) => {
     }
 
     await role.save();
+
+    await systemLog(
+      'UPDATE',
+      role.toObject ? role.toObject() : role,
+      actor._id,
+      'update-role',
+      existingData,
+      role.scope
+    );
+
     return createResponse(httpStatus.OK, 'Role updated', role);
   } catch (error) {
     errorHandler.errorM({ action_type: 'update-role', error_data: error });
@@ -375,6 +399,16 @@ const deleteRole = async (actor, roleId) => {
 
     role.status = 2;
     await role.save();
+
+    await systemLog(
+      'DELETE',
+      role.toObject ? role.toObject() : role,
+      actor._id,
+      'delete-role',
+      {},
+      role.scope
+    );
+
     return createResponse(httpStatus.OK, 'Role deleted', {});
   } catch (error) {
     errorHandler.errorM({ action_type: 'delete-role', error_data: error });

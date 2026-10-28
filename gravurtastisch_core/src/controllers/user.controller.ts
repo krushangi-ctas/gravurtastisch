@@ -10,6 +10,7 @@ const UserArchive = require('../models/user-archive.model');
 const mongoose = require('mongoose');
 const PlanModel = require('../models/plan.model');
 const paymentService = require('../services/payment.service');
+const { systemLog } = require('../utils/system-log');
 
 const createUser = catchAsync(async (req, res) => {
   const { status, message, data } = await userService.createUser(req.body);
@@ -50,12 +51,12 @@ const updateUserPassword = catchAsync(async (req, res) => {
 });
 
 const deleteUser = catchAsync(async (req, res) => {
-  // const { status, message, data } = await userService.deleteUserById(
-  //   req.params.userId,
-  //   req.params.loginId,
-  //   req.body
-  // );
-  return res.status(200).send({ status: 200, message: '', data: {} });
+  const { status, message, data } = await userService.deleteUserById(
+    req.params.userId,
+    req.user?._id || req.params.loginId,
+    req.body
+  );
+  return res.status(status).send({ status, message, data });
 });
 
 const uploadProfile = catchAsync(async (req, res) => {
@@ -180,6 +181,13 @@ const adminUpdateUser = catchAsync(async (req, res) => {
 
     await User.findByIdAndDelete(userId);
 
+    await systemLog(
+      'DELETE',
+      existing.toObject ? existing.toObject() : existing,
+      req.user?._id,
+      'delete-user'
+    );
+
     return res.status(httpStatus.OK).send({
       status: httpStatus.OK,
       message: 'User deleted successfully.',
@@ -205,6 +213,14 @@ const adminUpdateUser = catchAsync(async (req, res) => {
     { $set: updateData },
     { new: true }
   ).populate('role_id', 'role_name scope permissions status');
+
+  await systemLog(
+    'UPDATE',
+    updatedUser.toObject ? updatedUser.toObject() : updatedUser,
+    req.user?._id,
+    'update-user',
+    existing.toObject ? existing.toObject() : existing
+  );
 
   return res.status(httpStatus.OK).send({
     status: httpStatus.OK,
@@ -472,19 +488,40 @@ const registerSeller = catchAsync(async (req, res) => {
 });
 
 const assignPlanToUser = catchAsync(async (req, res) => {
+  const existingUser = await User.findById(req.params.userId).lean();
   const result = await userService.assignPlanManuallyToUser(
     req.user,
     req.params.userId,
     req.body
   );
+  if (result.status === httpStatus.OK) {
+    await systemLog(
+      'UPDATE',
+      result.data,
+      req.user?._id,
+      'assign-plan',
+      existingUser || {}
+    );
+  }
   res.status(result.status).send(result);
 });
 
 const cancelPlanForUser = catchAsync(async (req, res) => {
+  const existingUser = await User.findById(req.params.userId).lean();
   const result = await userService.cancelPlanForUser(
     req.params.userId,
     req.user
   );
+  if (result.status === httpStatus.OK) {
+    const updatedUser = await User.findById(req.params.userId).lean();
+    await systemLog(
+      'UPDATE',
+      updatedUser || result.data,
+      req.user?._id,
+      'cancel-plan',
+      existingUser || {}
+    );
+  }
   res.status(result.status).send(result);
 });
 

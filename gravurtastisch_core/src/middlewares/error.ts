@@ -38,6 +38,30 @@ const errorHandler = (err, req, res, next) => {
     logger.error(err);
   }
 
+  // Record unhandled errors in tbl_cron_errors with proper scope
+  try {
+    const errorLogHandler = require('../utils/error.handler');
+    const rawUrl = String(req.originalUrl || req.url || '').toLowerCase();
+    const action = `${req.method || 'GET'} ${req.baseUrl || ''}${req.path || ''}`;
+    let detectedScope = 'admin';
+    if (rawUrl.includes('/seller') || req.user?.userType === 'seller' || req.user?.isSellerAdmin) {
+      detectedScope = 'seller';
+    }
+    if (rawUrl.includes('/payment') || rawUrl.includes('/checkout')) {
+      detectedScope = 'admin';
+    }
+
+    errorLogHandler.errorM({
+      action_type: action.trim(),
+      error_data: err,
+      scope: detectedScope,
+      operation_by: req.user?._id || req.userId || null,
+      ip_address: req.ip || req.headers['x-forwarded-for'],
+    });
+  } catch (logErr) {
+    // avoid throwing from error middleware
+  }
+
   const origin = req.headers.origin;
   if (origin) {
     res.header('Access-Control-Allow-Origin', origin);

@@ -233,6 +233,7 @@ function AmazonCredentialsFormContent({
         await updateGeneralSettingMutation.mutateAsync({
           data: {
             activeMarketplaces: sanitizedActive,
+            actionKey: 'update-amazon-authorisation',
           },
         });
         setSavedActiveMarketplaces([...sanitizedActive]);
@@ -281,6 +282,7 @@ function AmazonCredentialsFormContent({
       await updateGeneralSettingMutation.mutateAsync({
         data: {
           activeMarketplaces: sanitizedActive,
+          actionKey: 'update-amazon-authorisation',
         },
       });
 
