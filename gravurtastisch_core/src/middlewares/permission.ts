@@ -26,33 +26,33 @@ const hasBypassForSection = (user, section) => {
  */
 const requirePermission =
   (section, action = 'view') =>
-  async (req, res, next) => {
-    try {
-      if (!req.user) {
-        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
-      }
+    async (req, res, next) => {
+      try {
+        if (!req.user) {
+          return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
+        }
 
-      if (req.user.isSuperAdmin || hasBypassForSection(req.user, section)) {
+        if (req.user.isSuperAdmin || hasBypassForSection(req.user, section)) {
+          return next();
+        }
+
+        const { permissions } = await getPermissionsForUser(req.user);
+        req.permissions = permissions;
+
+        if (!can(permissions, section, action)) {
+          return next(
+            new ApiError(
+              httpStatus.FORBIDDEN,
+              `You do not have permission to perform this action (${section}.${action}).`
+            )
+          );
+        }
+
         return next();
+      } catch (error) {
+        return next(error);
       }
-
-      const { permissions } = await getPermissionsForUser(req.user);
-      req.permissions = permissions;
-
-      if (!can(permissions, section, action)) {
-        return next(
-          new ApiError(
-            httpStatus.FORBIDDEN,
-            `You do not have permission to perform this action (${section}.${action}).`
-          )
-        );
-      }
-
-      return next();
-    } catch (error) {
-      return next(error);
-    }
-  };
+    };
 
 /**
  * Allow access when the user matches ANY of the given section/action pairs.
@@ -62,46 +62,46 @@ const requirePermission =
  */
 const requireAnyPermission =
   (requirements = []) =>
-  async (req, res, next) => {
-    try {
-      if (!req.user) {
-        return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
-      }
+    async (req, res, next) => {
+      try {
+        if (!req.user) {
+          return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
+        }
 
-      if (req.user.isSuperAdmin) {
-        return next();
-      }
-
-      for (const [section] of requirements) {
-        if (hasBypassForSection(req.user, section)) {
+        if (req.user.isSuperAdmin) {
           return next();
         }
-      }
 
-      const { permissions } = await getPermissionsForUser(req.user);
-      req.permissions = permissions;
+        for (const [section] of requirements) {
+          if (hasBypassForSection(req.user, section)) {
+            return next();
+          }
+        }
 
-      const allowed = requirements.some(([section, action]) =>
-        can(permissions, section, action)
-      );
+        const { permissions } = await getPermissionsForUser(req.user);
+        req.permissions = permissions;
 
-      if (!allowed) {
-        const label = requirements
-          .map(([section, action]) => `${section}.${action}`)
-          .join(' | ');
-        return next(
-          new ApiError(
-            httpStatus.FORBIDDEN,
-            `You do not have permission to perform this action (${label}).`
-          )
+        const allowed = requirements.some(([section, action]) =>
+          can(permissions, section, action)
         );
-      }
 
-      return next();
-    } catch (error) {
-      return next(error);
-    }
-  };
+        if (!allowed) {
+          const label = requirements
+            .map(([section, action]) => `${section}.${action}`)
+            .join(' | ');
+          return next(
+            new ApiError(
+              httpStatus.FORBIDDEN,
+              `You do not have permission to perform this action (${label}).`
+            )
+          );
+        }
+
+        return next();
+      } catch (error) {
+        return next(error);
+      }
+    };
 
 module.exports = requirePermission;
 module.exports.requirePermission = requirePermission;

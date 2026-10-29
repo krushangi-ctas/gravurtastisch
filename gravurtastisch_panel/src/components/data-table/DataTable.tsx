@@ -376,17 +376,17 @@ function DataTable<TData>({
           'mrt-row-actions': {
             muiTableHeadCellProps: {
               className:
-                'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
+                'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
             },
           },
           'mrt-row-select': {
             muiTableHeadCellProps: {
               className:
-                'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
+                'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
             },
           },
         },
-        muiTableBodyRowProps: ({ row, table }) => {
+        muiTableBodyRowProps: ({ row: _row, table: _table }) => {
           return {
             sx: {
               backgroundColor: 'background.paper',
@@ -410,15 +410,15 @@ function DataTable<TData>({
         },
         muiTableHeadProps: {
           className:
-            'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
+            'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
         },
         muiTableHeadRowProps: {
           className:
-            'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
+            'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
         },
-        muiTableHeadCellProps: ({ column }) => ({
+        muiTableHeadCellProps: ({ column: _column }) => ({
           className:
-            'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700',
+            'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
           sx: {
             py: 1,
             px: 1.5,

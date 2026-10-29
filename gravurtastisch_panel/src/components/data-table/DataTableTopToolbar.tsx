@@ -1,8 +1,6 @@
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
-import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
-import NavbarToggleButton from '@/components/theme-layouts/components/navbar/NavbarToggleButton';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import {
 	MRT_GlobalFilterTextField,
@@ -72,7 +70,6 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 
 	const isMobile = useMediaQuery('(max-width:720px)');
 	const isTablet = useMediaQuery('(max-width:1024px)');
-	const isNavMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
 
 	const toolbarProps = parseFromValuesOrFunc(muiTopToolbarProps, { table });
 

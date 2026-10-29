@@ -538,11 +538,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 
 				{/* Bottom Action Footer */}
 				<DialogActions
-					className="px-4 sm:px-6 py-3 bg-slate-50/90 border-t border-slate-200 flex justify-end gap-3 shrink-0"
+					className="px-4 sm:px-6 py-3 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 shrink-0"
 					sx={{
 						flexShrink: 0,
-						borderTop: '1px solid #e2e8f0',
-						bgcolor: '#f8fafc',
 						px: { xs: 2, sm: 3 },
 						py: 1.5
 					}}
@@ -550,7 +548,7 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 					<Button
 						onClick={onClose}
 						disabled={isPending}
-						className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
+						className="capitalize text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
 						sx={{
 							borderRadius: '12px',
 							textTransform: 'capitalize'
@@ -562,15 +560,13 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 						type="submit"
 						variant="contained"
 						disabled={isPending}
-						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm hover:shadow-md transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
 						startIcon={
 							<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
 								{isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
 							</FuseSvgIcon>
 						}
 						sx={{
-							bgcolor: 'primary.main',
-							'&:hover': { bgcolor: 'primary.dark' },
 							borderRadius: '12px',
 							textTransform: 'capitalize',
 							px: { xs: 2.5, sm: 3.5 },

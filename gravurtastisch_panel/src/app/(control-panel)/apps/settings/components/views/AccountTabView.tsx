@@ -316,10 +316,10 @@ function AccountTabView() {
     ? isExpired
       ? 'Plan has expired'
       : daysLeft === 0
-      ? 'Expires today'
-      : daysLeft === 1
-      ? 'Expires tomorrow'
-      : `${daysLeft} days remaining`
+        ? 'Expires today'
+        : daysLeft === 1
+          ? 'Expires tomorrow'
+          : `${daysLeft} days remaining`
     : 'Continuous access';
 
   const expiryDateText = expiryDate
@@ -378,11 +378,10 @@ function AccountTabView() {
           <button
             type="button"
             onClick={() => setActiveTab(0)}
-            className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${
-              activeTab === 0
+            className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 0
                 ? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
-            }`}
+              }`}
           >
             <FuseSvgIcon size={15}>lucide:circle-user</FuseSvgIcon>
             <span>Personal Information</span>
@@ -391,11 +390,10 @@ function AccountTabView() {
           <button
             type="button"
             onClick={() => setActiveTab(1)}
-            className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${
-              activeTab === 1
+            className={`h-8 px-4 rounded-lg text-xs sm:text-sm font-semibold transition-all flex items-center gap-2 cursor-pointer border-0 ${activeTab === 1
                 ? 'bg-white dark:bg-slate-900 text-primary-700 dark:text-primary-400 shadow-xs'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white bg-transparent'
-            }`}
+              }`}
           >
             <FuseSvgIcon size={15}>lucide:credit-card</FuseSvgIcon>
             <span>Subscription</span>
@@ -525,77 +523,37 @@ function AccountTabView() {
 
               <fieldset disabled={!canEdit} className={!canEdit ? 'pointer-events-none opacity-80 border-0 p-0 m-0' : 'border-0 p-0 m-0'}>
 
-              {/* Form Input Grid (3 columns in a single row) */}
-              <div className={`grid grid-cols-1 ${isSeller ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'} gap-5`}>
-                {/* Name Field */}
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="name"
-                    className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
-                  >
-                    Full Name <span className="text-red-500 font-bold ml-0.5">*</span>
-                  </label>
-                  <Controller
-                    control={control}
-                    name="name"
-                    render={({ field }) => (
-                      <FormControl className="w-full">
-                        <TextField
-                          {...field}
-                          placeholder="Enter your full name"
-                          id="name"
-                          error={!!errors.name}
-                          helperText={errors?.name?.message}
-                          required
-                          fullWidth
-                          inputProps={{ maxLength: 60 }}
-                          slotProps={{
-                            input: {
-                              className:
-                                'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
-                              startAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
-                                  <FuseSvgIcon size={18}>lucide:user</FuseSvgIcon>
-                                </div>
-                              ),
-                            },
-                          }}
-                        />
-                      </FormControl>
-                    )}
-                  />
-                </div>
-
-                {/* Business Name Field (Only for Sellers) */}
-                {isSeller && (
+                {/* Form Input Grid (3 columns in a single row) */}
+                <div className={`grid grid-cols-1 ${isSeller ? 'md:grid-cols-2 lg:grid-cols-4' : 'md:grid-cols-3'} gap-5`}>
+                  {/* Name Field */}
                   <div className="flex flex-col">
                     <label
-                      htmlFor="businessName"
+                      htmlFor="name"
                       className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                     >
-                      Business / Brand Name <span className="text-red-500 font-bold ml-0.5">*</span>
+                      Full Name <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
                     <Controller
                       control={control}
-                      name="businessName"
+                      name="name"
                       render={({ field }) => (
                         <FormControl className="w-full">
                           <TextField
                             {...field}
-                            placeholder="Enter your business or brand name"
-                            id="businessName"
-                            error={!!errors.businessName}
-                            helperText={errors?.businessName?.message}
+                            placeholder="Enter your full name"
+                            id="name"
+                            error={!!errors.name}
+                            helperText={errors?.name?.message}
                             required
                             fullWidth
-                            inputProps={{ maxLength: 100 }}
+                            inputProps={{ maxLength: 60 }}
                             slotProps={{
                               input: {
                                 className:
                                   'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
                                 startAdornment: (
                                   <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
-                                    <FuseSvgIcon size={18}>lucide:building-2</FuseSvgIcon>
+                                    <FuseSvgIcon size={18}>lucide:user</FuseSvgIcon>
                                   </div>
                                 ),
                               },
@@ -605,120 +563,160 @@ function AccountTabView() {
                       )}
                     />
                   </div>
-                )}
 
-                {/* Contact Number Field */}
-                <div className="flex flex-col">
-                  <label
-                    htmlFor="contact_no"
-                    className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
-                  >
-                    Contact Number <span className="text-red-500 font-bold ml-0.5">*</span>
-                  </label>
-                  <Controller
-                    control={control}
-                    name="contact_no"
-                    render={({ field }) => (
-                      <FormControl className="w-full">
-                        <TextField
-                          {...field}
-                          onKeyDown={(e) => {
-                            if (e.key === '-') {
-                              e.preventDefault();
-                            }
-                          }}
-                          onChange={(e) => {
-                            field.onChange(e.target.value.replace(/-/g, ''));
-                          }}
-                          placeholder="Enter your contact number (10-20 digits)"
-                          id="contact_no"
-                          error={!!errors.contact_no}
-                          helperText={errors?.contact_no?.message}
-                          required
-                          fullWidth
-                          inputProps={{ maxLength: 20 }}
-                          slotProps={{
-                            input: {
-                              className:
-                                'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
-                              startAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
-                                  <FuseSvgIcon size={18}>lucide:phone</FuseSvgIcon>
-                                </div>
-                              ),
-                            },
-                          }}
-                        />
-                      </FormControl>
-                    )}
-                  />
-                </div>
+                  {/* Business Name Field (Only for Sellers) */}
+                  {isSeller && (
+                    <div className="flex flex-col">
+                      <label
+                        htmlFor="businessName"
+                        className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
+                      >
+                        Business / Brand Name <span className="text-red-500 font-bold ml-0.5">*</span>
+                      </label>
+                      <Controller
+                        control={control}
+                        name="businessName"
+                        render={({ field }) => (
+                          <FormControl className="w-full">
+                            <TextField
+                              {...field}
+                              placeholder="Enter your business or brand name"
+                              id="businessName"
+                              error={!!errors.businessName}
+                              helperText={errors?.businessName?.message}
+                              required
+                              fullWidth
+                              inputProps={{ maxLength: 100 }}
+                              slotProps={{
+                                input: {
+                                  className:
+                                    'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
+                                  startAdornment: (
+                                    <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
+                                      <FuseSvgIcon size={18}>lucide:building-2</FuseSvgIcon>
+                                    </div>
+                                  ),
+                                },
+                              }}
+                            />
+                          </FormControl>
+                        )}
+                      />
+                    </div>
+                  )}
 
-                {/* Email Field */}
-                <div className="flex flex-col">
-                  <div className="flex items-center justify-between mb-1.5">
+                  {/* Contact Number Field */}
+                  <div className="flex flex-col">
                     <label
-                      htmlFor="email"
-                      className="text-sm font-semibold text-slate-800 dark:text-slate-100 block"
+                      htmlFor="contact_no"
+                      className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                     >
-                      Email Address
+                      Contact Number <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
-                      <FuseSvgIcon size={12} className="text-slate-400">lucide:lock</FuseSvgIcon>
-                      Primary Login
-                    </span>
+                    <Controller
+                      control={control}
+                      name="contact_no"
+                      render={({ field }) => (
+                        <FormControl className="w-full">
+                          <TextField
+                            {...field}
+                            onKeyDown={(e) => {
+                              if (e.key === '-') {
+                                e.preventDefault();
+                              }
+                            }}
+                            onChange={(e) => {
+                              field.onChange(e.target.value.replace(/-/g, ''));
+                            }}
+                            placeholder="Enter your contact number (10-20 digits)"
+                            id="contact_no"
+                            error={!!errors.contact_no}
+                            helperText={errors?.contact_no?.message}
+                            required
+                            fullWidth
+                            inputProps={{ maxLength: 20 }}
+                            slotProps={{
+                              input: {
+                                className:
+                                  'bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 focus-within:bg-white dark:focus-within:bg-slate-800 rounded-xl h-11 text-sm font-medium transition-all shadow-xs',
+                                startAdornment: (
+                                  <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
+                                    <FuseSvgIcon size={18}>lucide:phone</FuseSvgIcon>
+                                  </div>
+                                ),
+                              },
+                            }}
+                          />
+                        </FormControl>
+                      )}
+                    />
                   </div>
-                  <Controller
-                    control={control}
-                    name="email"
-                    render={({ field }) => (
-                      <FormControl className="w-full">
-                        <TextField
-                          {...field}
-                          id="email"
-                          placeholder="your.email@example.com"
-                          variant="outlined"
-                          fullWidth
-                          disabled
-                          error={!!errors.email}
-                          helperText={errors?.email?.message || 'Email address is permanently linked to your account'}
-                          slotProps={{
-                            input: {
-                              className:
-                                'bg-slate-100/70 dark:bg-slate-800/30 rounded-xl h-11 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-not-allowed border border-slate-200/80 dark:border-slate-700/60',
-                              startAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
-                                  <FuseSvgIcon size={18}>lucide:mail</FuseSvgIcon>
-                                </div>
-                              ),
-                              endAdornment: (
-                                <div className="text-slate-400 dark:text-slate-500 ml-2 flex items-center">
-                                  <FuseSvgIcon size={16}>lucide:lock</FuseSvgIcon>
-                                </div>
-                              ),
-                            },
-                          }}
-                        />
-                      </FormControl>
-                    )}
-                  />
-                </div>
-              </div>
 
-              {/* Security & Privacy Notice Banner */}
-              <div className="rounded-2xl border border-sky-100 dark:border-sky-900/40 bg-linear-to-r from-sky-50/70 via-blue-50/30 to-indigo-50/20 dark:from-slate-800/60 dark:to-slate-900/60 p-4 sm:p-5 flex items-start gap-4 shadow-xs">
-                <div className="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-400/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
-                  <FuseSvgIcon size={20}>lucide:shield-check</FuseSvgIcon>
+                  {/* Email Field */}
+                  <div className="flex flex-col">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label
+                        htmlFor="email"
+                        className="text-sm font-semibold text-slate-800 dark:text-slate-100 block"
+                      >
+                        Email Address
+                      </label>
+                      <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
+                        <FuseSvgIcon size={12} className="text-slate-400">lucide:lock</FuseSvgIcon>
+                        Primary Login
+                      </span>
+                    </div>
+                    <Controller
+                      control={control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormControl className="w-full">
+                          <TextField
+                            {...field}
+                            id="email"
+                            placeholder="your.email@example.com"
+                            variant="outlined"
+                            fullWidth
+                            disabled
+                            error={!!errors.email}
+                            helperText={errors?.email?.message || 'Email address is permanently linked to your account'}
+                            slotProps={{
+                              input: {
+                                className:
+                                  'bg-slate-100/70 dark:bg-slate-800/30 rounded-xl h-11 text-sm font-medium text-slate-600 dark:text-slate-400 cursor-not-allowed border border-slate-200/80 dark:border-slate-700/60',
+                                startAdornment: (
+                                  <div className="text-slate-400 dark:text-slate-500 mr-2.5 flex items-center">
+                                    <FuseSvgIcon size={18}>lucide:mail</FuseSvgIcon>
+                                  </div>
+                                ),
+                                endAdornment: (
+                                  <div className="text-slate-400 dark:text-slate-500 ml-2 flex items-center">
+                                    <FuseSvgIcon size={16}>lucide:lock</FuseSvgIcon>
+                                  </div>
+                                ),
+                              },
+                            }}
+                          />
+                        </FormControl>
+                      )}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Typography className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                    Security & Privacy Protection
-                  </Typography>
-                  <Typography className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                    Your profile name and avatar will appear across reports, notifications, and communications. Your data is encrypted and securely stored.
-                  </Typography>
+
+                {/* Security & Privacy Notice Banner */}
+                <div className="rounded-2xl border border-sky-100 dark:border-sky-900/40 bg-linear-to-r from-sky-50/70 via-blue-50/30 to-indigo-50/20 dark:from-slate-800/60 dark:to-slate-900/60 p-4 sm:p-5 flex items-start gap-4 shadow-xs">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 dark:bg-blue-400/20 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
+                    <FuseSvgIcon size={20}>lucide:shield-check</FuseSvgIcon>
+                  </div>
+                  <div>
+                    <Typography className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                      Security & Privacy Protection
+                    </Typography>
+                    <Typography className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
+                      Your profile name and avatar will appear across reports, notifications, and communications. Your data is encrypted and securely stored.
+                    </Typography>
+                  </div>
                 </div>
-              </div>
               </fieldset>
             </div>
 
@@ -892,13 +890,12 @@ function AccountTabView() {
                   <Chip
                     label={`${remainingRequests.toLocaleString()} remaining`}
                     size="small"
-                    className={`font-semibold text-xs ${
-                      usagePercent >= 90
+                    className={`font-semibold text-xs ${usagePercent >= 90
                         ? 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-300'
                         : usagePercent >= 75
-                        ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300'
-                        : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300'
-                    }`}
+                          ? 'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-300'
+                          : 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300'
+                      }`}
                   />
                 </div>
               </div>
@@ -917,8 +914,8 @@ function AccountTabView() {
                         usagePercent >= 90
                           ? 'linear-gradient(90deg, #f87171, #ef4444)'
                           : usagePercent >= 75
-                          ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
-                          : 'linear-gradient(90deg, #10b981, #059669)',
+                            ? 'linear-gradient(90deg, #fbbf24, #f59e0b)'
+                            : 'linear-gradient(90deg, #10b981, #059669)',
                     },
                   }}
                 />
