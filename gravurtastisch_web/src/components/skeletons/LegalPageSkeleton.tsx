@@ -10,27 +10,29 @@ export function LegalPageSkeleton() {
       <Nav />
 
       {/* Header Skeleton */}
-      <section className="relative pt-32 pb-16 lg:pt-36 lg:pb-20 bg-gradient-to-b from-navy-deep to-navy text-white">
+      <section className="relative pt-32 pb-14 lg:pt-36 lg:pb-16 bg-gradient-to-b from-[#0032ab]/6 via-white to-transparent border-b border-border/40">
         <Container className="max-w-4xl space-y-4">
-          <Skeleton className="h-4 w-28 bg-white/15" />
-          <Skeleton className="h-10 w-64 bg-white/20 rounded-2xl" />
-          <Skeleton className="h-4 w-40 bg-white/10" />
+          <Skeleton className="h-5 w-28 rounded-full bg-brand/15" />
+          <Skeleton className="h-10 w-64 bg-slate-200/90 rounded-2xl" />
+          <Skeleton className="h-4 w-44 bg-slate-200/60" />
         </Container>
       </section>
 
       {/* Content Skeleton */}
-      <section className="py-14 bg-surface">
-        <Container className="max-w-4xl space-y-8">
-          {[1, 2, 3].map((section) => (
-            <div key={section} className="space-y-4">
-              <Skeleton className="h-7 w-52 bg-slate-200" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full bg-slate-100" />
-                <Skeleton className="h-4 w-full bg-slate-100" />
-                <Skeleton className="h-4 w-4/5 bg-slate-100" />
+      <section className="py-12 bg-surface/50">
+        <Container className="max-w-4xl">
+          <div className="rounded-3xl bg-white dark:bg-navy-deep/80 border border-brand/10 p-6 sm:p-10 space-y-6 shadow-xs">
+            {[1, 2, 3].map((section) => (
+              <div key={section} className="space-y-3">
+                <Skeleton className="h-7 w-52 bg-slate-200" />
+                <div className="space-y-2">
+                  <Skeleton className="h-4 w-full bg-slate-100" />
+                  <Skeleton className="h-4 w-full bg-slate-100" />
+                  <Skeleton className="h-4 w-4/5 bg-slate-100" />
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </Container>
       </section>
 

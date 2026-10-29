@@ -4,7 +4,6 @@ const httpStatus = require('http-status');
 const ordermodel = require('../models/order.model');
 const User = require('../models/user.model');
 const GeneralSettingModel = require('../models/generalSetting.model');
-const moment = require('moment');
 const { getEffectivePlanLimits, syncUserMonthlyUsage } = require('./plan.service');
 
 const getOrderList = async (filter = {}, options = {}, userId) => {
@@ -325,9 +324,8 @@ const updateFeedback = async (refIds, userId) => {
 
     let warningMessage = '';
     if (allowedOrders.length < parsedRefIds.length) {
-      warningMessage = ` (${
-        parsedRefIds.length - allowedOrders.length
-      } orders were skipped because they belong to inactive marketplaces).`;
+      warningMessage = ` (${parsedRefIds.length - allowedOrders.length
+        } orders were skipped because they belong to inactive marketplaces).`;
     }
 
     return {
@@ -338,9 +336,8 @@ const updateFeedback = async (refIds, userId) => {
         0,
         maxReviewRequestsPerMonth - newTotalUsed
       ),
-      message: `Successfully scheduled review request${
-        allowedIds.length > 1 ? 's' : ''
-      }${warningMessage}.`,
+      message: `Successfully scheduled review request${allowedIds.length > 1 ? 's' : ''
+        }${warningMessage}.`,
       status: 200,
     };
   } catch (error) {

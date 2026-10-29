@@ -532,9 +532,9 @@ function AmazonSpApiPage() {
         {/* ========================================================================= */}
         {/* 3. ENDPOINTS & TECHNICAL SPECS: Developer REST Explorer */}
         {/* ========================================================================= */}
-        <section className="relative py-16 lg:py-24 bg-white dark:bg-[#070b19] overflow-hidden border-b border-[#0032ab]/10">
-          <Container className="relative">
-            <Reveal>
+        <section className="relative py-16 lg:py-24 bg-white dark:bg-[#070b19] overflow-hidden border-b border-[#0032ab]/10 w-full max-w-full">
+          <Container className="relative w-full max-w-full min-w-0">
+            <Reveal className="w-full max-w-full min-w-0">
               <div className="max-w-3xl mb-10">
                 <span className="section-badge mb-3">
                   {t('amazonSpApi.endpointsSectionBadge', 'Integration architecture')}
@@ -549,23 +549,23 @@ function AmazonSpApiPage() {
             </Reveal>
 
             {/* 4 Crisp Endpoints in Balanced 2x2 Grid with Developer Console Bento Styling */}
-            <div className="grid md:grid-cols-2 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-w-0 max-w-full">
               {apiEndpoints.map((ep, i) => {
                 const isCopied = copiedEndpoint === ep.endpoint;
                 return (
-                  <Reveal key={ep.id} delay={i * 60} className="h-full">
-                    <div className="group relative h-full rounded-3xl bg-white dark:bg-[#0b132b] border border-slate-200/90 dark:border-white/10 p-6 shadow-sm hover:shadow-xl hover:shadow-[#0032ab]/08 hover:border-[#0032ab]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
+                  <Reveal key={ep.id} delay={i * 60} className="h-full w-full min-w-0 max-w-full">
+                    <div className="group relative h-full rounded-3xl bg-white dark:bg-[#0b132b] border border-slate-200/90 dark:border-white/10 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:shadow-[#0032ab]/08 hover:border-[#0032ab]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden w-full min-w-0 max-w-full">
                       {/* Top gradient highlight on hover */}
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0032ab] via-[#4f6ef7] to-[#155dfc] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
-                      <div>
+                      <div className="w-full min-w-0">
                         {/* Header with high-contrast method badge */}
-                        <div className="flex items-center justify-between gap-3 mb-3.5">
-                          <h3 className="font-bold text-navy-deep dark:text-white text-base group-hover:text-[#0032ab] transition-colors">
+                        <div className="flex items-center justify-between gap-2.5 mb-3.5 min-w-0">
+                          <h3 className="font-bold text-navy-deep dark:text-white text-base group-hover:text-[#0032ab] transition-colors truncate min-w-0 flex-1">
                             {ep.name}
                           </h3>
                           <span
-                            className={`px-3 py-1 rounded-full text-[10.5px] font-mono font-extrabold uppercase tracking-wider shadow-2xs flex items-center gap-1.5 ${
+                            className={`shrink-0 px-2.5 sm:px-3 py-1 rounded-full text-[10.5px] font-mono font-extrabold uppercase tracking-wider shadow-2xs flex items-center gap-1.5 ${
                               ep.method === "POST"
                                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300"
                                 : ep.method === "GET"
@@ -587,8 +587,8 @@ function AmazonSpApiPage() {
                         </div>
 
                         {/* URL Pill with Copy Icon and interactive feedback */}
-                        <div className="group/code flex items-center justify-between gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-white/06 border border-slate-200/90 dark:border-white/10 group-hover:border-[#0032ab]/30 font-mono text-[11px] mb-3.5 shadow-2xs transition-colors">
-                          <span className="truncate text-navy-deep dark:text-white font-mono font-medium">
+                        <div className="group/code flex items-center justify-between gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-white/06 border border-slate-200/90 dark:border-white/10 group-hover:border-[#0032ab]/30 font-mono text-[11px] mb-3.5 shadow-2xs transition-colors w-full min-w-0 max-w-full">
+                          <span className="truncate min-w-0 flex-1 text-navy-deep dark:text-white font-mono font-medium">
                             {ep.endpoint}
                           </span>
                           <button
@@ -599,11 +599,11 @@ function AmazonSpApiPage() {
                           >
                             {isCopied ? (
                               <>
-                                <Check className="w-3.5 h-3.5 text-emerald-600" />
+                                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                                 <span className="text-[10px] text-emerald-600 font-bold hidden sm:inline">Copied!</span>
                               </>
                             ) : (
-                              <Copy className="w-3.5 h-3.5 text-slate-500 hover:text-[#0032ab]" />
+                              <Copy className="w-3.5 h-3.5 text-slate-500 hover:text-[#0032ab] shrink-0" />
                             )}
                           </button>
                         </div>
@@ -615,8 +615,8 @@ function AmazonSpApiPage() {
                       </div>
 
                       {/* Footer Specs with animated heartbeat */}
-                      <div className="mt-6 pt-3.5 border-t border-slate-100 dark:border-white/08 flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-2 text-slate-500 font-mono">
+                      <div className="mt-6 pt-3.5 border-t border-slate-100 dark:border-white/08 flex items-center justify-between gap-2 text-xs min-w-0">
+                        <span className="flex items-center gap-2 text-slate-500 font-mono shrink-0">
                           <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -626,7 +626,7 @@ function AmazonSpApiPage() {
                             {ep.status}
                           </strong>
                         </span>
-                        <span className="font-mono text-[10.5px] px-2 py-0.5 rounded bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-400 font-semibold border border-slate-200/80 dark:border-white/08">
+                        <span className="font-mono text-[10.5px] px-2 py-0.5 rounded bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-400 font-semibold border border-slate-200/80 dark:border-white/08 shrink-0">
                           REST 1.0 JSON
                         </span>
                       </div>

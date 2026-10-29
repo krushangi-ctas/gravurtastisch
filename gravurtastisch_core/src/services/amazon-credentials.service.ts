@@ -1,6 +1,5 @@
 // @ts-nocheck
 const AmazonCredentialsModel = require('../models/amazon-credentials.model');
-const User = require('../models/user.model');
 const logger = require('../config/logger');
 const mongoose = require('mongoose');
 const { getEffectivePlanLimits } = require('./plan.service');

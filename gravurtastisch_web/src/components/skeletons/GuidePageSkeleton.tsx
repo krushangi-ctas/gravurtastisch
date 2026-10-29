@@ -10,11 +10,11 @@ export function GuidePageSkeleton() {
       <Nav />
 
       {/* Guide Hero Skeleton */}
-      <section className="relative pt-32 pb-20 lg:pt-36 lg:pb-24 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white">
+      <section className="relative pt-24 pb-12 lg:pt-28 lg:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border-b border-[#0032ab]/12 overflow-hidden">
         <Container className="text-center max-w-3xl space-y-5">
-          <Skeleton className="h-6 w-32 rounded-full bg-white/15 mx-auto" />
-          <Skeleton className="h-10 sm:h-12 w-3/4 bg-white/20 rounded-2xl mx-auto" />
-          <Skeleton className="h-4 w-full max-w-xl bg-white/10 mx-auto" />
+          <Skeleton className="h-6 w-32 rounded-full bg-slate-400/20 mx-auto" />
+          <Skeleton className="h-10 sm:h-12 w-3/4 bg-slate-400/25 rounded-2xl mx-auto" />
+          <Skeleton className="h-4 w-full max-w-xl bg-slate-400/15 mx-auto" />
         </Container>
       </section>
 

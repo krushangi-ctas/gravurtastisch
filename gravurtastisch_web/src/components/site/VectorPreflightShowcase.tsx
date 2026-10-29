@@ -2,7 +2,7 @@ import React from "react";
 import { useTranslation } from "react-i18next";
 import { Container } from "./Container";
 import { Reveal } from "./Reveal";
-import { Sparkles, CheckCircle2, Sliders, ShieldCheck, ArrowRight } from "lucide-react";
+import { CheckCircle2, Sliders, ShieldCheck, ArrowRight } from "lucide-react";
 
 /**
  * Bespoke Vector Pre-Flight & Optical Curvature Astrolabe SVG
@@ -337,8 +337,7 @@ export function VectorPreflightShowcase() {
             <Reveal delay={120}>
               <div>
                 <span className="section-badge mb-3">
-                  <Sparkles className="h-3.5 w-3.5 text-brand shrink-0" />
-                  <span>{t("vectorPreflight.badge", "STUDIO PRE-FLIGHT INTELLIGENCE")}</span>
+                  {t("vectorPreflight.badge", "STUDIO PRE-FLIGHT INTELLIGENCE")}
                 </span>
 
                 <h2 className="mt-3 text-2xl sm:text-3xl lg:text-[2.25rem] font-extrabold tracking-tight text-navy-deep leading-[1.18]">

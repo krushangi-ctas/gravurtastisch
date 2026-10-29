@@ -13,7 +13,7 @@ Drawer.displayName = "Drawer";
 
 const DrawerTrigger = DrawerPrimitive.Trigger;
 
-const DrawerPortal = DrawerPrimitive.Portal;
+const DrawerPortal = DrawerPrimitive.Portal as any;
 
 const DrawerClose = DrawerPrimitive.Close;
 
