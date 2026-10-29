@@ -319,13 +319,15 @@ function OrderSyncPage() {
             <div className="grid lg:grid-cols-12 gap-6 items-stretch">
               {/* Left Column (Hero Bento Card): Continuous 5-Minute Ingestion Console */}
               <Reveal className="lg:col-span-5 flex" delay={50}>
-                <div className="w-full rounded-[2rem] liquid-glass bg-white text-navy-deep p-7 sm:p-8 flex flex-col justify-between border border-white/80 shadow-[0_16px_45px_rgba(0,50,171,0.08)] relative overflow-hidden group">
+                <div className="w-full rounded-[2rem] bg-gradient-to-b from-white via-[#fbfdff] to-[#f4f8fe] dark:bg-navy/90 text-navy-deep p-7 sm:p-8 flex flex-col justify-between border border-[#0032ab]/16 shadow-[0_16px_40px_rgba(0,50,171,0.08)] hover:shadow-[0_20px_50px_rgba(0,50,171,0.12)] transition-all duration-300 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-bl from-[#0032ab]/08 via-[#4f6ef7]/05 to-transparent rounded-full blur-2xl pointer-events-none" />
+                  
                   <div>
                     <div className="flex items-center justify-between gap-3 mb-6">
-                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/30 grid place-items-center">
+                      <div className="h-12 w-12 rounded-2xl bg-gradient-to-tr from-[#0032ab] via-[#155dfc] to-[#38bdf8] text-white shadow-lg shadow-[#0032ab]/25 grid place-items-center group-hover:scale-105 transition-transform">
                         <RefreshCw className="h-6 w-6 animate-[spin_8s_linear_infinite]" />
                       </div>
-                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
+                      <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-white text-[#0032ab] border border-[#0032ab]/20 shadow-xs">
                         <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                         {t('orderSync.bentoCard1Badge') || "Continuous Ingestion"}
                       </span>
@@ -339,64 +341,86 @@ function OrderSyncPage() {
                     </p>
 
                     {/* Interactive Live Stream Visualizer */}
-                    <div className="mt-6 rounded-2xl bg-[#f8f9fc] border border-slate-200/90 p-4 space-y-2.5">
-                      <div className="flex items-center justify-between text-xs text-slate-500 font-mono">
-                        <span className="flex items-center gap-1.5 font-semibold text-navy-deep">
+                    <div className="mt-6 rounded-2xl bg-white dark:bg-[#0b132b] border border-[#0032ab]/16 p-4.5 space-y-3 shadow-xs">
+                      <div className="flex items-center justify-between text-xs text-slate-500 font-mono pb-2 border-b border-slate-100 dark:border-white/06">
+                        <span className="flex items-center gap-2 font-bold text-navy-deep dark:text-white">
                           <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                          LIVE studio API STREAM
+                          LIVE STREAM // SP-API INGESTION
                         </span>
-                        <span className="text-[#0032ab] font-bold">POLLING: 5m</span>
+                        <span className="text-[#0032ab] dark:text-[#4f6ef7] font-extrabold bg-[#0032ab]/08 px-2 py-0.5 rounded">
+                          POLLING: 5m
+                        </span>
                       </div>
 
                       {/* Mini Live Stream Chips */}
-                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200/80 text-xs shadow-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                          <span className="font-mono text-navy-deep font-extrabold">#114-8923019</span>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 dark:bg-white/03 border border-slate-200/80 dark:border-white/08 text-xs hover:border-[#0032ab]/30 transition-all">
+                          <div className="flex items-center gap-2.5">
+                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
+                            <div>
+                              <span className="font-mono text-navy-deep dark:text-white font-extrabold block">#114-8923019</span>
+                              <span className="text-[10px] text-slate-400">Hydration Tumbler (360° Laser)</span>
+                            </div>
+                          </div>
+                          <span className="text-[11px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2.5 py-1 rounded-md border border-[#0032ab]/20">
+                            Ingested (FBA)
+                          </span>
                         </div>
-                        <span className="text-[11px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2 py-0.5 rounded border border-[#0032ab]/20">Ingested (FBA)</span>
-                      </div>
 
-                      <div className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200/80 text-xs shadow-xs">
-                        <div className="flex items-center gap-2">
-                          <span className="h-2 w-2 rounded-full bg-[#155dfc]" />
-                          <span className="font-mono text-navy-deep font-extrabold">#402-9918231</span>
+                        <div className="flex items-center justify-between p-2.5 rounded-xl bg-slate-50/80 dark:bg-white/03 border border-slate-200/80 dark:border-white/08 text-xs hover:border-[#0032ab]/30 transition-all">
+                          <div className="flex items-center gap-2.5">
+                            <span className="h-2.5 w-2.5 rounded-full bg-[#155dfc] shrink-0" />
+                            <div>
+                              <span className="font-mono text-navy-deep dark:text-white font-extrabold block">#402-9918231</span>
+                              <span className="text-[10px] text-slate-400">European Oak Board (Vector Etch)</span>
+                            </div>
+                          </div>
+                          <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-md border border-emerald-200">
+                            Verified (Delivered)
+                          </span>
                         </div>
-                        <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">Verified (Delivered)</span>
                       </div>
                     </div>
                   </div>
 
-                  <div className="mt-8 pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500 font-mono">
-                    <span>Latency: &lt; 1.8s Response</span>
-                    <span className="text-[#0032ab] font-bold">100% Automated Flow →</span>
+                  <div className="mt-6 pt-4 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs text-slate-500 font-mono">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      Latency: &lt; 1.8s Response
+                    </span>
+                    <span className="text-[#0032ab] dark:text-[#4f6ef7] font-extrabold flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                      100% Automated Flow →
+                    </span>
                   </div>
                 </div>
               </Reveal>
 
               {/* Right Column (Stacked Capability Rows): 3 Distinct Modular Strips */}
-              <div className="lg:col-span-7 flex flex-col justify-between gap-4">
+              <div className="lg:col-span-7 flex flex-col gap-4 justify-start">
                 {/* Capability 1: Return & Refund Guardrails */}
                 <Reveal delay={100}>
-                  <div className="group relative rounded-2xl liquid-glass border border-[#0032ab]/12 p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="group relative rounded-2xl bg-gradient-to-r from-white via-[#fbfdff] to-white dark:bg-navy/80 border border-[#0032ab]/14 p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,50,171,0.05)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:border-[#0032ab]/30 hover:-translate-y-0.5 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
                         <ShieldAlert className="h-5 w-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h3 className="text-base sm:text-lg font-bold text-navy-deep group-hover:text-brand transition-colors">{t('orderSync.bentoCap1Title') || "Return & Refund Guardrails"}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
+                          <h3 className="text-base sm:text-lg font-extrabold text-navy-deep group-hover:text-brand transition-colors">
+                            {t('orderSync.bentoCap1Title') || "Return & Refund Guardrails"}
+                          </h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
                             {t('orderSync.bentoCap1Tag') || "Auto-Suppression"}
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed">
+                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed max-w-xl">
                           {t('orderSync.bentoCap1Desc') || "If a customer initiates a return or cancellation, Gravurtastisch immediately cancels the production job to prevent soliciting dissatisfied buyers."}
                         </p>
                       </div>
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                      <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                      <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 shadow-2xs flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         0 Bad Custom orders
                       </span>
                     </div>
@@ -405,25 +429,30 @@ function OrderSyncPage() {
 
                 {/* Capability 2: Granular SKU & ASIN Filtering */}
                 <Reveal delay={150}>
-                  <div className="group relative rounded-2xl liquid-glass border border-[#0032ab]/12 p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="group relative rounded-2xl bg-gradient-to-r from-white via-[#fbfdff] to-white dark:bg-navy/80 border border-[#0032ab]/14 p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,50,171,0.05)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:border-[#0032ab]/30 hover:-translate-y-0.5 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#155dfc] to-[#38bdf8] text-white shadow-md shadow-[#155dfc]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
                         <Filter className="h-5 w-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h3 className="text-base sm:text-lg font-bold text-navy-deep group-hover:text-brand transition-colors">{t('orderSync.bentoCap2Title') || "Granular SKU & ASIN Filtering"}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
+                          <h3 className="text-base sm:text-lg font-extrabold text-navy-deep group-hover:text-brand transition-colors">
+                            {t('orderSync.bentoCap2Title') || "Granular SKU & ASIN Filtering"}
+                          </h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
                             {t('orderSync.bentoCap2Tag') || "Catalog Control"}
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed">
+                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed max-w-xl">
                           {t('orderSync.bentoCap2Desc') || "Exclude specific items, bundles, or low-margin SKUs from review solicitations with easy toggle rules per marketplace."}
                         </p>
                       </div>
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                      <span className="text-[11px] font-bold text-brand bg-[#0032ab]/10 border border-[#0032ab]/20 px-3 py-1 rounded-full">
+                      <span className="text-[11px] font-extrabold text-[#0032ab] bg-blue-50/90 border border-blue-200/90 px-3 py-1 rounded-full shadow-2xs flex items-center gap-1.5">
+                        <span className="h-2 w-3.5 rounded-full bg-emerald-500/20 border border-emerald-500 flex items-center justify-end px-0.5">
+                          <span className="h-1 w-1 rounded-full bg-emerald-600" />
+                        </span>
                         Rule Toggles
                       </span>
                     </div>
@@ -432,31 +461,63 @@ function OrderSyncPage() {
 
                 {/* Capability 3: 12+ Global Marketplaces */}
                 <Reveal delay={200}>
-                  <div className="group relative rounded-2xl liquid-glass border border-[#0032ab]/12 p-5 sm:p-6 shadow-[0_4px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:-translate-y-1 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                  <div className="group relative rounded-2xl bg-gradient-to-r from-white via-[#fbfdff] to-white dark:bg-navy/80 border border-[#0032ab]/14 p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,50,171,0.05)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:border-[#0032ab]/30 hover:-translate-y-0.5 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-4">
-                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-[#0032ab] to-[#155dfc] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#0032ab] to-[#06b6d4] text-white shadow-md shadow-[#0032ab]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
                         <Globe2 className="h-5 w-5" />
                       </div>
                       <div>
                         <div className="flex items-center gap-2 flex-wrap mb-1">
-                          <h3 className="text-base sm:text-lg font-bold text-navy-deep group-hover:text-brand transition-colors">{t('orderSync.bentoCap3Title') || "12+ Global Marketplaces"}</h3>
-                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
+                          <h3 className="text-base sm:text-lg font-extrabold text-navy-deep group-hover:text-brand transition-colors">
+                            {t('orderSync.bentoCap3Title') || "12+ Global Marketplaces"}
+                          </h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
                             {t('orderSync.bentoCap3Tag') || "Multi-Market"}
                           </span>
                         </div>
-                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed">
+                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed max-w-xl">
                           {t('orderSync.bentoCap3Desc') || "Sync orders simultaneously across North America (US, CA, MX), Europe (UK, DE, FR, IT, ES), Far East (JP, AU), and India (IN)."}
                         </p>
                       </div>
                     </div>
                     <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
-                      <div className="flex items-center gap-1.5 text-sm p-1 px-2 rounded-lg bg-slate-50 border border-slate-200">
+                      <div className="flex items-center gap-1.5 text-sm p-1.5 px-2.5 rounded-xl bg-white border border-[#0032ab]/18 shadow-xs">
                         <FlagGB className="w-4 h-2.5 rounded-[2px] shadow-xs" />
                         <FlagDE className="w-4 h-2.5 rounded-[2px] shadow-xs" />
                         <FlagFR className="w-4 h-2.5 rounded-[2px] shadow-xs" />
                         <FlagIT className="w-4 h-2.5 rounded-[2px] shadow-xs" />
                         <FlagES className="w-4 h-2.5 rounded-[2px] shadow-xs" />
                       </div>
+                    </div>
+                  </div>
+                </Reveal>
+
+                {/* Capability 4: Automated Dispatch & Tracking */}
+                <Reveal delay={250}>
+                  <div className="group relative rounded-2xl bg-gradient-to-r from-white via-[#fbfdff] to-white dark:bg-navy/80 border border-[#0032ab]/14 p-5 sm:p-5.5 shadow-[0_4px_20px_rgba(0,50,171,0.05)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.12)] hover:border-[#0032ab]/30 hover:-translate-y-0.5 transition-all duration-300 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                    <div className="flex items-start gap-4">
+                      <div className="h-11 w-11 rounded-2xl bg-gradient-to-tr from-[#155dfc] to-[#0ea5e9] text-white shadow-md shadow-[#155dfc]/25 grid place-items-center shrink-0 group-hover:scale-105 transition-transform">
+                        <Truck className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="flex items-center gap-2 flex-wrap mb-1">
+                          <h3 className="text-base sm:text-lg font-extrabold text-navy-deep group-hover:text-brand transition-colors">
+                            {t('orderSync.bentoCap4Title') || "Automated Dispatch & Tracking"}
+                          </h3>
+                          <span className="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#0032ab]/10 text-brand border border-[#0032ab]/20">
+                            {t('orderSync.bentoCap4Tag') || "Instant Relay"}
+                          </span>
+                        </div>
+                        <p className="text-xs sm:text-sm text-slate-body leading-relaxed max-w-xl">
+                          {t('orderSync.bentoCap4Desc') || "Tracking numbers and carrier fulfillment updates sync back to Amazon SP-API and your storefronts instantly upon dispatch."}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="shrink-0 flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100">
+                      <span className="text-[11px] font-extrabold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200 shadow-2xs flex items-center gap-1.5">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        Auto-Carrier Push
+                      </span>
                     </div>
                   </div>
                 </Reveal>
@@ -1183,410 +1244,398 @@ function OrderSyncHeroSvg() {
 function OrderSyncFaqSvg() {
   return (
     <svg
-      viewBox="0 0 540 500"
+      viewBox="0 0 540 450"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Real-Time Amazon Order Tracking & Automated Review Dispatch Hub"
+      aria-label="Real-Time Amazon Order Sync & Multi-Carrier Dispatch Router"
     >
       <defs>
         {/* Soft Drop Shadows */}
-        <filter id="hub-shadow-sm" x="-10%" y="-10%" width="120%" height="125%">
-          <feDropShadow dx="0" dy="6" stdDeviation="10" floodColor="#282828" floodOpacity="0.06" />
+        <filter id="router-deck-shadow" x="-4%" y="-4%" width="108%" height="112%">
+          <feDropShadow dx="0" dy="8" stdDeviation="12" floodColor="#0032ab" floodOpacity="0.08" />
         </filter>
-        <filter id="hub-shadow-md" x="-12%" y="-12%" width="124%" height="130%">
-          <feDropShadow dx="0" dy="10" stdDeviation="14" floodColor="#282828" floodOpacity="0.08" />
-        </filter>
-        <filter id="hub-glow-brand" x="-30%" y="-30%" width="160%" height="160%">
-          <feGaussianBlur stdDeviation="4" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        <filter id="pod-card-shadow" x="-6%" y="-6%" width="112%" height="118%">
+          <feDropShadow dx="0" dy="4" stdDeviation="5" floodColor="#0032ab" floodOpacity="0.06" />
         </filter>
 
-        {/* Clean Brand Gradients */}
-        <linearGradient id="hub-card-bg" x1="0" y1="0" x2="1" y2="1">
+        {/* Brand Gradients */}
+        <linearGradient id="chassis-grad" x1="0" y1="0" x2="1" y2="1">
           <stop offset="0%" stopColor="#FFFFFF" />
-          <stop offset="100%" stopColor="#F8FAFC" />
+          <stop offset="50%" stopColor="#FAFDFE" />
+          <stop offset="100%" stopColor="#F1F6FE" />
         </linearGradient>
 
-        <linearGradient id="hub-conveyor-track" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#E7E5E4" />
-          <stop offset="50%" stopColor="#4f6ef7" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#E7E5E4" />
-        </linearGradient>
-
-        <linearGradient id="hub-beam-active" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4f6ef7" />
-          <stop offset="50%" stopColor="#0032ab" />
-          <stop offset="100%" stopColor="#1d4ed8" />
-        </linearGradient>
-
-        {/* 3D Box Gradients (Craft Parcel 1: Tan) */}
-        <linearGradient id="box-top-amber" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#F8FAFC" />
-          <stop offset="100%" stopColor="#4f6ef7" />
-        </linearGradient>
-        <linearGradient id="box-left-amber" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id="neon-cyan-grad" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stopColor="#0032ab" />
-          <stop offset="100%" stopColor="#1d4ed8" />
-        </linearGradient>
-        <linearGradient id="box-right-amber" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#4f6ef7" />
-          <stop offset="100%" stopColor="#1e40af" />
+          <stop offset="50%" stopColor="#2563eb" />
+          <stop offset="100%" stopColor="#06b6d4" />
         </linearGradient>
 
-        {/* 3D Box Gradients (Craft Parcel 2: Sky / Sapphire Blue) */}
-        <linearGradient id="box-top-cyan" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#38bdf8" />
-          <stop offset="100%" stopColor="#0284c7" />
-        </linearGradient>
-        <linearGradient id="box-left-cyan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0369a1" />
-          <stop offset="100%" stopColor="#075985" />
-        </linearGradient>
-        <linearGradient id="box-right-cyan" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stopColor="#0ea5e9" />
-          <stop offset="100%" stopColor="#0284c7" />
+        <linearGradient id="gold-star-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stopColor="#F59E0B" />
+          <stop offset="50%" stopColor="#FCD34D" />
         </linearGradient>
 
-        {/* Laser Scanner Light */}
-        <linearGradient id="hub-laser-scan" x1="0" y1="0" x2="1" y2="0">
-          <stop offset="0%" stopColor="#4f6ef7" stopOpacity="0" />
-          <stop offset="50%" stopColor="#4f6ef7" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#4f6ef7" stopOpacity="0" />
+        <linearGradient id="pod-bg-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor="#FFFFFF" />
+          <stop offset="100%" stopColor="#F8FAFD" />
+        </linearGradient>
+
+        <linearGradient id="divider-fade-grad" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stopColor="#0032ab" stopOpacity="0.05" />
+          <stop offset="50%" stopColor="#0032ab" stopOpacity="0.25" />
+          <stop offset="100%" stopColor="#0032ab" stopOpacity="0.05" />
         </linearGradient>
       </defs>
 
-      {/* ==================================================== */}
-      {/* 1. BACKGROUND CONNECTING LOGISTICS FLOW PIPES */}
-      {/* ==================================================== */}
-      {/* Curved Pipe from Top-Left to Center Hub */}
+      {/* ========================================================================= */}
+      {/* 1. UNIQUE CHAMFERED CYBER-DECK CHASSIS (NOT USED ANYWHERE ELSE ON SITE) */}
+      {/* ========================================================================= */}
       <path
-        d="M 120 135 C 120 190, 270 180, 270 230"
-        fill="none"
-        stroke="url(#hub-beam-active)"
-        strokeWidth="2.5"
-        strokeDasharray="6 6"
-      >
-        <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.4s" repeatCount="indefinite" />
-      </path>
+        d="M 28 8 L 512 8 L 532 28 L 532 422 L 512 442 L 28 442 L 8 422 L 8 28 Z"
+        fill="url(#chassis-grad)"
+        stroke="#0032ab"
+        strokeWidth="1.2"
+        strokeOpacity="0.18"
+        filter="url(#router-deck-shadow)"
+      />
 
-      {/* Curved Pipe from Top-Right to Center Hub */}
-      <path
-        d="M 420 135 C 420 190, 270 180, 270 230"
-        fill="none"
-        stroke="url(#hub-beam-active)"
-        strokeWidth="2.5"
-        strokeDasharray="6 6"
-      >
-        <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.4s" repeatCount="indefinite" />
-      </path>
+      {/* Cybernetic Chamfered Corner Accent Brackets */}
+      <path d="M 12 40 L 12 28 L 28 12 L 44 12" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.6" fill="none" />
+      <path d="M 528 40 L 528 28 L 512 12 L 496 12" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.6" fill="none" />
+      <path d="M 12 410 L 12 422 L 28 438 L 44 438" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.6" fill="none" />
+      <path d="M 528 410 L 528 422 L 512 438 L 496 438" stroke="#2563eb" strokeWidth="2" strokeLinecap="round" strokeOpacity="0.6" fill="none" />
 
-      {/* Pipe from Center Hub to Bottom Dispatch Station */}
-      <path
-        d="M 270 290 L 270 345"
-        fill="none"
-        stroke="url(#hub-beam-active)"
-        strokeWidth="2.5"
-        strokeDasharray="6 6"
-      >
-        <animate attributeName="stroke-dashoffset" values="0;-24" dur="1.1s" repeatCount="indefinite" />
-      </path>
+      {/* ========================================================================= */}
+      {/* 2. TOP HUD DISPLAY BAR (y: 16 to 52) */}
+      {/* ========================================================================= */}
+      <g transform="translate(24, 20)">
+        {/* macOS Status Beads */}
+        <circle cx="8" cy="12" r="4" fill="#10b981" />
+        <circle cx="20" cy="12" r="4" fill="#3b82f6" />
+        <circle cx="32" cy="12" r="4" fill="#06b6d4" />
 
-      {/* Flowing Energy Photons */}
-      <circle cx="0" cy="0" r="3.5" fill="#4f6ef7" filter="url(#hub-glow-brand)">
-        <animateMotion
-          path="M 120 135 C 120 190, 270 180, 270 230"
-          dur="1.8s"
-          repeatCount="indefinite"
-        />
-      </circle>
-      <circle cx="0" cy="0" r="3.5" fill="#4f6ef7" filter="url(#hub-glow-brand)">
-        <animateMotion
-          path="M 420 135 C 420 190, 270 180, 270 230"
-          dur="1.8s"
-          repeatCount="indefinite"
-        />
-      </circle>
-
-      {/* ==================================================== */}
-      {/* 2. TOP-LEFT CARD: FBA CARRIER TRACKING RADAR */}
-      {/* ==================================================== */}
-      <g transform="translate(18, 20)" filter="url(#hub-shadow-sm)">
-        <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -4; 0 0"
-            dur="4s"
-            repeatCount="indefinite"
-          />
-          {/* Card Frame */}
-          <rect
-            x="0"
-            y="0"
-            width="235"
-            height="125"
-            rx="16"
-            fill="url(#hub-card-bg)"
-            stroke="#4f6ef7"
-            strokeWidth="1"
-            strokeOpacity="0.4"
-          />
-
-          {/* Header Bar */}
-          <g transform="translate(14, 14)">
-            <rect x="0" y="0" width="82" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-            <FlagDE x={6} y={5.5} width={14} height={9} />
-            <text x="47" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              FBA PRIME
-            </text>
-            <text x="92" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
-              Carrier Sync
-            </text>
-          </g>
-
-          {/* 3D Parcel Preview */}
-          <g transform="translate(38, 76)">
-            {/* Box Top */}
-            <polygon points="0,-16 18,-26 36,-16 18,-6" fill="url(#box-top-amber)" stroke="#4f6ef7" strokeWidth="0.6" />
-            {/* Box Left */}
-            <polygon points="0,-16 18,-6 18,18 0,8" fill="url(#box-left-amber)" stroke="#1d4ed8" strokeWidth="0.6" />
-            {/* Box Right */}
-            <polygon points="18,-6 36,-16 36,8 18,18" fill="url(#box-right-amber)" stroke="#0032ab" strokeWidth="0.6" />
-            {/* Amazon Smile Curve */}
-            <path d="M 22 4 Q 28 9 33 3" fill="none" stroke="#0032ab" strokeWidth="1.8" strokeLinecap="round" />
-          </g>
-
-          {/* Order Info */}
-          <g transform="translate(85, 48)">
-            <text x="0" y="0" fill="#0b132b" fontFamily="monospace" fontSize="10.5" fontWeight="800">
-              #114-8923019
-            </text>
-            <text x="0" y="14" fill="#78716C" fontFamily="system-ui" fontSize="8.5">
-              SKU: <tspan fill="#0032ab" fontWeight="700">Hydration Pro</tspan>
-            </text>
-            {/* Status Pill */}
-            <g transform="translate(0, 22)">
-              <rect x="0" y="0" width="134" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-              <circle cx="9" cy="10" r="3" fill="#4f6ef7" />
-              <text x="18" y="13.5" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="700">
-                Delivered (Amazon Log.)
-              </text>
-            </g>
-          </g>
-        </g>
-      </g>
-
-      {/* ==================================================== */}
-      {/* 3. TOP-RIGHT CARD: FBM MERCHANT FULFILLED SYNC */}
-      {/* ==================================================== */}
-      <g transform="translate(287, 20)" filter="url(#hub-shadow-sm)">
-        <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -5; 0 0"
-            dur="4.5s"
-            repeatCount="indefinite"
-          />
-          {/* Card Frame */}
-          <rect
-            x="0"
-            y="0"
-            width="235"
-            height="125"
-            rx="16"
-            fill="url(#hub-card-bg)"
-            stroke="#4f6ef7"
-            strokeWidth="1"
-            strokeOpacity="0.4"
-          />
-
-          {/* Header Bar */}
-          <g transform="translate(14, 14)">
-            <rect x="0" y="0" width="84" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-            <FlagGB x={6} y={5.5} width={14} height={9} />
-            <text x="49" y="14" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="9" fontWeight="800">
-              FBM / MFN
-            </text>
-            <text x="94" y="14" fill="#78716C" fontFamily="system-ui" fontSize="9" fontWeight="600">
-              Multi-Carrier
-            </text>
-          </g>
-
-          {/* 3D Cyan Cyber Parcel Preview */}
-          <g transform="translate(38, 76)">
-            {/* Box Top */}
-            <polygon points="0,-16 18,-26 36,-16 18,-6" fill="url(#box-top-cyan)" stroke="#38bdf8" strokeWidth="0.8" />
-            {/* Box Left */}
-            <polygon points="0,-16 18,-6 18,18 0,8" fill="url(#box-left-cyan)" stroke="#0284c7" strokeWidth="0.8" />
-            {/* Box Right */}
-            <polygon points="18,-6 36,-16 36,8 18,18" fill="url(#box-right-cyan)" stroke="#0369a1" strokeWidth="0.8" />
-            {/* Tape */}
-            <line x1="16" y1="-17" x2="22" y2="-14" stroke="#e0f2fe" strokeWidth="2" opacity="0.9" />
-          </g>
-
-          {/* Order Info */}
-          <g transform="translate(85, 48)">
-            <text x="0" y="0" fill="#0b132b" fontFamily="monospace" fontSize="10.5" fontWeight="800">
-              #402-9918231
-            </text>
-            <text x="0" y="14" fill="#78716C" fontFamily="system-ui" fontSize="8.5">
-              Carrier: <tspan fill="#0032ab" fontWeight="700">UPS / FedEx</tspan>
-            </text>
-            {/* Status Pill */}
-            <g transform="translate(0, 22)">
-              <rect x="0" y="0" width="134" height="20" rx="6" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-              <circle cx="9" cy="10" r="3" fill="#4f6ef7" />
-              <text x="18" y="13.5" fill="#0b132b" fontFamily="system-ui" fontSize="8" fontWeight="700">
-                Tracking Auto-Matched
-              </text>
-            </g>
-          </g>
-        </g>
-      </g>
-
-      {/* ==================================================== */}
-      {/* 4. CENTER: INTELLIGENT LOGISTICS & RETURN AUDIT HUB */}
-      {/* ==================================================== */}
-      <g transform="translate(270, 235)" filter="url(#hub-shadow-md)">
-        {/* Ambient Outer Halo */}
-        <circle cx="0" cy="0" r="50" fill="#F8FAFC" stroke="#E7E5E4" strokeWidth="1.5" />
-        <circle cx="0" cy="0" r="42" fill="#FFFFFF" stroke="#4f6ef7" strokeWidth="2" opacity="0.9" />
-
-        {/* Rotating Tech Gyro */}
-        <circle cx="0" cy="0" r="46" fill="none" stroke="#4f6ef7" strokeWidth="1.5" strokeDasharray="10 12">
-          <animateTransform
-            attributeName="transform"
-            type="rotate"
-            from="0"
-            to="360"
-            dur="15s"
-            repeatCount="indefinite"
-          />
-        </circle>
-
-        {/* Central Core Shield */}
-        <circle cx="0" cy="0" r="28" fill="#0032ab" stroke="#155dfc" strokeWidth="1.5" />
-        <text x="0" y="7" textAnchor="middle" fontSize="17" fill="#FFFFFF">
-          🛡️
+        {/* Engine Monospace Title */}
+        <text x="46" y="16" fill="#0032ab" fontFamily="monospace" fontSize="9.5" fontWeight="800" letterSpacing="0.8">
+          GRAVURTASTISCH // REAL-TIME LOGISTICS ROUTER
         </text>
 
-        {/* Left Floating Metric Tag */}
-        <g transform="translate(-160, -14)">
-          <rect x="0" y="0" width="120" height="28" rx="8" fill="rgba(0,50,171,0.08)" stroke="#155dfc" strokeWidth="1" />
-          <circle cx="12" cy="14" r="3.5" fill="#155dfc">
-            <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
+        {/* Right Status Badge */}
+        <g transform="translate(354, 0)">
+          <rect width="138" height="24" rx="12" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
+          <circle cx="12" cy="12" r="3" fill="#10b981">
+            <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite" />
           </circle>
-          <text x="22" y="17" fill="#0032ab" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
-            0 Returns Detected
-          </text>
-        </g>
-
-        {/* Right Floating Metric Tag */}
-        <g transform="translate(42, -14)">
-          <rect x="0" y="0" width="120" height="28" rx="8" fill="rgba(16,185,129,0.08)" stroke="#10b981" strokeWidth="1" />
-          <circle cx="12" cy="14" r="3.5" fill="#10b981">
-            <animate attributeName="opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite" />
-          </circle>
-          <text x="22" y="17" fill="#059669" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
-            Safe to Solicit ✓
+          <text x="22" y="15.5" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">
+            CONTINUOUS 5m SYNC
           </text>
         </g>
       </g>
 
-      {/* ==================================================== */}
-      {/* 5. BOTTOM CARD: 5-DAY OPTIMAL REVIEW DISPATCH CONSOLE */}
-      {/* ==================================================== */}
-      <g transform="translate(18, 345)" filter="url(#hub-shadow-sm)">
-        <g>
-          <animateTransform
-            attributeName="transform"
-            type="translate"
-            values="0 0; 0 -4; 0 0"
-            dur="3.8s"
-            repeatCount="indefinite"
-          />
-          {/* Main Card Frame */}
-          <rect
-            x="0"
-            y="0"
-            width="504"
-            height="135"
-            rx="18"
-            fill="url(#hub-card-bg)"
-            stroke="#4f6ef7"
-            strokeWidth="1"
-            strokeOpacity="0.5"
-          />
+      <line x1="16" y1="52" x2="524" y2="52" stroke="url(#divider-fade-grad)" strokeWidth="1" />
 
-          {/* Console Header */}
-          <g transform="translate(20, 20)">
-            <rect x="0" y="0" width="145" height="22" rx="6" fill="rgba(0,50,171,0.08)" stroke="#155dfc" strokeWidth="0.8" />
-            <text x="72" y="15" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
-              SOLICITATION PIPELINE
+      {/* ========================================================================= */}
+      {/* 3. UPPER DECK: 3 SYNCHRONIZED MULTI-CARRIER LANES (y: 64 to 186) */}
+      {/* ========================================================================= */}
+
+      {/* LANE 1 (Left, x: 22): FBA Prime Ingestion */}
+      <g transform="translate(22, 64)" filter="url(#pod-card-shadow)">
+        <rect width="158" height="118" rx="14" fill="url(#pod-bg-grad)" stroke="#0032ab" strokeWidth="1" strokeOpacity="0.16" />
+        
+        {/* Header Pill */}
+        <g transform="translate(10, 10)">
+          <rect width="68" height="18" rx="5" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+          <text x="34" y="12.5" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="8" fontWeight="800">
+            FBA PRIME
+          </text>
+          <text x="76" y="13" fill="#64748b" fontFamily="system-ui" fontSize="8" fontWeight="600">
+            Amazon DE
+          </text>
+        </g>
+
+        {/* Order Info */}
+        <g transform="translate(12, 38)">
+          <text x="0" y="10" fill="#0b132b" fontFamily="monospace" fontSize="10" fontWeight="800">
+            #114-8923019
+          </text>
+          <text x="0" y="21" fill="#64748b" fontFamily="system-ui" fontSize="8">
+            SKU: Matte Tumbler (Laser)
+          </text>
+        </g>
+
+        {/* Isometric 3D Delivery Box */}
+        <g transform="translate(118, 54)">
+          <polygon points="14,0 28,7 14,14 0,7" fill="#60a5fa" />
+          <polygon points="0,7 14,14 14,28 0,21" fill="#2563eb" />
+          <polygon points="14,14 28,7 28,21 14,28" fill="#1d4ed8" />
+          <path d="M 5 15 Q 10 20 15 15" stroke="#FFFFFF" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+        </g>
+
+        {/* Status Pill */}
+        <g transform="translate(10, 88)">
+          <rect width="138" height="20" rx="6" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="0.8" />
+          <circle cx="8" cy="10" r="2.5" fill="#10b981" />
+          <text x="16" y="13" fill="#059669" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+            ✓ Ingested &amp; Logged
+          </text>
+        </g>
+      </g>
+
+      {/* LANE 2 (Center, x: 191): MFN Multi-Carrier Relay */}
+      <g transform="translate(191, 64)" filter="url(#pod-card-shadow)">
+        <rect width="158" height="118" rx="14" fill="url(#pod-bg-grad)" stroke="#0032ab" strokeWidth="1" strokeOpacity="0.16" />
+
+        {/* Header Pill */}
+        <g transform="translate(10, 10)">
+          <rect width="66" height="18" rx="5" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="0.8" />
+          <text x="33" y="12.5" textAnchor="middle" fill="#059669" fontFamily="system-ui" fontSize="8" fontWeight="800">
+            FBM / MFN
+          </text>
+          <text x="74" y="13" fill="#64748b" fontFamily="system-ui" fontSize="8" fontWeight="600">
+            DHL / UPS
+          </text>
+        </g>
+
+        {/* Order Info */}
+        <g transform="translate(12, 38)">
+          <text x="0" y="10" fill="#0b132b" fontFamily="monospace" fontSize="10" fontWeight="800">
+            #402-9918231
+          </text>
+          <text x="0" y="21" fill="#64748b" fontFamily="system-ui" fontSize="8">
+            SKU: Oak Board (0.8mm)
+          </text>
+        </g>
+
+        {/* Delivery Truck Vector Icon */}
+        <g transform="translate(118, 52)">
+          <rect x="0" y="5" width="16" height="14" rx="2" fill="#0032ab" />
+          <path d="M 16 9 L 23 9 L 26 14 L 26 19 L 16 19 Z" fill="#2563eb" />
+          <circle cx="5" cy="20" r="3" fill="#0b132b" />
+          <circle cx="21" cy="20" r="3" fill="#0b132b" />
+          <circle cx="5" cy="20" r="1.2" fill="#FFFFFF" />
+          <circle cx="21" cy="20" r="1.2" fill="#FFFFFF" />
+        </g>
+
+        {/* Status Pill */}
+        <g transform="translate(10, 88)">
+          <rect width="138" height="20" rx="6" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
+          <circle cx="8" cy="10" r="2.5" fill="#2563eb" />
+          <text x="16" y="13" fill="#0032ab" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+            ✓ Tracking Auto-Matched
+          </text>
+        </g>
+      </g>
+
+      {/* LANE 3 (Right, x: 360): Studio Direct / Wholesale */}
+      <g transform="translate(360, 64)" filter="url(#pod-card-shadow)">
+        <rect width="158" height="118" rx="14" fill="url(#pod-bg-grad)" stroke="#0032ab" strokeWidth="1" strokeOpacity="0.16" />
+
+        {/* Header Pill */}
+        <g transform="translate(10, 10)">
+          <rect width="78" height="18" rx="5" fill="#fdf4ff" stroke="#f0abfc" strokeWidth="0.8" />
+          <text x="39" y="12.5" textAnchor="middle" fill="#9333ea" fontFamily="system-ui" fontSize="8" fontWeight="800">
+            B2B / STUDIO
+          </text>
+          <text x="86" y="13" fill="#64748b" fontFamily="system-ui" fontSize="8" fontWeight="600">
+            Direct Synced
+          </text>
+        </g>
+
+        {/* Order Info */}
+        <g transform="translate(12, 38)">
+          <text x="0" y="10" fill="#0b132b" fontFamily="monospace" fontSize="10" fontWeight="800">
+            #B2B-CH-4419
+          </text>
+          <text x="0" y="21" fill="#64748b" fontFamily="system-ui" fontSize="8">
+            SKU: Studio Hoodie (Tajima)
+          </text>
+        </g>
+
+        {/* Precision Laser / Stitch Vector */}
+        <g transform="translate(120, 52)">
+          <circle cx="12" cy="12" r="10" fill="none" stroke="#9333ea" strokeWidth="1.5" strokeDasharray="3 3" />
+          <circle cx="12" cy="12" r="4" fill="#a855f7" />
+          <path d="M 12 2 L 12 6 M 12 18 L 12 22 M 2 12 L 6 12 M 18 12 L 22 12" stroke="#9333ea" strokeWidth="1.5" />
+        </g>
+
+        {/* Status Pill */}
+        <g transform="translate(10, 88)">
+          <rect width="138" height="20" rx="6" fill="#fdf4ff" stroke="#f0abfc" strokeWidth="0.8" />
+          <circle cx="8" cy="10" r="2.5" fill="#9333ea" />
+          <text x="16" y="13" fill="#7e22ce" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+            ✓ Proof Artwork Bound
+          </text>
+        </g>
+      </g>
+
+      {/* ========================================================================= */}
+      {/* 4. MIDDLE DECK: GUARDRAILS & 5-30 DAY SOLICITATION STEPPER (y: 196 to 330) */}
+      {/* ========================================================================= */}
+      <g transform="translate(22, 196)" filter="url(#pod-card-shadow)">
+        <rect
+          width="496"
+          height="130"
+          rx="16"
+          fill="#FFFFFF"
+          stroke="#0032ab"
+          strokeWidth="1"
+          strokeOpacity="0.15"
+        />
+
+        {/* SECTION A: Left Half - Return / Cancellation Auto-Suppression */}
+        <g transform="translate(16, 16)">
+          <rect width="32" height="32" rx="9" fill="#fef2f2" stroke="#fecaca" strokeWidth="1" />
+          <path d="M 16 6 L 24 9.5 C 24 17 20 21.5 16 24 C 12 21.5 8 17 8 9.5 Z" fill="#fee2e2" stroke="#dc2626" strokeWidth="1.6" />
+          <path d="M 13 15 L 19 15" stroke="#dc2626" strokeWidth="1.8" strokeLinecap="round" />
+
+          <g transform="translate(40, 4)">
+            <text x="0" y="10" fill="#0b132b" fontFamily="system-ui" fontSize="11" fontWeight="800">
+              Cancel &amp; Hold Guardrails
             </text>
-            <text x="160" y="15" fill="#0b132b" fontFamily="system-ui" fontSize="9.5" fontWeight="700">
-              ● Amazon 5-30 Day Window Active
-            </text>
-            <rect x="360" y="1" width="105" height="20" rx="5" fill="#F8FAFC" stroke="#4f6ef7" strokeWidth="0.8" />
-            <text x="412" y="14" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="700">
-              solicitations/v1
+            <text x="0" y="22" fill="#64748b" fontFamily="system-ui" fontSize="8">
+              Buyer cancellation triggers instant production hold
             </text>
           </g>
 
-          {/* Visual Step Progress Bar */}
-          <g transform="translate(30, 68)">
-            {/* Rail track */}
-            <line x1="0" y1="0" x2="444" y2="0" stroke="#E7E5E4" strokeWidth="5" strokeLinecap="round" />
-            {/* Active Range from Day 0 to Day 5 */}
-            <line x1="0" y1="0" x2="190" y2="0" stroke="#4f6ef7" strokeWidth="5" strokeLinecap="round" />
+          {/* 2 Safety Micro Badges */}
+          <g transform="translate(0, 46)">
+            <rect width="194" height="20" rx="6" fill="#fef2f2" stroke="#fecaca" strokeWidth="0.8" />
+            <circle cx="8" cy="10" r="2.5" fill="#dc2626" />
+            <text x="16" y="13.5" fill="#b91c1c" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+              0 Bad Custom Orders Solicited
+            </text>
+          </g>
 
-            {/* Point 1: Day 0 (Delivered) */}
-            <g transform="translate(0, 0)">
-              <circle cx="0" cy="0" r="9" fill="#0032ab" stroke="#155dfc" strokeWidth="1" />
-              <path d="M -3 0 L -1 2 L 3 -2" fill="none" stroke="#F8FAFC" strokeWidth="1.8" strokeLinecap="round" />
-              <text x="0" y="20" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
+          <g transform="translate(0, 72)">
+            <rect width="194" height="20" rx="6" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="0.8" />
+            <circle cx="8" cy="10" r="2.5" fill="#10b981" />
+            <text x="16" y="13.5" fill="#047857" fontFamily="monospace" fontSize="7.5" fontWeight="800">
+              ✓ Automated Return Freeze Active
+            </text>
+          </g>
+        </g>
+
+        {/* Center Vertical Divider */}
+        <line x1="228" y1="14" x2="228" y2="116" stroke="#0032ab" strokeWidth="0.8" strokeOpacity="0.12" />
+
+        {/* SECTION B: Right Half - Amazon 5-30 Day TOS Window Stepper */}
+        <g transform="translate(244, 16)">
+          <text x="0" y="10" fill="#0b132b" fontFamily="system-ui" fontSize="11" fontWeight="800">
+            Solicitation Pipeline (solicitations/v1)
+          </text>
+          <rect x="180" y="-2" width="60" height="16" rx="4" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.6" />
+          <text x="210" y="9.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7" fontWeight="800">
+            TOS COMPLIANT
+          </text>
+
+          <text x="0" y="24" fill="#64748b" fontFamily="system-ui" fontSize="8">
+            Amazon 5-30 day review solicitation window enforced
+          </text>
+
+          {/* Stepper Timeline Visualizer */}
+          <g transform="translate(0, 48)">
+            {/* Base Horizontal Track */}
+            <line x1="10" y1="10" x2="230" y2="10" stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" />
+            <line x1="10" y1="10" x2="115" y2="10" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" />
+
+            {/* Step 1: Day 0 */}
+            <g transform="translate(10, 10)">
+              <circle cx="0" cy="0" r="6" fill="#2563eb" />
+              <circle cx="0" cy="0" r="2" fill="#FFFFFF" />
+              <text x="0" y="17" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="7.5" fontWeight="800">
                 Day 0
               </text>
-              <text x="0" y="31" textAnchor="middle" fill="#78716C" fontFamily="system-ui" fontSize="7.5">
+              <text x="0" y="26" textAnchor="middle" fill="#64748b" fontFamily="system-ui" fontSize="6.5">
                 Delivered
               </text>
             </g>
 
-            {/* Point 2: Day 5 (Optimal Review Solicitation) */}
-            <g transform="translate(190, 0)">
-              <circle cx="0" cy="0" r="14" fill="#4f6ef7" filter="url(#hub-glow-brand)">
-                <animate attributeName="r" values="12;16;12" dur="2s" repeatCount="indefinite" />
+            {/* Step 2: Day 5 (Optimal Review Trigger) */}
+            <g transform="translate(115, 10)">
+              <circle cx="0" cy="0" r="10" fill="#F59E0B" fillOpacity="0.2">
+                <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
               </circle>
-              <circle cx="0" cy="0" r="7" fill="#FFFFFF" stroke="#0032ab" strokeWidth="2" />
-              <text x="0" y="22" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="9" fontWeight="900">
-                ★ Day 5 (Optimal)
+              <circle cx="0" cy="0" r="7" fill="url(#gold-star-grad)" stroke="#FFFFFF" strokeWidth="1.5" />
+              <polygon points="0,-3 1,-1 3,-1 1.5,0.5 2,2.5 0,1.2 -2,2.5 -1.5,0.5 -3,-1 -1,-1" fill="#FFFFFF" />
+              
+              <text x="0" y="18" textAnchor="middle" fill="#b45309" fontFamily="system-ui" fontSize="8" fontWeight="800">
+                Day 5 (Optimal)
               </text>
-              <text x="0" y="33" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
+              <text x="0" y="27" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="6.5" fontWeight="700">
                 Auto-Review Sent
               </text>
             </g>
 
-            {/* Point 3: Day 30 (Window Expiry) */}
-            <g transform="translate(444, 0)">
-              <circle cx="0" cy="0" r="8" fill="#A8A29E" />
-              <text x="0" y="20" textAnchor="middle" fill="#78716C" fontFamily="system-ui" fontSize="8.5" fontWeight="700">
+            {/* Step 3: Day 30 */}
+            <g transform="translate(230, 10)">
+              <circle cx="0" cy="5" r="5" fill="#94a3b8" />
+              <text x="0" y="17" textAnchor="middle" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
                 Day 30
               </text>
-              <text x="0" y="31" textAnchor="middle" fill="#A8A29E" fontFamily="system-ui" fontSize="7.5">
+              <text x="0" y="26" textAnchor="middle" fill="#94a3b8" fontFamily="system-ui" fontSize="6.5">
                 Window Closes
               </text>
             </g>
           </g>
 
-          {/* Footer Security Badge */}
-          <g transform="translate(20, 118)">
-            <text x="0" y="0" fill="#78716C" fontFamily="system-ui" fontSize="8">
-              Automatic 1-Request Deduplication Lock • Zero Spam &amp; Account Strike Safe
-            </text>
-          </g>
+          {/* Deduplication tag at bottom right */}
+          <text x="0" y="98" fill="#64748b" fontFamily="monospace" fontSize="7">
+            ✓ 1-Request Deduplication Lock · Strike Safe
+          </text>
+        </g>
+      </g>
+
+      {/* ========================================================================= */}
+      {/* 5. BOTTOM STATUS & REPUTATION TELEMETRY RIBBON (y: 338 to 392) */}
+      {/* ========================================================================= */}
+      <g transform="translate(22, 338)" filter="url(#pod-card-shadow)">
+        <rect
+          width="496"
+          height="52"
+          rx="14"
+          fill="#F8FAFD"
+          stroke="#0032ab"
+          strokeWidth="1"
+          strokeOpacity="0.16"
+        />
+
+        {/* Col 1: Sync Frequency */}
+        <g transform="translate(18, 14)">
+          <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="bold">
+            POLLING FREQUENCY
+          </text>
+          <circle cx="4" cy="22" r="3" fill="#10b981">
+            <animate attributeName="opacity" values="1;0.4;1" dur="1.8s" repeatCount="indefinite" />
+          </circle>
+          <text x="12" y="25" fill="#059669" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+            EVERY 5 MINUTES
+          </text>
+        </g>
+
+        <line x1="170" y1="10" x2="170" y2="42" stroke="#0032ab" strokeWidth="0.6" strokeOpacity="0.14" />
+
+        {/* Col 2: Multi-Marketplace Sync */}
+        <g transform="translate(185, 14)">
+          <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="bold">
+            GLOBAL MARKETPLACES
+          </text>
+          <text x="0" y="25" fill="#0032ab" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+            12+ CHANNELS SYNCED
+          </text>
+        </g>
+
+        <line x1="340" y1="10" x2="340" y2="42" stroke="#0032ab" strokeWidth="0.6" strokeOpacity="0.14" />
+
+        {/* Col 3: Safe Solicitations */}
+        <g transform="translate(355, 14)">
+          <text x="0" y="10" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="bold">
+            ACCOUNT SAFETY
+          </text>
+          <text x="0" y="25" fill="#2563eb" fontFamily="monospace" fontSize="9.5" fontWeight="800">
+            0 SELLER TOS STRIKES
+          </text>
         </g>
       </g>
     </svg>

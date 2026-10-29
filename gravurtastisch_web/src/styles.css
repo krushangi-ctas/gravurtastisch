@@ -271,6 +271,54 @@
   animation: pulse-ring 3s ease-in-out infinite;
 }
 
+@keyframes laser-sweep {
+  0% {
+    top: 10%;
+    opacity: 0.2;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    top: 90%;
+    opacity: 0.2;
+  }
+}
+
+.laser-sweep-line {
+  animation: laser-sweep 2.8s ease-in-out infinite alternate;
+}
+
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.orbit-spin-slow {
+  animation: orbit-spin 35s linear infinite;
+}
+
+@keyframes orbit-spin-rev {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.orbit-spin-slow-rev {
+  animation: orbit-spin-rev 45s linear infinite;
+}
+
+
 @keyframes bar-grow {
   from {
     transform: scaleY(0);

@@ -364,7 +364,21 @@
   },
   "legal": {
     "backToHome": "Back to home",
-    "lastUpdated": "Last updated"
+    "lastUpdated": "Last updated",
+    "badge": "Studio Compliance & Trust",
+    "statusActive": "Active & Enforced",
+    "tabPrivacy": "Privacy Policy",
+    "tabTerms": "Terms & Conditions",
+    "tabRefund": "Refund Policy",
+    "trustGdprTitle": "GDPR & DSGVO Compliant",
+    "trustGdprDesc": "Encrypted file transfer & strict privacy standards for all uploaded customer artwork.",
+    "trustProofTitle": "Proof-Gated Manufacturing",
+    "trustProofDesc": "Production starts only after your digital proof approval. Zero surprises.",
+    "trustSupportTitle": "Direct Human Support",
+    "trustSupportDesc": "Have questions about terms or orders? Our studio team typically answers within 1 business day.",
+    "needHelpTitle": "Need clarification on legal or order terms?",
+    "needHelpDesc": "We believe in complete transparency. Reach out to our legal and customer team anytime.",
+    "contactSupport": "Contact Legal Support"
   },
   "privacy": {
     "title": "Privacy Policy",
@@ -632,6 +646,9 @@
     "bentoCap3Title": "Multi-channel queues",
     "bentoCap3Tag": "Unified studio",
     "bentoCap3Desc": "DTC, marketplace, and wholesale orders share one proof-first pipeline.",
+    "bentoCap4Title": "Automated dispatch & tracking",
+    "bentoCap4Tag": "Instant relay",
+    "bentoCap4Desc": "Live tracking numbers, carrier labels, and fulfillment updates push back to Amazon & channels immediately upon ship.",
     "pipelineBadge": "Step-by-step flow",
     "pipelineHeading": "End-to-end order sync journey",
     "pipelineDesc": "See how a sale becomes a proof, then a finished personalized product.",
@@ -800,5 +817,17 @@
     "ctaDesc": "See proof, production, and delivery data in one place - grow your custom brand with confidence.",
     "ctaButton": "Place Custom Order",
     "ctaPricing": "View pricing plans"
+  },
+  "vectorPreflight": {
+    "badge": "STUDIO PRE-FLIGHT INTELLIGENCE",
+    "heading": "Automated vector inspection before a single laser fires.",
+    "desc": "Avoid wasted inventory from blurry logos, jagged low-res JPEGs, or warped cylinder wraps. Our studio pre-flight engine analyzes vector anchor points, compensates for conical taper, and validates engraving depth in real time.",
+    "feature1Title": "Contour & Anchor Point Optimization",
+    "feature1Desc": "Eliminates jagged edges and self-intersecting paths with 1200 DPI vector fidelity.",
+    "feature2Title": "360° Conical Taper Projection",
+    "feature2Desc": "Compensates for tumbler taper angles so logos wrap straight without barrel distortion.",
+    "feature3Title": "Substrate Etch Contrast Check",
+    "feature3Desc": "Validates optical contrast against stainless steel, slate, and solid wood.",
+    "cta": "Explore 4-Step Process →"
   }
 }
