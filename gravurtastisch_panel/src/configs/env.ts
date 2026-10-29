@@ -13,7 +13,6 @@ export const sendFeedbackUrl = `${baseBackendApiUrl}/order/update-feedback`;
 export const upoadImageUrl = `${baseBackendApiUrl}/users`;
 export const marketPlaceUrl = `${baseBackendApiUrl}/marketplace`;
 export const generalSettingUrl = `${baseBackendApiUrl}/general-setting`;
-const emailTemplateUrl = `${baseBackendApiUrl}/email-template`;
 export const amazonCredentialsUrl = `${baseBackendApiUrl}/amazon-credentials`;
 export const usersUrl = `${baseBackendApiUrl}/users`;
 export const rolesUrl = `${baseBackendApiUrl}/roles`;

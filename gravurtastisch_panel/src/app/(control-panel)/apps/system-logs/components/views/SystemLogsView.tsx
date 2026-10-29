@@ -539,11 +539,10 @@ export default function SystemLogsView() {
 
 					return (
 						<span
-							className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${
-								isSuper
+							className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium ${isSuper
 									? 'bg-amber-100/70 text-amber-800 dark:bg-amber-950/40 dark:text-amber-300 border border-amber-300 dark:border-amber-800'
 									: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
-							}`}
+								}`}
 						>
 							{roleName}
 						</span>
@@ -837,11 +836,10 @@ export default function SystemLogsView() {
 					size="small"
 					variant="outlined"
 					onClick={(e) => setDateAnchorEl(e.currentTarget)}
-					className={`h-[38px] text-xs font-medium px-3 rounded-lg border bg-white dark:bg-slate-800 ${
-						searchDate.from && searchDate.to
+					className={`h-[38px] text-xs font-medium px-3 rounded-lg border bg-white dark:bg-slate-800 ${searchDate.from && searchDate.to
 							? 'border-amber-500 text-amber-700 dark:text-amber-400 bg-amber-50/50 dark:bg-amber-950/20'
 							: 'border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300'
-					}`}
+						}`}
 					startIcon={
 						<FuseSvgIcon size={15} className="text-slate-500 dark:text-slate-400">
 							heroicons-outline:calendar
@@ -917,207 +915,207 @@ export default function SystemLogsView() {
 						}
 					}}
 				>
-						<DataTable
-							columns={columns}
-							data={logs}
-							tableId={`system-logs-grid-${activeScope}`}
-							title="System Logs"
-							subtitle="Audit user activities, data modifications, and system events with detailed operational history."
-							icon="lucide:scroll-text"
-							actionButtons={actionButtons}
-							onRefresh={handleRefresh}
-							enableRowActions
-							positionActionsColumn="last"
-							initialState={{
-								columnOrder: [
-									'name',
-									'email',
-									'role_name',
-									'operation',
-									'key',
-									'ip_address',
-									'createdAt',
-									'mrt-row-actions'
-								]
-							}}
-							displayColumnDefOptions={{
-								'mrt-row-actions': {
-									size: 70,
-									minSize: 60,
-									maxSize: 80,
-									header: 'Actions',
-									muiTableHeadCellProps: {
-										className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700 text-center',
-										sx: { width: '70px !important', minWidth: '60px !important' }
-									},
-									muiTableBodyCellProps: {
-										sx: { width: '70px !important', minWidth: '60px !important', px: '8px !important', textAlign: 'center' }
-									}
+					<DataTable
+						columns={columns}
+						data={logs}
+						tableId={`system-logs-grid-${activeScope}`}
+						title="System Logs"
+						subtitle="Audit user activities, data modifications, and system events with detailed operational history."
+						icon="lucide:scroll-text"
+						actionButtons={actionButtons}
+						onRefresh={handleRefresh}
+						enableRowActions
+						positionActionsColumn="last"
+						initialState={{
+							columnOrder: [
+								'name',
+								'email',
+								'role_name',
+								'operation',
+								'key',
+								'ip_address',
+								'createdAt',
+								'mrt-row-actions'
+							]
+						}}
+						displayColumnDefOptions={{
+							'mrt-row-actions': {
+								size: 70,
+								minSize: 60,
+								maxSize: 80,
+								header: 'Actions',
+								muiTableHeadCellProps: {
+									className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700 text-center',
+									sx: { width: '70px !important', minWidth: '60px !important' }
+								},
+								muiTableBodyCellProps: {
+									sx: { width: '70px !important', minWidth: '60px !important', px: '8px !important', textAlign: 'center' }
 								}
-							}}
-							enableRowSelection={false}
-							state={{
-								isLoading: isLoading || isFetching,
-								pagination,
-								globalFilter,
-								sorting
-							}}
-							onPaginationChange={setPagination}
-							onGlobalFilterChange={handleGlobalFilterChange}
-							onSortingChange={handleSortingChange}
-							manualPagination
-							manualFiltering
-							manualSorting
-							rowCount={totalResults}
-							pageCount={totalPages}
-							renderRowActions={({ row }: { row: MRT_Row<SystemLog> }) => (
-								<div className="flex items-center justify-center">
-									<Tooltip title="View Log Details" arrow>
-										<IconButton
-											size="small"
-											onClick={() => handleViewDetails(row.original)}
-											className="w-8 h-8 rounded-lg text-slate-600 hover:text-amber-600 hover:bg-amber-50 dark:text-slate-300 dark:hover:text-amber-400 dark:hover:bg-amber-950/30 transition-colors"
-										>
-											<FuseSvgIcon size={18}>heroicons-outline:eye</FuseSvgIcon>
-										</IconButton>
-									</Tooltip>
-								</div>
-							)}
-							muiTableProps={{
-								sx: {
-									tableLayout: 'auto',
-									minWidth: '100%',
-									'& .MuiTableCell-root': {
-										borderBottom: '1px solid',
-										borderColor: 'divider',
-										padding: '8px 12px',
-										overflow: 'hidden',
-										textOverflow: 'ellipsis',
-										whiteSpace: 'nowrap'
-									}
+							}
+						}}
+						enableRowSelection={false}
+						state={{
+							isLoading: isLoading || isFetching,
+							pagination,
+							globalFilter,
+							sorting
+						}}
+						onPaginationChange={setPagination}
+						onGlobalFilterChange={handleGlobalFilterChange}
+						onSortingChange={handleSortingChange}
+						manualPagination
+						manualFiltering
+						manualSorting
+						rowCount={totalResults}
+						pageCount={totalPages}
+						renderRowActions={({ row }: { row: MRT_Row<SystemLog> }) => (
+							<div className="flex items-center justify-center">
+								<Tooltip title="View Log Details" arrow>
+									<IconButton
+										size="small"
+										onClick={() => handleViewDetails(row.original)}
+										className="w-8 h-8 rounded-lg text-slate-600 hover:text-amber-600 hover:bg-amber-50 dark:text-slate-300 dark:hover:text-amber-400 dark:hover:bg-amber-950/30 transition-colors"
+									>
+										<FuseSvgIcon size={18}>heroicons-outline:eye</FuseSvgIcon>
+									</IconButton>
+								</Tooltip>
+							</div>
+						)}
+						muiTableProps={{
+							sx: {
+								tableLayout: 'auto',
+								minWidth: '100%',
+								'& .MuiTableCell-root': {
+									borderBottom: '1px solid',
+									borderColor: 'divider',
+									padding: '8px 12px',
+									overflow: 'hidden',
+									textOverflow: 'ellipsis',
+									whiteSpace: 'nowrap'
 								}
-							}}
-							muiTableHeadCellProps={{
-								className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700'
-							}}
-							muiBottomToolbarProps={{
-								className:
-									'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 overflow-x-auto',
-								sx: {
-									backgroundColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6',
-									borderTop: '1px solid',
-									borderColor: (theme: any) =>
-										theme.palette?.mode === 'dark' ? '#374151' : '#e5e7eb',
-									flexShrink: 0,
-									marginTop: 'auto',
-									position: 'sticky',
-									bottom: 0,
-									zIndex: 2,
+							}
+						}}
+						muiTableHeadCellProps={{
+							className: 'bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700'
+						}}
+						muiBottomToolbarProps={{
+							className:
+								'flex flex-row items-center justify-end min-h-[46px] h-[46px] py-0 px-2 sm:px-4 bg-gray-100 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 overflow-x-auto',
+							sx: {
+								backgroundColor: (theme: any) =>
+									theme.palette?.mode === 'dark' ? '#1f2937' : '#f3f4f6',
+								borderTop: '1px solid',
+								borderColor: (theme: any) =>
+									theme.palette?.mode === 'dark' ? '#374151' : '#e5e7eb',
+								flexShrink: 0,
+								marginTop: 'auto',
+								position: 'sticky',
+								bottom: 0,
+								zIndex: 2,
+								minHeight: '46px !important',
+								height: '46px !important',
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: { xs: 'center', sm: 'flex-end' },
+								'& .MuiTablePagination-root': {
+									overflow: 'visible',
+									width: 'auto',
 									minHeight: '46px !important',
 									height: '46px !important',
 									display: 'flex',
+									alignItems: 'center'
+								},
+								'& .MuiTablePagination-toolbar': {
+									flexWrap: 'nowrap',
 									alignItems: 'center',
 									justifyContent: { xs: 'center', sm: 'flex-end' },
-									'& .MuiTablePagination-root': {
-										overflow: 'visible',
-										width: 'auto',
-										minHeight: '46px !important',
-										height: '46px !important',
-										display: 'flex',
-										alignItems: 'center'
-									},
-									'& .MuiTablePagination-toolbar': {
-										flexWrap: 'nowrap',
-										alignItems: 'center',
-										justifyContent: { xs: 'center', sm: 'flex-end' },
-										gap: { xs: 0.5, sm: 1 },
-										minHeight: '46px !important',
-										height: '46px !important',
-										paddingLeft: { xs: 1, sm: 2 },
-										paddingRight: { xs: 1, sm: 2 },
-										py: '0 !important',
-										my: 'auto'
-									},
-									'& .MuiTablePagination-selectLabel': {
+									gap: { xs: 0.5, sm: 1 },
+									minHeight: '46px !important',
+									height: '46px !important',
+									paddingLeft: { xs: 1, sm: 2 },
+									paddingRight: { xs: 1, sm: 2 },
+									py: '0 !important',
+									my: 'auto'
+								},
+								'& .MuiTablePagination-selectLabel': {
+									fontSize: { xs: '11px', sm: '13px' },
+									margin: '0 !important',
+									lineHeight: '1.2 !important',
+									display: 'inline-flex',
+									alignItems: 'center'
+								},
+								'& .MuiTablePagination-displayedRows': {
+									fontSize: { xs: '11px', sm: '13px' },
+									margin: '0 !important'
+								},
+								'& .MuiTablePagination-input': {
+									marginRight: { xs: 0.5, sm: 1 },
+									marginLeft: 0.5,
+									display: 'inline-flex',
+									alignItems: 'center',
+									'& .MuiSelect-select': {
+										paddingTop: '3px !important',
+										paddingBottom: '3px !important',
 										fontSize: { xs: '11px', sm: '13px' },
-										margin: '0 !important',
-										lineHeight: '1.2 !important',
 										display: 'inline-flex',
 										alignItems: 'center'
-									},
-									'& .MuiTablePagination-displayedRows': {
-										fontSize: { xs: '11px', sm: '13px' },
-										margin: '0 !important'
-									},
-									'& .MuiTablePagination-input': {
-										marginRight: { xs: 0.5, sm: 1 },
-										marginLeft: 0.5,
-										display: 'inline-flex',
-										alignItems: 'center',
-										'& .MuiSelect-select': {
-											paddingTop: '3px !important',
-											paddingBottom: '3px !important',
-											fontSize: { xs: '11px', sm: '13px' },
-											display: 'inline-flex',
-											alignItems: 'center'
-										}
-									},
-									'& .MuiTablePagination-actions': {
-										marginLeft: { xs: 0.5, sm: 1 },
-										display: 'inline-flex',
-										alignItems: 'center',
-										'& .MuiIconButton-root': {
-											padding: '4px'
-										}
-									},
-									'& .MuiPagination-root': {
-										display: 'flex',
-										justifyContent: 'center',
-										alignItems: 'center'
-									},
-									'& .MuiPaginationItem-root': {
-										minWidth: { xs: 26, sm: 30 },
-										height: { xs: 26, sm: 30 },
-										fontSize: { xs: 12, sm: 13 },
-										padding: { xs: '0 3px', sm: '0 6px' },
-										margin: '0 1px',
-										display: 'inline-flex',
-										alignItems: 'center',
-										justifyContent: 'center'
+									}
+								},
+								'& .MuiTablePagination-actions': {
+									marginLeft: { xs: 0.5, sm: 1 },
+									display: 'inline-flex',
+									alignItems: 'center',
+									'& .MuiIconButton-root': {
+										padding: '4px'
+									}
+								},
+								'& .MuiPagination-root': {
+									display: 'flex',
+									justifyContent: 'center',
+									alignItems: 'center'
+								},
+								'& .MuiPaginationItem-root': {
+									minWidth: { xs: 26, sm: 30 },
+									height: { xs: 26, sm: 30 },
+									fontSize: { xs: 12, sm: 13 },
+									padding: { xs: '0 3px', sm: '0 6px' },
+									margin: '0 1px',
+									display: 'inline-flex',
+									alignItems: 'center',
+									justifyContent: 'center'
+								}
+							}
+						}}
+						muiTableContainerProps={{
+							className: 'flex-auto custom-table-scrollbar',
+							sx: {
+								maxWidth: '100%',
+								width: '100%',
+								flex: '1 1 auto',
+								minHeight: 0,
+								overflowX: 'auto',
+								overflowY: 'auto',
+								WebkitOverflowScrolling: 'touch',
+								scrollbarWidth: 'thin',
+								scrollbarColor: '#94a3b8 #f1f5f9',
+								'&::-webkit-scrollbar': { height: 6, width: 6 },
+								'&::-webkit-scrollbar-track': {
+									backgroundColor: (theme: any) =>
+										theme.palette.mode === 'dark' ? '#1e293b' : '#f1f5f9',
+									borderRadius: 9999
+								},
+								'&::-webkit-scrollbar-thumb': {
+									backgroundColor: '#94a3b8',
+									borderRadius: 9999,
+									border: (theme: any) =>
+										theme.palette.mode === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0',
+									'&:hover': {
+										backgroundColor: '#64748b'
 									}
 								}
-							}}
-							muiTableContainerProps={{
-								className: 'flex-auto custom-table-scrollbar',
-								sx: {
-									maxWidth: '100%',
-									width: '100%',
-									flex: '1 1 auto',
-									minHeight: 0,
-									overflowX: 'auto',
-									overflowY: 'auto',
-									WebkitOverflowScrolling: 'touch',
-									scrollbarWidth: 'thin',
-									scrollbarColor: '#94a3b8 #f1f5f9',
-									'&::-webkit-scrollbar': { height: 6, width: 6 },
-									'&::-webkit-scrollbar-track': {
-										backgroundColor: (theme: any) =>
-											theme.palette.mode === 'dark' ? '#1e293b' : '#f1f5f9',
-										borderRadius: 9999
-									},
-									'&::-webkit-scrollbar-thumb': {
-										backgroundColor: '#94a3b8',
-										borderRadius: 9999,
-										border: (theme: any) =>
-											theme.palette.mode === 'dark' ? '1px solid #1e293b' : '1px solid #e2e8f0',
-										'&:hover': {
-											backgroundColor: '#64748b'
-										}
-									}
-								}
-							}}
-						/>
+							}
+						}}
+					/>
 					{/* Log Details Modal */}
 					<SystemLogDetailsDialog
 						open={detailsModalOpen}

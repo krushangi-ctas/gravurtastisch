@@ -10,23 +10,23 @@ export function ServicePageSkeleton() {
       <Nav />
 
       {/* Service Hero Skeleton */}
-      <section className="relative pt-32 pb-20 lg:pt-36 lg:pb-24 bg-gradient-to-b from-navy-deep via-navy to-navy-soft text-white">
+      <section className="relative pt-24 pb-12 lg:pt-28 lg:pb-16 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border-b border-[#0032ab]/12 overflow-hidden">
         <Container className="grid lg:grid-cols-12 gap-8 items-center">
           <div className="lg:col-span-6 space-y-6">
-            <Skeleton className="h-6 w-36 rounded-full bg-white/15" />
+            <Skeleton className="h-6 w-36 rounded-full bg-slate-400/20" />
             <div className="space-y-3">
-              <Skeleton className="h-10 sm:h-12 w-4/5 bg-white/20 rounded-2xl" />
-              <Skeleton className="h-10 sm:h-12 w-3/5 bg-white/20 rounded-2xl" />
+              <Skeleton className="h-10 sm:h-12 w-4/5 bg-slate-400/25 rounded-2xl" />
+              <Skeleton className="h-10 sm:h-12 w-3/5 bg-slate-400/25 rounded-2xl" />
             </div>
-            <Skeleton className="h-4 w-full max-w-lg bg-white/10" />
-            <Skeleton className="h-4 w-3/4 max-w-md bg-white/10" />
+            <Skeleton className="h-4 w-full max-w-lg bg-slate-400/15" />
+            <Skeleton className="h-4 w-3/4 max-w-md bg-slate-400/15" />
             <div className="flex gap-4 pt-2">
               <Skeleton className="h-11 w-36 rounded-full bg-brand/50" />
-              <Skeleton className="h-11 w-32 rounded-full bg-white/10" />
+              <Skeleton className="h-11 w-32 rounded-full bg-slate-400/20" />
             </div>
           </div>
           <div className="lg:col-span-6">
-            <Skeleton className="h-80 w-full rounded-3xl bg-white/10 border border-white/15" />
+            <Skeleton className="h-80 w-full rounded-3xl bg-white/60 border border-[#0032ab]/10" />
           </div>
         </Container>
       </section>

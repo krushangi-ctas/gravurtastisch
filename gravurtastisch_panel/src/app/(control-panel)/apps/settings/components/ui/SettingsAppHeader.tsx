@@ -47,8 +47,8 @@ function SettingsAppHeader(props: SettingsAppHeaderProps) {
 							{currentNavigation?.id === 'settings.siteConfiguration'
 								? 'heroicons-outline:globe-alt'
 								: currentNavigation?.id === 'settings.generalSetting'
-								? 'heroicons-outline:cog-6-tooth'
-								: 'heroicons-outline:user-circle'}
+									? 'heroicons-outline:cog-6-tooth'
+									: 'heroicons-outline:user-circle'}
 						</FuseSvgIcon>
 					</div>
 					<div className="flex flex-col min-w-0">
@@ -59,8 +59,8 @@ function SettingsAppHeader(props: SettingsAppHeaderProps) {
 							{currentNavigation?.id === 'settings.siteConfiguration'
 								? 'Configure website contact details, company profile, and social media links.'
 								: currentNavigation?.id === 'settings.generalSetting'
-								? 'Manage default marketplace rules, order matching, and automated requests.'
-								: 'Manage your account settings, security preferences, and profile details.'}
+									? 'Manage default marketplace rules, order matching, and automated requests.'
+									: 'Manage your account settings, security preferences, and profile details.'}
 						</p>
 					</div>
 				</div>

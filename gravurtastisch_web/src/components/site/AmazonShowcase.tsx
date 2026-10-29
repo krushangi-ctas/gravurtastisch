@@ -284,156 +284,253 @@ export function AmazonShowcase() {
         </Container>
       </section>
 
-      {/* 3. Light / White Bottom Section: Workflow Comparison Full-Width Band */}
-      <section id="amazon-comparison" className="relative py-16 lg:py-24 bg-gradient-to-b from-surface via-surface-alt/40 to-surface border-y border-border/60 overflow-hidden text-navy-deep">
+      {/* 3. Workflow Comparison: High-End Interactive Matrix & Impact Hub */}
+      <section id="amazon-comparison" className="relative py-16 lg:py-24 bg-gradient-to-b from-surface via-surface-alt/60 to-surface border-y border-border/60 overflow-hidden text-navy-deep">
         {/* Subtle ambient light gradient */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[400px] bg-brand/5 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[500px] bg-brand/5 rounded-full blur-3xl pointer-events-none" />
 
         <Container className="relative">
+          {/* Centered Premium Header */}
           <Reveal>
-            <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-10 border-b border-slate-200/80">
-              <div className="max-w-2xl">
-                <span className="section-badge mb-3">
-                  {t("amazonShowcase.comparisonTag", "WORKFLOW COMPARISON")}
-                </span>
-                <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
-                  {t("amazonShowcase.comparisonHeading", "DIY shops vs. Gravurtastisch studio desk")}
-                </h2>
-              </div>
+            <div className="text-center max-w-3xl mx-auto mb-10">
+              <span className="section-badge mb-3">
+                {t("amazonShowcase.comparisonTag", "WORKFLOW COMPARISON")}
+              </span>
+              <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
+                {t("amazonShowcase.comparisonHeading", "Scattered vendors vs. Gravurtastisch Studio Hub")}
+              </h2>
+              <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
+                {activeTab === "fba"
+                  ? t("amazonShowcase.comparisonDescFba", "See how unifying multi-channel intake, proofs, and laser craft eliminates vendor chaos and protects your customer feedback.")
+                  : t("amazonShowcase.comparisonDescFbm", "Streamline corporate gifts, custom merchandise, and wholesale reorders from a single studio production hub.")}
+              </p>
 
-              {/* Mode Toggle */}
-              <div className="inline-flex rounded-full bg-slate-200/70 border border-slate-300/80 p-1 self-start lg:self-auto shadow-inner">
+              {/* Mode Toggle with Pill Accent */}
+              <div className="mt-6 inline-flex items-center gap-1 p-1.5 rounded-full bg-slate-200/80 dark:bg-navy/80 border border-slate-300/80 dark:border-white/10 shadow-inner">
                 <button
                   type="button"
                   onClick={() => setActiveTab("fba")}
-                  className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === "fba"
-                      ? "bg-[#0032ab] text-white font-bold shadow-md shadow-[#0032ab]/35 scale-102"
-                      : "text-slate-600 hover:text-slate-900 font-medium"
-                  }`}
+                  className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${activeTab === "fba"
+                    ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/30 scale-102"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900"
+                    }`}
                 >
-                  <span className={activeTab === "fba" ? "text-white font-bold" : ""}>
-                    {t("amazonShowcase.tabFba", "Marketplace orders")}
-                  </span>
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>{t("amazonShowcase.tabFba", "Marketplace orders")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab("fbm")}
-                  className={`px-6 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                    activeTab === "fbm"
-                      ? "bg-[#0032ab] text-white font-bold shadow-md shadow-[#0032ab]/35 scale-102"
-                      : "text-slate-600 hover:text-slate-900 font-medium"
-                  }`}
+                  className={`px-5 py-2 rounded-full text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${activeTab === "fbm"
+                    ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/30 scale-102"
+                    : "text-slate-600 dark:text-slate-300 hover:text-slate-900"
+                    }`}
                 >
-                  <span className={activeTab === "fbm" ? "text-white font-bold" : ""}>
-                    {t("amazonShowcase.tabFbm", "Direct & B2B")}
-                  </span>
+                  <Globe2 className="w-3.5 h-3.5" />
+                  <span>{t("amazonShowcase.tabFbm", "Direct & B2B")}</span>
                 </button>
               </div>
             </div>
           </Reveal>
 
-          {/* Side-by-Side Comparison Cards on White Section */}
-          <div className="mt-10 grid md:grid-cols-2 gap-8">
-            {/* Left: Scattered DIY custom shops */}
-            <Reveal delay={80}>
-              <div className="h-full rounded-3xl bg-white border border-rose-200/90 p-7 sm:p-8 shadow-sm hover:shadow-md transition-shadow">
-                <div className="flex items-center gap-3.5 pb-6 border-b border-rose-100">
-                  <div className="h-11 w-11 rounded-2xl bg-rose-100 grid place-items-center text-rose-600 shrink-0 shadow-2xs">
-                    <XCircle className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-navy-deep text-lg">
+          {/* Quick Impact KPIs Strip */}
+          <Reveal delay={60}>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-extrabold text-[#0032ab] font-mono">3.8x</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Faster proof turnaround</div>
+              </div>
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-extrabold text-emerald-600 font-mono">100%</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Free digital proofs</div>
+              </div>
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-extrabold text-[#0032ab] font-mono">0%</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Brand / bleed mismatch</div>
+              </div>
+              <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
+                <div className="text-xl sm:text-2xl font-extrabold text-purple-600 font-mono">1 Hub</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Instead of 5 separate vendors</div>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Structured Head-to-Head Comparison Matrix */}
+          <Reveal delay={100}>
+            <div className="rounded-3xl bg-white dark:bg-navy/90 border border-slate-200/90 dark:border-white/10 shadow-xl shadow-[#0032ab]/05 overflow-hidden">
+              {/* Matrix Table Header */}
+              <div className="grid grid-cols-1 md:grid-cols-12 border-b border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/5">
+                <div className="md:col-span-3 p-4 sm:p-5 flex items-center">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
+                    Workflow Dimension
+                  </span>
+                </div>
+                <div className="md:col-span-4 p-4 sm:p-5 border-t md:border-t-0 md:border-l border-slate-200/80 dark:border-white/10 flex items-center justify-between bg-rose-50/30 dark:bg-rose-950/10">
+                  <div className="flex items-center gap-2">
+                    <XCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                    <span className="text-sm font-bold text-slate-800 dark:text-slate-200">
                       {t("amazonShowcase.manualTitle", "Traditional multi-vendor process")}
-                    </h4>
-                    <p className="text-xs text-rose-600 font-medium mt-0.5">
-                      {t("amazonShowcase.manualSubtitle", "Slow proofs, mismatched colors, lost files")}
-                    </p>
+                    </span>
                   </div>
+                  <span className="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-300 font-semibold">
+                    Fragmented
+                  </span>
                 </div>
-
-                <ul className="mt-6 space-y-4 text-sm sm:text-base text-slate-600">
-                  <li className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.manualPoint1", 'Opening every order individually to click "Request a Review" button')}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.manualPoint2", "Frequently missing the strict 5 to 30-day Amazon window")}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.manualPoint3", "Risk of policy strikes from non-compliant custom buyer-seller messages")}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <XCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.manualPoint4", "No automated timing for buyer timezones or weekend peak-reading hours")}</span>
-                  </li>
-                </ul>
-              </div>
-            </Reveal>
-
-            {/* Right: Gravurtastisch SP-API Autopilot */}
-            <Reveal delay={160}>
-              <div className="h-full rounded-3xl bg-white border-2 border-brand/30 p-7 sm:p-8 relative overflow-hidden group shadow-lg shadow-brand/5 hover:border-brand/60 transition-all">
-                <div className="absolute top-0 right-0 px-4 py-1.5 bg-gradient-to-r from-brand to-brand-bright text-[11px] font-bold uppercase tracking-wider text-white rounded-bl-2xl shadow-sm">
-                  {t("amazonShowcase.autoBadge", "One studio flow")}
-                </div>
-
-                <div className="flex items-center gap-3.5 pb-6 border-b border-slate-200">
-                  <div className="h-11 w-11 rounded-2xl bg-[#F4F4F2] grid place-items-center text-brand shrink-0 shadow-2xs">
-                    <CheckCircle2 className="w-6 h-6 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h4 className="font-bold text-navy-deep text-lg">
+                <div className="md:col-span-5 p-4 sm:p-5 border-t md:border-t-0 md:border-l border-slate-200/80 dark:border-white/10 flex items-center justify-between bg-gradient-to-r from-[#0032ab]/08 via-[#4f6ef7]/08 to-transparent">
+                  <div className="flex items-center gap-2">
+                    <div className="h-6 w-6 rounded-lg bg-[#0032ab] grid place-items-center text-white shrink-0 shadow-xs">
+                      <CheckCircle2 className="w-4 h-4" />
+                    </div>
+                    <span className="text-sm font-bold text-[#0032ab] dark:text-brand-bright">
                       {t("amazonShowcase.autoTitle", "Gravurtastisch unified pipeline")}
-                    </h4>
-                    <p className="text-xs text-emerald-600 font-medium mt-0.5">
-                      {t("amazonShowcase.autoSubtitle", "Design intake through delivery in one hub")}
-                    </p>
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-[#0032ab] text-white font-bold shadow-xs">
+                    {t("amazonShowcase.autoBadge", "One studio flow")}
+                  </span>
+                </div>
+              </div>
+
+              {/* Comparison Rows */}
+              <div className="divide-y divide-slate-100 dark:divide-white/05">
+                {/* Row 1: Artwork Intake */}
+                <div className="grid grid-cols-1 md:grid-cols-12 group hover:bg-slate-50/60 dark:hover:bg-white/03 transition-colors">
+                  <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
+                    <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-[#0032ab]" />
+                      Artwork & SKU Intake
+                    </span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">Asset collection & routing</span>
+                  </div>
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                    <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p>{t("amazonShowcase.manualPoint1", "Emailing artwork to different suppliers for each product type")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
+                        Lost attachments & manual sorting
+                      </span>
+                    </div>
+                  </div>
+                  <div className="md:col-span-5 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 bg-[#0032ab]/03">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">{t("amazonShowcase.autoPoint1", "Central uploads with automatic SKU and product-line routing")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
+                        Instant SKU parsing · Zero email loss
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <ul className="mt-6 space-y-4 text-sm sm:text-base text-slate-700">
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.autoPoint1", "Proof-approved jobs move into laser and print queues automatically")}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.autoPoint2", "Amazon Policy Guard: Strict 5–30 day rule calculation preventing any invalid API calls")}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.autoPoint3", "Zero Risk: Uses Amazon native template - never touches buyer personal email or messaging terms")}</span>
-                  </li>
-                  <li className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <span>{t("amazonShowcase.autoPoint4", "Smart Peak-Hour Delivery: Sends in the customer’s local timezone to maximize review submissions")}</span>
-                  </li>
-                </ul>
-              </div>
-            </Reveal>
-          </div>
+                {/* Row 2: Digital Proofs */}
+                <div className="grid grid-cols-1 md:grid-cols-12 group hover:bg-slate-50/60 dark:hover:bg-white/03 transition-colors">
+                  <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
+                    <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                      Digital Proofs & Revisions
+                    </span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">Pre-production verification</span>
+                  </div>
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                    <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p>{t("amazonShowcase.manualPoint2", "Approving proofs on inconsistent templates and missing bleed zones")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
+                        Wasted blanks & wrong positions
+                      </span>
+                    </div>
+                  </div>
+                  <div className="md:col-span-5 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 bg-[#0032ab]/03">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">{t("amazonShowcase.autoPoint2", "Free digital proofs with revision rounds before production unlocks")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
+                        Proof-gated · 100% Guaranteed safe
+                      </span>
+                    </div>
+                  </div>
+                </div>
 
-          {/* Global Amazon Marketplaces Strip */}
-          <Reveal delay={200}>
-            <div className="mt-12 pt-8 border-t border-slate-200/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600">
-                <Globe2 className="w-4 h-4 text-[#D97706]" />
-                <span>{t("amazonShowcase.marketplacesSupported", "Seamless Multi-Region SP-API Support across all Amazon Stores:")}</span>
+                {/* Row 3: Tracking & Visibility */}
+                <div className="grid grid-cols-1 md:grid-cols-12 group hover:bg-slate-50/60 dark:hover:bg-white/03 transition-colors">
+                  <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
+                    <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-amber-500" />
+                      Live Stage Tracking
+                    </span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">Real-time status visibility</span>
+                  </div>
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                    <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p>{t("amazonShowcase.manualPoint3", "No single view of what's in production or already shipped")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
+                        Constant "where is my order" queries
+                      </span>
+                    </div>
+                  </div>
+                  <div className="md:col-span-5 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 bg-[#0032ab]/03">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">{t("amazonShowcase.autoPoint3", "Status you can trust: proof → crafting → quality → shipped")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
+                        Clear timeline milestones · Live tracking
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Row 4: Brand Fidelity */}
+                <div className="grid grid-cols-1 md:grid-cols-12 group hover:bg-slate-50/60 dark:hover:bg-white/03 transition-colors">
+                  <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
+                    <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-purple-500" />
+                      Brand Fidelity & Repeat Runs
+                    </span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">Consistent specs across runs</span>
+                  </div>
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                    <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                    <div>
+                      <p>{t("amazonShowcase.manualPoint4", "Reorders that drift from your original brand colors or font choices")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
+                        Inconsistent customer perception
+                      </span>
+                    </div>
+                  </div>
+                  <div className="md:col-span-5 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-800 dark:text-slate-100 bg-[#0032ab]/03">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium">{t("amazonShowcase.autoPoint4", "Saved brand presets for faster reorders and corporate runs")}</p>
+                      <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
+                        Vector-locked presets · Exact match guarantee
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-2.5">
+            </div>
+          </Reveal>
+
+          {/* Regional Multi-Marketplace Glass Dock */}
+          <Reveal delay={140}>
+            <div className="mt-8 p-4 sm:p-5 rounded-2xl liquid-glass border border-[#0032ab]/15 flex flex-col md:flex-row items-center justify-between gap-4">
+              <div className="flex items-center gap-2.5 text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                <Globe2 className="w-4 h-4 text-[#0032ab]" />
+                <span>{t("amazonShowcase.marketplacesSupported", "Seamless multi-region studio routing across Europe & wholesale channels:")}</span>
+              </div>
+              <div className="flex flex-wrap items-center justify-center gap-2">
                 {marketplaces.map((m) => {
                   const Flag = m.Flag;
                   return (
                     <div
                       key={m.name}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-2xs hover:border-[#E89B5C] hover:shadow-xs transition-all"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs hover:border-[#0032ab]/50 hover:scale-105 transition-all cursor-default"
                       title={m.share}
                     >
-                      <Flag className="w-4 h-3" />
-                      <span className="text-xs font-mono font-bold text-navy-deep">{m.name}</span>
+                      <Flag className="w-4 h-3 rounded-xs" />
+                      <span className="text-xs font-mono font-bold text-navy-deep dark:text-white">{m.name}</span>
                     </div>
                   );
                 })}

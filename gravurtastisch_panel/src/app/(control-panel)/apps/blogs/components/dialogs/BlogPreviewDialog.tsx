@@ -294,8 +294,8 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 					</div>
 					<span
 						className={`ml-2 px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase ${blog.status === 1
-								? 'bg-emerald-600/20 text-emerald-900 dark:text-emerald-300 border border-emerald-600/40'
-								: 'bg-rose-600/20 text-rose-900 dark:text-rose-300 border border-rose-600/40'
+							? 'bg-emerald-600/20 text-emerald-900 dark:text-emerald-300 border border-emerald-600/40'
+							: 'bg-rose-600/20 text-rose-900 dark:text-rose-300 border border-rose-600/40'
 							}`}
 					>
 						{blog.status === 1 ? 'Active' : 'Inactive'}
@@ -472,8 +472,8 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 															type="button"
 															onClick={() => setActiveImageIndex(idx)}
 															className={`relative shrink-0 h-14 w-20 rounded-lg overflow-hidden border-2 transition-all cursor-pointer ${Math.min(activeImageIndex, validImages.length - 1) === idx
-																	? 'border-blue-600 shadow-sm ring-2 ring-blue-400/40 scale-105'
-																	: 'border-slate-200 opacity-60 hover:opacity-100'
+																? 'border-blue-600 shadow-sm ring-2 ring-blue-400/40 scale-105'
+																: 'border-slate-200 opacity-60 hover:opacity-100'
 																}`}
 														>
 															<img

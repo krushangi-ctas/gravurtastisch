@@ -28,13 +28,14 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
     <ToolbarTheme>
       <AppBar
         id="fuse-toolbar"
-        className={clsx('relative z-20 flex', className)}
-        sx={(theme) => ({
-          backgroundColor: (t: any) => (t.palette?.mode === 'dark' ? '#0f172a' : '#ffffff'),
-          color: theme.vars.palette.text.primary,
+        className={clsx(
+          'relative z-20 flex bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800/80 shadow-2xs text-slate-800 dark:text-slate-100',
+          className
+        )}
+        sx={{
+          backgroundColor: 'transparent',
           boxShadow: 'none',
-          borderBottom: `1px solid ${theme.vars.palette.divider}`,
-        })}
+        }}
       >
         <Toolbar className="min-h-12 px-4 py-0 md:min-h-12">
           <div className="flex flex-1 items-center gap-3">

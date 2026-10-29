@@ -3,6 +3,7 @@ import i18n from "@/i18n/config";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
 import { ValueProp } from "@/components/site/ValueProp";
+import { VectorPreflightShowcase } from "@/components/site/VectorPreflightShowcase";
 import { AmazonShowcase } from "@/components/site/AmazonShowcase";
 import { HowItWorks } from "@/components/site/HowItWorks";
 import { DashboardPreview } from "@/components/site/DashboardPreview";
@@ -43,6 +44,7 @@ function Index() {
       <main>
         <Hero />
         <ValueProp />
+        <VectorPreflightShowcase />
         <HowItWorks />
         <AmazonShowcase />
         <DashboardPreview />

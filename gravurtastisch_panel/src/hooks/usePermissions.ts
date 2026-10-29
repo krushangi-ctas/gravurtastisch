@@ -1,9 +1,7 @@
 import { useCallback, useMemo } from 'react';
 import useUser from '@auth/useUser';
 import {
-	ADMIN_SECTION_KEYS,
 	getFirstAccessibleRoute,
-	SELLER_SECTION_KEYS,
 	type PanelScope
 } from '@/configs/sectionRoutes';
 
@@ -40,7 +38,7 @@ function usePermissions() {
 	const isSuperAdmin = Boolean(user?.isSuperAdmin);
 	const isSellerAdmin = Boolean(
 		user?.isSellerAdmin ||
-			(user?.roleInfo?.isBypass && user?.roleInfo?.scope === 'seller')
+		(user?.roleInfo?.isBypass && user?.roleInfo?.scope === 'seller')
 	);
 
 	const scope = useMemo<PanelScope>(() => {

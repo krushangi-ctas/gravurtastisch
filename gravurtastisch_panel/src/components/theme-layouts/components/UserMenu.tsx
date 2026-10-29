@@ -165,7 +165,8 @@ function UserMenu(props: UserMenuProps) {
         }}
         slotProps={{
           paper: {
-            className: 'min-w-48 py-1 shadow-lg rounded-xl border border-divider',
+            className:
+              'min-w-56 py-2 shadow-xl rounded-2xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl',
           },
         }}
         {...popoverProps}

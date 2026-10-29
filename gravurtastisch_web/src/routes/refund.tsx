@@ -47,7 +47,7 @@ function RefundPage() {
         <a href={`mailto:${contactEmail}`} className="text-brand hover:underline">
           {contactEmail}
         </a>{" "}
-        {t('refund.para3Suffix', 'with your account email, plan name, and reason for the request. We typically respond within one business day.')}
+        {t('refund.para3Suffix', 'with your account email, order reference, and reason for the request. We typically respond within one business day.')}
       </p>
     </LegalLayout>
   );
