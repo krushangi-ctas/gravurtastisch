@@ -5,7 +5,6 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import usePathname from '@fuse/hooks/usePathname';
 import SettingsAppNavigation from '../../lib/constants/SettingsAppNavigation';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
-import NavbarToggleButton from '@/components/theme-layouts/components/navbar/NavbarToggleButton';
 
 type SettingsAppHeaderProps = {
 	className?: string;

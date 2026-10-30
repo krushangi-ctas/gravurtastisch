@@ -112,6 +112,11 @@ function usePermissions() {
 				}
 			}
 
+			// Technical document is accessible on admin side
+			if (scope === 'admin' && (clean === 'technical-document' || clean === 'api-docs')) {
+				return true;
+			}
+
 			return false;
 		},
 		[user, isSuperAdmin, isSellerAdmin, scope, permissions]

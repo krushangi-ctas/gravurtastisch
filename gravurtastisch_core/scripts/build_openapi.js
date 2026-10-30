@@ -1,0 +1,2172 @@
+const fs = require('fs');
+const path = require('path');
+
+const openapi = {
+  openapi: "3.0.3",
+  info: {
+    title: "Gravurtastisch API Documentation",
+    version: "1.0.0",
+    description: "Official REST API documentation for Gravurtastisch Admin & Seller Panel. Provides comprehensive endpoints for authentication, user management, order review request automation, Amazon SP-API integration, subscription plans, roles & permissions, site configuration, support tickets, and system audit logs."
+  },
+  servers: [
+    {
+      url: "{baseurl}/v1"
+    }
+  ],
+  security: [
+    {
+      bearerAuth: []
+    }
+  ],
+  tags: [
+    {
+      name: "Authentication & Session",
+      description: "User authentication, OTP verification, password updates, and JWT session tokens."
+    },
+    {
+      name: "User Management & Team",
+      description: "Sellers list, admin staff, seller team members, plan limits, and user administration."
+    },
+    {
+      name: "Profile & Account Settings",
+      description: "Personal account profile, password change, and avatar image management."
+    },
+    {
+      name: "Orders & Review Automation",
+      description: "Amazon orders retrieval and automated review request solicitations."
+    },
+    {
+      name: "Marketplaces & Amazon Credentials",
+      description: "Amazon SP-API LWA credentials, refresh tokens, and marketplace configuration."
+    },
+    {
+      name: "General Settings & Scheduling",
+      description: "Seller review automation scheduling, active marketplaces, and order filters."
+    },
+    {
+      name: "Subscription Plans & Payments",
+      description: "Subscription tiers, pricing quotas, and Stripe Checkout sessions."
+    },
+    {
+      name: "Roles & Permissions (RBAC)",
+      description: "Role-based access control, section access matrix, and role assignment."
+    },
+    {
+      name: "Sections Management",
+      description: "Control panel navigation sections and permission definitions."
+    },
+    {
+      name: "Blogs Management",
+      description: "Public articles, blogs CRUD, status toggling, and image uploads."
+    },
+    {
+      name: "Website Configuration",
+      description: "Site-wide company profile, contact details, and social media links."
+    },
+    {
+      name: "Support Requests",
+      description: "Customer and seller support inquiries and ticket status resolution."
+    },
+    {
+      name: "System Logs & Audit Trails",
+      description: "Administrative action audit trails and cron job execution history."
+    },
+    {
+      name: "Email Templates & IP Whitelist",
+      description: "Transactional email templates and IP address whitelisting."
+    },
+    {
+      name: "Universal OTP & Health",
+      description: "Fallback system OTP generation and API server health monitoring."
+    }
+  ],
+  paths: {
+    "/auth/send-otp": {
+      post: {
+        tags: ["Authentication & Session"],
+        summary: "Send 6-digit Login OTP",
+        description: "Sends a temporary 6-digit one-time password to the specified user email address for passwordless sign-in.",
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email"],
+                properties: {
+                  email: {
+                    type: "string",
+                    format: "email",
+                    example: "admin@gravurtastisch.de"
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "OTP sent successfully to email",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: 200,
+                  message: "OTP sent to your email successfully. Please verify to continue."
+                }
+              }
+            }
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "404": { $ref: "#/components/responses/NotFound" },
+          "500": { $ref: "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/auth/verify-otp": {
+      post: {
+        tags: ["Authentication & Session"],
+        summary: "Verify OTP & Sign In",
+        description: "Verifies the 6-digit OTP code sent to user email and returns JWT access & refresh tokens along with user details.",
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["email", "otp"],
+                properties: {
+                  email: {
+                    type: "string",
+                    format: "email",
+                    example: "admin@gravurtastisch.de"
+                  },
+                  otp: {
+                    type: "string",
+                    minLength: 6,
+                    maxLength: 6,
+                    example: "123456"
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Authentication successful, tokens issued",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/AuthSuccessResponse" },
+                example: {
+                  status: 200,
+                  message: "Logged in successfully.",
+                  user: {
+                    id: "662f1a2b3c4d5e6f7a8b9c0d",
+                    name: "Admin User",
+                    email: "admin@gravurtastisch.de",
+                    role: "admin",
+                    userType: "admin",
+                    isSuperAdmin: true,
+                    status: 1
+                  },
+                  tokens: {
+                    access: {
+                      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjJmMWEY...",
+                      expires: "2026-10-31T13:00:00.000Z"
+                    },
+                    refresh: {
+                      token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2NjJmMWEY...",
+                      expires: "2026-11-30T13:00:00.000Z"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": { $ref: "#/components/responses/BadRequest" },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+          "500": { $ref: "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/users/sign-in-with-token": {
+      get: {
+        tags: ["Authentication & Session"],
+        summary: "Get Current Enriched User by Bearer Token",
+        description: "Validates the active session Bearer token and returns the full user document enriched with section-level permissions and active plan details.",
+        responses: {
+          "200": {
+            description: "Enriched user profile retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/EnrichedUser" },
+                example: {
+                  id: "662f1a2b3c4d5e6f7a8b9c0d",
+                  name: "Store Admin",
+                  email: "seller@store.com",
+                  userType: "seller",
+                  isSellerAdmin: true,
+                  status: 1,
+                  planLimits: {
+                    maxMarketplaces: 5,
+                    maxReviewRequestsPerMonth: 2500,
+                    usedReviewRequests: 142
+                  },
+                  permissions: [
+                    { section: "orders", canView: true, canCreate: true, canUpdate: true, canDelete: false },
+                    { section: "settings", canView: true, canCreate: true, canUpdate: true, canDelete: false }
+                  ]
+                }
+              }
+            }
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+          "500": { $ref: "#/components/responses/InternalError" }
+        }
+      }
+    },
+    "/auth/refresh-tokens": {
+      post: {
+        tags: ["Authentication & Session"],
+        summary: "Refresh JWT Access Token",
+        description: "Exchanges a valid refresh token for a fresh access token without re-authenticating.",
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  refreshToken: { type: "string", example: "eyJhbGciOiJIUzI1Ni..." }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Tokens refreshed successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/AuthSuccessResponse" },
+                example: {
+                  status: 200,
+                  message: "Tokens refreshed successfully.",
+                  tokens: {
+                    access: { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6...", expires: "2026-10-31T14:00:00.000Z" },
+                    refresh: { token: "eyJhbGciOiJIUzI1NiIsInR5cCI6...", expires: "2026-11-30T14:00:00.000Z" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/auth/register": {
+      post: {
+        tags: ["Authentication & Session"],
+        summary: "Register New User Account",
+        description: "Creates a standard user account with email and password.",
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "email", "password"],
+                properties: {
+                  name: { type: "string", example: "Max Mustermann" },
+                  email: { type: "string", format: "email", example: "max@example.com" },
+                  password: { type: "string", format: "password", example: "Secret123!" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": {
+            description: "User registered successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: 201,
+                  message: "User registered successfully.",
+                  data: {
+                    id: "662f1a2b3c4d5e6f7a8b9c10",
+                    name: "Max Mustermann",
+                    email: "max@example.com"
+                  }
+                }
+              }
+            }
+          },
+          "400": { $ref: "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/auth/logout": {
+      post: {
+        tags: ["Authentication & Session"],
+        summary: "User Logout",
+        description: "Revokes refresh token and clears active session cookies.",
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  refreshToken: { type: "string" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "204": { description: "Logged out successfully" },
+          "401": { $ref: "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/users/sellers": {
+      get: {
+        tags: ["User Management & Team"],
+        summary: "Get Sellers List (Admin View)",
+        description: "Admin panel: Returns paginated list of all seller accounts with plan details, used requests, and active status.",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          { name: "search", in: "query", schema: { type: "string" } },
+          { name: "sortBy", in: "query", schema: { type: "string", default: "createdAt:desc" } },
+          { name: "status", in: "query", schema: { type: "string" } }
+        ],
+        responses: {
+          "200": {
+            description: "Sellers list retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/PaginatedUsersResponse" },
+                example: {
+                  status: 200,
+                  message: "Sellers fetched successfully.",
+                  data: [
+                    {
+                      _id: "662f1a2b3c4d5e6f7a8b9c0d",
+                      name: "Alpha Retailers GmbH",
+                      businessName: "Alpha Retailers",
+                      email: "owner@alpharetail.de",
+                      contact_no: "+491761234567",
+                      status: 1,
+                      subscriptionStatus: 1,
+                      planLimits: {
+                        maxMarketplaces: 5,
+                        maxReviewRequestsPerMonth: 2500,
+                        usedReviewRequests: 420
+                      },
+                      createdAt: "2026-03-15T09:30:00.000Z"
+                    }
+                  ],
+                  pagination: {
+                    page: 1,
+                    limit: 10,
+                    lastPage: 3,
+                    totalResults: 28,
+                    length: 10
+                  }
+                }
+              }
+            }
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" },
+          "403": { $ref: "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/users/admin-staff": {
+      get: {
+        tags: ["User Management & Team"],
+        summary: "Get Admin Staff Users List",
+        description: "Admin panel: Returns paginated list of internal admin staff and assigned roles.",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          { name: "search", in: "query", schema: { type: "string" } }
+        ],
+        responses: {
+          "200": {
+            description: "Staff users retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/PaginatedUsersResponse" }
+              }
+            }
+          },
+          "403": { $ref: "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/users/team": {
+      get: {
+        tags: ["User Management & Team"],
+        summary: "Get Seller Team Members",
+        description: "Seller panel: Returns team members under current seller organization.",
+        responses: {
+          "200": {
+            description: "Team members retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/PaginatedUsersResponse" }
+              }
+            }
+          }
+        }
+      },
+      post: {
+        tags: ["User Management & Team"],
+        summary: "Create Seller Team Member",
+        description: "Adds a new team user under the seller's organization.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "email", "role_id"],
+                properties: {
+                  name: { type: "string", example: "Support Specialist" },
+                  email: { type: "string", format: "email", example: "support@sellerstore.com" },
+                  contact_no: { type: "string", example: "+49151234567" },
+                  role_id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c0e" },
+                  status: { type: "integer", enum: [0, 1], default: 1 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": {
+            description: "Team member created successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" }
+              }
+            }
+          },
+          "400": { $ref: "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/users/admin-update/{userId}": {
+      put: {
+        tags: ["User Management & Team"],
+        summary: "Update User Status, Role & Custom Plan Limits",
+        description: "Admin or Seller Manager updates status (0=inactive, 1=active, 2=delete), assigned role, or custom quotas.",
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "string" } }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  status: { type: "integer", enum: [0, 1, 2], example: 1 },
+                  name: { type: "string", example: "Updated Company Name" },
+                  businessName: { type: "string", example: "Updated GmbH" },
+                  contact_no: { type: "string", example: "+491761122334" },
+                  role_id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c0e" },
+                  planLimits: {
+                    type: "object",
+                    properties: {
+                      maxMarketplaces: { type: "integer", example: 8 },
+                      maxReviewRequestsPerMonth: { type: "integer", example: 5000 }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "User updated successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: 200,
+                  message: "User updated successfully.",
+                  data: {
+                    _id: "662f1a2b3c4d5e6f7a8b9c0d",
+                    status: 1,
+                    businessName: "Updated GmbH"
+                  }
+                }
+              }
+            }
+          },
+          "404": { $ref: "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/users/{userId}/assign-plan": {
+      post: {
+        tags: ["User Management & Team"],
+        summary: "Manually Assign Subscription Plan to Seller",
+        description: "Admin panel: Assigns or overrides a subscription plan for a seller without requiring Stripe payment.",
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "string" } }
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["planId"],
+                properties: {
+                  planId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c10" },
+                  billingCycle: { type: "integer", enum: [1, 2, 3, 12], default: 1 },
+                  activationMode: { type: "string", enum: ["immediate", "extend"], default: "immediate" },
+                  sendNotification: { type: "boolean", default: true }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Plan assigned successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: 200,
+                  message: "Plan assigned to user successfully."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{userId}/cancel-plan": {
+      post: {
+        tags: ["User Management & Team"],
+        summary: "Cancel Seller Subscription Plan",
+        description: "Admin panel: Immediately cancels active subscription for seller.",
+        parameters: [
+          { name: "userId", in: "path", required: true, schema: { type: "string" } }
+        ],
+        responses: {
+          "200": {
+            description: "Plan cancelled successfully",
+            content: {
+              "application/json": {
+                example: { status: 200, message: "User subscription plan cancelled successfully." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/update-profile": {
+      put: {
+        tags: ["Profile & Account Settings"],
+        summary: "Update Current User Profile",
+        description: "Updates current logged-in user name, email, and contact phone.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "email"],
+                properties: {
+                  name: { type: "string", example: "Christian Gravur" },
+                  email: { type: "string", format: "email", example: "christian@gravurtastisch.de" },
+                  contact_no: { type: "string", example: "+49123456789" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Profile updated successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: { status: 200, message: "Profile updated successfully." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/upload-image": {
+      post: {
+        tags: ["Profile & Account Settings"],
+        summary: "Upload Avatar Profile Picture",
+        description: "Uploads an avatar picture file via multipart/form-data with key 'file'.",
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  file: { type: "string", format: "binary" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Image uploaded successfully",
+            content: {
+              "application/json": {
+                example: {
+                  status: 200,
+                  message: "Profile image uploaded successfully.",
+                  data: { avatarUrl: "/profiles/avatar-1234.png" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/profile/delete-image": {
+      post: {
+        tags: ["Profile & Account Settings"],
+        summary: "Delete Avatar Profile Picture",
+        description: "Removes avatar picture of current logged-in user.",
+        responses: {
+          "200": {
+            description: "Avatar deleted successfully",
+            content: {
+              "application/json": {
+                example: { status: 200, message: "Profile image deleted successfully." }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/order": {
+      get: {
+        tags: ["Orders & Review Automation"],
+        summary: "Get Orders List with Review Solicitation Status",
+        description: "Seller Panel: Retrieves paginated Amazon orders synced from SP-API, review request status, and plan usage counters.",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          { name: "search", in: "query", schema: { type: "string" } },
+          { name: "sortBy", in: "query", schema: { type: "string", default: "purchaseDate:desc" } },
+          { name: "marketplaceId", in: "query", schema: { type: "string" } },
+          { name: "from", in: "query", schema: { type: "string", format: "date" } },
+          { name: "to", in: "query", schema: { type: "string", format: "date" } }
+        ],
+        responses: {
+          "200": {
+            description: "Orders retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/PaginatedOrdersResponse" },
+                example: {
+                  status: 200,
+                  message: "Orders fetched successfully.",
+                  data: [
+                    {
+                      _id: "662f1a2b3c4d5e6f7a8b9c15",
+                      amazonOrderId: "302-1234567-8901234",
+                      purchaseDate: "2026-10-25T14:22:00.000Z",
+                      orderStatus: "Shipped",
+                      buyerEmail: "buyer@amazon.de",
+                      marketplaceId: "A1PA6795UKMFR9",
+                      fulfillmentChannel: "AFN",
+                      feedbackSent: false,
+                      feedbackScheduled: true,
+                      feedbackStatus: "SCHEDULED"
+                    }
+                  ],
+                  pagination: {
+                    page: 1,
+                    size: 10,
+                    lastPage: 12,
+                    length: 115
+                  },
+                  planLimits: {
+                    maxReviewRequestsPerMonth: 2500,
+                    usedReviewRequests: 420
+                  }
+                }
+              }
+            }
+          },
+          "401": { $ref: "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/order/update-feedback": {
+      put: {
+        tags: ["Orders & Review Automation"],
+        summary: "Schedule Amazon Review Requests for Orders",
+        description: "Schedules automated Amazon SP-API review solicitation emails for selected order IDs according to seller active marketplaces and plan quotas.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "array",
+                items: { type: "string" },
+                example: ["662f1a2b3c4d5e6f7a8b9c15", "662f1a2b3c4d5e6f7a8b9c16"]
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Review request scheduled successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: 200,
+                  message: "Review requests scheduled successfully for 2 orders."
+                }
+              }
+            }
+          },
+          "400": {
+            description: "Marketplace not configured or invalid order IDs",
+            content: {
+              "application/json": {
+                example: {
+                  status: 400,
+                  message: "You have no active marketplaces configured. Please configure and activate at least one marketplace first."
+                }
+              }
+            }
+          },
+          "403": {
+            description: "Plan quota exceeded or plan expired",
+            content: {
+              "application/json": {
+                example: {
+                  status: 403,
+                  message: "Your monthly review request quota has been reached. Please upgrade your plan."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/marketplace": {
+      get: {
+        tags: ["Marketplaces & Amazon Credentials"],
+        summary: "Get All Supported Amazon Marketplaces",
+        description: "Fetches list of all official Amazon regional marketplaces (DE, FR, IT, ES, UK, US, etc.) with marketplace IDs and region domains.",
+        responses: {
+          "200": {
+            description: "Marketplaces list fetched successfully",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: { type: "integer", example: 200 },
+                    data: {
+                      type: "array",
+                      items: { $ref: "#/components/schemas/MarketplaceItem" }
+                    }
+                  },
+                  example: {
+                    status: 200,
+                    data: [
+                      { _id: "66123456789abcdef0123456", country_code: "DE", country: "Germany", marketplace_id: "A1PA6795UKMFR9", endpoint: "https://sellingpartnerapi-eu.amazon.com" },
+                      { _id: "66123456789abcdef0123457", country_code: "FR", country: "France", marketplace_id: "A13V1IB3VIYZZH", endpoint: "https://sellingpartnerapi-eu.amazon.com" }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/amazon-credentials": {
+      get: {
+        tags: ["Marketplaces & Amazon Credentials"],
+        summary: "Get Current Seller Amazon SP-API Credentials",
+        description: "Retrieves active LWA App Client ID, Seller ID, and SP-API tokens for the authenticated seller.",
+        responses: {
+          "200": {
+            description: "Amazon credentials retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/AmazonCredentialsResponse" },
+                example: {
+                  status: 200,
+                  message: "Amazon credentials fetched successfully.",
+                  data: {
+                    _id: "662f1a2b3c4d5e6f7a8b9c13",
+                    client_id: "amzn1.application-oa2-client.1234567890",
+                    seller_id: "A1B2C3D4E5F6G7",
+                    marketplace_id: "A1PA6795UKMFR9",
+                    sp_api_base_url: "https://sellingpartnerapi-eu.amazon.com"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/amazon-credentials/upsert": {
+      post: {
+        tags: ["Marketplaces & Amazon Credentials"],
+        summary: "Create or Update Amazon SP-API Credentials",
+        description: "Upserts Amazon LWA application credentials and seller refresh token.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["client_id", "client_secret", "refresh_token", "seller_id"],
+                properties: {
+                  client_id: { type: "string", example: "amzn1.application-oa2-client.sample123" },
+                  client_secret: { type: "string", example: "amzn1.oa2-cs.v1.secret123" },
+                  refresh_token: { type: "string", example: "Atzr|sample_refresh_token_123" },
+                  seller_id: { type: "string", example: "A1B2C3D4E5F6G7" },
+                  marketplace_id: { type: "string", example: "A1PA6795UKMFR9" },
+                  sp_api_base_url: { type: "string", example: "https://sellingpartnerapi-eu.amazon.com" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Amazon credentials saved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: 200,
+                  message: "Amazon credentials saved successfully."
+                }
+              }
+            }
+          },
+          "400": { $ref: "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/general-setting": {
+      get: {
+        tags: ["General Settings & Scheduling"],
+        summary: "Get Automation & Marketplace Settings",
+        description: "Fetches automation rules, active marketplaces list, and daily review solicitation execution time.",
+        responses: {
+          "200": {
+            description: "Settings retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/GeneralSettingResponse" },
+                example: {
+                  status: true,
+                  message: "General setting fetched successfully.",
+                  data: {
+                    activeMarketplaces: ["A1PA6795UKMFR9", "A1RKKUPIHCS9HS"],
+                    campaign_name: "Amazon DE Review Automator",
+                    order_status: "Shipped",
+                    fba: true,
+                    fbm: true,
+                    hour: 10,
+                    minute: 30,
+                    day: 1,
+                    autoSendRequest: true,
+                    status: 1
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/general-setting/update-setting": {
+      put: {
+        tags: ["General Settings & Scheduling"],
+        summary: "Update Automation Rules & Active Marketplaces",
+        description: "Updates seller review scheduling time and active marketplaces (validated against max marketplace allowance in active plan).",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  activeMarketplaces: { type: "array", items: { type: "string" }, example: ["A1PA6795UKMFR9"] },
+                  campaign_name: { type: "string", example: "Review Campaign 2026" },
+                  order_status: { type: "string", example: "Shipped" },
+                  fba: { type: "boolean", example: true },
+                  fbm: { type: "boolean", example: true },
+                  hour: { type: "integer", minimum: 0, maximum: 23, example: 11 },
+                  minute: { type: "integer", minimum: 0, maximum: 59, example: 0 },
+                  autoSendRequest: { type: "boolean", example: true },
+                  status: { type: "integer", enum: [0, 1], example: 1 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Settings updated successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" },
+                example: {
+                  status: true,
+                  message: "General settings updated successfully."
+                }
+              }
+            }
+          },
+          "400": {
+            description: "Exceeded plan marketplaces limit or invalid rules",
+            content: {
+              "application/json": {
+                example: {
+                  status: false,
+                  message: "Your current plan only permits up to 3 active marketplaces. Please upgrade your subscription."
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/plans": {
+      get: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "List All Subscription Plans",
+        description: "Fetches public/active subscription plans with pricing, quota limits, and billing intervals.",
+        security: [],
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 20 } },
+          { name: "status", in: "query", schema: { type: "integer", default: 1 } }
+        ],
+        responses: {
+          "200": {
+            description: "Plans retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/PlansListResponse" },
+                example: {
+                  status: 200,
+                  message: "Plans fetched successfully.",
+                  data: [
+                    {
+                      _id: "662f1a2b3c4d5e6f7a8b9c10",
+                      name: "Professional Plan",
+                      price: 49.99,
+                      currency: "eur",
+                      marketplace: 5,
+                      request_quota: 2500,
+                      billingCycle: 1,
+                      status: 1
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      post: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Create New Plan (Admin Only)",
+        description: "Admin panel: Creates a new subscription plan with marketplace and review request limits.",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "price", "request_quota"],
+                properties: {
+                  name: { type: "string", example: "Enterprise Plan" },
+                  price: { type: "number", example: 99.99 },
+                  currency: { type: "string", example: "eur" },
+                  marketplace: { type: "integer", example: 10 },
+                  request_quota: { type: "integer", example: 10000 },
+                  billingCycle: { type: "integer", enum: [1, 2, 3, 12], default: 1 },
+                  status: { type: "integer", enum: [0, 1], default: 1 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": {
+            description: "Plan created successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/StandardResponse" }
+              }
+            }
+          },
+          "403": { $ref: "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/plans/{planId}": {
+      get: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Get Plan Details By ID",
+        parameters: [{ name: "planId", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          "200": { description: "Plan details retrieved successfully" },
+          "404": { $ref: "#/components/responses/NotFound" }
+        }
+      },
+      put: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Update Plan (Admin Only)",
+        parameters: [{ name: "planId", in: "path", required: true, schema: { type: "string" } }],
+        requestBody: {
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                properties: {
+                  name: { type: "string" },
+                  price: { type: "number" },
+                  marketplace: { type: "integer" },
+                  request_quota: { type: "integer" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": { description: "Plan updated successfully" },
+          "403": { $ref: "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/plans/{planId}/status": {
+      put: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Update Plan Status (Admin Only)",
+        parameters: [{ name: "planId", in: "path", required: true, schema: { type: "string" } }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["status"],
+                properties: {
+                  status: { type: "integer", enum: [0, 1, 2], example: 1 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": { description: "Plan status updated successfully" }
+        }
+      }
+    },
+    "/payments/checkout": {
+      post: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Create Stripe Checkout Session",
+        description: "Initiates a Stripe Hosted Checkout Session for a seller subscribing to a paid plan. Returns session ID and checkout URL.",
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["planId", "email"],
+                properties: {
+                  planId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c10" },
+                  email: { type: "string", format: "email", example: "seller@store.com" },
+                  name: { type: "string", example: "Store Owner" },
+                  currency: { type: "string", example: "eur" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": {
+            description: "Checkout session created successfully",
+            content: {
+              "application/json": {
+                example: {
+                  status: 200,
+                  message: "Checkout created successfully.",
+                  data: {
+                    sessionId: "cs_test_a1b2c3d4e5f6g7h8",
+                    url: "https://checkout.stripe.com/c/pay/cs_test_a1b2c3d4e5f6g7h8"
+                  }
+                }
+              }
+            }
+          },
+          "400": { $ref: "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/payments/session/{sessionId}": {
+      get: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Get Stripe Checkout Session Status",
+        security: [],
+        parameters: [{ name: "sessionId", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          "200": {
+            description: "Session status retrieved",
+            content: {
+              "application/json": {
+                example: {
+                  status: 200,
+                  data: { paymentStatus: "paid", subscriptionStatus: "active" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments/webhook": {
+      post: {
+        tags: ["Subscription Plans & Payments"],
+        summary: "Stripe Webhook Handler",
+        description: "Processes raw Stripe webhook events (invoice.paid, checkout.session.completed, customer.subscription.deleted).",
+        security: [],
+        parameters: [{ name: "stripe-signature", in: "header", required: true, schema: { type: "string" } }],
+        responses: {
+          "200": { description: "Webhook acknowledged" }
+        }
+      }
+    },
+    "/roles": {
+      get: {
+        tags: ["Roles & Permissions (RBAC)"],
+        summary: "List Roles",
+        description: "Fetches RBAC roles filtered by scope (admin or seller).",
+        parameters: [
+          { name: "scope", in: "query", schema: { type: "string", enum: ["admin", "seller"] } },
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 20 } },
+          { name: "search", in: "query", schema: { type: "string" } }
+        ],
+        responses: {
+          "200": {
+            description: "Roles list retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/RolesListResponse" }
+              }
+            }
+          }
+        }
+      },
+      post: {
+        tags: ["Roles & Permissions (RBAC)"],
+        summary: "Create Role with Permissions",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["role_name", "scope"],
+                properties: {
+                  role_name: { type: "string", example: "Support Agent" },
+                  description: { type: "string", example: "Handles tickets and orders" },
+                  scope: { type: "string", enum: ["admin", "seller"], example: "admin" },
+                  permissions: {
+                    type: "array",
+                    items: { $ref: "#/components/schemas/RolePermissionItem" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": { description: "Role created successfully" },
+          "400": { $ref: "#/components/responses/BadRequest" }
+        }
+      }
+    },
+    "/roles/sections": {
+      get: {
+        tags: ["Roles & Permissions (RBAC)"],
+        summary: "Get Available Sections for Role Matrix",
+        parameters: [{ name: "scope", in: "query", schema: { type: "string", enum: ["admin", "seller"] } }],
+        responses: {
+          "200": { description: "Sections list retrieved successfully" }
+        }
+      }
+    },
+    "/sections": {
+      get: {
+        tags: ["Sections Management"],
+        summary: "List All Sections",
+        parameters: [
+          { name: "scope", in: "query", schema: { type: "string" } },
+          { name: "search", in: "query", schema: { type: "string" } }
+        ],
+        responses: {
+          "200": { description: "Sections list retrieved" }
+        }
+      },
+      post: {
+        tags: ["Sections Management"],
+        summary: "Create New Section Route",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "title"],
+                properties: {
+                  name: { type: "string", example: "dashboard" },
+                  title: { type: "string", example: "Main Dashboard" },
+                  scope: { type: "string", enum: ["admin", "seller"], default: "admin" },
+                  permissions: {
+                    type: "object",
+                    properties: {
+                      view: { type: "boolean", default: true },
+                      add: { type: "boolean", default: false },
+                      update: { type: "boolean", default: false },
+                      delete: { type: "boolean", default: false }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": { description: "Section created successfully" }
+        }
+      }
+    },
+    "/sections/{sectionId}/status": {
+      patch: {
+        tags: ["Sections Management"],
+        summary: "Toggle Section Status",
+        parameters: [{ name: "sectionId", in: "path", required: true, schema: { type: "string" } }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["status"],
+                properties: {
+                  status: { type: "integer", enum: [0, 1], example: 1 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": { description: "Section status updated successfully" }
+        }
+      }
+    },
+    "/blogs": {
+      get: {
+        tags: ["Blogs Management"],
+        summary: "List Blog Articles",
+        security: [],
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          { name: "search", in: "query", schema: { type: "string" } },
+          { name: "status", in: "query", schema: { type: "integer", default: 1 } }
+        ],
+        responses: {
+          "200": { description: "Blogs list retrieved successfully" }
+        }
+      },
+      post: {
+        tags: ["Blogs Management"],
+        summary: "Create Blog Post",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["blog_title"],
+                properties: {
+                  blog_title: { type: "string", example: "How to Increase Amazon Reviews in 2026" },
+                  slug: { type: "string", example: "increase-amazon-reviews-2026" },
+                  short_description: { type: "string", example: "A proven guide to compliant customer review solicitation." },
+                  description: { type: "string", example: "<p>Full blog content...</p>" },
+                  status: { type: "integer", enum: [0, 1, 2], default: 1 }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": { description: "Blog article created successfully" }
+        }
+      }
+    },
+    "/blogs/upload-image": {
+      post: {
+        tags: ["Blogs Management"],
+        summary: "Upload Inline Blog Image",
+        requestBody: {
+          required: true,
+          content: {
+            "multipart/form-data": {
+              schema: {
+                type: "object",
+                properties: {
+                  image: { type: "string", format: "binary" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": { description: "Image uploaded successfully" }
+        }
+      }
+    },
+    "/website-configuration": {
+      get: {
+        tags: ["Website Configuration"],
+        summary: "Get Public Website Configuration",
+        security: [],
+        responses: {
+          "200": {
+            description: "Configuration retrieved successfully",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/WebsiteConfigResponse" },
+                example: {
+                  status: true,
+                  message: "Website configuration fetched successfully.",
+                  data: {
+                    company: {
+                      name: "Gravurtastisch",
+                      website: "https://gravurtastisch.de",
+                      tagline: "Automate Your Amazon Review Process Seamlessly",
+                      about: "Gravurtastisch helps Amazon merchants boost verified customer reviews.",
+                      copyright_text: "© 2026 Gravurtastisch. All rights reserved."
+                    },
+                    contact: {
+                      email: "support@gravurtastisch.de",
+                      phone: "+49 123 4567890",
+                      address: "Musterstraße 12",
+                      city: "Berlin",
+                      country: "Germany",
+                      postal_code: "10115",
+                      working_hours: "Mon - Fri: 09:00 - 18:00",
+                      timezone: "Europe/Berlin"
+                    },
+                    social_links: {
+                      facebook: "https://facebook.com/gravurtastisch",
+                      instagram: "https://instagram.com/gravurtastisch",
+                      linkedin: "https://linkedin.com/company/gravurtastisch"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      put: {
+        tags: ["Website Configuration"],
+        summary: "Update Website Configuration (Admin Only)",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: { $ref: "#/components/schemas/WebsiteConfigInput" }
+            }
+          }
+        },
+        responses: {
+          "200": { description: "Website configuration updated successfully" },
+          "403": { $ref: "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/support": {
+      get: {
+        tags: ["Support Requests"],
+        summary: "Get Support Requests (Admin View)",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          { name: "status", in: "query", schema: { type: "string", enum: ["pending", "resolved"] } }
+        ],
+        responses: {
+          "200": { description: "Support tickets list retrieved" }
+        }
+      },
+      post: {
+        tags: ["Support Requests"],
+        summary: "Create Support Ticket (Public / User)",
+        security: [],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["name", "email", "message"],
+                properties: {
+                  name: { type: "string", example: "Hans Schmidt" },
+                  email: { type: "string", format: "email", example: "hans@example.com" },
+                  message: { type: "string", example: "I have a question regarding SP-API syncing frequency." }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": { description: "Support request submitted successfully" }
+        }
+      }
+    },
+    "/support/{requestId}/status": {
+      put: {
+        tags: ["Support Requests"],
+        summary: "Update Support Ticket Status",
+        parameters: [{ name: "requestId", in: "path", required: true, schema: { type: "string" } }],
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["status"],
+                properties: {
+                  status: { type: "string", enum: ["pending", "resolved"], example: "resolved" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "200": { description: "Ticket status updated successfully" }
+        }
+      }
+    },
+    "/system-log/get-system-log": {
+      get: {
+        tags: ["System Logs & Audit Trails"],
+        summary: "Get System Audit Logs",
+        parameters: [
+          { name: "page", in: "query", schema: { type: "integer", default: 1 } },
+          { name: "limit", in: "query", schema: { type: "integer", default: 10 } },
+          { name: "search", in: "query", schema: { type: "string" } },
+          { name: "operation", in: "query", schema: { type: "string" } }
+        ],
+        responses: {
+          "200": { description: "System audit logs fetched successfully" }
+        }
+      }
+    },
+    "/cron-log/get-list": {
+      get: {
+        tags: ["System Logs & Audit Trails"],
+        summary: "Get Background Cron Execution Logs",
+        responses: {
+          "200": { description: "Cron logs fetched successfully" }
+        }
+      }
+    },
+    "/email-template/get-email-templates": {
+      get: {
+        tags: ["Email Templates & IP Whitelist"],
+        summary: "Get Configured Email Templates",
+        responses: {
+          "200": { description: "Email templates list retrieved" }
+        }
+      }
+    },
+    "/email-template/add-email-template": {
+      post: {
+        tags: ["Email Templates & IP Whitelist"],
+        summary: "Add Email Template",
+        requestBody: {
+          required: true,
+          content: {
+            "application/json": {
+              schema: {
+                type: "object",
+                required: ["subject", "content"],
+                properties: {
+                  subject: { type: "string", example: "Welcome to Gravurtastisch!" },
+                  content: { type: "string", example: "<p>Hello {{name}}, welcome!</p>" }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          "201": { description: "Email template added successfully" }
+        }
+      }
+    },
+    "/ip/get-list": {
+      get: {
+        tags: ["Email Templates & IP Whitelist"],
+        summary: "Get Whitelisted IPs List",
+        responses: {
+          "200": { description: "Whitelisted IPs list retrieved" }
+        }
+      }
+    },
+    "/universal-otp/generate/{system}": {
+      post: {
+        tags: ["Universal OTP & Health"],
+        summary: "Generate Universal System OTP",
+        security: [{ universalOtpApiKey: [] }],
+        parameters: [{ name: "system", in: "path", required: true, schema: { type: "string" } }],
+        responses: {
+          "200": { description: "Universal OTP generated successfully" }
+        }
+      }
+    },
+    "/health": {
+      get: {
+        tags: ["Universal OTP & Health"],
+        summary: "API Server Health & Keep-Alive Check",
+        description: "Returns server status, uptime seconds, ISO timestamp, and deployment environment. Used by useHealthKeepAlive and monitoring.",
+        security: [],
+        responses: {
+          "200": {
+            description: "API server is healthy",
+            content: {
+              "application/json": {
+                schema: {
+                  type: "object",
+                  properties: {
+                    status: { type: "string", example: "ok" },
+                    uptime: { type: "integer", example: 86400 },
+                    timestamp: { type: "string", format: "date-time", example: "2026-10-30T13:00:00.000Z" },
+                    message: { type: "string", example: "Gravurtastisch API is running and healthy" },
+                    env: { type: "string", example: "production" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        description: "Standard JWT Bearer token authentication header: 'Authorization: Bearer <token>'"
+      },
+      universalOtpApiKey: {
+        type: "apiKey",
+        in: "header",
+        name: "x-api-key",
+        description: "API Key required for universal OTP generation"
+      }
+    },
+    schemas: {
+      StandardResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string", example: "Operation completed successfully." },
+          data: { type: "object" }
+        }
+      },
+      ErrorResponse: {
+        type: "object",
+        properties: {
+          code: { type: "integer", example: 400 },
+          message: { type: "string", example: "Validation failed or resource not found." },
+          stack: { type: "string" }
+        }
+      },
+      AuthSuccessResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string", example: "Login successful." },
+          user: { type: "object" },
+          tokens: {
+            type: "object",
+            properties: {
+              access: {
+                type: "object",
+                properties: {
+                  token: { type: "string" },
+                  expires: { type: "string" }
+                }
+              },
+              refresh: {
+                type: "object",
+                properties: {
+                  token: { type: "string" },
+                  expires: { type: "string" }
+                }
+              }
+            }
+          }
+        }
+      },
+      EnrichedUser: {
+        type: "object",
+        properties: {
+          id: { type: "string" },
+          name: { type: "string" },
+          email: { type: "string" },
+          userType: { type: "string" },
+          isSuperAdmin: { type: "boolean" },
+          isSellerAdmin: { type: "boolean" },
+          permissions: { type: "array", items: { type: "object" } },
+          planLimits: { type: "object" }
+        }
+      },
+      PaginatedUsersResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string" },
+          data: { type: "array", items: { type: "object" } },
+          pagination: {
+            type: "object",
+            properties: {
+              page: { type: "integer" },
+              limit: { type: "integer" },
+              lastPage: { type: "integer" },
+              totalResults: { type: "integer" },
+              length: { type: "integer" }
+            }
+          }
+        }
+      },
+      PaginatedOrdersResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string" },
+          data: { type: "array", items: { type: "object" } },
+          pagination: { type: "object" },
+          planLimits: { type: "object" }
+        }
+      },
+      MarketplaceItem: {
+        type: "object",
+        properties: {
+          _id: { type: "string" },
+          country_code: { type: "string" },
+          country: { type: "string" },
+          marketplace_id: { type: "string" },
+          endpoint: { type: "string" }
+        }
+      },
+      AmazonCredentialsResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string" },
+          data: {
+            type: "object",
+            properties: {
+              client_id: { type: "string" },
+              seller_id: { type: "string" },
+              marketplace_id: { type: "string" },
+              sp_api_base_url: { type: "string" }
+            }
+          }
+        }
+      },
+      GeneralSettingResponse: {
+        type: "object",
+        properties: {
+          status: { type: "boolean", example: true },
+          message: { type: "string" },
+          data: {
+            type: "object",
+            properties: {
+              activeMarketplaces: { type: "array", items: { type: "string" } },
+              campaign_name: { type: "string" },
+              order_status: { type: "string" },
+              fba: { type: "boolean" },
+              fbm: { type: "boolean" },
+              hour: { type: "integer" },
+              minute: { type: "integer" },
+              autoSendRequest: { type: "boolean" }
+            }
+          }
+        }
+      },
+      PlansListResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string" },
+          data: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                _id: { type: "string" },
+                name: { type: "string" },
+                price: { type: "number" },
+                marketplace: { type: "integer" },
+                request_quota: { type: "integer" }
+              }
+            }
+          }
+        }
+      },
+      RolesListResponse: {
+        type: "object",
+        properties: {
+          status: { type: "integer", example: 200 },
+          message: { type: "string" },
+          data: { type: "array", items: { type: "object" } }
+        }
+      },
+      RolePermissionItem: {
+        type: "object",
+        properties: {
+          section: { type: "string", example: "orders" },
+          canView: { type: "boolean", default: true },
+          canCreate: { type: "boolean", default: false },
+          canUpdate: { type: "boolean", default: false },
+          canDelete: { type: "boolean", default: false }
+        }
+      },
+      WebsiteConfigResponse: {
+        type: "object",
+        properties: {
+          status: { type: "boolean", example: true },
+          message: { type: "string" },
+          data: { type: "object" }
+        }
+      },
+      WebsiteConfigInput: {
+        type: "object",
+        properties: {
+          company: { type: "object" },
+          contact: { type: "object" },
+          social_links: { type: "object" }
+        }
+      },
+      // ==========================================
+      // DATABASE MODELS (DATA SCHEMAS)
+      // ==========================================
+      User: {
+        type: "object",
+        description: "User account model for Admin staff, Sellers, and Team Members",
+        required: ["_id", "email", "name", "role"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c01", description: "Unique MongoDB ObjectId" },
+          name: { type: "string", example: "Max Mustermann", description: "Full name of the user" },
+          businessName: { type: "string", example: "Mustermann E-Commerce GmbH", description: "Registered legal business name" },
+          email: { type: "string", format: "email", example: "seller@gravurtastisch.de", description: "Unique email address" },
+          role: { type: "string", enum: ["admin", "seller", "user"], example: "seller", description: "System account role tier" },
+          role_id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c10", description: "Associated custom RBAC role ID if applicable" },
+          status: { type: "integer", enum: [0, 1, 2], example: 1, description: "0: Inactive, 1: Active, 2: Deleted" },
+          mobile_no: { type: "string", example: "491701234567", description: "Contact phone number" },
+          country_code: { type: "string", example: "49", description: "Dialing country code" },
+          profile_image: { type: "string", example: "/uploads/avatars/avatar-662f.png", description: "Profile photo URL" },
+          plan_id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c99", description: "Subscribed plan MongoDB ObjectId" },
+          planName: { type: "string", example: "Professional Growth", description: "Active subscription plan name" },
+          plan_limits: {
+            type: "object",
+            properties: {
+              maxMarketplaces: { type: "integer", example: 5 },
+              maxReviewRequests: { type: "integer", example: 5000 },
+              maxTeamMembers: { type: "integer", example: 3 }
+            }
+          },
+          seller_id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c01", description: "Parent seller ID for staff team accounts" },
+          createdAt: { type: "string", format: "date-time", example: "2026-01-15T08:30:00.000Z" },
+          updatedAt: { type: "string", format: "date-time", example: "2026-10-30T10:00:00.000Z" }
+        }
+      },
+      Order: {
+        type: "object",
+        description: "Amazon Customer Order and Automated Review Solicitation Model",
+        required: ["_id", "userId", "amazonOrderId", "orderStatus"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c02" },
+          userId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c01", description: "Owner seller user ID" },
+          amazonOrderId: { type: "string", example: "302-1234567-8901234", description: "Amazon unique Order ID" },
+          buyerEmail: { type: "string", example: "buyer@marketplace.amazon.de", description: "Anonymized buyer email address" },
+          orderStatus: { type: "string", enum: ["Shipped", "Delivered", "Unshipped", "Canceled"], example: "Shipped" },
+          fulfillmentChannel: { type: "string", enum: ["AFN", "MFN"], example: "AFN", description: "AFN = Amazon Fulfillment, MFN = Merchant" },
+          shipServiceLevel: { type: "string", example: "Standard" },
+          marketplaceId: { type: "string", example: "A1PA6795UKMFR9", description: "Amazon Marketplace ID" },
+          purchaseDate: { type: "string", format: "date-time", example: "2026-10-25T14:22:10.000Z" },
+          shippingAddress: {
+            type: "object",
+            properties: {
+              postalCode: { type: "string", example: "10115" },
+              city: { type: "string", example: "Berlin" },
+              countryCode: { type: "string", example: "DE" },
+              addressLine1: { type: "string", example: "Friedrichstraße 123" }
+            }
+          },
+          orderTotal: {
+            type: "object",
+            properties: {
+              currencyCode: { type: "string", example: "EUR" },
+              amount: { type: "number", example: 49.95 }
+            }
+          },
+          earliestDeliveryDate: { type: "string", format: "date-time", example: "2026-10-27T00:00:00.000Z" },
+          latestDeliveryDate: { type: "string", format: "date-time", example: "2026-10-29T23:59:59.000Z" },
+          isReviewSent: { type: "boolean", default: false, description: "Whether automated review request was sent" },
+          reviewSentDate: { type: "string", format: "date-time", example: "2026-10-29T16:00:00.000Z" },
+          createdAt: { type: "string", format: "date-time", example: "2026-10-25T14:30:00.000Z" }
+        }
+      },
+      AmazonCredential: {
+        type: "object",
+        description: "Amazon Selling Partner API (SP-API) LWA OAuth Credentials Model",
+        required: ["_id", "userId", "client_id", "refresh_token", "seller_id"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c03" },
+          userId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c01", description: "Connected seller user ID" },
+          client_id: { type: "string", example: "amzn1.application-oa2-client.abcdef123456", description: "Amazon LWA App Client ID" },
+          client_secret: { type: "string", example: "amzn1.oa2-cs.v1.abcdef123456", description: "Amazon LWA Client Secret (masked)" },
+          refresh_token: { type: "string", example: "Atzr|IwEBIJ...", description: "LWA SP-API refresh token" },
+          seller_id: { type: "string", example: "A21TJRUUN4KGV", description: "Amazon Merchant / Seller ID" },
+          region: { type: "string", enum: ["eu", "na", "fe"], example: "eu", description: "Amazon SP-API region endpoint" },
+          activeMarketplaces: {
+            type: "array",
+            items: { type: "string" },
+            example: ["A1PA6795UKMFR9", "A1RKKUPIHCS9HS"]
+          },
+          is_connected: { type: "boolean", example: true },
+          createdAt: { type: "string", format: "date-time", example: "2026-02-10T11:00:00.000Z" }
+        }
+      },
+      Plan: {
+        type: "object",
+        description: "Subscription Pricing Tier and Quota Model",
+        required: ["_id", "name", "price", "marketplace", "request_quota"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c99" },
+          name: { type: "string", example: "Professional Tier", description: "Plan name" },
+          desc: { type: "string", example: "Ideal for growing multi-marketplace Amazon brands", description: "Plan description" },
+          price: { type: "number", example: 49.00, description: "Monthly price in EUR" },
+          currency: { type: "string", example: "eur", default: "eur" },
+          marketplace: { type: "integer", example: 5, description: "Allowed active Amazon marketplaces limit" },
+          request_quota: { type: "integer", example: 5000, description: "Monthly review request automation quota" },
+          duration_days: { type: "integer", example: 30, default: 30 },
+          features: {
+            type: "array",
+            items: { type: "string" },
+            example: ["SP-API Direct Sync", "5 Amazon Marketplaces", "Review Solicitation Automation", "Priority Support"]
+          },
+          status: { type: "integer", enum: [0, 1, 2], example: 1, description: "0: Inactive, 1: Active, 2: Deleted" },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      Payment: {
+        type: "object",
+        description: "Stripe Subscription Checkout & Billing Transactions Model",
+        required: ["_id", "email", "planId", "amount", "status"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c05" },
+          email: { type: "string", format: "email", example: "seller@gravurtastisch.de" },
+          name: { type: "string", example: "Max Mustermann" },
+          planId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c99" },
+          planName: { type: "string", example: "Professional Tier" },
+          amount: { type: "number", example: 49.00 },
+          currency: { type: "string", example: "eur" },
+          stripeSessionId: { type: "string", example: "cs_test_a1b2c3d4e5f6..." },
+          status: { type: "string", enum: ["pending", "paid", "failed"], example: "paid" },
+          billingCycle: { type: "integer", example: 1, description: "Number of months" },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      Role: {
+        type: "object",
+        description: "Role-Based Access Control (RBAC) Role Definition Model",
+        required: ["_id", "role", "title", "scope"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c06" },
+          role: { type: "string", example: "catalog_manager" },
+          title: { type: "string", example: "Catalog & Reviews Manager" },
+          description: { type: "string", example: "Full access to reviews and orders, read-only settings" },
+          scope: { type: "string", enum: ["admin", "seller"], example: "seller" },
+          sellerId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c01", nullable: true },
+          sectionPermissions: {
+            type: "array",
+            items: { $ref: "#/components/schemas/RolePermissionItem" }
+          },
+          status: { type: "integer", enum: [0, 1, 2], example: 1 },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      Section: {
+        type: "object",
+        description: "Application Sections & Permissions Matrix Module",
+        required: ["_id", "name", "title", "scope"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c07" },
+          name: { type: "string", example: "orders" },
+          title: { type: "string", example: "Orders & Solicitations" },
+          scope: { type: "string", enum: ["admin", "seller"], example: "seller" },
+          ownerId: { type: "string", nullable: true },
+          description: { type: "string", example: "Manage orders and automated review requests" },
+          icon: { type: "string", example: "shopping-bag" },
+          order: { type: "integer", example: 1 },
+          status: { type: "integer", enum: [0, 1], example: 1 },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      Marketplace: {
+        type: "object",
+        description: "Amazon Supported Global Marketplace Registry Model",
+        required: ["_id", "marketplace_id", "country_code", "country"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c08" },
+          marketplace_id: { type: "string", example: "A1PA6795UKMFR9", description: "Amazon Marketplace ID" },
+          country_code: { type: "string", example: "DE" },
+          country: { type: "string", example: "Germany" },
+          region: { type: "string", example: "eu" },
+          currency: { type: "string", example: "EUR" },
+          status: { type: "integer", enum: [0, 1, 2], example: 1, description: "0: Inactive, 1: Active, 2: Deleted" }
+        }
+      },
+      GeneralSetting: {
+        type: "object",
+        description: "Seller Automation Settings, Schedule, and Marketplace Filters Model",
+        required: ["_id", "userId"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c09" },
+          userId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c01" },
+          amazonCredentialId: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c03" },
+          activeMarketplaces: {
+            type: "array",
+            items: { type: "string" },
+            example: ["A1PA6795UKMFR9", "A1RKKUPIHCS9HS"]
+          },
+          campaign_name: { type: "string", example: "Automated Feedback Solicitations 2026" },
+          marketplace_id: { type: "string", example: "A1PA6795UKMFR9" },
+          order_status: { type: "string", example: "Shipped" },
+          schedule_time: { type: "string", example: "14:00" },
+          review_delay_days: { type: "integer", example: 5, description: "Days to wait after delivery before soliciting" },
+          is_active: { type: "boolean", default: true }
+        }
+      },
+      Blog: {
+        type: "object",
+        description: "Website Blog Article and Content Marketing Model",
+        required: ["_id", "blog_title", "slug"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c10" },
+          blog_title: { type: "string", example: "How to Maximize Amazon Seller Feedback in 2026" },
+          slug: { type: "string", example: "how-to-maximize-amazon-seller-feedback-2026" },
+          short_description: { type: "string", example: "Proven strategies for compliant review solicitations using SP-API" },
+          description: { type: "string", example: "<p>Full formatted article HTML or markdown content...</p>" },
+          banner_image: { type: "string", example: "/uploads/blogs/banner-2026.jpg" },
+          description_images: {
+            type: "array",
+            items: { type: "string" },
+            example: ["/uploads/blogs/chart-1.png"]
+          },
+          status: { type: "integer", enum: [0, 1, 2], example: 1 },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      SupportRequest: {
+        type: "object",
+        description: "Customer Inquiries and Seller Support Ticket Model",
+        required: ["_id", "name", "email", "message"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c11" },
+          name: { type: "string", example: "Max Mustermann" },
+          email: { type: "string", format: "email", example: "seller@gravurtastisch.de" },
+          subject: { type: "string", example: "Question regarding SP-API authorization" },
+          message: { type: "string", example: "I need assistance refreshing my German marketplace token." },
+          status: { type: "string", enum: ["pending", "in-progress", "resolved"], example: "pending" },
+          priority: { type: "string", enum: ["low", "medium", "high"], example: "medium" },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      SystemLog: {
+        type: "object",
+        description: "System Security, Access, and Operational Audit Logs Model",
+        required: ["_id", "operation"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c12" },
+          operation: { type: "string", example: "UPDATE_PLAN_PRICING" },
+          operation_by: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c00", description: "Admin user ID who executed the action" },
+          key: { type: "string", example: "pricing_change" },
+          scope: { type: "string", example: "admin" },
+          operation_data: { type: "array", items: { type: "object" }, example: [{ field: "price", from: 39, to: 49 }] },
+          ip_address: { type: "string", example: "192.168.1.100" },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      },
+      WebsiteConfiguration: {
+        type: "object",
+        description: "Branding, Company Info, and Site Configuration Model",
+        properties: {
+          company: {
+            type: "object",
+            properties: {
+              name: { type: "string", example: "Gravurtastisch GmbH" },
+              website: { type: "string", example: "https://gravurtastisch.de" },
+              tagline: { type: "string", example: "Automated Amazon Feedback & Review Management" },
+              about: { type: "string", example: "Leading German e-commerce automation software" },
+              copyright_text: { type: "string", example: "© 2026 Gravurtastisch. All rights reserved." }
+            }
+          },
+          contact: {
+            type: "object",
+            properties: {
+              email: { type: "string", format: "email", example: "support@gravurtastisch.de" },
+              phone: { type: "string", example: "+49 30 1234567" },
+              address: { type: "string", example: "Musterstraße 42, 10115 Berlin, Germany" }
+            }
+          },
+          social_links: {
+            type: "object",
+            properties: {
+              facebook: { type: "string", example: "https://facebook.com/gravurtastisch" },
+              instagram: { type: "string", example: "https://instagram.com/gravurtastisch" },
+              linkedin: { type: "string", example: "https://linkedin.com/company/gravurtastisch" }
+            }
+          }
+        }
+      },
+      EmailTemplate: {
+        type: "object",
+        description: "System Email Notification Templates Model",
+        required: ["_id", "subject", "content"],
+        properties: {
+          _id: { type: "string", example: "662f1a2b3c4d5e6f7a8b9c13" },
+          subject: { type: "string", example: "Your Verification OTP Code" },
+          content: { type: "string", example: "<p>Your 6-digit login code is {{otp}}</p>" },
+          slug: { type: "string", example: "verification_otp" },
+          status: { type: "integer", enum: [0, 1, 2], example: 1 },
+          createdAt: { type: "string", format: "date-time" }
+        }
+      }
+    },
+    responses: {
+      BadRequest: {
+        description: "Bad Request - Invalid query parameters, missing required payload properties, or schema mismatch.",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+            example: {
+              code: 400,
+              message: "Validation Error: \"email\" must be a valid email address"
+            }
+          }
+        }
+      },
+      Unauthorized: {
+        description: "Unauthorized - Access token is missing, expired, or invalid signature.",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+            example: {
+              code: 401,
+              message: "Please authenticate to access this endpoint."
+            }
+          }
+        }
+      },
+      Forbidden: {
+        description: "Forbidden - Insufficient permissions or role privileges for this section.",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+            example: {
+              code: 403,
+              message: "Forbidden: You do not have permission to execute this operation."
+            }
+          }
+        }
+      },
+      NotFound: {
+        description: "Not Found - The requested resource ID was not found.",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+            example: {
+              code: 404,
+              message: "The requested record was not found."
+            }
+          }
+        }
+      },
+      InternalError: {
+        description: "Internal Server Error - Unexpected server runtime failure.",
+        content: {
+          "application/json": {
+            schema: { $ref: "#/components/schemas/ErrorResponse" },
+            example: {
+              code: 500,
+              message: "An unexpected internal server error occurred. Please try again later."
+            }
+          }
+        }
+      }
+    }
+  }
+};
+
+// Write to files
+const targets = [
+  path.join(__dirname, '../src/docs/openapi.json'),
+  path.join(__dirname, '../../gravurtastisch_panel/public/api-docs/openapi.json'),
+  path.join(__dirname, '../../Gravurtastisch_OpenAPI.json')
+];
+
+for (const target of targets) {
+  const dir = path.dirname(target);
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+  fs.writeFileSync(target, JSON.stringify(openapi, null, 2), 'utf-8');
+  console.log('Successfully wrote OpenAPI specification to:', target);
+}

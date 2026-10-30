@@ -171,7 +171,7 @@ export function DashboardPreview() {
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/06 border border-slate-200 dark:border-white/10 font-mono text-[11px] text-slate-600 dark:text-slate-300">
                   <Lock className="w-3 h-3 text-emerald-600" />
-                  <span className="truncate">{t("dashboardPreview.mockUrl", "app.gravurtastisch.com / orders")}</span>
+                  <span className="truncate">{t("dashboardPreview.mockUrl", "app.gravurtastisch.com/orders")}</span>
                 </div>
               </div>
 

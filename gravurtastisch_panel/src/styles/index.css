@@ -162,6 +162,88 @@ Tables styles
 @import './tiptap.css';
 
 /**
+ * Modern Website-Style Carded Containers, Floating Surfaces & Shadows
+ * Exactly matches gravurtastisch_web homepage design language
+ */
+#fuse-main,
+.FusePageCarded-root {
+	padding: 8px !important;
+	box-sizing: border-box !important;
+	background-color: #ffffff !important;
+}
+
+@media (min-width: 640px) {
+	#fuse-main,
+	.FusePageCarded-root {
+		padding: 8px 10px !important;
+	}
+}
+
+@media (min-width: 1024px) {
+	#fuse-main,
+	.FusePageCarded-root {
+		padding: 10px 12px !important;
+	}
+}
+
+.dark #fuse-main,
+.dark .FusePageCarded-root {
+	background-color: var(--mui-palette-background-default) !important;
+}
+
+.FusePageCarded-wrapper {
+	border-radius: 16px !important;
+	box-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.1), 0 4px 12px -2px rgba(15, 23, 42, 0.06), 0 0 0 1px rgba(15, 23, 42, 0.05) !important;
+	border: 1px solid rgba(226, 232, 240, 0.95) !important;
+	background-color: #ffffff !important;
+	overflow: hidden !important;
+	margin: 0 !important;
+	transition: box-shadow 0.2s ease-in-out !important;
+}
+
+.dark .FusePageCarded-wrapper {
+	box-shadow: 0 16px 36px -6px rgba(0, 0, 0, 0.6), 0 4px 12px -2px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.08) !important;
+	border: 1px solid var(--mui-palette-divider) !important;
+	background-color: var(--mui-palette-background-paper) !important;
+}
+
+/**
+ * Modern Website-Style Dialogs & Modals
+ */
+.MuiDialog-paper {
+	border-radius: 16px !important;
+	border: 1px solid var(--mui-palette-divider) !important;
+	box-shadow: 0 20px 45px -10px rgba(15, 23, 42, 0.12), 0 4px 6px -2px rgba(15, 23, 42, 0.04) !important;
+	background-color: var(--mui-palette-background-paper) !important;
+	overflow: hidden !important;
+}
+
+.dark .MuiDialog-paper {
+	box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6) !important;
+}
+
+.MuiDialogTitle-root {
+	padding: 18px 24px !important;
+	border-bottom: 1px solid var(--mui-palette-divider) !important;
+	font-weight: 700 !important;
+	letter-spacing: -0.01em !important;
+	color: var(--mui-palette-text-primary) !important;
+}
+
+.MuiDialogActions-root {
+	padding: 14px 24px !important;
+	border-top: 1px solid var(--mui-palette-divider) !important;
+	background-color: var(--mui-palette-background-default) !important;
+}
+
+.MuiDialogActions-root .MuiButton-root {
+	border-radius: 10px !important;
+	text-transform: none !important;
+	font-weight: 600 !important;
+	padding: 8px 18px !important;
+}
+
+/**
  * Modern Website-Style Form Inputs & Dialog Fields
  * Exactly matching gravurtastisch_web RegisterAndContact input styles
  */
@@ -170,51 +252,34 @@ Tables styles
 form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root,
 .MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root {
 	border-radius: 12px !important;
-	background-color: #f8fafc !important;
+	background-color: var(--mui-palette-background-default) !important;
 	min-height: 44px;
 	box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.04) !important;
 	transition: all 0.2s ease-in-out !important;
 }
 
-.dark .MuiDialogContent-root .MuiOutlinedInput-root,
-.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root,
-.dark .MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root {
-	background-color: #0f172a !important;
-}
-
 .MuiDialogContent-root .MuiOutlinedInput-root fieldset,
 form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root fieldset,
 .MuiDialog-root .MuiFormControl-root .MuiOutlinedInput-root fieldset {
-	border-color: #e2e8f0 !important;
+	border-color: var(--mui-palette-divider) !important;
 	border-width: 1px !important;
 	transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out !important;
 }
 
-.dark .MuiDialogContent-root .MuiOutlinedInput-root fieldset,
-.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root fieldset {
-	border-color: #334155 !important;
-}
-
 .MuiDialogContent-root .MuiOutlinedInput-root:hover fieldset,
 form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root:hover fieldset {
-	border-color: #0032ab !important;
+	border-color: var(--mui-palette-primary-main) !important;
 }
 
 .MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused,
 form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused {
-	background-color: #ffffff !important;
-	box-shadow: 0 0 0 3px rgba(0, 50, 171, 0.15) !important;
-}
-
-.dark .MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused,
-.dark form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused {
-	background-color: #0f172a !important;
-	box-shadow: 0 0 0 3px rgba(79, 110, 247, 0.25) !important;
+	background-color: var(--mui-palette-background-paper) !important;
+	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
 }
 
 .MuiDialogContent-root .MuiOutlinedInput-root.Mui-focused fieldset,
 form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focused fieldset {
-	border-color: #0032ab !important;
+	border-color: var(--mui-palette-primary-main) !important;
 	border-width: 1.5px !important;
 }
 
@@ -222,7 +287,7 @@ form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-root.Mui-focus
 form:not(.MRT_TopToolbar):not(.MuiToolbar-root) .MuiOutlinedInput-input {
 	padding: 10px 14px !important;
 	font-size: 13.5px !important;
-	color: #0f172a !important;
+	color: var(--mui-palette-text-primary) !important;
 }
 
 /* Explicit Table Toolbar Controls (Search, Filters, Refresh, Actions) */
@@ -297,15 +362,10 @@ label.MuiFormLabel-root {
 	color: #94a3b8 !important;
 }
 
-/* Table grid borders matching Orders table */
+/* Table grid borders */
 .MuiTable-root .MuiTableCell-root,
 .MuiTable-root .MuiTableRow-root {
-	border-bottom: 1px solid #e2e8f0 !important;
-}
-
-.dark .MuiTable-root .MuiTableCell-root,
-.dark .MuiTable-root .MuiTableRow-root {
-	border-bottom: 1px solid #1e293b !important;
+	border-bottom: 1px solid var(--mui-palette-divider) !important;
 }
 
 

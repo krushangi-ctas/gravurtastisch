@@ -10,8 +10,9 @@ export const ADMIN_SECTION_KEYS = [
 	'blogs',
 	'site-configuration',
 	'plans',
+	'settings',
 	'system-logs',
-	'settings'
+	'technical-document'
 ] as const;
 
 /** Seller nav / redirect order. */
@@ -21,8 +22,8 @@ export const SELLER_SECTION_KEYS = [
 	'sections',
 	'orders',
 	'amazon-credentials',
-	'system-logs',
-	'settings'
+	'settings',
+	'system-logs'
 ] as const;
 
 /** RBAC section key → panel route path. */
@@ -36,8 +37,9 @@ export const SECTION_ROUTES: Record<string, string> = {
 	blogs: '/blogs',
 	'site-configuration': '/settings/site-configuration',
 	plans: '/plans',
-	'system-logs': '/system-logs',
 	settings: '/settings/account',
+	'system-logs': '/system-logs',
+	'technical-document': '/technical-document',
 	orders: '/orders',
 	'amazon-credentials': '/amazon-credentials'
 };
@@ -48,8 +50,9 @@ export const ADMIN_NAV_IDS = [
 	'support',
 	'blogs',
 	'plans',
+	'settings',
 	'system-logs',
-	'settings'
+	'technical-document'
 ] as const;
 
 export const SELLER_NAV_IDS = [

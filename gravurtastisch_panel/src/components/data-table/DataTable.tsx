@@ -264,11 +264,14 @@ function DataTable<TData>({
         },
         muiTablePaperProps: {
           elevation: 0,
-          square: true,
-          className: 'flex flex-col flex-auto h-full rounded-none',
+          square: false,
+          className: 'flex flex-col flex-auto h-full rounded-2xl overflow-hidden',
           sx: {
-            borderRadius: '0px !important',
+            borderRadius: '16px !important',
             boxShadow: 'none !important',
+            border: 'none !important',
+            overflow: 'hidden !important',
+            backgroundColor: 'background.paper',
           },
         },
         muiTableContainerProps: {

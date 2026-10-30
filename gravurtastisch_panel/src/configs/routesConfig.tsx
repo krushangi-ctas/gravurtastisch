@@ -1,22 +1,22 @@
 // Dynamically import all *Route.tsx files from the app folder
-import { FuseRouteConfigType, FuseRoutesType } from "@fuse/utils/FuseUtils";
-import { Navigate } from "react-router";
-import FuseLoading from "@fuse/core/FuseLoading";
-import ErrorBoundary from "@fuse/utils/ErrorBoundary";
-import { layoutConfigOnlyMain } from "./layoutConfigTemplates";
-import settingsConfig from "./settingsConfig";
-import App from "@/app/App";
-import DefaultRedirect from "@/components/DefaultRedirect";
+import { FuseRouteConfigType, FuseRoutesType } from '@fuse/utils/FuseUtils';
+import { Navigate } from 'react-router';
+import FuseLoading from '@fuse/core/FuseLoading';
+import ErrorBoundary from '@fuse/utils/ErrorBoundary';
+import { layoutConfigOnlyMain } from './layoutConfigTemplates';
+import settingsConfig from './settingsConfig';
+import App from '@/app/App';
+import DefaultRedirect from '@/components/DefaultRedirect';
 
 const namedRouteConfigModules: Record<string, unknown> = import.meta.glob(
-  "/src/app/**/*Route.tsx",
+  '/src/app/**/*Route.tsx',
   {
     eager: true,
   }
 );
 
 const routeConfigModules: Record<string, unknown> = import.meta.glob(
-  "/src/app/**/route.tsx",
+  '/src/app/**/route.tsx',
   {
     eager: true,
   }
@@ -37,25 +37,25 @@ const mainRoutes: FuseRouteConfigType[] = Object.keys(allConfigModules)
 
 const routes: FuseRoutesType = [
   {
-    path: "/",
+    path: '/',
     element: <App />,
     auth: settingsConfig.defaultAuth,
     errorElement: <ErrorBoundary />,
     children: [
       {
-        path: "/",
+        path: '/',
         element: <DefaultRedirect />,
       },
       ...mainRoutes,
       {
-        path: "loading",
+        path: 'loading',
         element: <FuseLoading />,
         settings: { layout: layoutConfigOnlyMain },
       },
     ],
   },
   {
-    path: "*",
+    path: '*',
     element: <Navigate to="/404" />,
   },
 ];

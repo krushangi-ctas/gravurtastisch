@@ -1,6 +1,5 @@
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
-import NavbarToggleButton from '@/components/theme-layouts/components/navbar/NavbarToggleButton';
 
 function AmazonHeader() {
   const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));

@@ -10,7 +10,6 @@ import {
 	IconButton,
 	Tooltip,
 	Dialog,
-	CircularProgress,
 	Select,
 	MenuItem,
 	FormControl,
@@ -30,15 +29,12 @@ import CustomStatusSwitch from '@/components/CustomSwitch';
 import { getErrorMessage } from '@/utils/errorMessage';
 
 const Root = styled(FusePageCarded)(() => ({
-	padding: '0!important',
 	'& .container': {
 		maxWidth: '100%!important',
-		padding: '0!important'
-	},
-	'& .FusePageCarded-wrapper': {
-		borderRadius: '0!important',
-		boxShadow: 'none!important',
-		margin: '0!important'
+		padding: '0!important',
+		height: '100%',
+		display: 'flex',
+		flexDirection: 'column'
 	},
 	'& .FusePageCarded-header': {
 		marginBottom: '0px'

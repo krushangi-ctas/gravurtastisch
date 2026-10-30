@@ -171,19 +171,29 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
           sx={{
             ...sx,
             borderLeft: '4px solid transparent',
+            color: (theme) =>
+              theme.palette.mode === 'light' ? '#334155' : '#cbd5e1',
+            '& .fuse-list-item-icon': {
+              color: (theme) =>
+                theme.palette.mode === 'light' ? '#64748b' : '#94a3b8',
+            },
+            '& .fuse-list-item-title': {
+              color: (theme) =>
+                theme.palette.mode === 'light' ? '#334155' : '#cbd5e1',
+              fontSize: '13px',
+              fontWeight: 500,
+            },
             '&.active': {
               backgroundColor: (theme) =>
                 theme.palette.mode === 'light'
-                  ? '#ffffff !important'
-                  : `${alpha(theme.palette.primary.main, 0.16)} !important`,
-              boxShadow: (theme) =>
-                theme.palette.mode === 'light'
-                  ? '0 2px 8px rgba(37, 99, 235, 0.08) !important'
-                  : 'none !important',
+                  ? 'rgba(239, 246, 255, 0.9) !important'
+                  : 'rgba(30, 58, 138, 0.4) !important',
+              boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05) !important',
               color: (theme) => `${theme.palette.primary.main} !important`,
               borderLeft: (theme) => `4px solid ${theme.palette.primary.main} !important`,
-              borderTopLeftRadius: '8px !important',
-              borderBottomLeftRadius: '8px !important',
+              borderRadius: '8px !important',
+              borderTopLeftRadius: '0 !important',
+              borderBottomLeftRadius: '0 !important',
               '& .fuse-list-item-icon': {
                 color: (theme) => `${theme.palette.primary.main} !important`,
               },
@@ -194,16 +204,26 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
               '&:hover': {
                 backgroundColor: (theme) =>
                   theme.palette.mode === 'light'
-                    ? '#ffffff !important'
-                    : `${alpha(theme.palette.primary.main, 0.22)} !important`,
+                    ? 'rgba(239, 246, 255, 1) !important'
+                    : 'rgba(30, 58, 138, 0.5) !important',
               },
             },
             '&:hover': {
               backgroundColor: (theme) =>
                 theme.palette.mode === 'light'
-                  ? 'rgba(255, 255, 255, 0.65)!important'
-                  : 'rgba(255, 255, 255, 0.08)!important',
-              transform: 'translateX(2px)',
+                  ? 'rgba(241, 245, 249, 0.75) !important'
+                  : 'rgba(30, 41, 59, 0.6) !important',
+              color: (theme) =>
+                theme.palette.mode === 'light' ? '#0f172a !important' : '#ffffff !important',
+              '& .fuse-list-item-icon': {
+                color: (theme) =>
+                  theme.palette.mode === 'light' ? '#0f172a !important' : '#ffffff !important',
+              },
+              '& .fuse-list-item-title': {
+                color: (theme) =>
+                  theme.palette.mode === 'light' ? '#0f172a !important' : '#ffffff !important',
+              },
+              transform: 'none',
             },
           }}
           color="inherit"

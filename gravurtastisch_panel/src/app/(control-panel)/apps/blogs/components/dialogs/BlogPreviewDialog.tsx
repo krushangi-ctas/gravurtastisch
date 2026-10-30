@@ -2,8 +2,7 @@ import React, { useState, useMemo } from 'react';
 import {
 	Dialog,
 	DialogContent,
-	IconButton,
-	Button
+	IconButton
 } from '@mui/material';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import moment from 'moment';

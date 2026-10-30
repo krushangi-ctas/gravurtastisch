@@ -20,7 +20,7 @@ const StyledNavBar = styled('div')<StyledNavBarProps>(({ theme }) => ({
   width: `${navbarWidth}px !important`,
   maxWidth: `${navbarWidth}px !important`,
   flexShrink: '0 !important',
-  backgroundColor: theme.palette.grey[200],
+  backgroundColor: '#ffffff',
   ...theme.applyStyles('dark', {
     backgroundColor: theme.vars.palette.background.default,
   }),
@@ -109,7 +109,7 @@ function NavbarStyle1() {
     <>
       {!isMobile && (
         <StyledNavBar
-          className="sticky top-0 z-20 h-screen shrink-0 flex-col bg-gray-200 dark:bg-slate-900"
+          className="sticky top-0 z-20 h-screen shrink-0 flex-col bg-white dark:bg-slate-900 border-r border-slate-200/90 dark:border-slate-800"
           open={isNavbarOpen}
           position={config.navbar.position}
         >

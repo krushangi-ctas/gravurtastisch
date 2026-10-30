@@ -3,7 +3,6 @@ import { useParams, useNavigate, useLocation } from 'react-router';
 import {
 	TextField,
 	Button,
-	Box,
 	Typography,
 	IconButton,
 	CircularProgress,
@@ -11,8 +10,7 @@ import {
 	Paper,
 	Chip,
 	Dialog,
-	DialogContent,
-	Divider
+	DialogContent
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';

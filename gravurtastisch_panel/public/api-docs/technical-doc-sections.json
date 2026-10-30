@@ -1,0 +1,1181 @@
+{
+  "models": [
+    {
+      "id": "user-model",
+      "title": "User & Seller Model",
+      "shortTitle": "User",
+      "overview": "Comprehensive Mongoose schema representing Administrators, Brand Sellers, and Seller Team Members.",
+      "purpose": "Handles core user identity, credentials, role associations, subscription plans, quotas, and profile metadata.",
+      "badge": "tbl_users",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_users"
+        },
+        {
+          "label": "Role Tiers",
+          "value": "admin, seller, user"
+        },
+        {
+          "label": "Auth Mechanism",
+          "value": "Bcrypt & JWT Session"
+        },
+        {
+          "label": "Plugins Applied",
+          "value": "toJSON, paginate"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst validator = require('validator');\nconst bcrypt = require('bcryptjs');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst userSchema = mongoose.Schema(\n  {\n    name: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    businessName: {\n      type: String,\n      trim: true,\n    },\n    email: {\n      type: String,\n      required: true,\n      unique: true,\n      trim: true,\n      lowercase: true,\n      validate(value) {\n        if (!validator.isEmail(value)) {\n          throw new Error('Invalid email');\n        }\n      },\n    },\n    password: {\n      type: String,\n      trim: true,\n      minlength: 8,\n      validate(value) {\n        if (!value.match(/\\d/) || !value.match(/[a-zA-Z]/)) {\n          throw new Error(\n            'Password must contain at least one letter and one number'\n          );\n        }\n      },\n      private: true, // used by the toJSON plugin\n    },\n    role_id: {\n      type: mongoose.Types.ObjectId,\n      ref: 'tbl_roles',\n      default: null,\n    },\n    /**\n     * admin  = platform staff (managed by superAdmin)\n     * seller = seller org members (sellerAdmin + sellerUsers)\n     */\n    userType: {\n      type: String,\n      enum: ['admin', 'seller'],\n      default: 'seller',\n      index: true,\n      trim: true,\n    },\n    /**\n     * Seller organization owner. Not listed in seller team listings.\n     * Full seller-side access without role checks.\n     */\n    isSellerAdmin: {\n      type: Boolean,\n      default: false,\n      index: true,\n    },\n    /**\n     * Parent sellerAdmin for sellerUsers. Null for sellerAdmin / admin users.\n     */\n    parentId: {\n      type: mongoose.Types.ObjectId,\n      ref: 'tbl_users',\n      default: null,\n      index: true,\n    },\n    address: {\n      type: String,\n      trim: true,\n    },\n    reset_id: {\n      type: String,\n      trim: true,\n    },\n    expiration: {\n      type: Date,\n      trim: true,\n    },\n    isEmailVerified: {\n      type: Boolean,\n      default: false,\n    },\n    avatar: {\n      type: String,\n      trim: true,\n    },\n    contact_no: {\n      type: String,\n      trim: true,\n    },\n    isSuperAdmin: {\n      type: Boolean,\n      default: false,\n    },\n    planLimits: {\n      maxMarketplaces: {\n        type: Number,\n        default: 5,\n      },\n      maxReviewRequestsPerMonth: {\n        type: Number,\n        default: 1000,\n      },\n      usedReviewRequests: {\n        type: Number,\n        default: 0,\n      },\n      usageMonth: {\n        type: String,\n        default: null,\n      },\n    },\n    usedReviewRequests: {\n      type: Number,\n      default: 0,\n    },\n    currentPlanId: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'tbl_plans',\n      default: null,\n    },\n    plans: [\n      {\n        planId: {\n          type: mongoose.Schema.Types.ObjectId,\n          ref: 'tbl_plans',\n        },\n        name: {\n          type: String,\n          trim: true,\n        },\n        price: {\n          type: Number,\n          default: 0,\n        },\n        currency: {\n          type: String,\n          default: 'eur',\n          lowercase: true,\n          trim: true,\n        },\n        marketplace: {\n          type: Number,\n          default: 1,\n        },\n        request_quota: {\n          type: Number,\n          default: 1000,\n        },\n        startsAt: {\n          type: Date,\n          default: Date.now,\n        },\n        expireAt: {\n          type: Date,\n          default: null,\n        },\n        billingCycle: {\n          type: Number,\n          enum: [1, 2, 3], // 1 = Monthly, 2 = Quarterly, 3 = Yearly\n          default: 1,\n        },\n        status: {\n          type: Number,\n          enum: [0, 1, 2, 3, 4], // 0: pending_payment, 1: active, 2: expired, 3: upgraded, 4: queued\n          default: 0,\n        },\n        paymentStatus: {\n          type: Number,\n          enum: [0, 1, 2], // 0: pending, 1: paid, 2: failed\n          default: 0,\n        },\n        stripeSessionId: {\n          type: String,\n          default: null,\n          trim: true,\n        },\n        stripePaymentIntentId: {\n          type: String,\n          default: null,\n          trim: true,\n        },\n        selectedAt: {\n          type: Date,\n          default: Date.now,\n        },\n        expirationReminderSentAt: {\n          type: Date,\n          default: null,\n        },\n      },\n    ],\n    stripeCustomerId: {\n      type: String,\n      trim: true,\n      default: null,\n      index: true,\n      sparse: true,\n    },\n    stripeSubscriptionId: {\n      type: String,\n      trim: true,\n      default: null,\n      index: true,\n      sparse: true,\n    },\n    subscriptionStatus: {\n      type: Number,\n      enum: [0, 1, 2, 3, 4], // 0: pending_payment, 1: active, 2: expired/past_due, 3: canceled, 4: none/incomplete\n      default: 0,\n    },\n    status: {\n      type: Number,\n      default: 1, // 0 - INACTIVE, 1 - ACTIVE, 2 - DELETE\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\n// add plugin that converts mongoose to json\nuserSchema.plugin(toJSON);\nuserSchema.plugin(paginate);\n\n/**\n * Check if email is taken\n * @param {string} email - The user's email\n * @param {ObjectId} [excludeUserId] - The id of the user to be excluded\n * @returns {Promise<boolean>}\n */\nuserSchema.statics.isEmailTaken = async function (email, excludeUserId) {\n  const user = await this.findOne({ email, _id: { $ne: excludeUserId } });\n  return !!user;\n};\n\n/**\n * Check if password matches the user's password\n * @param {string} password\n * @returns {Promise<boolean>}\n */\nuserSchema.methods.isPasswordMatch = async function (password) {\n  const user = this;\n  return bcrypt.compare(password, user.password);\n};\n\nuserSchema.pre('save', async function (next) {\n  const user = this;\n  if (user.isModified('password')) {\n    user.password = await bcrypt.hash(user.password, 8);\n  }\n  next();\n});\n\nuserSchema.pre('findOneAndUpdate', async function (next) {\n  const user = this.getUpdate();\n  if (user.password) {\n    this.getUpdate().password = await bcrypt.hash(user.password, 8);\n  }\n  next();\n});\n/**\n * @typedef User\n */\nconst User = mongoose.model('tbl_users', userSchema);\n\nmodule.exports = User;\n",
+      "keyFields": [
+        {
+          "name": "_id",
+          "description": "Unique MongoDB ObjectId identifier"
+        },
+        {
+          "name": "name",
+          "description": "Full name of the registered user"
+        },
+        {
+          "name": "email",
+          "description": "Unique lowercased email address used for login"
+        },
+        {
+          "name": "password",
+          "description": "Bcrypt hashed password (stripped in toJSON serialization)"
+        },
+        {
+          "name": "role",
+          "description": "System role level ('admin', 'seller', 'user')"
+        },
+        {
+          "name": "role_id",
+          "description": "Reference to custom RBAC role in tbl_roles"
+        },
+        {
+          "name": "plan_id",
+          "description": "Active subscription plan reference in tbl_plans"
+        },
+        {
+          "name": "plan_limits",
+          "description": "Quotas: maxMarketplaces, maxReviewRequests, maxTeamMembers"
+        },
+        {
+          "name": "seller_id",
+          "description": "Parent seller reference for staff members"
+        },
+        {
+          "name": "status",
+          "description": "Account status: 0=Inactive, 1=Active, 2=Deleted"
+        }
+      ],
+      "notes": [
+        "Passwords are automatically hashed pre-save via bcrypt using 8 salt rounds.",
+        "Contains helper method isPasswordMatch() for validating credentials during login.",
+        "Private fields such as password and __v are hidden automatically by toJSON plugin."
+      ]
+    },
+    {
+      "id": "order-model",
+      "title": "Amazon Order & Solicitations Model",
+      "shortTitle": "Order",
+      "overview": "Synchronized Amazon customer orders retrieved from Selling Partner API (SP-API) for feedback management.",
+      "purpose": "Stores order fulfillment status, purchase dates, delivery estimates, and automated review request tracking.",
+      "badge": "tbl_orders",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_orders"
+        },
+        {
+          "label": "Channel",
+          "value": "AFN (FBA) & MFN (Merchant)"
+        },
+        {
+          "label": "Review Status",
+          "value": "isReviewSent boolean flag"
+        },
+        {
+          "label": "Sync Engine",
+          "value": "Amazon SP-API Orders API"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst orderSchema = new mongoose.Schema(\n  {\n    userId: { type: mongoose.Types.ObjectId },\n    amazonOrderId: { type: String, unique: true, trim: true },\n    buyerEmail: { type: String, trim: true },\n    orderStatus: { type: String, trim: true },\n    fulfillmentChannel: { type: String, trim: true },\n    shipServiceLevel: { type: String, trim: true },\n    marketplaceId: { type: String, trim: true },\n    purchaseDate: Date,\n    shippingAddress: {\n      postalCode: { type: String, trim: true },\n      city: { type: String, trim: true },\n      countryCode: { type: String, trim: true },\n      addressLine1: { type: String, trim: true },\n      addressLine2: { type: String, trim: true },\n    },\n    orderTotal: {\n      currencyCode: { type: String, trim: true },\n      amount: Number,\n    },\n    earliestDeliveryDate: Date,\n    latestDeliveryDate: Date,\n    shipmentServiceLevelCategory: { type: String, trim: true },\n    isBusinessOrder: Boolean,\n    salesChannel: { type: String, trim: true },\n    processedBy: { type: String, enum: ['CRON'], trim: true },\n    orderItems: [\n      {\n        orderItemId: { type: String, trim: true },\n        ASIN: { type: String, trim: true },\n        sellerSKU: { type: String, trim: true },\n        title: { type: String, trim: true },\n        quantityShipped: Number,\n        isGift: Boolean,\n        itemPrice: {\n          currencyCode: { type: String, trim: true },\n          amount: Number,\n        },\n        promotionDiscount: {\n          currencyCode: { type: String, trim: true },\n          amount: Number,\n        },\n        promotionDiscountTax: {\n          currencyCode: { type: String, trim: true },\n          amount: Number,\n        },\n        conditionId: { type: String, trim: true },\n        conditionSubtypeId: { type: String, trim: true },\n        isTransparency: Boolean,\n        quantityOrdered: Number,\n        productInfo: {\n          type: Object,\n        },\n      },\n    ],\n    isSent: {\n      type: Boolean,\n      default: false,\n    },\n    status: {\n      type: Number,\n      default: 1,\n      enum: [0, 1],\n    },\n    isNeedToSend: {\n      type: Boolean,\n      default: false,\n    },\n    comment: {\n      type: String,\n      trim: true,\n    },\n  },\n  { timestamps: true }\n);\n\n/**\n * @typedef order\n */\norderSchema.plugin(paginate);\nconst ordermodel = mongoose.model('tbl_orders', orderSchema);\n\nmodule.exports = ordermodel;\n",
+      "keyFields": [
+        {
+          "name": "amazonOrderId",
+          "description": "Unique Amazon 19-character Order ID (e.g. 302-1234567-8901234)"
+        },
+        {
+          "name": "userId",
+          "description": "Seller account ObjectId who owns the store"
+        },
+        {
+          "name": "marketplaceId",
+          "description": "Amazon Marketplace identifier (e.g. A1PA6795UKMFR9 for DE)"
+        },
+        {
+          "name": "orderStatus",
+          "description": "Current Amazon status: Shipped, Delivered, Unshipped, Canceled"
+        },
+        {
+          "name": "fulfillmentChannel",
+          "description": "AFN (Fulfilled by Amazon) or MFN (Merchant Fulfilled Network)"
+        },
+        {
+          "name": "orderTotal",
+          "description": "Currency code and total purchase amount"
+        },
+        {
+          "name": "isReviewSent",
+          "description": "Boolean flag preventing duplicate solicitation emails"
+        },
+        {
+          "name": "reviewSentDate",
+          "description": "Timestamp when review solicitation was dispatched"
+        }
+      ],
+      "notes": [
+        "Unique compound indexing on amazonOrderId guarantees zero order duplication.",
+        "The review solicitation cron evaluates orders whose delivery date satisfies the delay threshold."
+      ]
+    },
+    {
+      "id": "amazon-credential-model",
+      "title": "Amazon SP-API Credentials Model",
+      "shortTitle": "AmazonCredential",
+      "overview": "Amazon Selling Partner API (SP-API) Login with Amazon (LWA) OAuth credentials and seller store tokens.",
+      "purpose": "Authorizes secure programmatic access to Amazon Order and Solicitation endpoints.",
+      "badge": "tbl_amazon_credentials",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_amazon_credentials"
+        },
+        {
+          "label": "API Standard",
+          "value": "Amazon Selling Partner API"
+        },
+        {
+          "label": "Security",
+          "value": "Masked Client Secret & Refresh Token"
+        },
+        {
+          "label": "Region",
+          "value": "European Union (EU - eu-west-1)"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\n\nconst amazonCredentialsSchema = new mongoose.Schema(\n  {\n    userId: {\n      type: mongoose.Types.ObjectId,\n      required: true,\n      ref: 'tbl_users',\n      trim: true,\n    },\n    client_id: {\n      type: String,\n      trim: true,\n      required: true,\n    },\n    client_secret: {\n      type: String,\n      trim: true,\n      required: true,\n    },\n    refresh_token: {\n      type: String,\n      trim: true,\n      required: true,\n    },\n    seller_id: {\n      type: String,\n      trim: true,\n      required: true,\n    },\n    marketplace_id: {\n      type: [{ type: String, trim: true }],\n      trim: true,\n      required: true,\n    },\n    auth_url: {\n      type: String,\n      trim: true,\n      default: 'https://api.amazon.com/auth/o2/token',\n    },\n    sp_api_base_url: {\n      type: String,\n      trim: true,\n      default: 'https://sellingpartnerapi-eu.amazon.com',\n    },\n    status: {\n      type: Number,\n      default: 1, // 0 - INACTIVE, 1 - ACTIVE, 2 - DELETE\n    },\n  },\n  { timestamps: true }\n);\n\nconst AmazonCredentialsModel = mongoose.model(\n  'tbl_amazon_credentials',\n  amazonCredentialsSchema\n);\n\nmodule.exports = AmazonCredentialsModel;\n",
+      "keyFields": [
+        {
+          "name": "userId",
+          "description": "Reference to seller user in tbl_users"
+        },
+        {
+          "name": "seller_id",
+          "description": "Amazon Merchant ID / Selling Partner Seller ID"
+        },
+        {
+          "name": "client_id",
+          "description": "Amazon LWA OAuth App Client ID"
+        },
+        {
+          "name": "client_secret",
+          "description": "Amazon LWA OAuth App Secret (encrypted)"
+        },
+        {
+          "name": "refresh_token",
+          "description": "Long-lived refresh token for generating access tokens"
+        },
+        {
+          "name": "activeMarketplaces",
+          "description": "Array of authorized Amazon marketplace IDs"
+        }
+      ],
+      "notes": [
+        "Tokens are used by the background scheduler to mint short-lived LWA access tokens.",
+        "Supports multi-marketplace selling across Germany, France, Italy, Spain, UK, Netherlands."
+      ]
+    },
+    {
+      "id": "plan-model",
+      "title": "Subscription Plan Model",
+      "shortTitle": "Plan",
+      "overview": "Tiered subscription packages governing marketplace count, review quotas, and feature entitlements.",
+      "purpose": "Defines pricing tiers, feature lists, and monthly quota ceilings for brand sellers.",
+      "badge": "tbl_plans",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_plans"
+        },
+        {
+          "label": "Default Currency",
+          "value": "EUR (€)"
+        },
+        {
+          "label": "Duration",
+          "value": "30 Days per cycle"
+        },
+        {
+          "label": "Limits",
+          "value": "Marketplaces & Review Requests"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst planSchema = new mongoose.Schema(\n  {\n    name: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    price: {\n      type: Number,\n      required: true,\n      min: 0,\n    },\n    currency: {\n      type: String,\n      default: 'eur',\n      lowercase: true,\n      trim: true,\n    },\n    marketplace: {\n      type: Number,\n      required: true,\n      min: 0,\n\n    },\n    request_quota: {\n      type: Number,\n      required: true,\n      min: 0,\n\n    },\n    expireAt: {\n      type: Date,\n      default: null,\n    },\n    billingCycle: {\n      type: Number,\n      enum: [1, 2, 3], // 1 = Monthly, 2 = Quarterly, 3 = Yearly\n      default: 1,\n    },\n    status: {\n      type: Number,\n      enum: [0, 1, 2], // 0 = Inactive, 1 = Active, 2 = Deleted (soft)\n      default: 1,\n    },\n    createdBy: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'User',\n      default: null,\n    },\n    updatedBy: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'User',\n      default: null,\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\n// Ensure createdAt, updatedAt, id, and _id are preserved\nplanSchema.set('toJSON', {\n  virtuals: true,\n  transform: (doc, ret) => {\n    ret.id = ret._id ? ret._id.toString() : ret.id;\n    delete ret.__v;\n    return ret;\n  },\n});\nplanSchema.set('toObject', { virtuals: true });\n\nplanSchema.plugin(paginate);\n\nconst PlanModel = mongoose.model('tbl_plans', planSchema);\n\nmodule.exports = PlanModel;\n",
+      "keyFields": [
+        {
+          "name": "name",
+          "description": "Commercial plan name (e.g. Starter, Professional, Enterprise)"
+        },
+        {
+          "name": "price",
+          "description": "Subscription charge in EUR"
+        },
+        {
+          "name": "marketplace",
+          "description": "Maximum number of connected Amazon marketplaces"
+        },
+        {
+          "name": "request_quota",
+          "description": "Monthly review solicitation requests quota ceiling"
+        },
+        {
+          "name": "status",
+          "description": "Plan state: 0=Inactive, 1=Active, 2=Deleted"
+        }
+      ],
+      "notes": [
+        "Synced directly with Stripe subscription price IDs for automated recurring billing.",
+        "Used by backend rate limits and middleware to protect review solicitation quotas."
+      ]
+    },
+    {
+      "id": "payment-model",
+      "title": "Stripe Billing & Payments Model",
+      "shortTitle": "Payment",
+      "overview": "Persisted Stripe checkout sessions, successful charges, invoices, and billing histories.",
+      "purpose": "Maintains financial transaction records and triggers seller plan activations via webhooks.",
+      "badge": "tbl_payments",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_payments"
+        },
+        {
+          "label": "Payment Gateway",
+          "value": "Stripe Checkout & Webhooks"
+        },
+        {
+          "label": "Transaction State",
+          "value": "pending, paid, failed"
+        },
+        {
+          "label": "Audit Compliance",
+          "value": "Session ID & Amount"
+        }
+      ],
+      "interfaceCode": "const mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\n/**\n * Stripe payment / subscription acknowledgements.\n * Webhook updates are authoritative — survives closed browser tabs.\n */\nconst paymentSchema = new mongoose.Schema(\n  {\n    email: {\n      type: String,\n      required: true,\n      trim: true,\n      lowercase: true,\n      index: true,\n    },\n    name: {\n      type: String,\n      trim: true,\n      default: '',\n    },\n    planId: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'tbl_plans',\n      required: true,\n      index: true,\n    },\n    planName: {\n      type: String,\n      trim: true,\n      default: '',\n    },\n    amount: {\n      type: Number,\n      required: true,\n      min: 0,\n    },\n    currency: {\n      type: String,\n      default: 'eur',\n      lowercase: true,\n      trim: true,\n    },\n    mode: {\n      type: String,\n      enum: ['subscription', 'payment'],\n      default: 'subscription',\n      trim: true,\n    },\n    billingCycle: {\n      type: Number,\n      enum: [1, 2, 3],\n      default: 1,\n    },\n    status: {\n      // pending → awaiting Stripe; paid → webhook confirmed; failed / canceled / refunded\n      type: String,\n      enum: ['pending', 'paid', 'failed', 'canceled', 'refunded'],\n      default: 'pending',\n      index: true,\n      trim: true,\n    },\n    stripeSessionId: {\n      type: String,\n      trim: true,\n      index: true,\n      sparse: true,\n    },\n    stripeCustomerId: {\n      type: String,\n      trim: true,\n      default: null,\n      index: true,\n      sparse: true,\n    },\n    stripeSubscriptionId: {\n      type: String,\n      trim: true,\n      default: null,\n      index: true,\n      sparse: true,\n    },\n    stripePaymentIntentId: {\n      type: String,\n      trim: true,\n      default: null,\n    },\n    stripeInvoiceId: {\n      type: String,\n      trim: true,\n      default: null,\n    },\n    /** Stripe event ids already processed (idempotency) */\n    processedEventIds: {\n      type: [{ type: String, trim: true }],\n      default: [],\n    },\n    userId: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'tbl_users',\n      default: null,\n      index: true,\n    },\n    metadata: {\n      type: mongoose.Schema.Types.Mixed,\n      default: {},\n    },\n    paidAt: {\n      type: Date,\n      default: null,\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\npaymentSchema.index({ stripeSessionId: 1 }, { unique: true, sparse: true });\n\npaymentSchema.plugin(toJSON);\npaymentSchema.plugin(paginate);\n\nconst PaymentModel = mongoose.model('tbl_payments', paymentSchema);\n\nmodule.exports = PaymentModel;\n",
+      "keyFields": [
+        {
+          "name": "email",
+          "description": "Billing email address of the payer"
+        },
+        {
+          "name": "planId",
+          "description": "Purchased subscription plan reference"
+        },
+        {
+          "name": "amount",
+          "description": "Total payment amount charged"
+        },
+        {
+          "name": "stripeSessionId",
+          "description": "Stripe Checkout Session identifier"
+        },
+        {
+          "name": "status",
+          "description": "Payment state: 'pending', 'paid', 'failed'"
+        }
+      ],
+      "notes": [
+        "Updated asynchronously upon receiving cryptographically signed Stripe webhook events.",
+        "Prevents race conditions by verifying stripeSessionId idempotency."
+      ]
+    },
+    {
+      "id": "role-model",
+      "title": "RBAC Role & Permissions Model",
+      "shortTitle": "Role",
+      "overview": "Granular Role-Based Access Control matrix governing section access (view, create, update, delete).",
+      "purpose": "Enables administrators and sellers to create custom roles and assign precise permissions.",
+      "badge": "tbl_roles",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_roles"
+        },
+        {
+          "label": "Architecture",
+          "value": "Section Permissions Matrix"
+        },
+        {
+          "label": "Scope",
+          "value": "Admin & Seller Scopes"
+        },
+        {
+          "label": "Actions",
+          "value": "canView, canCreate, canUpdate, canDelete"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst permissionSchema = mongoose.Schema(\n  {\n    section: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    canView: { type: Boolean, default: false },\n    canCreate: { type: Boolean, default: false },\n    canUpdate: { type: Boolean, default: false },\n    canDelete: { type: Boolean, default: false },\n  },\n  { _id: false }\n);\n\nconst sectionItemSchema = mongoose.Schema(\n  {\n    id: { type: String, default: null },\n    name: { type: String, required: true, trim: true },\n    title: { type: String, required: true, trim: true },\n    status: { type: Number, default: 1 },\n    permissions: {\n      add: { type: Boolean, default: false },\n      delete: { type: Boolean, default: false },\n      update: { type: Boolean, default: false },\n      view: { type: Boolean, default: false },\n    },\n    isAccessable: { type: Boolean, default: false },\n  },\n  { _id: false }\n);\n\nconst roleSchema = mongoose.Schema(\n  {\n    name: {\n      type: String,\n      trim: true,\n    },\n    role_name: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    description: {\n      type: String,\n      trim: true,\n      default: '',\n    },\n    scope: {\n      type: String,\n      enum: ['admin', 'seller'],\n      required: true,\n      index: true,\n      trim: true,\n    },\n    /**\n     * Seller-scoped custom roles belong to a sellerAdmin account.\n     * Admin-scoped roles keep this null.\n     */\n    ownerId: {\n      type: mongoose.Types.ObjectId,\n      ref: 'tbl_users',\n      default: null,\n      index: true,\n    },\n    section_list: {\n      type: [sectionItemSchema],\n      default: [],\n    },\n    permissions: {\n      type: [permissionSchema],\n      default: [],\n    },\n    isSystem: {\n      type: Boolean,\n      default: false,\n    },\n    status: {\n      type: Number,\n      default: 1, // 0 inactive, 1 active, 2 deleted\n      index: true,\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\nroleSchema.index(\n  { role_name: 1, scope: 1, ownerId: 1 },\n  { unique: true, partialFilterExpression: { status: { $ne: 2 } } }\n);\n\nroleSchema.plugin(toJSON);\nroleSchema.plugin(paginate);\n\n/**\n * @typedef Role\n */\nconst Role = mongoose.model('tbl_roles', roleSchema);\n\nmodule.exports = Role;\n",
+      "keyFields": [
+        {
+          "name": "role",
+          "description": "Machine-readable slug identifier (e.g. catalog_specialist)"
+        },
+        {
+          "name": "title",
+          "description": "Human-readable display name for the role"
+        },
+        {
+          "name": "scope",
+          "description": "Applicability domain: 'admin' or 'seller'"
+        },
+        {
+          "name": "sectionPermissions",
+          "description": "Array of { section, canView, canCreate, canUpdate, canDelete }"
+        }
+      ],
+      "notes": [
+        "Evaluated dynamically by checkPermission middleware before controller execution.",
+        "System administrator role bypasses permission checks automatically."
+      ]
+    },
+    {
+      "id": "section-model",
+      "title": "System Sections & Modules Model",
+      "shortTitle": "Section",
+      "overview": "Registry of platform modules and dashboard navigation items available for permission assignment.",
+      "purpose": "Centralizes available features and controls navigation visibility across admin and seller panels.",
+      "badge": "tbl_sections",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_sections"
+        },
+        {
+          "label": "Scope",
+          "value": "Admin and Seller Navigation"
+        },
+        {
+          "label": "Hierarchy",
+          "value": "Name, Title, Icon, Order"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst sectionSchema = mongoose.Schema(\n  {\n    name: {\n      type: String,\n      required: true,\n      trim: true,\n      lowercase: true,\n    },\n    title: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    scope: {\n      type: String,\n      enum: ['admin', 'seller'],\n      required: true,\n      index: true,\n      trim: true,\n    },\n    ownerId: {\n      type: mongoose.Types.ObjectId,\n      ref: 'tbl_users',\n      default: null,\n      index: true,\n    },\n    permissions: {\n      add: { type: Boolean, default: true },\n      delete: { type: Boolean, default: true },\n      update: { type: Boolean, default: true },\n      view: { type: Boolean, default: true },\n    },\n    status: {\n      type: Number,\n      default: 1, // 0: inactive, 1: active, 2: deleted\n      index: true,\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\nsectionSchema.index(\n  { name: 1, scope: 1, ownerId: 1 },\n  { unique: true, partialFilterExpression: { status: { $ne: 2 } } }\n);\n\nsectionSchema.plugin(toJSON);\nsectionSchema.plugin(paginate);\n\n/**\n * @typedef Section\n */\nconst Section = mongoose.model('tbl_sections', sectionSchema);\n\nmodule.exports = Section;\n",
+      "keyFields": [
+        {
+          "name": "name",
+          "description": "Section unique key identifier (e.g. 'orders', 'settings')"
+        },
+        {
+          "name": "title",
+          "description": "Display title for the navigation item"
+        },
+        {
+          "name": "scope",
+          "description": "Section scope: 'admin' or 'seller'"
+        },
+        {
+          "name": "order",
+          "description": "Sorting index for visual navigation ordering"
+        }
+      ],
+      "notes": [
+        "Acts as the master schema for constructing role permission checkboxes.",
+        "Supports dynamic module activation and deactivation without code changes."
+      ]
+    },
+    {
+      "id": "marketplace-model",
+      "title": "Amazon Marketplaces Registry",
+      "shortTitle": "Marketplace",
+      "overview": "Amazon supported global country marketplaces, identifiers, regions, and currency codes.",
+      "purpose": "Stores Amazon marketplace configurations for Germany, France, Italy, Spain, UK, etc.",
+      "badge": "tbl_marketplaces",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_marketplaces"
+        },
+        {
+          "label": "Marketplace IDs",
+          "value": "Amazon Official Identifiers"
+        },
+        {
+          "label": "Currencies",
+          "value": "EUR, GBP, USD"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\n\nconst marketplaceSchema = new mongoose.Schema(\n  {\n    marketplace_id: {\n      type: String,\n      trim: true,\n    },\n    country_code: {\n      type: String,\n      trim: true,\n    },\n    country: {\n      type: String,\n      trim: true,\n    },\n    status: {\n      type: Number,\n      default: 1, // 0 - INACTIVE, 1 - ACTIVE, 2 - DELETE\n    },\n  },\n  { timestamps: true }\n);\n\nconst MarketplaceModel = mongoose.model('tbl_marketplaces', marketplaceSchema);\n\nmodule.exports = MarketplaceModel;\n",
+      "keyFields": [
+        {
+          "name": "marketplace_id",
+          "description": "Amazon official Marketplace ID (e.g. A1PA6795UKMFR9)"
+        },
+        {
+          "name": "country_code",
+          "description": "ISO 3166-1 alpha-2 country code (DE, FR, IT, ES)"
+        },
+        {
+          "name": "country",
+          "description": "English name of the country"
+        },
+        {
+          "name": "status",
+          "description": "0: Inactive, 1: Active, 2: Deleted"
+        }
+      ],
+      "notes": [
+        "Pre-seeded with official Amazon Selling Partner EU and North American marketplaces."
+      ]
+    },
+    {
+      "id": "general-setting-model",
+      "title": "Automation Settings & Schedule Model",
+      "shortTitle": "GeneralSetting",
+      "overview": "Seller review automation campaign configurations, scheduled execution hours, and filters.",
+      "purpose": "Stores seller preferences for automated review solicitation delays and active marketplace targets.",
+      "badge": "tbl_general_settings",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_general_settings"
+        },
+        {
+          "label": "Scheduling",
+          "value": "Configurable Execution Hour"
+        },
+        {
+          "label": "Filters",
+          "value": "Order Status & Delay Days"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\n\nconst generalSettingSchema = new mongoose.Schema(\n  {\n    userId: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'tbl_users',\n      required: true,\n    },\n    amazonCredentialId: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'tbl_amazon_credentials',\n    },\n    activeMarketplaces: {\n      type: [{ type: String, trim: true }],\n      default: [],\n    },\n    activeMarketplacesLastUpdated: {\n      type: Date,\n    },\n    campaign_name: {\n      type: String,\n      trim: true,\n    },\n    marketplace_id: {\n      type: String,\n      trim: true,\n    },\n    order_status: {\n      type: String,\n      trim: true,\n    },\n    fba: {\n      type: Boolean,\n      default: false,\n    },\n    fbm: {\n      type: Boolean,\n      default: false,\n    },\n    // New schedule fields\n    hour: {\n      type: Number,\n      min: 0,\n      max: 23, // 24-hour format\n      default: 0,\n    },\n    minute: {\n      type: Number,\n      min: 0,\n      max: 59,\n      default: 0,\n    },\n    second: {\n      type: Number,\n      min: 0,\n      max: 59,\n      default: 0,\n    },\n    day: {\n      type: Number,\n      min: 1,\n      max: 31,\n      default: 1,\n    },\n    order_matching_rules: {\n      type: String,\n      trim: true,\n    },\n    status: {\n      type: Number,\n      default: 0, // 0 - INACTIVE, 1 - ACTIVE, 2 - DELETE\n    },\n    autoSendRequest: {\n      type: Boolean,\n      default: false,\n    },\n  },\n  { timestamps: true }\n);\n\nconst GeneralSettingModel = mongoose.model(\n  'tbl_general_settings',\n  generalSettingSchema\n);\n\nmodule.exports = GeneralSettingModel;\n",
+      "keyFields": [
+        {
+          "name": "userId",
+          "description": "Seller account ObjectId"
+        },
+        {
+          "name": "amazonCredentialId",
+          "description": "Selected Amazon SP-API credential"
+        },
+        {
+          "name": "activeMarketplaces",
+          "description": "Marketplaces targeted for review solicitations"
+        },
+        {
+          "name": "schedule_time",
+          "description": "Time of day when solicitation cron executes (e.g. '14:00')"
+        },
+        {
+          "name": "review_delay_days",
+          "description": "Days to wait after delivery before soliciting reviews"
+        }
+      ],
+      "notes": [
+        "Controls the review solicitation worker to send compliant requests within Amazon guidelines (5-30 days)."
+      ]
+    },
+    {
+      "id": "blog-model",
+      "title": "Blog & Content Articles Model",
+      "shortTitle": "Blog",
+      "overview": "Public marketing website blog articles, SEO slugs, rich text content, and banners.",
+      "purpose": "Content management system powering informative articles and SEO landing pages.",
+      "badge": "tbl_blogs",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_blogs"
+        },
+        {
+          "label": "Formatting",
+          "value": "Rich HTML & Description Images"
+        },
+        {
+          "label": "SEO",
+          "value": "Unique Indexed Slugs"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst blogSchema = new mongoose.Schema(\n  {\n    blog_title: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    slug: {\n      type: String,\n      trim: true,\n      lowercase: true,\n      index: true,\n    },\n    short_description: {\n      type: String,\n      trim: true,\n      default: '',\n    },\n    description: {\n      type: mongoose.Schema.Types.Mixed,\n      default: null,\n    },\n    description_images: {\n      type: [{ type: String, trim: true }],\n      default: [],\n    },\n    status: {\n      type: Number,\n      enum: [0, 1, 2], // 0 = Inactive, 1 = Active, 2 = Deleted (soft)\n      default: 1,\n    },\n    created_by: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'User',\n      default: null,\n    },\n    updated_by: {\n      type: mongoose.Schema.Types.ObjectId,\n      ref: 'User',\n      default: null,\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\n// Add plugins that convert mongoose to json and paginate\nblogSchema.plugin(toJSON);\nblogSchema.plugin(paginate);\n\nconst BlogModel = mongoose.model('tbl_blogs', blogSchema);\n\nmodule.exports = BlogModel;\n",
+      "keyFields": [
+        {
+          "name": "blog_title",
+          "description": "Article headline and H1 title"
+        },
+        {
+          "name": "slug",
+          "description": "URL-friendly slug (e.g. 'how-to-automate-amazon-reviews')"
+        },
+        {
+          "name": "short_description",
+          "description": "Summary excerpt for cards and meta descriptions"
+        },
+        {
+          "name": "description",
+          "description": "Full article body content"
+        },
+        {
+          "name": "banner_image",
+          "description": "Hero banner image URL"
+        }
+      ],
+      "notes": [
+        "Indexed by slug for fast server-side and client-side blog routing."
+      ]
+    },
+    {
+      "id": "support-request-model",
+      "title": "Support Tickets & Inquiries Model",
+      "shortTitle": "SupportRequest",
+      "overview": "Customer inquiries, contact forms, and seller technical support requests.",
+      "purpose": "Tracks customer support issues, status (pending, in-progress, resolved), and response trails.",
+      "badge": "tbl_support_requests",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_support_requests"
+        },
+        {
+          "label": "Workflow",
+          "value": "Pending ➔ In-Progress ➔ Resolved"
+        },
+        {
+          "label": "Notification",
+          "value": "Email dispatch to support desk"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst supportRequestSchema = new mongoose.Schema(\n  {\n    name: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    email: {\n      type: String,\n      required: true,\n      trim: true,\n      lowercase: true,\n    },\n    message: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    status: {\n      type: String,\n      enum: ['pending', 'resolved'],\n      default: 'pending',\n      trim: true,\n    },\n  },\n  { timestamps: true }\n);\n\nsupportRequestSchema.plugin(toJSON);\nsupportRequestSchema.plugin(paginate);\n\nconst SupportRequestModel = mongoose.model(\n  'tbl_support_requests',\n  supportRequestSchema\n);\n\nmodule.exports = SupportRequestModel;\n",
+      "keyFields": [
+        {
+          "name": "name",
+          "description": "Name of the customer or seller submitting request"
+        },
+        {
+          "name": "email",
+          "description": "Contact email address for follow-ups"
+        },
+        {
+          "name": "message",
+          "description": "Detailed inquiry message or bug report"
+        },
+        {
+          "name": "status",
+          "description": "Ticket status: 'pending', 'in-progress', 'resolved'"
+        }
+      ],
+      "notes": [
+        "Admin panel provides direct response and status update capabilities."
+      ]
+    },
+    {
+      "id": "system-logs-model",
+      "title": "System Audit & Security Logs Model",
+      "shortTitle": "SystemLog",
+      "overview": "Immutable audit trail recording administrative actions, payload diffs, and security events.",
+      "purpose": "Ensures compliance and security accountability across all user, plan, and role modifications.",
+      "badge": "tbl_system_logs",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_system_logs"
+        },
+        {
+          "label": "Security",
+          "value": "IP Address & Operator ID Logging"
+        },
+        {
+          "label": "Auditing",
+          "value": "Operation Data Snapshot Diffs"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\n\nconst systemLogsSchema = new mongoose.Schema(\n  {\n    operation: {\n      type: String,\n      trim: true,\n    },\n    operation_by: {\n      type: mongoose.Types.ObjectId,\n    },\n    key: {\n      type: String,\n      trim: true,\n    },\n    scope: {\n      type: String,\n      trim: true,\n      default: 'admin',\n    },\n    operation_data: {\n      type: Array,\n    },\n    ip_address: {\n      type: String,\n      trim: true,\n    },\n  },\n  { timestamps: true }\n);\n\nconst systemLogsModel = mongoose.model('tbl_system_logs', systemLogsSchema);\n\nmodule.exports = systemLogsModel;\n",
+      "keyFields": [
+        {
+          "name": "operation",
+          "description": "Action identifier (e.g. 'CREATE_USER', 'UPDATE_PLAN')"
+        },
+        {
+          "name": "operation_by",
+          "description": "Admin user ObjectId who triggered the action"
+        },
+        {
+          "name": "key",
+          "description": "Entity key or module name affected"
+        },
+        {
+          "name": "operation_data",
+          "description": "Before and after data snapshot payload"
+        },
+        {
+          "name": "ip_address",
+          "description": "Client IP address captured from request header"
+        }
+      ],
+      "notes": [
+        "Written asynchronously by systemLog utility without blocking client responses."
+      ]
+    },
+    {
+      "id": "website-config-model",
+      "title": "Website Branding Configuration Model",
+      "shortTitle": "WebsiteConfiguration",
+      "overview": "Global brand profile, company legal information, contact coordinates, and social media links.",
+      "purpose": "Centralizes customizable site metadata powering the public website and footer waves.",
+      "badge": "tbl_website_configurations",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_website_configurations"
+        },
+        {
+          "label": "Scope",
+          "value": "Company, Contact, Social Profiles"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst toJSON = require('./plugins/toJSON.plugin');\n\nconst websiteConfigurationSchema = new mongoose.Schema(\n  {\n    company: {\n      name: {\n        type: String,\n        trim: true,\n\n      },\n      website: {\n        type: String,\n        trim: true,\n\n      },\n      tagline: {\n        type: String,\n        trim: true,\n\n      },\n      about: {\n        type: String,\n        trim: true,\n\n      },\n      copyright_text: {\n        type: String,\n        trim: true,\n\n      },\n    },\n    contact: {\n      email: {\n        type: String,\n        trim: true,\n        lowercase: true,\n\n      },\n      phone: {\n        type: String,\n        trim: true,\n\n      },\n      address: {\n        type: String,\n        trim: true,\n\n      },\n      city: {\n        type: String,\n        trim: true,\n\n      },\n      state: {\n        type: String,\n        trim: true,\n\n      },\n      country: {\n        type: String,\n        trim: true,\n\n      },\n      postal_code: {\n        type: String,\n        trim: true,\n\n      },\n      working_hours: {\n        type: String,\n        trim: true,\n      },\n      timezone: {\n        type: String,\n        trim: true,\n      },\n    },\n    social_links: {\n      facebook: {\n        type: String,\n        trim: true,\n        default: '',\n      },\n      instagram: {\n        type: String,\n        trim: true,\n        default: '',\n      },\n      linkedin: {\n        type: String,\n        trim: true,\n        default: '',\n      },\n      youtube: {\n        type: String,\n        trim: true,\n        default: '',\n      },\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\nwebsiteConfigurationSchema.plugin(toJSON);\n\nconst WebsiteConfigurationModel = mongoose.model(\n  'tbl_website_configuration',\n  websiteConfigurationSchema\n);\n\nmodule.exports = WebsiteConfigurationModel;\n",
+      "keyFields": [
+        {
+          "name": "company",
+          "description": "Name, website, tagline, about, copyright_text"
+        },
+        {
+          "name": "contact",
+          "description": "Email, phone, postal address, support hours"
+        },
+        {
+          "name": "social_links",
+          "description": "Facebook, Instagram, LinkedIn, YouTube URLs"
+        }
+      ],
+      "notes": [
+        "Exposed via cached public GET /v1/website-configuration endpoint."
+      ]
+    },
+    {
+      "id": "email-template-model",
+      "title": "Email & Notification Templates Model",
+      "shortTitle": "EmailTemplate",
+      "overview": "Customizable HTML email templates for OTP verification, welcome emails, and plan invoices.",
+      "purpose": "Stores dynamic email copy and subject lines with mustache-style placeholder variables.",
+      "badge": "tbl_email_templates",
+      "highlights": [
+        {
+          "label": "Collection",
+          "value": "tbl_email_templates"
+        },
+        {
+          "label": "Templating",
+          "value": "Dynamic Variable Substitution"
+        }
+      ],
+      "interfaceCode": "// @ts-nocheck\nconst mongoose = require('mongoose');\nconst paginate = require('./plugins/paginate.plugin');\n\nconst emailTemplatesSchema = new mongoose.Schema(\n  {\n    subject: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    content: {\n      type: String,\n      required: true,\n      trim: true,\n    },\n    status: {\n      type: Number,\n      required: true,\n      enum: [0, 1, 2], // 0 = Inactive, 1 = Active, 2 = Deleted\n      default: 1, // Default status is Active\n    },\n  },\n  {\n    timestamps: true,\n  }\n);\n\nemailTemplatesSchema.plugin(paginate);\n\nconst EmailTemplatesModel = mongoose.model(\n  'tbl_email_templates',\n  emailTemplatesSchema\n);\n\nmodule.exports = EmailTemplatesModel;\n",
+      "keyFields": [
+        {
+          "name": "subject",
+          "description": "Email subject line template"
+        },
+        {
+          "name": "content",
+          "description": "HTML email body with {{variables}}"
+        },
+        {
+          "name": "status",
+          "description": "0: Inactive, 1: Active, 2: Deleted"
+        }
+      ],
+      "notes": [
+        "Rendered at runtime by templateHelpers utility during email dispatch."
+      ]
+    }
+  ],
+  "middlewares": [
+    {
+      "id": "auth-guard",
+      "title": "JWT Authentication Guard",
+      "overview": "Passport.js JWT Bearer token authentication middleware verifying authorization headers.",
+      "code": "const passport = require('passport');\nconst httpStatus = require('http-status');\nconst ApiError = require('../utils/ApiError');\nconst { roleRights } = require('../config/roles');\n\nconst verifyCallback =\n  (req, resolve, reject, requiredRights) => async (err, user, info) => {\n    if (err || info || !user) {\n      return reject(\n        new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate')\n      );\n    }\n    req.user = user;\n\n    if (requiredRights.length) {\n      const userRights = roleRights.get(user.role);\n      const hasRequiredRights = requiredRights.every((requiredRight) =>\n        userRights.includes(requiredRight)\n      );\n      if (!hasRequiredRights && req.params.userId !== user.id) {\n        return reject(\n          new ApiError(\n            httpStatus.FORBIDDEN,\n            'You do not have permission to access this resource.'\n          )\n        );\n      }\n    }\n\n    resolve();\n  };\n\nconst auth =\n  (...requiredRights) =>\n  async (req, res, next) => {\n    return new Promise((resolve, reject) => {\n      passport.authenticate(\n        'jwt',\n        { session: false },\n        verifyCallback(req, resolve, reject, requiredRights)\n      )(req, res, next);\n    })\n      .then(() => next())\n      .catch((err) => next(err));\n  };\n\nmodule.exports = auth;\n",
+      "notes": [
+        "Validates signature using JWT_SECRET from configuration.",
+        "Rejects expired or tampered tokens with 401 Unauthorized.",
+        "Attaches authenticated user document to req.user."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Express Request Guard"
+        },
+        {
+          "label": "Strategy",
+          "value": "Passport JWT"
+        },
+        {
+          "label": "Header",
+          "value": "Authorization: Bearer <token>"
+        }
+      ]
+    },
+    {
+      "id": "permission-guard",
+      "title": "RBAC Section Permission Guard",
+      "overview": "Dynamic authorization middleware checking user role privileges (canView, canCreate, canUpdate, canDelete).",
+      "code": "const httpStatus = require('http-status');\nconst ApiError = require('../utils/ApiError');\nconst {\n  getPermissionsForUser,\n  can,\n  isSellerOwner,\n} = require('../services/permission.service');\n\nconst hasBypassForSection = (user, section) => {\n  if (!user) return false;\n  if (user.isSuperAdmin) {\n    return true;\n  }\n  if (user.userType !== 'admin' && isSellerOwner(user)) {\n    return true;\n  }\n  return false;\n};\n\n/**\n * Require a section action permission.\n * SuperAdmin and sellerAdmin bypass checks (sellerAdmin only for seller sections).\n *\n * @param {string} section\n * @param {'view'|'create'|'update'|'delete'} action\n */\nconst requirePermission =\n  (section, action = 'view') =>\n    async (req, res, next) => {\n      try {\n        if (!req.user) {\n          return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));\n        }\n\n        if (req.user.isSuperAdmin || hasBypassForSection(req.user, section)) {\n          return next();\n        }\n\n        const { permissions } = await getPermissionsForUser(req.user);\n        req.permissions = permissions;\n\n        if (!can(permissions, section, action)) {\n          return next(\n            new ApiError(\n              httpStatus.FORBIDDEN,\n              `You do not have permission to perform this action (${section}.${action}).`\n            )\n          );\n        }\n\n        return next();\n      } catch (error) {\n        return next(error);\n      }\n    };\n\n/**\n * Allow access when the user matches ANY of the given section/action pairs.\n * Useful for role dropdowns needed while creating/updating users.\n *\n * @param {Array<[string, string]>} requirements\n */\nconst requireAnyPermission =\n  (requirements = []) =>\n    async (req, res, next) => {\n      try {\n        if (!req.user) {\n          return next(new ApiError(httpStatus.UNAUTHORIZED, 'Please authenticate'));\n        }\n\n        if (req.user.isSuperAdmin) {\n          return next();\n        }\n\n        for (const [section] of requirements) {\n          if (hasBypassForSection(req.user, section)) {\n            return next();\n          }\n        }\n\n        const { permissions } = await getPermissionsForUser(req.user);\n        req.permissions = permissions;\n\n        const allowed = requirements.some(([section, action]) =>\n          can(permissions, section, action)\n        );\n\n        if (!allowed) {\n          const label = requirements\n            .map(([section, action]) => `${section}.${action}`)\n            .join(' | ');\n          return next(\n            new ApiError(\n              httpStatus.FORBIDDEN,\n              `You do not have permission to perform this action (${label}).`\n            )\n          );\n        }\n\n        return next();\n      } catch (error) {\n        return next(error);\n      }\n    };\n\nmodule.exports = requirePermission;\nmodule.exports.requirePermission = requirePermission;\nmodule.exports.requireAnyPermission = requireAnyPermission;\n",
+      "notes": [
+        "Extracts user role and queries tbl_roles for section privileges.",
+        "Grants automatic bypass for system administrators.",
+        "Returns 403 Forbidden if user lacks the required permission."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Authorization Interceptor"
+        },
+        {
+          "label": "Granularity",
+          "value": "Section + Action Matrix"
+        },
+        {
+          "label": "Security",
+          "value": "403 Forbidden Protection"
+        }
+      ]
+    },
+    {
+      "id": "manage-role-guard",
+      "title": "Role Scope & Hierarchy Guard",
+      "overview": "Enforces role boundary protection preventing sellers from modifying admin accounts.",
+      "code": "const mongoose = require('mongoose');\nconst User = require('../models/user.model');\nconst httpStatus = require('http-status');\n\nconst getUserStoreList = async (userId) => {\n  try {\n    const userData = await User.aggregate([\n      {\n        $match: {\n          _id: new mongoose.Types.ObjectId(userId),\n        },\n      },\n      {\n        $lookup: {\n          from: 'tbl_roles',\n          localField: 'role_id',\n          foreignField: '_id',\n          as: 'role_data',\n        },\n      },\n      {\n        $project: {\n          store_ids: { $arrayElemAt: ['$role_data.store_ids', 0] },\n          isSuperAdmin: 1,\n        },\n      },\n    ]);\n\n    if (!userData || userData.length === 0) {\n      return null;\n    }\n\n    const user = userData[0];\n\n    if (!user.isSuperAdmin) {\n      const storeIds = Array.isArray(user.store_ids)\n        ? user.store_ids\n        : [user.store_ids];\n      return {\n        isSuperAdmin: false,\n        storeIds: storeIds.map((id) => new mongoose.Types.ObjectId(id)),\n      };\n    }\n\n    return { isSuperAdmin: true, storeIds: [] };\n  } catch (error) {\n    console.error('Error fetching user store list:', error);\n    throw error;\n  }\n};\n\n// Middleware to check user stores\nconst checkUserStores = async (req, res, next) => {\n  try {\n    const userId =\n      req.userId || req.params.userId || req.body.userId || req.query.userId; // Adjust as per your request structure\n    if (!userId) {\n      return res\n        .status(httpStatus.BAD_REQUEST)\n        .json({ error: 'User ID is required' });\n    }\n    const userData = await getUserStoreList(userId);\n    if (!userData) {\n      return res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });\n    }\n\n    req.storeIds = userData.storeIds;\n    req.isSuperAdmin = userData.isSuperAdmin;\n\n    next(); // Proceed to the next middleware or route handler\n  } catch (error) {\n    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });\n  }\n};\n\nmodule.exports = checkUserStores;\n",
+      "notes": [
+        "Verifies operator role hierarchy before role updates.",
+        "Ensures seller team members can only be managed by their owner."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Hierarchy Validator"
+        },
+        {
+          "label": "Scope",
+          "value": "Admin & Seller Isolation"
+        }
+      ]
+    },
+    {
+      "id": "validate-pipe",
+      "title": "Joi Schema Validation Middleware",
+      "overview": "Request payload validator enforcing schema constraints on body, query, and path parameters.",
+      "code": "const Joi = require('joi');\nconst httpStatus = require('http-status');\nconst pick = require('../utils/pick');\nconst ApiError = require('../utils/ApiError');\n\nconst validate = (schema) => async (req, res, next) => {\n  // Use async function here\n  const validSchema = pick(schema, ['params', 'query', 'body']);\n  const object = pick(req, Object.keys(validSchema));\n\n  try {\n    // Use validateAsync to handle asynchronous validation\n    const { value, error } = await Joi.object(validSchema) // Use await here\n      .prefs({ errors: { label: 'key' }, abortEarly: false })\n      .validateAsync(object); // Use validateAsync here\n\n    if (error) {\n      const errorMessage = error.details\n        .map((details) => (details.message || '').replace(/[\"\\\\]/g, ''))\n        .join(', ');\n      return next(new ApiError(httpStatus.BAD_REQUEST, errorMessage));\n    }\n\n    Object.assign(req, value);\n    return next();\n  } catch (error) {\n    const errorMsg = (error.message || '').replace(/[\"\\\\]/g, '');\n    return next(new ApiError(httpStatus.BAD_REQUEST, errorMsg));\n  }\n};\n\nmodule.exports = validate;\n",
+      "notes": [
+        "Validates request data against defined Joi schemas.",
+        "Strips unknown properties and enforces strict types.",
+        "Returns 400 Bad Request with precise validation error messages."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Validation Middleware"
+        },
+        {
+          "label": "Engine",
+          "value": "Joi Schema Validator"
+        },
+        {
+          "label": "Targets",
+          "value": "body, query, params"
+        }
+      ]
+    },
+    {
+      "id": "error-converter",
+      "title": "Global Error Converter & Handler",
+      "overview": "Centralized Express error handling pipeline normalizing errors into standardized JSON envelopes.",
+      "code": "const mongoose = require('mongoose');\nconst httpStatus = require('http-status');\nconst config = require('../config/config');\nconst logger = require('../config/logger');\nconst ApiError = require('../utils/ApiError');\n\nconst errorConverter = (err, req, res, next) => {\n  let error = err;\n  if (!(error instanceof ApiError)) {\n    const statusCode =\n      error.statusCode || error instanceof mongoose.Error\n        ? httpStatus.BAD_REQUEST\n        : httpStatus.INTERNAL_SERVER_ERROR;\n    const message = error.message || httpStatus[statusCode];\n    error = new ApiError(statusCode, message, false, err.stack);\n  }\n  next(error);\n};\n\n// eslint-disable-next-line no-unused-vars\nconst errorHandler = (err, req, res, next) => {\n  let { statusCode, message } = err;\n  if (config.env === 'production' && !err.isOperational) {\n    statusCode = httpStatus.INTERNAL_SERVER_ERROR;\n    message = httpStatus[httpStatus.INTERNAL_SERVER_ERROR];\n  }\n\n  res.locals.errorMessage = err.message;\n\n  const cleanMessage = (message || '').replace(/[\"\\\\]/g, '');\n\n  const response = {\n    code: statusCode,\n    message: cleanMessage,\n  };\n\n  if (config.env === 'development') {\n    logger.error(err);\n  }\n\n  // Record unhandled errors in tbl_cron_errors with proper scope\n  try {\n    const errorLogHandler = require('../utils/error.handler');\n    const rawUrl = String(req.originalUrl || req.url || '').toLowerCase();\n    const action = `${req.method || 'GET'} ${req.baseUrl || ''}${req.path || ''}`;\n    let detectedScope = 'admin';\n    if (rawUrl.includes('/seller') || req.user?.userType === 'seller' || req.user?.isSellerAdmin) {\n      detectedScope = 'seller';\n    }\n    if (rawUrl.includes('/payment') || rawUrl.includes('/checkout')) {\n      detectedScope = 'admin';\n    }\n\n    errorLogHandler.errorM({\n      action_type: action.trim(),\n      error_data: err,\n      scope: detectedScope,\n      operation_by: req.user?._id || req.userId || null,\n      ip_address: req.ip || req.headers['x-forwarded-for'],\n    });\n  } catch (logErr) {\n    // avoid throwing from error middleware\n  }\n\n  const origin = req.headers.origin;\n  if (origin) {\n    res.header('Access-Control-Allow-Origin', origin);\n  } else {\n    res.header('Access-Control-Allow-Origin', '*');\n  }\n  res.header('Access-Control-Allow-Credentials', 'true');\n  res.status(statusCode).send(response);\n};\n\nmodule.exports = {\n  errorConverter,\n  errorHandler,\n};\n",
+      "notes": [
+        "Converts unknown errors (e.g. Mongoose, CastError) into ApiError instances.",
+        "Formats final response as { status, message, stack? }.",
+        "Hides stack traces in production environment."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Express Error Handler"
+        },
+        {
+          "label": "Format",
+          "value": "{ status, message }"
+        }
+      ]
+    },
+    {
+      "id": "rate-limiter",
+      "title": "IP Rate Limiter Middleware",
+      "overview": "Brute-force protection throttling authentication and OTP solicitation requests.",
+      "code": "const rateLimit = require('express-rate-limit');\n\nconst authLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000,\n  max: 20,\n  skipSuccessfulRequests: true,\n});\n\nmodule.exports = {\n  authLimiter,\n};\n",
+      "notes": [
+        "Restricts repeated failed login and OTP requests from the same IP.",
+        "Prevents denial of service and credential stuffing attacks."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Security Throttler"
+        },
+        {
+          "label": "Target",
+          "value": "/auth/* routes"
+        }
+      ]
+    },
+    {
+      "id": "universal-otp-guard",
+      "title": "Universal OTP Security Guard",
+      "overview": "API Key authorization middleware guarding programmatic universal OTP generation.",
+      "code": "const httpStatus = require('http-status');\nconst ApiError = require('../utils/ApiError');\nconst config = require('../config/config');\n\nconst universalOtpApiKey = (req, res, next) => {\n  const expectedKey = config.universalOtp && config.universalOtp.apiKey;\n  if (!expectedKey) {\n    return next(\n      new ApiError(\n        httpStatus.UNAUTHORIZED,\n        'Universal OTP API key is not configured on server'\n      )\n    );\n  }\n\n  const providedKey =\n    req.headers['x-api-key'] ||\n    req.headers['X-Api-Key'] ||\n    req.headers['x-universal-otp-key'] ||\n    req.headers['X-Universal-Otp-Key'];\n\n  if (!providedKey || providedKey !== expectedKey) {\n    return next(\n      new ApiError(httpStatus.UNAUTHORIZED, 'Invalid universal OTP API key')\n    );\n  }\n\n  next();\n};\n\nmodule.exports = universalOtpApiKey;\n",
+      "notes": [
+        "Validates x-api-key header against server configured secret.",
+        "Protects automated test environments and staging OTP endpoints."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "API Key Guard"
+        },
+        {
+          "label": "Header",
+          "value": "x-api-key"
+        }
+      ]
+    }
+  ],
+  "utilities": [
+    {
+      "id": "api-error-class",
+      "title": "ApiError Custom Exception Class",
+      "overview": "Standardized operational error class extending native Error with HTTP status codes.",
+      "code": "class ApiError extends Error {\n  statusCode: number;\n  isOperational: boolean;\n\n  constructor(\n    statusCode: number,\n    message: string,\n    isOperational = true,\n    stack = ''\n  ) {\n    super(message);\n    this.statusCode = statusCode;\n    this.isOperational = isOperational;\n    if (stack) {\n      this.stack = stack;\n    } else {\n      Error.captureStackTrace(this, this.constructor);\n    }\n  }\n}\n\nmodule.exports = ApiError;\n",
+      "notes": [
+        "Accepts statusCode, message, isOperational flag, and custom stack.",
+        "Used universally across controllers and services for throwing expected errors."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Custom Exception Class"
+        },
+        {
+          "label": "Inheritance",
+          "value": "extends Error"
+        }
+      ]
+    },
+    {
+      "id": "catch-async-wrapper",
+      "title": "catchAsync Controller Wrapper",
+      "overview": "Higher-order utility wrapping asynchronous Express route handlers to forward unhandled rejections to next().",
+      "code": "import type { Request, Response, NextFunction, RequestHandler } from 'express';\n\ntype AsyncHandler = (\n  req: Request,\n  res: Response,\n  next: NextFunction\n) => Promise<unknown>;\n\nconst catchAsync =\n  (fn: AsyncHandler): RequestHandler =>\n  (req, res, next) => {\n    Promise.resolve(fn(req, res, next)).catch(next);\n  };\n\nmodule.exports = catchAsync;\n",
+      "notes": [
+        "Eliminates redundant try/catch blocks in controller methods.",
+        "Guarantees all Promise rejections reach the centralized error handler."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Async Handler Wrapper"
+        },
+        {
+          "label": "Benefit",
+          "value": "Zero try/catch boilerplate"
+        }
+      ]
+    },
+    {
+      "id": "system-audit-logger",
+      "title": "System Audit Activity Logger",
+      "overview": "Asynchronous background helper persisting admin and seller activity diffs to tbl_system_logs.",
+      "code": "// @ts-nocheck\nconst SystemLogsModel = require('../models/system-logs.model');\nconst User = require('../models/user.model');\nvar ip = require('ip');\n\nconst resolveScope = async (explicitScope, key, data, userId) => {\n  if (explicitScope && typeof explicitScope === 'string') {\n    return explicitScope.toLowerCase().trim() === 'seller' ? 'seller' : 'admin';\n  }\n\n  // Payment logs always belong to admin scope (per user requirement)\n  const paymentKeys = [\n    'create-checkout-session',\n    'payment-paid',\n    'cancel-payment',\n    'create-payment',\n    'update-payment',\n  ];\n  if (paymentKeys.includes(key)) {\n    return 'admin';\n  }\n\n  // Seller-specific actions\n  const sellerKeys = [\n    'update-amazon-credentials',\n    'update-amazon-authorisation',\n    'update-general-settings',\n    'update-feedback',\n  ];\n  if (sellerKeys.includes(key)) {\n    return 'seller';\n  }\n\n  // Check performer first! If performer is Super Admin or Admin, the log always belongs to admin scope\n  if (userId) {\n    try {\n      const performer = await User.findById(userId)\n        .select('userType isSellerAdmin isSuperAdmin')\n        .lean();\n      if (performer) {\n        if (performer.isSuperAdmin || performer.userType === 'admin') {\n          return 'admin';\n        }\n        if (performer.userType === 'seller' || performer.isSellerAdmin) {\n          return 'seller';\n        }\n      }\n    } catch (e) {\n      // ignore\n    }\n  }\n\n  // Explicit scope inside data object (e.g. role or section model)\n  if (data?.scope && typeof data.scope === 'string') {\n    return data.scope.toLowerCase().trim() === 'seller' ? 'seller' : 'admin';\n  }\n\n  // Super Admin and admin users always belong to admin scope\n  if (data?.isSuperAdmin || data?.userType === 'admin') {\n    return 'admin';\n  }\n\n  // User type checks\n  if (data?.userType === 'seller') {\n    return 'seller';\n  }\n\n  return 'admin';\n};\n\n/**\n *\n * @param {'UPDATE'|'DELETE'|'CREATE'|'LOGIN'|'LOGOUT'} operationType\n * @param {Object<any>} data\n * @param {string} userId\n * @param {string} key\n * @param {Object<any>} oldData\n * @param {string} explicitScope\n */\nconst systemLog = async (\n  operationType,\n  data,\n  userId,\n  key,\n  oldData = {},\n  explicitScope = null\n) => {\n  try {\n    let clientIp = '';\n    try {\n      clientIp = ip.address();\n    } catch (e) {\n      clientIp = '127.0.0.1';\n    }\n\n    const resolvedScope = await resolveScope(explicitScope, key, data, userId);\n\n    const cleanData = (obj) => {\n      if (!obj) return {};\n      if (typeof obj.toObject === 'function') {\n        obj = obj.toObject();\n      } else if (typeof obj.toJSON === 'function') {\n        obj = obj.toJSON();\n      }\n      try {\n        const cloned = JSON.parse(JSON.stringify(obj));\n        delete cloned.password;\n        delete cloned.token;\n        delete cloned.operation_by;\n        return cloned;\n      } catch (e) {\n        return { ...obj };\n      }\n    };\n\n    const operationData = {\n      operation: operationType,\n      operation_by: userId || null,\n      key: key,\n      scope: resolvedScope,\n      ip_address: clientIp,\n    };\n\n    const currentData = cleanData(data);\n    const previousData = cleanData(oldData);\n\n    if (operationType === 'UPDATE') {\n      const allKeys = new Set([\n        ...Object.keys(previousData || {}),\n        ...Object.keys(currentData || {}),\n      ]);\n      const oldChanges = { _id: previousData._id || currentData._id };\n      const newChanges = { _id: currentData._id || previousData._id };\n\n      for (const k of allKeys) {\n        if (k === '_id' || k === 'updatedAt' || k === '__v') continue;\n        if (JSON.stringify(previousData[k]) !== JSON.stringify(currentData[k])) {\n          oldChanges[k] = previousData[k] !== undefined ? previousData[k] : null;\n          newChanges[k] = currentData[k] !== undefined ? currentData[k] : null;\n        }\n      }\n\n      operationData.operation_data = [\n        {\n          oldData: oldChanges,\n          updatedData: newChanges,\n        },\n      ];\n    } else {\n      operationData.operation_data = Array.isArray(currentData)\n        ? currentData\n        : [currentData];\n    }\n\n    await SystemLogsModel.create(operationData);\n  } catch (err) {\n    console.error('Failed to create system log:', err?.message || err);\n  }\n};\n\nmodule.exports = {\n  systemLog,\n};\n",
+      "notes": [
+        "Captures operator ID, action name, module, IP address, and changed fields.",
+        "Executed in non-blocking fashion without delaying HTTP responses."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Audit Logger"
+        },
+        {
+          "label": "Target",
+          "value": "tbl_system_logs"
+        }
+      ]
+    },
+    {
+      "id": "pick-utility",
+      "title": "Object Property Whitelist Utility",
+      "overview": "Safe utility creating an object composed of selected whitelisted properties.",
+      "code": "/**\n * Create an object composed of the picked object properties\n */\nconst pick = (object: any, keys: string[]): any => {\n  return keys.reduce((obj: any, key: string) => {\n    if (object && Object.prototype.hasOwnProperty.call(object, key)) {\n      // eslint-disable-next-line no-param-reassign\n      obj[key] = object[key];\n    }\n    return obj;\n  }, {});\n};\n\nmodule.exports = pick;\n",
+      "notes": [
+        "Extracts search, page, limit, and filter parameters cleanly from req.query.",
+        "Guards against prototype pollution and unintended query injection."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Data Sanitizer"
+        },
+        {
+          "label": "Input",
+          "value": "object + keys array"
+        }
+      ]
+    },
+    {
+      "id": "file-uploader",
+      "title": "Multer File Uploader Utility",
+      "overview": "Configured Multer storage engine handling avatar images, blog banners, and media uploads.",
+      "code": "// @ts-nocheck\nconst fs = require('fs');\n\nmodule.exports.uploadFile = (file, subPath) => {\n  var filename = file.path.split('/').pop();\n  var picture = filename.replace(`src/uploads\\\\${subPath}\\\\`, '');\n  return picture;\n};\n\nmodule.exports.deleteFile = (file, subPath) => {\n  if (fs.existsSync(`./src/uploads/${subPath}/${file}`)) {\n    fs.unlink(`./src/uploads/${subPath}/${file}`, (err) => {\n      if (err) {\n        console.error(err);\n      }\n    });\n    return true;\n  }\n};\n",
+      "notes": [
+        "Validates image MIME types (JPEG, PNG, WebP) and 5MB size limits.",
+        "Generates unique random filenames to avoid file collisions."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "File Storage Engine"
+        },
+        {
+          "label": "Destination",
+          "value": "uploads/ directory"
+        }
+      ]
+    },
+    {
+      "id": "diagnostic-error-handler",
+      "title": "Diagnostic Service Error Logger",
+      "overview": "Formatted console and Winston logger capturing contextual runtime diagnostics.",
+      "code": "// @ts-nocheck\nconst ErrorModel = require('../models/cron-error.model');\nconst User = require('../models/user.model');\nvar ip = require('ip');\n\nconst resolveErrorScope = async (arg) => {\n  if (arg?.scope && typeof arg.scope === 'string') {\n    return arg.scope.toLowerCase().trim() === 'seller' ? 'seller' : 'admin';\n  }\n\n  const actionType = String(arg?.action_type || '').toLowerCase();\n\n  // Payment logs always belong to admin scope (per user requirement)\n  if (\n    actionType.includes('payment') ||\n    actionType.includes('checkout') ||\n    actionType.includes('stripe')\n  ) {\n    return 'admin';\n  }\n\n  // Seller-specific actions\n  const sellerKeywords = [\n    'amazon-credential',\n    'general-setting',\n    'feedback',\n    'order',\n    'seller',\n  ];\n  if (sellerKeywords.some((k) => actionType.includes(k))) {\n    return 'seller';\n  }\n\n  // If userId / operation_by provided, look up user\n  const userId = arg?.userId || arg?.operation_by;\n  if (userId) {\n    try {\n      const user = await User.findById(userId)\n        .select('userType isSellerAdmin isSuperAdmin')\n        .lean();\n      if (user && (user.userType === 'seller' || user.isSellerAdmin)) {\n        return 'seller';\n      }\n    } catch (e) {\n      // ignore\n    }\n  }\n\n  return 'admin';\n};\n\nmodule.exports.errorM = async function (arg) {\n  try {\n    let clientIp = '';\n    try {\n      clientIp = ip.address();\n    } catch (e) {\n      clientIp = '127.0.0.1';\n    }\n\n    const resolvedScope = await resolveErrorScope(arg);\n\n    let errorData = arg?.error_data;\n    if (errorData instanceof Error) {\n      errorData = {\n        name: errorData.name,\n        message: errorData.message,\n        stack: errorData.stack,\n      };\n    } else if (typeof errorData === 'object' && errorData !== null) {\n      try {\n        errorData = JSON.parse(JSON.stringify(errorData));\n      } catch (e) {\n        // fallback to string\n        errorData = String(errorData);\n      }\n    }\n\n    const error = new ErrorModel({\n      action_type: arg?.action_type || 'unhandled-error',\n      scope: resolvedScope,\n      error_data: errorData,\n      operation_by: arg?.userId || arg?.operation_by || null,\n      ip_address: arg?.ip_address || clientIp,\n    });\n\n    await error.save();\n  } catch (err) {\n    console.error('Failed to log error to database:', err?.message || err);\n  }\n};\n",
+      "notes": [
+        "Categorizes errors by action_type for quick debugging in development.",
+        "Integrates with Morgan HTTP logger in production."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Logger Helper"
+        },
+        {
+          "label": "Output",
+          "value": "Console & Logs"
+        }
+      ]
+    }
+  ],
+  "plugins": [
+    {
+      "id": "to-json-plugin",
+      "title": "Mongoose toJSON Serialization Plugin",
+      "overview": "Custom Mongoose plugin transforming documents into clean API response JSON objects.",
+      "code": "// @ts-nocheck\n/* eslint-disable no-param-reassign */\n\n/**\n * A mongoose schema plugin which applies the following in the toJSON transform call:\n *  - removes __v, createdAt, updatedAt, and any path that has private: true\n *  - replaces _id with id\n */\n\nconst deleteAtPath = (obj, path, index) => {\n  if (index === path.length - 1) {\n    delete obj[path[index]];\n    return;\n  }\n  deleteAtPath(obj[path[index]], path, index + 1);\n};\n\nconst toJSON = (schema) => {\n  let transform;\n  if (schema.options.toJSON && schema.options.toJSON.transform) {\n    transform = schema.options.toJSON.transform;\n  }\n\n  schema.options.toJSON = Object.assign(schema.options.toJSON || {}, {\n    transform(doc, ret, options) {\n      Object.keys(schema.paths).forEach((path) => {\n        if (schema.paths[path].options && schema.paths[path].options.private) {\n          deleteAtPath(ret, path.split('.'), 0);\n        }\n      });\n\n      ret.id = ret._id.toString();\n      delete ret._id;\n      delete ret.__v;\n      delete ret.createdAt;\n      delete ret.updatedAt;\n      if (transform) {\n        return transform(doc, ret, options);\n      }\n    },\n  });\n};\n\nmodule.exports = toJSON;\n",
+      "notes": [
+        "Deletes private fields like password and __v.",
+        "Transforms _id to id string representation automatically.",
+        "Applied globally across all application Mongoose schemas."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Mongoose Schema Plugin"
+        },
+        {
+          "label": "Behavior",
+          "value": "Strips password & converts _id to id"
+        }
+      ]
+    },
+    {
+      "id": "paginate-plugin",
+      "title": "Mongoose Pagination & Query Plugin",
+      "overview": "High-performance pagination plugin adding paginate() static method to Mongoose models.",
+      "code": "// @ts-nocheck\nconst paginate = (schema) => {\n  /**\n   * @typedef {Object} QueryResult\n   * @property {Document[]} results - Results found\n   * @property {number} page - Current page\n   * @property {number} limit - Maximum number of results per page\n   * @property {number} totalPages - Total number of pages\n   * @property {number} totalResults - Total number of documents\n   */\n  /**\n   * Query for documents with pagination\n   * @param {Object} [filter] - Mongo filter\n   * @param {Object} [options] - Query options\n   * @param {string} [options.sortBy] - Sorting criteria using the format: sortField:(desc|asc). Multiple sorting criteria should be separated by commas (,)\n   * @param {string} [options.populate] - Populate data fields. Hierarchy of fields should be separated by (.). Multiple populating criteria should be separated by commas (,)\n   * @param {number} [options.limit] - Maximum number of results per page (default = 10)\n   * @param {number} [options.page] - Current page (default = 1)\n   * @returns {Promise<QueryResult>}\n   */\n  schema.statics.paginate = async function (filter, options, searchArr) {\n    let searchData = [];\n    if (filter.status !== undefined && filter.status !== null && filter.status !== '') {\n      if (filter.status === 'active' || filter.status === '1' || filter.status === 1) {\n        searchData.push({ status: 1 });\n      } else if (filter.status === 'inactive' || filter.status === '0' || filter.status === 0) {\n        searchData.push({ status: 0 });\n      } else {\n        searchData.push({ status: filter.status });\n      }\n    } else {\n      searchData.push({ status: { $ne: 2 } });\n    }\n    Object.keys(filter).forEach((key) => {\n      if (\n        !['status', 'search', 'user_type', 'startDate', 'endDate'].includes(\n          key\n        ) &&\n        filter[key] !== undefined\n      ) {\n        searchData.push({ [key]: filter[key] });\n      }\n    });\n    let sort = {};\n    if (options.sortBy) {\n      const [key, order] = options.sortBy.split(':');\n      order === 'desc' ? (sort = { [key]: -1 }) : (sort = { [key]: 1 });\n    }\n    if (filter.search && Array.isArray(searchArr) && searchArr.length > 0) {\n      const sanitized = filter.search.toString().trim().replace(/[.*+?^${}()|[\\]\\\\]/g, '\\\\$&');\n      const searchvalue = {\n        $regex: sanitized,\n        $options: 'i',\n      };\n      const sArray = [];\n      searchArr.forEach((ele) => {\n        sArray.push({ [ele]: searchvalue });\n      });\n      searchData.push({\n        $or: sArray,\n      });\n    }\n    if (filter.user_type && filter.user_type !== 'undefined') {\n      const searchvalue = {\n        $regex: '.*' + filter.user_type + '.*',\n        $options: 'i',\n      };\n      const sArray = [];\n      searchArr.forEach((ele) => {\n        sArray.push({ [ele]: searchvalue });\n      });\n      searchData.push({\n        $or: sArray,\n      });\n    }\n\n    let { startDate, endDate } = filter;\n    if (startDate && startDate !== '' && endDate && endDate != '') {\n      startDate = new Date(startDate);\n      endDate = new Date(new Date(endDate).setUTCHours(23, 59, 59, 999));\n      searchData.push({ publishedAt: { $gte: startDate, $lte: endDate } });\n    }\n\n    const limit =\n      options.limit && parseInt(options.limit, 10) > 0\n        ? parseInt(options.limit, 10)\n        : 10;\n    const page =\n      options.page && parseInt(options.page, 10) > 0\n        ? parseInt(options.page, 10)\n        : 1;\n    const skip = (page - 1) * limit;\n    const countPromise = await this.aggregate([\n      { $match: { $and: searchData } },\n      { $count: 'count' },\n    ]).exec();\n    let docsPromise = this.aggregate([\n      { $match: { $and: searchData } },\n      { $sort: sort },\n      { $skip: skip },\n      { $limit: limit },\n    ]);\n\n    if (options.populate) {\n      options.populate.split(',').forEach((populateOption) => {\n        docsPromise = docsPromise.populate(\n          populateOption\n            .split('.')\n            .reverse()\n            .reduce((a, b) => ({ path: b, populate: a }))\n        );\n      });\n    }\n\n    docsPromise = docsPromise.exec();\n\n    return Promise.all([countPromise, docsPromise]).then((values) => {\n      const [totalCount, results] = values;\n      const totalResults = (totalCount[0] && totalCount[0].count) || 0;\n      const totalPages = Math.ceil(totalResults / limit) || 1;\n      const result = {\n        results,\n        pagination: {\n          page: page,\n          limit: limit,\n          size: limit,\n          totalPages: totalPages,\n          lastPage: totalPages,\n          totalResults: totalResults,\n          length: totalResults,\n        },\n      };\n\n      return Promise.resolve(result);\n    });\n  };\n};\n\nmodule.exports = paginate;\n",
+      "notes": [
+        "Handles sortBy, limit, page, and populate options seamlessly.",
+        "Returns { results, page, limit, totalPages, totalResults } standard envelope."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Mongoose Query Plugin"
+        },
+        {
+          "label": "Output",
+          "value": "Paginated Results Envelope"
+        }
+      ]
+    },
+    {
+      "id": "common-pagination",
+      "title": "Common Pagination Envelope Helper",
+      "overview": "Transforms raw pagination counters into unified API response envelopes.",
+      "code": "// @ts-nocheck\n// Common function for\n\nconst paginationOprator = (options) => {\n  // Sorting by operation, first name and last name\n  let sort = {};\n  if (options.sortBy) {\n    let [key, order] = options.sortBy.split(':');\n    if (key === 'first_name' || key === 'last_name') {\n      key = `userDetails.${key}`;\n    }\n    if (key === 'role_name') {\n      key = `role.${key}`;\n    }\n    sort = { [key]: order === 'desc' ? -1 : 1 };\n  }\n\n  // PAGINATION\n  const limit =\n    options.limit && parseInt(options.limit, 10) > 0\n      ? parseInt(options.limit, 10)\n      : 10;\n  const page =\n    options.page && parseInt(options.page, 10) > 0\n      ? parseInt(options.page, 10)\n      : 1;\n  const skip = (page - 1) * limit;\n\n  return {\n    limit,\n    page,\n    skip,\n    sort,\n  };\n};\n\nmodule.exports = {\n  paginationOprator,\n};\n",
+      "notes": [
+        "Ensures consistent response metadata across admin and seller tables."
+      ],
+      "highlights": [
+        {
+          "label": "Type",
+          "value": "Envelope Utility"
+        },
+        {
+          "label": "Structure",
+          "value": "{ status, message, data, pagination }"
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "serverPort": "7051",
+    "environment": "development",
+    "authWindow": "15m / 30d",
+    "groups": [
+      {
+        "title": "Server & Runtime Environment",
+        "summary": "Core Node.js runtime process ports and hosting variables.",
+        "entries": [
+          {
+            "key": "PORT",
+            "description": "Backend server listening port (Default: 7051)"
+          },
+          {
+            "key": "NODE_ENV",
+            "description": "Application runtime mode ('development' | 'production' | 'test')"
+          },
+          {
+            "key": "APP_URL",
+            "description": "Public canonical backend base URL"
+          },
+          {
+            "key": "CORS_ORIGIN",
+            "description": "Allowed CORS client origins for admin, seller, and web apps"
+          }
+        ]
+      },
+      {
+        "title": "Database Cluster Settings",
+        "summary": "MongoDB cluster connection and connection pool configurations.",
+        "entries": [
+          {
+            "key": "MONGODB_URL",
+            "description": "MongoDB connection string with credentials and database name"
+          },
+          {
+            "key": "AUTO_INDEX",
+            "description": "Mongoose auto-index creation enabled in development"
+          },
+          {
+            "key": "POOL_SIZE",
+            "description": "Maximum concurrent database connection pool allocation"
+          }
+        ]
+      },
+      {
+        "title": "JWT & Authentication Windows",
+        "summary": "Cryptographic secrets and session token lifetime parameters.",
+        "entries": [
+          {
+            "key": "JWT_SECRET",
+            "description": "HMAC SHA-256 secret key for signing user session tokens"
+          },
+          {
+            "key": "JWT_ACCESS_EXPIRATION_MINUTES",
+            "description": "Short-lived access token validity (Default: 15 minutes)"
+          },
+          {
+            "key": "JWT_REFRESH_EXPIRATION_DAYS",
+            "description": "Persistent refresh token validity (Default: 30 days)"
+          },
+          {
+            "key": "JWT_RESET_PASSWORD_EXPIRATION_MINUTES",
+            "description": "Password recovery link expiry window (10 minutes)"
+          }
+        ]
+      },
+      {
+        "title": "Amazon SP-API Integration",
+        "summary": "Selling Partner API OAuth App credentials and LWA endpoints.",
+        "entries": [
+          {
+            "key": "AMAZON_CLIENT_ID",
+            "description": "Login with Amazon (LWA) App Client ID"
+          },
+          {
+            "key": "AMAZON_CLIENT_SECRET",
+            "description": "Login with Amazon (LWA) App Secret"
+          },
+          {
+            "key": "AMAZON_OAUTH_REDIRECT_URL",
+            "description": "Registered OAuth callback URL for seller authorization"
+          },
+          {
+            "key": "SP_API_REGION",
+            "description": "AWS Selling Partner API regional endpoint (eu-west-1)"
+          }
+        ]
+      },
+      {
+        "title": "Stripe Payment Gateway",
+        "summary": "Stripe API keys for checkout sessions and webhook verification.",
+        "entries": [
+          {
+            "key": "STRIPE_SECRET_KEY",
+            "description": "Stripe secret API key for billing and session creation"
+          },
+          {
+            "key": "STRIPE_WEBHOOK_SECRET",
+            "description": "Cryptographic secret for verifying Stripe webhook signatures"
+          },
+          {
+            "key": "PAYMENT_CURRENCY",
+            "description": "Default transaction currency (Default: 'eur')"
+          }
+        ]
+      },
+      {
+        "title": "Email & SMTP Service",
+        "summary": "Outgoing mail server configuration for OTP and notifications.",
+        "entries": [
+          {
+            "key": "SMTP_HOST",
+            "description": "Outbound SMTP server hostname"
+          },
+          {
+            "key": "SMTP_PORT",
+            "description": "SMTP port (587 for TLS, 465 for SSL)"
+          },
+          {
+            "key": "SMTP_USERNAME",
+            "description": "SMTP authentication username"
+          },
+          {
+            "key": "SMTP_PASSWORD",
+            "description": "SMTP authentication password"
+          },
+          {
+            "key": "EMAIL_FROM",
+            "description": "Sender display name and email address"
+          }
+        ]
+      }
+    ]
+  }
+}
