@@ -8,7 +8,6 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
-import NavbarToggleButton from '@/components/theme-layouts/components/navbar/NavbarToggleButton';
 import {
 	Typography,
 	Paper,
@@ -51,7 +50,7 @@ const isValidPhone = (val?: string) => {
 
 const isValidPostalCode = (val?: string) => {
 	if (!val || !val.trim()) return true;
-	return /^[A-Za-z0-9\s\-]{3,20}$/.test(val.trim());
+	return /^[A-Za-z0-9\s-]{3,20}$/.test(val.trim());
 };
 
 const siteConfigSchema = z.object({

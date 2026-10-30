@@ -11,8 +11,7 @@ import {
 	MenuItem,
 	Switch,
 	Paper,
-	Chip,
-	Divider
+	Chip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';

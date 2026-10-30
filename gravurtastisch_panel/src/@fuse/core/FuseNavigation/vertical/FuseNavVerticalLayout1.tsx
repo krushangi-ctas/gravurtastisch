@@ -17,7 +17,7 @@ function FuseNavVerticalLayout1(props: FuseNavigationProps) {
 	}
 
 	return (
-		<div className={clsx('navigation px-1 py-1', `active-${active}-list`, dense && 'dense', className)}>
+		<div className={clsx('navigation p-2.5 space-y-1', `active-${active}-list`, dense && 'dense', className)}>
 			{navigation.map((_item) => (
 				<FuseNavVerticalItemBase
 					key={_item.id}

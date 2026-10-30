@@ -177,7 +177,7 @@
     "feature3Desc": "Proof · production · QC · shipped - no spreadsheet hunting.",
     "feature4Title": "Reorder shortcuts",
     "feature4Desc": "Clone a past order with saved artwork and brand presets.",
-    "mockUrl": "app.gravurtastisch.com / orders"
+    "mockUrl": "app.gravurtastisch.com/orders"
   },
   "stackDiagram": {
     "sectionLabel": "Under the hood",

@@ -532,9 +532,9 @@ function AmazonSpApiPage() {
         {/* ========================================================================= */}
         {/* 3. ENDPOINTS & TECHNICAL SPECS: Developer REST Explorer */}
         {/* ========================================================================= */}
-        <section className="relative py-16 lg:py-24 bg-white dark:bg-[#070b19] overflow-hidden border-b border-[#0032ab]/10 w-full max-w-full">
-          <Container className="relative w-full max-w-full min-w-0">
-            <Reveal className="w-full max-w-full min-w-0">
+        <section className="relative py-16 lg:py-24 bg-white dark:bg-[#070b19] overflow-hidden border-b border-[#0032ab]/10">
+          <Container className="relative">
+            <Reveal>
               <div className="max-w-3xl mb-10">
                 <span className="section-badge mb-3">
                   {t('amazonSpApi.endpointsSectionBadge', 'Integration architecture')}
@@ -549,12 +549,12 @@ function AmazonSpApiPage() {
             </Reveal>
 
             {/* 4 Crisp Endpoints in Balanced 2x2 Grid with Developer Console Bento Styling */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 w-full min-w-0 max-w-full">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {apiEndpoints.map((ep, i) => {
                 const isCopied = copiedEndpoint === ep.endpoint;
                 return (
-                  <Reveal key={ep.id} delay={i * 60} className="h-full w-full min-w-0 max-w-full">
-                    <div className="group relative h-full rounded-3xl bg-white dark:bg-[#0b132b] border border-slate-200/90 dark:border-white/10 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:shadow-[#0032ab]/08 hover:border-[#0032ab]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden w-full min-w-0 max-w-full">
+                  <Reveal key={ep.id} delay={i * 60} className="h-full">
+                    <div className="group relative h-full rounded-3xl bg-white dark:bg-[#0b132b] border border-slate-200/90 dark:border-white/10 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:shadow-[#0032ab]/08 hover:border-[#0032ab]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
                       {/* Top gradient highlight on hover */}
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0032ab] via-[#4f6ef7] to-[#155dfc] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 

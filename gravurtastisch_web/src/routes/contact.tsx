@@ -5,6 +5,7 @@ import { Footer } from "@/components/site/Footer";
 import { ContactSection } from "@/components/site/RegisterAndContact";
 import { Container } from "@/components/site/Container";
 import { Reveal } from "@/components/site/Reveal";
+import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
 import {
   Mail,
   Phone,
@@ -65,12 +66,41 @@ export const Route = createFileRoute("/contact")({
 });
 
 function ContactPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { config } = useWebsiteConfiguration();
+  const currentLang = (i18n.language || "en").split("-")[0];
+
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.com";
+  const contactPhone = config?.contact?.phone || "+91 79489 93409";
+  const contactHours =
+    config?.contact?.working_hours ||
+    (currentLang === "en" ? "10:30 AM–8:30 PM IST" : "10:30 – 20:30 Uhr");
+  const contactAddress =
+    config?.contact?.address || t("footer.officeAddress");
+  const studioLocation =
+    currentLang === "en"
+      ? (() => {
+          if (
+            config?.contact?.city ||
+            config?.contact?.state ||
+            config?.contact?.country
+          ) {
+            const cityState = [config.contact.city, config.contact.state]
+              .filter(Boolean)
+              .join(", ");
+            return (
+              [cityState, config.contact.country].filter(Boolean).join(" · ") ||
+              contactAddress
+            );
+          }
+          return contactAddress;
+        })()
+      : t("contact.officeLocation", "Ahmedabad, Gujarat · Indien");
 
   const contactFaqs = [
     {
       q: "How fast do you respond to custom order inquiries?",
-      a: "Our studio desk typically responds within 2 business hours during working days (Mon–Fri 10:30 AM–8:30 PM IST), and always guarantees a reply within one business day.",
+      a: `Our studio desk typically responds within 2 business hours during working days (${contactHours}), and always guarantees a reply within one business day.`,
     },
     {
       q: "Can I request changes to my digital proof before engraving begins?",
@@ -86,7 +116,7 @@ function ContactPage() {
     },
     {
       q: "Where is your manufacturing facility located?",
-      a: "Our primary laser engraving and personalization studio is located in Ahmedabad, Gujarat, India, with localized logistics lanes serving direct Amazon EU & UK fulfillment routes.",
+      a: `Our primary laser engraving and personalization studio is located in ${studioLocation}, with localized logistics lanes serving direct Amazon EU & UK fulfillment routes.`,
     },
   ];
 
@@ -133,7 +163,7 @@ function ContactPage() {
               <Reveal className="lg:col-span-5 flex flex-col gap-3" delay={100}>
                 {/* Channel 1: Email */}
                 <a
-                  href="mailto:info@gravurtastisch.com"
+                  href={`mailto:${contactEmail}`}
                   className="group rounded-2xl liquid-glass border border-white/85 p-4 shadow-[0_4px_16px_rgba(0,50,171,0.06)] hover:shadow-[0_8px_24px_rgba(0,50,171,0.14)] hover:-translate-y-0.5 transition-all flex items-center gap-3.5"
                 >
                   <div className="h-10 w-10 rounded-xl bg-brand/10 text-brand grid place-items-center shrink-0 group-hover:bg-brand group-hover:text-white transition-colors">
@@ -145,14 +175,14 @@ function ContactPage() {
                       <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">24h SLA</span>
                     </div>
                     <p className="text-sm font-bold text-navy-deep group-hover:text-brand transition-colors truncate">
-                      info@gravurtastisch.com
+                      {contactEmail}
                     </p>
                   </div>
                 </a>
 
                 {/* Channel 2: Phone */}
                 <a
-                  href="tel:+917948789349"
+                  href={`tel:${contactPhone.replace(/\s+/g, '')}`}
                   className="group rounded-2xl liquid-glass border border-white/85 p-4 shadow-[0_4px_16px_rgba(0,50,171,0.06)] hover:shadow-[0_8px_24px_rgba(0,50,171,0.14)] hover:-translate-y-0.5 transition-all flex items-center gap-3.5"
                 >
                   <div className="h-10 w-10 rounded-xl bg-sky-100 text-sky-700 grid place-items-center shrink-0 group-hover:bg-sky-600 group-hover:text-white transition-colors">
@@ -164,20 +194,20 @@ function ContactPage() {
                       <span className="text-[9.5px] text-slate-600 font-medium">Mon–Fri</span>
                     </div>
                     <p className="text-sm font-bold text-navy-deep group-hover:text-brand transition-colors">
-                      +91 79487 89349 <span className="text-xs font-normal text-slate-600">(10:30 AM–8:30 PM IST)</span>
+                      {contactPhone} {contactHours && <span className="text-xs font-normal text-slate-600">({contactHours})</span>}
                     </p>
                   </div>
                 </a>
 
-                {/* Channel 3: Studio Location */}
+                {/* Channel 3: Studio Address */}
                 <div className="rounded-2xl liquid-glass border border-white/85 p-4 shadow-[0_4px_16px_rgba(0,50,171,0.06)] flex items-center gap-3.5">
                   <div className="h-10 w-10 rounded-xl bg-purple-100 text-purple-700 grid place-items-center shrink-0">
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Studio Location</span>
-                    <p className="text-sm font-bold text-navy-deep">
-                      Ahmedabad, Gujarat &middot; India
+                    <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Studio Address</span>
+                    <p className="text-xs sm:text-sm font-bold text-navy-deep leading-relaxed">
+                      {contactAddress}
                     </p>
                   </div>
                 </div>

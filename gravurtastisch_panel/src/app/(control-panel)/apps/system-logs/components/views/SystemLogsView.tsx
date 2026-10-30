@@ -10,12 +10,10 @@ import {
 	Button,
 	FormControl,
 	IconButton,
-	InputAdornment,
 	MenuItem,
 	Paper,
 	Popover,
 	Select,
-	TextField,
 	Tooltip,
 	Typography
 } from '@mui/material';
@@ -42,15 +40,12 @@ import { SystemLog } from '../../api/types';
 import SystemLogDetailsDialog, { formatActionKey } from '../dialogs/SystemLogDetailsDialog';
 
 const Root = styled(FusePageCarded)(() => ({
-	padding: '0!important',
 	'& .container': {
 		maxWidth: '100%!important',
-		padding: '0!important'
-	},
-	'& .FusePageCarded-wrapper': {
-		borderRadius: '0!important',
-		boxShadow: 'none!important',
-		margin: '0!important'
+		padding: '0!important',
+		height: '100%',
+		display: 'flex',
+		flexDirection: 'column'
 	},
 	'& .FusePageCarded-header': {
 		marginBottom: '0px'

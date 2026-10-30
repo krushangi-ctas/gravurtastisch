@@ -16,6 +16,7 @@ import i18n from "../i18n/config";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/toast";
+import { ScrollToTopButton } from "../components/site/ScrollToTopButton";
 import { API_V1 } from "../lib/api";
 
 function NotFoundComponent() {
@@ -139,10 +140,14 @@ function RootComponent() {
       autoRaf: true,
     });
     lenisRef.current = lenis;
+    (window as any).__lenis = lenis;
 
     return () => {
       lenis.destroy();
       lenisRef.current = null;
+      if ((window as any).__lenis === lenis) {
+        delete (window as any).__lenis;
+      }
     };
   }, []);
 
@@ -185,6 +190,7 @@ function RootComponent() {
       <QueryClientProvider client={queryClient}>
         <Outlet />
         <Toaster />
+        <ScrollToTopButton />
       </QueryClientProvider>
     </I18nextProvider>
   );

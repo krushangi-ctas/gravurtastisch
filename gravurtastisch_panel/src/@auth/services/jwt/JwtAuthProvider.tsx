@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback, useMemo, useRef, useImperativeHandle 
 import { FuseAuthProviderComponentProps, FuseAuthProviderState } from '@fuse/core/FuseAuthProvider/types/FuseAuthTypes';
 import { authRefreshToken, authSignInWithToken, authUpdateDbUser } from '@auth/authApi';
 import { User } from '../../user';
-import { removeGlobalHeaders, setGlobalHeaders } from '@/utils/api';
+import { removeGlobalHeaders } from '@/utils/api';
 import JwtAuthContext from '@auth/services/jwt/JwtAuthContext';
 import { JwtAuthContextType } from '@auth/services/jwt/JwtAuthContext';
 import { HTTPError } from 'ky';
@@ -91,7 +91,7 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 				}
 			});
 		}
-		// eslint-disable-next-line
+		 
 	}, [authState.isAuthenticated]);
 
 	/**

@@ -5,7 +5,6 @@ import FusePageCarded from '@fuse/core/FusePageCarded';
 import AmazonCredentialsView from '../../ui/Amazon/AmazonCredentialsView';
 
 const Root = styled(FusePageCarded)(() => ({
-	padding: '0!important',
 	'& .container': {
 		maxWidth: '100%!important',
 		padding: '0!important'

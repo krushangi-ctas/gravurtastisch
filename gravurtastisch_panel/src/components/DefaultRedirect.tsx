@@ -2,7 +2,6 @@
 
 import { Navigate } from 'react-router';
 import usePermissions from '@/hooks/usePermissions';
-import { getFirstAccessibleRoute } from '@/configs/sectionRoutes';
 
 /**
  * Resolves `/` to the first section the current user can view (never hardcoded).

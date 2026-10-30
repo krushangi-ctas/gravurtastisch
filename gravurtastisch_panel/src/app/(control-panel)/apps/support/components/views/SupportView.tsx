@@ -27,15 +27,12 @@ import { SupportRequest } from '../../api/services/supportApiService';
 import { getErrorMessage } from '@/utils/errorMessage';
 
 const Root = styled(FusePageCarded)(() => ({
-	padding: '0!important',
 	'& .container': {
 		maxWidth: '100%!important',
-		padding: '0!important'
-	},
-	'& .FusePageCarded-wrapper': {
-		borderRadius: '0!important',
-		boxShadow: 'none!important',
-		margin: '0!important'
+		padding: '0!important',
+		height: '100%',
+		display: 'flex',
+		flexDirection: 'column'
 	},
 	'& .FusePageCarded-header': {
 		marginBottom: '0px'

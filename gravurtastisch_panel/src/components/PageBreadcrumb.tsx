@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import Breadcrumbs, { BreadcrumbsProps } from "@mui/material/Breadcrumbs";
-import { FuseNavItemType } from "@fuse/core/FuseNavigation/types/FuseNavItemType";
-import usePathname from "@fuse/hooks/usePathname";
+import Breadcrumbs, { BreadcrumbsProps } from '@mui/material/Breadcrumbs';
+import { FuseNavItemType } from '@fuse/core/FuseNavigation/types/FuseNavItemType';
+import usePathname from '@fuse/hooks/usePathname';
 
-import Typography from "@mui/material/Typography";
-import clsx from "clsx";
-import Link from "@fuse/core/Link";
-import useNavigationItems from "./theme-layouts/components/navigation/hooks/useNavigationItems";
-import usePermissions from "@/hooks/usePermissions";
+import Typography from '@mui/material/Typography';
+import clsx from 'clsx';
+import Link from '@fuse/core/Link';
+import useNavigationItems from './theme-layouts/components/navigation/hooks/useNavigationItems';
+import usePermissions from '@/hooks/usePermissions';
 
 type PageBreadcrumbProps = BreadcrumbsProps & {
   className?: string;
@@ -41,8 +41,8 @@ function PageBreadcrumb(props: PageBreadcrumbProps) {
   const {
     className,
     skipHome = false,
-    color = "action.active",
-    borderColor = "divider",
+    color = 'action.active',
+    borderColor = 'divider',
     maxItems = 4,
     ...rest
   } = props;
@@ -51,25 +51,25 @@ function PageBreadcrumb(props: PageBreadcrumbProps) {
   const { defaultLandingRoute } = usePermissions();
 
   const crumbs = pathname
-    .split("/")
+    .split('/')
     .filter(Boolean)
     .reduce(
       (acc: { title: string; url: string }[], part, index, array) => {
-        const url = `/${array.slice(0, index + 1).join("/")}`;
+        const url = `/${array.slice(0, index + 1).join('/')}`;
         const navItem = getNavigationItem(url, navigation);
         const title = navItem?.title || part;
 
         acc.push({ title, url });
         return acc;
       },
-      skipHome ? [] : [{ title: "Home", url: defaultLandingRoute || "/" }]
+      skipHome ? [] : [{ title: 'Home', url: defaultLandingRoute || '/' }]
     );
 
   return (
     <Breadcrumbs
-      classes={{ ol: "list-none m-0 p-0" }}
-      className={clsx("flex w-fit rounded-sm border-1 px-2", className)}
-      sx={{ borderColor: borderColor + "!important" }}
+      classes={{ ol: 'list-none m-0 p-0' }}
+      className={clsx('flex w-fit rounded-sm border-1 px-2', className)}
+      sx={{ borderColor: borderColor + '!important' }}
       aria-label="breadcrumb"
       color={color}
       maxItems={maxItems}
@@ -77,7 +77,7 @@ function PageBreadcrumb(props: PageBreadcrumbProps) {
     >
       {crumbs.map((item, index) => (
         <Typography
-          component={item.url ? Link : "span"}
+          component={item.url ? Link : 'span'}
           to={item.url}
           key={index}
           className="text-md block max-w-32 truncate font-medium tracking-tight capitalize"

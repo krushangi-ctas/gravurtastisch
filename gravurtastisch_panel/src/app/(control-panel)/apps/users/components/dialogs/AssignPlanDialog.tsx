@@ -6,7 +6,6 @@ import {
 	DialogActions,
 	Button,
 	Typography,
-	CircularProgress,
 	IconButton,
 	MenuItem,
 	Select,

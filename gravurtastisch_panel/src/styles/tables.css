@@ -195,25 +195,20 @@ th[data-column-id="mrt-row-expand"]:after,
 .MRT_BottomToolbar-root,
 div[class*="MRT_BottomToolbar-root"],
 .MuiTablePagination-root {
-    background-color: #f3f4f6 !important;
+    background-color: var(--mui-palette-background-paper, #ffffff) !important;
+    border-top: 1px solid var(--mui-palette-divider) !important;
 }
 
-.dark .MRT_BottomToolbar-root,
-.dark div[class*="MRT_BottomToolbar-root"],
-.dark .MuiTablePagination-root {
-    background-color: #1f2937 !important;
-}
-
-/* Table Body Rows - Default White */
+/* Table Body Rows - Theme Paper Background */
 .MuiTableBody-root tr:not([data-selected="true"])>td,
 .MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned,
 .MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"] {
-    background-color: #ffffff;
+    background-color: var(--mui-palette-background-paper) !important;
 }
 
 .MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"]:before,
 .MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned:before {
-    background-color: #ffffff !important;
+    background-color: var(--mui-palette-background-paper) !important;
 }
 
 /* Neutralize MRT's default dark overlay pseudo-element on hover */
@@ -226,45 +221,18 @@ div[class*="MRT_BottomToolbar-root"],
     background: transparent !important;
 }
 
-/* Row Hover - pure gray-100 (#f3f4f6) across row and all cells including pinned cells */
+/* Row Hover across row and all cells including pinned cells */
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover,
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td,
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"],
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned {
-    background-color: #f3f4f6 !important;
-    background: #f3f4f6 !important;
+    background-color: var(--mui-palette-action-hover) !important;
+    background: var(--mui-palette-action-hover) !important;
 }
 
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td:before,
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"]:before,
 .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned:before {
-    background-color: #f3f4f6 !important;
-    background: #f3f4f6 !important;
-}
-
-/* Dark mode Table Body Rows & Hover */
-.dark .MuiTableBody-root tr:not([data-selected="true"])>td,
-.dark .MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned,
-.dark .MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"] {
-    background-color: #0f172a;
-}
-
-.dark .MuiTableBody-root tr:not([data-selected="true"])>td[data-pinned="true"]:before,
-.dark .MuiTableBody-root tr:not([data-selected="true"])>td.MRT_TableBodyCell-pinned:before {
-    background-color: #0f172a !important;
-}
-
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"],
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned {
-    background-color: #1f2937 !important;
-    background: #1f2937 !important;
-}
-
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td:before,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td[data-pinned="true"]:before,
-.dark .MuiTableBody-root tr:not([style*="FEF2F2"]):not([style*="fef2f2"]):not([style*="239, 68, 68"]):hover>td.MRT_TableBodyCell-pinned:before {
-    background-color: #1f2937 !important;
-    background: #1f2937 !important;
+    background-color: var(--mui-palette-action-hover) !important;
+    background: var(--mui-palette-action-hover) !important;
 }

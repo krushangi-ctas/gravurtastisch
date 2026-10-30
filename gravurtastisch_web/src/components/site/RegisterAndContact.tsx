@@ -765,31 +765,16 @@ function ContactSection() {
   };
 
   const supportEmail = config?.contact?.email || "info@gravurtastisch.com";
+  const contactPhone = config?.contact?.phone || "+91 79489 93409";
   const workingHours =
-    currentLang === "en" && config?.contact?.working_hours
-      ? config.contact.working_hours
-      : t("contact.salesHours");
+    config?.contact?.working_hours ||
+    (currentLang === "en"
+      ? "Mon–Fri, 10:30 AM – 8:30 PM IST"
+      : t("contact.salesHours"));
 
-  const headOffice =
-    currentLang === "en"
-      ? (() => {
-          if (
-            config?.contact?.city ||
-            config?.contact?.state ||
-            config?.contact?.country
-          ) {
-            const cityState = [config.contact.city, config.contact.state]
-              .filter(Boolean)
-              .join(", ");
-            return (
-              [cityState, config.contact.country].filter(Boolean).join(" · ") ||
-              config.contact.address ||
-              t("contact.officeLocation")
-            );
-          }
-          return config?.contact?.address || t("contact.officeLocation");
-        })()
-      : t("contact.officeLocation");
+  const contactAddress =
+    config?.contact?.address || t("footer.officeAddress");
+  const headOffice = contactAddress;
 
   const isMessageError = Boolean(errors.message && touched.message);
 
@@ -947,7 +932,15 @@ function ContactSection() {
               </span>
               <div>
                 <p className="font-semibold text-navy-deep">{t("contact.sales")}</p>
-                <p className="text-slate-body">{workingHours}</p>
+                {contactPhone && (
+                  <a
+                    href={`tel:${contactPhone.replace(/\s+/g, '')}`}
+                    className="text-slate-body hover:text-brand transition-colors block font-medium"
+                  >
+                    {contactPhone}
+                  </a>
+                )}
+                <p className="text-slate-500 text-xs mt-0.5">{workingHours}</p>
               </div>
             </li>
             <li className="flex gap-4 items-start">

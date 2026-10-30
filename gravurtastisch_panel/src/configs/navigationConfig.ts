@@ -79,6 +79,11 @@ const navigationConfig: FuseNavItemType[] = [
 				authSection: 'plans'
 			},
 			{
+				...SettingsAppNavigation,
+				type: 'item',
+				authSection: 'settings'
+			},
+			{
 				id: 'system-logs',
 				title: 'System Logs',
 				type: 'item',
@@ -87,9 +92,12 @@ const navigationConfig: FuseNavItemType[] = [
 				authSection: 'system-logs'
 			},
 			{
-				...SettingsAppNavigation,
+				id: 'technical-document',
+				title: 'Technical Document',
 				type: 'item',
-				authSection: 'settings'
+				icon: 'lucide:file-code-2',
+				url: '/technical-document',
+				authSection: 'technical-document'
 			}
 		]
 	}

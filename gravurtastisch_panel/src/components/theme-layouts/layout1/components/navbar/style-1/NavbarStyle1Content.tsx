@@ -7,11 +7,10 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import useThemeMediaQuery from '@fuse/hooks/useThemeMediaQuery';
 import Logo from 'src/components/theme-layouts/components/Logo';
 import Navigation from 'src/components/theme-layouts/components/navigation/Navigation';
-import UserMenu from 'src/components/theme-layouts/components/UserMenu';
 import { useNavbarContext } from '@/components/theme-layouts/components/navbar/contexts/NavbarContext/useNavbarContext';
 
 const Root = styled('div')(({ theme }) => ({
-  backgroundColor: theme.palette.grey[200],
+  backgroundColor: '#ffffff',
   color: theme.vars.palette.text.primary,
   ...theme.applyStyles('dark', {
     backgroundColor: theme.vars.palette.background.default,
@@ -56,13 +55,13 @@ function NavbarStyle1Content(props: NavbarStyle1ContentProps) {
   return (
     <Root
       className={clsx(
-        'flex h-full flex-auto flex-col overflow-hidden bg-gray-200 dark:bg-slate-900',
+        'flex h-full flex-auto flex-col overflow-hidden bg-white dark:bg-slate-900',
         className
       )}
     >
       <div
         className={clsx(
-          'flex h-20 shrink-0 items-center px-4 border-b border-gray-300 dark:border-slate-800',
+          'flex h-20 shrink-0 items-center px-4 border-b border-slate-100 dark:border-slate-800',
           isMobile ? 'justify-between' : 'justify-center'
         )}
       >
