@@ -3,24 +3,24 @@
         "es6": true,
         "node": true
     },
+    "parser": "@typescript-eslint/parser",
     "extends": [
-        "prettier",
-        "eslint:recommended"
+        "eslint:recommended",
+        "prettier"
     ],
     "plugins": [
+        "@typescript-eslint",
         "prettier"
     ],
     "parserOptions": {
         "sourceType": "module",
-        "ecmaVersion": 2020,
-        "jsx": true,
-        "ecmaFeatures": {
-            "experimentalObjectRestSpread": true
-        }
+        "ecmaVersion": 2020
     },
     "ignorePatterns": [
         "**/*.test.js",
-        "**/vendor/*.js"
+        "**/vendor/*.js",
+        "dist/**",
+        "node_modules/**"
     ],
     "rules": {
         "linebreak-style": [
@@ -35,12 +35,25 @@
             "error",
             "always"
         ],
-        "no-unused-vars": [
+        "no-empty": [
+            "error",
+            {
+                "allowEmptyCatch": true
+            }
+        ],
+        "no-constant-condition": [
+            "error",
+            {
+                "checkLoops": false
+            }
+        ],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": [
             "warn",
             {
                 "vars": "all",
                 "args": "after-used",
-                "ignoreRestSiblings": false
+                "ignoreRestSiblings": true
             }
         ]
     }

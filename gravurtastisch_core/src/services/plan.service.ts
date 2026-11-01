@@ -577,6 +577,8 @@ const getEffectivePlanLimits = async (userOrId) => {
       };
     }
 
+    const latestPlan = user.plans[user.plans.length - 1] || null;
+
     // If user has a plan that is canceled (status === 3 or subscriptionStatus === 3)
     const isLatestCanceled =
       user.subscriptionStatus === 3 ||
@@ -606,13 +608,13 @@ const getEffectivePlanLimits = async (userOrId) => {
     // If user has a plan that is expired (status === 2 or past expireAt)
     const now = Date.now();
     const isLatestExpired =
-      latestPlan.status === 2 ||
-      latestPlan.status === 'expired' ||
-      (latestPlan.expireAt && new Date(latestPlan.expireAt).getTime() < now) ||
+      latestPlan?.status === 2 ||
+      latestPlan?.status === 'expired' ||
+      (latestPlan?.expireAt && new Date(latestPlan.expireAt).getTime() < now) ||
       user.subscriptionStatus === 2 ||
       user.subscriptionStatus === 'past_due';
 
-    if (isLatestExpired) {
+    if (isLatestExpired && latestPlan) {
       const maxQuota = Number(latestPlan.request_quota) || 1000;
       return {
         maxMarketplaces: Number(latestPlan.marketplace) || 5,

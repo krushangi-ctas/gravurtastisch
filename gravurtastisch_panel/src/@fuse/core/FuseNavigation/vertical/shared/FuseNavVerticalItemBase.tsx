@@ -9,7 +9,6 @@ import {
   Typography,
   TypographyProps,
 } from '@mui/material';
-import { alpha } from '@mui/material/styles';
 import FuseNavBadge from '../../FuseNavBadge';
 import FuseSvgIcon from '../../../FuseSvgIcon';
 import { FuseNavItemType } from '../../types/FuseNavItemType';
@@ -118,10 +117,6 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
     }
   }
 
-  if (checkPermission && !item?.hasPermission) {
-    return null;
-  }
-
   const isItemActive = useMemo(() => {
     if (item.active) return true;
     if (!pathname || !item.url) return false;
@@ -154,6 +149,10 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
 
     return false;
   }, [item.active, item.id, item.url, pathname]);
+
+  if (checkPermission && !item?.hasPermission) {
+    return null;
+  }
 
   return (
     <>

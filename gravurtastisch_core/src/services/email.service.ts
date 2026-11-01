@@ -433,7 +433,7 @@ const sendPlanExpiryReminderEmail = async (user, plan) => {
 };
 
 async function getMailTemplateByKey(key) {
-  return db
+  return mongoose.connection.db
     .collection('tbl_email_templates')
     .findOne({ template_trigger: key, status: 1 });
 }

@@ -18,6 +18,8 @@
     "build:core": "pnpm --filter @gravurstastich/core build",
     "start": "pnpm --filter @gravurstastich/core start:run",
     "start:core": "pnpm --filter @gravurstastich/core start:run",
+    "start:web": "pnpm --filter @gravurstastich/web start",
+    "start:panel": "pnpm --filter @gravurstastich/panel start",
     "lint": "pnpm -r --if-present lint",
     "format": "pnpm -r --if-present format"
   },

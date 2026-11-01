@@ -155,7 +155,7 @@ function ApiDocsView() {
 				setDocData(data);
 			})
 			.catch((err) => {
-				console.warn('Could not load technical-doc-sections.json:', err);
+				console.error('Could not load technical-doc-sections.json:', err);
 			});
 	}, []);
 
@@ -193,8 +193,8 @@ function ApiDocsView() {
 				try {
 					const res = await fetch('/api-docs/openapi.json');
 					if (res.ok) spec = await res.json();
-				} catch (e) {
-					console.warn('Local /api-docs/openapi.json failed, falling back to backend');
+				} catch (_e) {
+					console.error('Local /api-docs/openapi.json failed, falling back to backend');
 				}
 
 				if (!spec) {
