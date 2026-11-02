@@ -92,17 +92,17 @@ export function AmazonShowcase() {
         <Container className="relative">
           <div className="grid lg:grid-cols-12 gap-12 lg:gap-8 items-center">
             {/* Left Column: Headline, Description, 4 Crisp Feature Items, CTAs, Clean Trust Badges */}
-            <div className="lg:col-span-5 space-y-6">
+            <div className="lg:col-span-5 space-y-6 min-w-0 w-full">
               <Reveal>
-                <div>
+                <div className="min-w-0">
                   <span className="section-badge mb-3">
                     {t("amazonShowcase.hubBadge", "Custom production studio")}
                   </span>
-                  <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep dark:text-white leading-tight">
+                  <h2 className="mt-3 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-navy-deep dark:text-white leading-tight break-words">
                     {t("amazonShowcase.hubHeadingPrefix", "One desk for engraving, print, and")}{" "}
                     {t("amazonShowcase.hubHeadingHighlight", "keepsakes that feel personal.")}
                   </h2>
-                  <p className="mt-3.5 text-sm sm:text-base text-slate-body leading-relaxed max-w-xl">
+                  <p className="mt-3.5 text-sm sm:text-base text-slate-body leading-relaxed max-w-xl break-words">
                     {t(
                       "amazonShowcase.hubDescription",
                       "Coordinate artwork intake, free digital proofs, laser engraving, and premium print finishes from a single Gravurtastisch studio workflow."
@@ -113,58 +113,58 @@ export function AmazonShowcase() {
 
               {/* 4 Crisp Key Value Props (2x2 Grid) */}
               <Reveal delay={80}>
-                <div className="grid sm:grid-cols-2 gap-3 pt-1">
-                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs min-w-0">
                     <div className="h-6 w-6 rounded-lg bg-brand/10 border border-brand-500/20 grid place-items-center text-brand-600 dark:text-brand-400 shrink-0 mt-0.5">
                       <Sparkles className="w-3.5 h-3.5" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white">
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet1Title", "Official SP-API")}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet1Desc", "Artwork intake with clear SKU briefs")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs min-w-0">
                     <div className="h-6 w-6 rounded-lg bg-emerald-500/10 border border-emerald-500/20 grid place-items-center text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5">
                       <ShieldCheck className="w-3.5 h-3.5" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white">
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet3Title", "100% Policy Safe")}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet3Desc", "Strict 5–30 day rule with zero risk")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs min-w-0">
                     <div className="h-6 w-6 rounded-lg bg-amber-500/10 border border-amber-500/20 grid place-items-center text-amber-600 dark:text-amber-400 shrink-0 mt-0.5">
                       <CheckCircle2 className="w-3.5 h-3.5" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white">
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet2Title", "Delivery Sync")}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet2Desc", "Auto-dispatches for FBA & FBM orders")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs">
+                  <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white dark:bg-navy/60 border border-slate-200/80 dark:border-white/10 shadow-2xs min-w-0">
                     <div className="h-6 w-6 rounded-lg bg-purple-500/10 border border-purple-500/20 grid place-items-center text-purple-600 dark:text-purple-400 shrink-0 mt-0.5">
                       <Globe2 className="w-3.5 h-3.5" />
                     </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white">
+                    <div className="min-w-0">
+                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet4Title", "Multi-Store Hub")}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5">
+                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet4Desc", "Unified US, UK, EU & global stores")}
                       </p>
                     </div>
@@ -174,45 +174,45 @@ export function AmazonShowcase() {
 
               {/* CTA Buttons */}
               <Reveal delay={120}>
-                <div className="flex flex-wrap items-center gap-3 pt-1">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                   <a
                     href="#amazon-ecosystem"
-                    className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider liquid-glass border border-[#0032ab]/15 text-slate-700 hover:border-[#0032ab]/40 hover:text-[#0032ab] shadow-2xs hover:shadow-xs transition-all"
+                    className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider liquid-glass border border-[#0032ab]/15 text-slate-700 hover:border-[#0032ab]/40 hover:text-[#0032ab] shadow-2xs hover:shadow-xs transition-all text-center"
                   >
                     {t("amazonShowcase.btnExplore", "Explore the studio hub")}
                   </a>
 
                   <a
                     href="/#contact"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider btn-glass-primary !text-white shadow-sm shadow-[#0032ab]/30 hover:scale-[1.02] transition-all"
+                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider btn-glass-primary !text-white shadow-sm shadow-[#0032ab]/30 hover:scale-[1.02] transition-all text-center"
                   >
                     <span className="!text-white">{t("amazonShowcase.btnTalk", "Talk to our team")}</span>
-                    <ArrowRight className="w-4 h-4 text-white" />
+                    <ArrowRight className="w-4 h-4 text-white shrink-0" />
                   </a>
                 </div>
               </Reveal>
 
               <Reveal delay={160}>
                 <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-slate-200/80 dark:border-white/10 text-[11px] text-slate-500 dark:text-white/60">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-medium">
-                    <Check className="w-3 h-3 text-emerald-600" />
-                    {t("amazonShowcase.pillFba", "Retail & wholesale")}
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-medium max-w-full">
+                    <Check className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span className="truncate">{t("amazonShowcase.pillFba", "Retail & wholesale")}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-medium">
-                    <Check className="w-3 h-3 text-emerald-600" />
-                    {t("amazonShowcase.pillSpApi", "Laser-certified workflow")}
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-medium max-w-full">
+                    <Check className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span className="truncate">{t("amazonShowcase.pillSpApi", "Laser-certified workflow")}</span>
                   </span>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-medium">
-                    <Check className="w-3 h-3 text-emerald-600" />
-                    {t("amazonShowcase.pillPolicySafe", "Proof-gated production")}
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/5 border border-slate-200 dark:border-white/10 font-medium max-w-full">
+                    <Check className="w-3 h-3 text-emerald-600 shrink-0" />
+                    <span className="truncate">{t("amazonShowcase.pillPolicySafe", "Proof-gated production")}</span>
                   </span>
                 </div>
               </Reveal>
             </div>
 
             {/* Right Column: Interactive Animated Amazon Hub Diagram */}
-            <div className="lg:col-span-7 flex justify-center lg:justify-end">
-              <Reveal delay={120}>
+            <div className="lg:col-span-7 flex justify-center lg:justify-end min-w-0 w-full overflow-hidden sm:overflow-visible">
+              <Reveal delay={120} className="w-full">
                 <AmazonHubDiagram />
               </Reveal>
             </div>

@@ -711,7 +711,7 @@ function OrderSyncPage() {
                         value={`faq-${idx}`}
                         className="rounded-2xl liquid-glass border border-[#0032ab]/12 px-5 sm:px-6 shadow-[0_2px_12px_rgba(0,50,171,0.04)] hover:border-[#0032ab]/30 transition-all border-b-0"
                       >
-                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-base sm:text-lg py-4 sm:py-5 flex gap-3.5">
+                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-[15px] sm:text-base py-3.5 sm:py-4 flex gap-3.5">
                           <span className="flex items-center gap-3.5">
                             <HelpCircle className="h-5 w-5 text-brand shrink-0" />
                             <span>{faq.q}</span>

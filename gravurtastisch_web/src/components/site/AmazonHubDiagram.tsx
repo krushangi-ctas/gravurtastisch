@@ -77,7 +77,7 @@ export function AmazonHubDiagram() {
   const currentJob = customJobs[activeJobIndex];
 
   return (
-    <div className="relative w-full max-w-[620px] mx-auto select-none py-2">
+    <div className="relative w-full max-w-[620px] mx-auto select-none py-2 min-w-0">
       {/* Brand Ambient Glows - Royal Blue & Electric Indigo Caustics */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-gradient-to-tr from-[#0032ab]/10 via-[#4f6ef7]/12 to-transparent rounded-full blur-3xl pointer-events-none" />
 
@@ -197,35 +197,35 @@ export function AmazonHubDiagram() {
         <circle cx="388" cy="265" r="3.5" fill="#10b981" />
       </svg>
 
-      {/* TOP ROW: Satellite Channel Capsules (Uniform 200px x 56px) */}
-      <div className="relative z-10 flex items-center justify-between gap-3 mb-1">
+      {/* TOP ROW: Satellite Channel Capsules (Uniform 200px x 56px on sm+, responsive on mobile) */}
+      <div className="relative z-10 flex items-center justify-between gap-2 sm:gap-3 mb-1 w-full min-w-0">
         {/* Top-Left Satellite: Amazon SP-API */}
         <div
           onClick={() => setActiveJobIndex(0)}
-          className={`w-[200px] h-[56px] flex items-center gap-2.5 px-3 rounded-2xl cursor-pointer transition-all duration-200 border relative ${
+          className={`flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl cursor-pointer transition-all duration-200 border relative ${
             activeJobIndex === 0
               ? "bg-white dark:bg-[#0b132b] border-[#0032ab] shadow-md shadow-[#0032ab]/15 ring-2 ring-[#0032ab]/15"
               : "bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 hover:border-[#0032ab]/50 hover:bg-white"
           }`}
         >
-          <div className="h-8 w-8 rounded-xl bg-[#0032ab] text-white grid place-items-center shrink-0 shadow-xs">
-            <Zap className="w-4 h-4" />
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-[#0032ab] text-white grid place-items-center shrink-0 shadow-xs">
+            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-navy-deep dark:text-white truncate">
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
                 Amazon SP-API
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
             </div>
-            <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
+            <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
               Live Intake · 12ms
             </span>
           </div>
         </div>
 
         {/* Top-Center Orchestrator Live Pill */}
-        <div className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/90 dark:bg-white/06 border border-slate-200 dark:border-white/10 text-[9.5px] font-mono font-bold text-[#0032ab] dark:text-[#4f6ef7]">
+        <div className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/90 dark:bg-white/06 border border-slate-200 dark:border-white/10 text-[9.5px] font-mono font-bold text-[#0032ab] dark:text-[#4f6ef7] shrink-0">
           <span className="h-1.5 w-1.5 rounded-full bg-[#4f6ef7] animate-pulse" />
           <span>STUDIO ORCHESTRATOR LIVE</span>
         </div>
@@ -233,23 +233,23 @@ export function AmazonHubDiagram() {
         {/* Top-Right Satellite: Shopify DTC */}
         <div
           onClick={() => setActiveJobIndex(1)}
-          className={`w-[200px] h-[56px] flex items-center gap-2.5 px-3 rounded-2xl cursor-pointer transition-all duration-200 border relative ${
+          className={`flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl cursor-pointer transition-all duration-200 border relative ${
             activeJobIndex === 1
               ? "bg-white dark:bg-[#0b132b] border-[#4f6ef7] shadow-md shadow-[#4f6ef7]/15 ring-2 ring-[#4f6ef7]/15"
               : "bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 hover:border-[#4f6ef7]/50 hover:bg-white"
           }`}
         >
-          <div className="h-8 w-8 rounded-xl bg-[#4f6ef7] text-white grid place-items-center shrink-0 shadow-xs">
-            <Globe2 className="w-4 h-4" />
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-[#4f6ef7] text-white grid place-items-center shrink-0 shadow-xs">
+            <Globe2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-navy-deep dark:text-white truncate">
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
                 Shopify DTC
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
             </div>
-            <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
+            <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
               Vector Inflow · 300 DPI
             </span>
           </div>
@@ -262,12 +262,12 @@ export function AmazonHubDiagram() {
         <div className="absolute w-[248px] sm:w-[268px] h-[248px] sm:h-[268px] rounded-full border border-dashed border-[#0032ab]/25 dark:border-[#4f6ef7]/30 orbit-spin-slow pointer-events-none" />
         <div className="absolute w-[264px] sm:w-[284px] h-[264px] sm:h-[284px] rounded-full border border-slate-200/70 dark:border-white/10 orbit-spin-slow-rev pointer-events-none" />
 
-        {/* Degree Markers */}
-        <div className="absolute inset-0 flex items-center justify-between px-3 sm:px-6 pointer-events-none text-[8px] font-mono text-[#0032ab]/60 dark:text-[#4f6ef7]/70 font-bold">
+        {/* Degree Markers - Centered directly on optical dial circumference */}
+        <div className="absolute w-[276px] sm:w-[300px] h-[276px] sm:h-[300px] flex items-center justify-between px-1 pointer-events-none text-[8px] font-mono text-[#0032ab]/60 dark:text-[#4f6ef7]/70 font-bold">
           <span>270°</span>
           <span>090°</span>
         </div>
-        <div className="absolute inset-0 flex flex-col items-center justify-between py-1 sm:py-3 pointer-events-none text-[8px] font-mono text-[#0032ab]/60 dark:text-[#4f6ef7]/70 font-bold">
+        <div className="absolute w-[276px] sm:w-[300px] h-[276px] sm:h-[300px] flex flex-col items-center justify-between py-1 pointer-events-none text-[8px] font-mono text-[#0032ab]/60 dark:text-[#4f6ef7]/70 font-bold">
           <span>000° [CAL]</span>
           <span>180° [ROT]</span>
         </div>
@@ -443,60 +443,60 @@ export function AmazonHubDiagram() {
         </div>
       </div>
 
-      {/* BOTTOM ROW: Satellite Channel Capsules (Uniform 200px x 56px) */}
-      <div className="relative z-10 flex items-center justify-between gap-3 mt-1">
+      {/* BOTTOM ROW: Satellite Channel Capsules (Uniform 200px x 56px on sm+, responsive on mobile) */}
+      <div className="relative z-10 flex items-center justify-between gap-2 sm:gap-3 mt-1 w-full min-w-0">
         {/* Bottom-Left Satellite: Corporate B2B Portal */}
         <div
           onClick={() => setActiveJobIndex(2)}
-          className={`w-[200px] h-[56px] flex items-center gap-2.5 px-3 rounded-2xl cursor-pointer transition-all duration-200 border relative ${
+          className={`flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl cursor-pointer transition-all duration-200 border relative ${
             activeJobIndex === 2
               ? "bg-white dark:bg-[#0b132b] border-[#155dfc] shadow-md shadow-[#155dfc]/15 ring-2 ring-[#155dfc]/15"
               : "bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 hover:border-[#155dfc]/50 hover:bg-white"
           }`}
         >
-          <div className="h-8 w-8 rounded-xl bg-[#155dfc] text-white grid place-items-center shrink-0 shadow-xs">
-            <Layers className="w-4 h-4" />
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-[#155dfc] text-white grid place-items-center shrink-0 shadow-xs">
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-navy-deep dark:text-white truncate">
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
                 B2B Bulk Portal
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
             </div>
-            <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
+            <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
               Proof-Gated · Tiered
             </span>
           </div>
         </div>
 
         {/* Bottom-Right Satellite: DHL Express EU */}
-        <div className="w-[200px] h-[56px] flex items-center gap-2.5 px-3 rounded-2xl border bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 relative">
-          <div className="h-8 w-8 rounded-xl bg-emerald-600 text-white grid place-items-center shrink-0 shadow-xs">
-            <PackageCheck className="w-4 h-4" />
+        <div className="flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl border bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 relative">
+          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-emerald-600 text-white grid place-items-center shrink-0 shadow-xs">
+            <PackageCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
           <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1.5">
-              <span className="text-xs font-bold text-navy-deep dark:text-white truncate">
+            <div className="flex items-center gap-1 sm:gap-1.5">
+              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
                 DHL Express EU
               </span>
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
             </div>
-            <span className="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 block font-bold truncate">
+            <span className="text-[9px] sm:text-[10px] font-mono text-emerald-600 dark:text-emerald-400 block font-bold truncate">
               {currentJob.eta}
             </span>
           </div>
         </div>
       </div>
 
-      {/* INTERACTIVE CRAFT STUDIO SWITCHER: Equal Uniform Size for ALL 3 Options! */}
-      <div className="relative z-10 mt-5 flex flex-col items-center gap-2">
-        <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold">
+      {/* INTERACTIVE CRAFT STUDIO SWITCHER: Equal Uniform Size for ALL 3 Options */}
+      <div className="relative z-10 mt-5 flex flex-col items-center gap-2 w-full min-w-0">
+        <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold text-center">
           Select Custom Studio Line to Simulate:
         </span>
 
-        {/* Uniform Grid: 3 Equal-Sized Options (100% Equal Width & Height, No Truncation) */}
-        <div className="w-full max-w-[620px] grid grid-cols-1 sm:grid-cols-3 gap-2.5 p-1.5 rounded-2xl bg-slate-100/90 dark:bg-white/06 border border-slate-200/90 dark:border-white/10">
+        {/* Uniform Grid: 3 Equal-Sized Options */}
+        <div className="w-full max-w-[620px] grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5 p-1.5 rounded-2xl bg-slate-100/90 dark:bg-white/06 border border-slate-200/90 dark:border-white/10 min-w-0">
           {customJobs.map((job, idx) => {
             const isActive = activeJobIndex === idx;
             return (
@@ -504,17 +504,17 @@ export function AmazonHubDiagram() {
                 key={job.id}
                 type="button"
                 onClick={() => setActiveJobIndex(idx)}
-                className={`w-full h-11 px-3.5 rounded-xl text-[11.5px] font-bold transition-all duration-200 cursor-pointer flex items-center justify-between gap-1.5 ${
+                className={`w-full h-11 px-3 sm:px-3.5 rounded-xl text-[11px] sm:text-[11.5px] font-bold transition-all duration-200 cursor-pointer flex items-center justify-between gap-1.5 min-w-0 ${
                   isActive
                     ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/25"
                     : "bg-white dark:bg-[#0b132b]/80 text-navy-deep dark:text-white border border-slate-200/70 dark:border-white/10 hover:border-[#0032ab]/40"
                 }`}
               >
-                <div className="flex items-center gap-1.5 whitespace-nowrap">
+                <div className="flex items-center gap-1.5 min-w-0 truncate">
                   {isActive && (
                     <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shrink-0" />
                   )}
-                  <span>{job.shortName}</span>
+                  <span className="truncate">{job.shortName}</span>
                 </div>
                 <span
                   className={`text-[8.5px] font-mono px-1.5 py-0.5 rounded uppercase font-bold shrink-0 ${
@@ -531,7 +531,7 @@ export function AmazonHubDiagram() {
         </div>
 
         {/* Dynamic Detail Breadcrumb Bar */}
-        <div className="flex flex-wrap items-center justify-center gap-3 text-xs text-slate-600 dark:text-slate-300 mt-1">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-full px-2">
           <div className="flex items-center gap-1.5">
             <span className="font-mono text-[11px] font-bold text-[#0032ab] dark:text-[#4f6ef7]">Channel:</span>
             <span className="font-semibold text-navy-deep dark:text-white">{currentJob.channel}</span>

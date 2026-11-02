@@ -472,7 +472,7 @@ function ReviewAnalyticsPage() {
                         value={`faq-${idx}`}
                         className="rounded-2xl border border-slate-200/80 bg-white px-5 sm:px-6 shadow-xs border-b-0 transition-all hover:border-brand/40"
                       >
-                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-sm sm:text-base py-4 sm:py-5 flex gap-3">
+                        <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep text-[15px] sm:text-base py-3.5 sm:py-4 flex gap-3">
                           <span className="flex items-center gap-3">
                             <span className="flex h-6 w-6 rounded-full bg-brand/10 text-brand items-center justify-center text-xs font-bold shrink-0">
                               {idx + 1}

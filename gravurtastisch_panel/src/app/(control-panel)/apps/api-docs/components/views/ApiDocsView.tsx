@@ -91,6 +91,7 @@ function ApiDocsView() {
 	const [docData, setDocData] = useState<TechnicalDocData | null>(null);
 	const [selectedSection, setSelectedSection] = useState<'api-docs' | 'models' | 'middlewares' | 'utilities' | 'plugins' | 'configuration'>('api-docs');
 	const [selectedChildId, setSelectedChildId] = useState<string>('');
+	const [mobileView, setMobileView] = useState<'nav' | 'content'>('nav');
 	// Default: expand all sections so all 14 models, 7 middlewares, 6 utilities, 3 plugins are immediately visible
 	const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
 		models: true,
@@ -126,6 +127,7 @@ function ApiDocsView() {
 		if (defaultChildId) {
 			setSelectedChildId(defaultChildId);
 		}
+		setMobileView('content');
 	};
 
 	// Copy Code to Clipboard
@@ -448,6 +450,17 @@ function ApiDocsView() {
 
 				{/* Quick Actions */}
 				<div className="flex items-center gap-2">
+					{/* Mobile Menu / Details Switcher */}
+					<Button
+						variant="outlined"
+						size="small"
+						onClick={() => setMobileView(mobileView === 'nav' ? 'content' : 'nav')}
+						className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-blue-500/30 bg-blue-50/70 dark:bg-blue-950/40 text-[#0032ab] dark:text-blue-300 font-bold text-xs shadow-2xs"
+					>
+						<FuseSvgIcon size={16}>{mobileView === 'nav' ? 'lucide:file-text' : 'lucide:menu'}</FuseSvgIcon>
+						<span>{mobileView === 'nav' ? 'Show Details' : 'Docs Menu'}</span>
+					</Button>
+
 					<Tooltip title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
 						<Button
 							variant="outlined"
@@ -464,7 +477,9 @@ function ApiDocsView() {
 			{/* Main Layout: Fixed height flex container preventing page scroll */}
 			<div className="flex flex-1 flex-col lg:flex-row min-w-0 min-h-0 h-[calc(100dvh-65px)] overflow-hidden">
 				{/* Left Sidebar Navigation: Permanently sticky / fixed h-full, never scrolls away */}
-				<aside className="w-full lg:w-75 shrink-0 h-full border-r border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col min-h-0 overflow-hidden">
+				<aside className={`w-full lg:w-75 shrink-0 h-full border-r border-slate-200/90 dark:border-slate-800 bg-white dark:bg-slate-900 flex-col min-h-0 overflow-hidden ${
+					mobileView === 'nav' ? 'flex' : 'hidden lg:flex'
+				}`}>
 					{/* Search Box: text-[13px] matching main navigation */}
 					<div className="p-3 border-b border-slate-100 dark:border-slate-800">
 						<div className="relative">
@@ -545,6 +560,7 @@ function ApiDocsView() {
 												onClick={() => {
 													setSelectedSection('models');
 													setSelectedChildId(model.id);
+													setMobileView('content');
 												}}
 												className={`w-full text-left px-2.5 py-1.5 rounded-md text-[13px] transition-all flex items-center justify-between ${
 													isSelected
@@ -604,6 +620,7 @@ function ApiDocsView() {
 												onClick={() => {
 													setSelectedSection('middlewares');
 													setSelectedChildId(mw.id);
+													setMobileView('content');
 												}}
 												className={`w-full text-left px-2.5 py-1.5 rounded-md text-[13px] transition-all flex items-center justify-between ${
 													isSelected
@@ -656,6 +673,7 @@ function ApiDocsView() {
 												onClick={() => {
 													setSelectedSection('utilities');
 													setSelectedChildId(u.id);
+													setMobileView('content');
 												}}
 												className={`w-full text-left px-2.5 py-1.5 rounded-md text-[13px] transition-all flex items-center justify-between ${
 													isSelected
@@ -708,6 +726,7 @@ function ApiDocsView() {
 												onClick={() => {
 													setSelectedSection('plugins');
 													setSelectedChildId(p.id);
+													setMobileView('content');
 												}}
 												className={`w-full text-left px-2.5 py-1.5 rounded-md text-[13px] transition-all flex items-center justify-between ${
 													isSelected
@@ -751,7 +770,29 @@ function ApiDocsView() {
 				</aside>
 
 				{/* Main Content Area: Constrained h-full so window never scrolls */}
-				<main className="flex-1 h-full flex flex-col min-w-0 min-h-0 bg-white dark:bg-slate-900 overflow-hidden">
+				<main className={`flex-1 h-full flex-col min-w-0 min-h-0 bg-white dark:bg-slate-900 overflow-hidden ${
+					mobileView === 'content' ? 'flex' : 'hidden lg:flex'
+				}`}>
+					{/* Mobile Navigation Header: Quick return to docs menu */}
+					<div className="lg:hidden shrink-0 bg-slate-100/95 dark:bg-slate-800/95 border-b border-slate-200 dark:border-slate-700 px-4 py-2.5 flex items-center justify-between gap-2 shadow-2xs z-20">
+						<button
+							type="button"
+							onClick={() => setMobileView('nav')}
+							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-[#0032ab] dark:text-blue-400 hover:bg-slate-50 shadow-2xs cursor-pointer"
+						>
+							<FuseSvgIcon size={14}>lucide:arrow-left</FuseSvgIcon>
+							<span>‹ Docs Menu</span>
+						</button>
+						<span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
+							{selectedSection === 'models' && (activeModel?.shortTitle || 'Models')}
+							{selectedSection === 'middlewares' && (activeMiddleware?.title || 'Middlewares')}
+							{selectedSection === 'utilities' && (activeUtility?.title || 'Utilities')}
+							{selectedSection === 'plugins' && (activePlugin?.title || 'Plugins')}
+							{selectedSection === 'api-docs' && 'API Documentation'}
+							{selectedSection === 'configuration' && 'Configuration'}
+						</span>
+					</div>
+
 					{/* ============================================================== */}
 					{/* 1. API DOCUMENTATION VIEW (REDOC) */}
 					{/* ============================================================== */}
