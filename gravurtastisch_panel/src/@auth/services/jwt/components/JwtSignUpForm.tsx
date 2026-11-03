@@ -47,7 +47,7 @@ function JwtSignUpForm() {
 	const { control, formState, handleSubmit, setError } = useForm<FormType>({
 		mode: 'onChange',
 		defaultValues,
-		resolver: zodResolver(schema)
+		resolver: zodResolver(schema as any)
 	});
 
 	const { isValid, dirtyFields, errors } = formState;

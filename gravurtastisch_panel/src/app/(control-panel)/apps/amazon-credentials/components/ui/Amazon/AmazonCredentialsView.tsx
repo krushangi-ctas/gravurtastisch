@@ -1269,7 +1269,7 @@ function AmazonCredentialsView() {
       seller_id: '',
       marketplace_ids: [],
     },
-    resolver: zodResolver(amazonCredentialsSchema),
+    resolver: zodResolver(amazonCredentialsSchema as any),
   });
 
   const handleUpdateSuccess = () => {

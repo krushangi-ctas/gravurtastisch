@@ -39,7 +39,7 @@ function GeneralSetAppView() {
       second: 0,
       day: 0,
     },
-    resolver: zodResolver(generalSettingSchema),
+    resolver: zodResolver(generalSettingSchema as any),
   });
 
   if (isGeneralSettingLoading) {

@@ -403,6 +403,10 @@ const syncUserSubscriptionPlans = async (userDocOrLean: any) => {
  */
 const autoPromoteAllExpiredUserPlans = async () => {
   try {
+    const mongoose = require('mongoose');
+    if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+      return 0;
+    }
     const User = require('../models/user.model');
     const now = new Date();
 
@@ -498,6 +502,10 @@ const syncUserMonthlyUsage = async (userDocOrLean: any) => {
  */
 const resetMonthlyUsageForAllUsers = async () => {
   try {
+    const mongoose = require('mongoose');
+    if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+      return 0;
+    }
     const currentMonthKey = moment().format('YYYY-MM');
 
     const outdatedUsers = await User.find({
@@ -673,6 +681,10 @@ const getEffectivePlanLimits = async (userOrId) => {
  */
 const checkAndSendPlanExpiryReminders = async () => {
   try {
+    const mongoose = require('mongoose');
+    if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+      return 0;
+    }
 
     // Tomorrow calendar day window (from start of tomorrow to end of tomorrow)
     const startOfTomorrow = moment().add(1, 'day').startOf('day').toDate();

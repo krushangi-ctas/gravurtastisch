@@ -237,7 +237,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 	} = useForm<SiteConfigFormType>({
 		defaultValues,
 		mode: 'onChange',
-		resolver: zodResolver(siteConfigSchema)
+		resolver: zodResolver(siteConfigSchema as any)
 	});
 
 	// Populate form when data is loaded

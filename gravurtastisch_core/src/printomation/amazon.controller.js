@@ -117,6 +117,10 @@ const checkIfUnauthorized = (response) =>
 // [EN] The token is NOT stored globally: each run fetches one and passes it forward. If it expires
 // [EN] in the middle of pagination, fetchOrders returns the renewed one.
 const accessToken = async () => {
+  if (!config.amz.clientId || !config.amz.clientSecret || !config.amz.refreshToken) {
+    logger.warn('Amazon SP-API credentials not configured in environment variables');
+    return null;
+  }
   try {
     const response = await spApi.post(
       config.amz.amz_auth_url,

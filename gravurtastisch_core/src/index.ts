@@ -41,6 +41,25 @@ const connectMongoDB = async () => {
 
 mongoose.connection.on('connected', () => {
   logger.info('[MongoDB] Connection established successfully');
+  // Trigger initial database tasks once connection is ready
+  setTimeout(() => {
+    try {
+      const {
+        autoPromoteAllExpiredUserPlans,
+        resetMonthlyUsageForAllUsers,
+        checkAndSendPlanExpiryReminders,
+      } = require('./services/plan.service');
+      autoPromoteAllExpiredUserPlans().catch((err: any) => {
+        logger.warn(`[Plan-Sync] Initial plan sync error: ${err?.message || err}`);
+      });
+      resetMonthlyUsageForAllUsers().catch((err: any) => {
+        logger.warn(`[Usage-Sync] Initial monthly usage sync error: ${err?.message || err}`);
+      });
+      checkAndSendPlanExpiryReminders().catch((err: any) => {
+        logger.warn(`[Plan-Reminder] Initial expiry reminder error: ${err?.message || err}`);
+      });
+    } catch (_) {}
+  }, 1000);
 });
 
 mongoose.connection.on('disconnected', () => {

@@ -60,27 +60,35 @@ const startKeepAlive = () => {
     '[Keep-Alive] Initializing 5-minute health check keeper (cron: */5 * * * *)'
   );
 
-  // Trigger initial ping 10 seconds after server boot
-  initialTimeout = setTimeout(() => {
-    pingHealth().catch((err) => {
-      logger.warn(`[Keep-Alive] Initial ping error: ${err.message}`);
-    });
+  const runDbSyncTasksSafely = (triggerName = 'Scheduled') => {
     try {
+      const mongoose = require('mongoose');
+      if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+        return;
+      }
       const {
         autoPromoteAllExpiredUserPlans,
         resetMonthlyUsageForAllUsers,
         checkAndSendPlanExpiryReminders,
       } = require('./plan.service');
       autoPromoteAllExpiredUserPlans().catch((err) => {
-        logger.warn(`[Plan-Sync] Initial plan sync error: ${err.message}`);
+        logger.warn(`[Plan-Sync] ${triggerName} plan sync error: ${err.message}`);
       });
       resetMonthlyUsageForAllUsers().catch((err) => {
-        logger.warn(`[Usage-Sync] Initial monthly usage sync error: ${err.message}`);
+        logger.warn(`[Usage-Sync] ${triggerName} monthly usage sync error: ${err.message}`);
       });
       checkAndSendPlanExpiryReminders().catch((err) => {
-        logger.warn(`[Plan-Reminder] Initial expiry reminder error: ${err.message}`);
+        logger.warn(`[Plan-Reminder] ${triggerName} expiry reminder error: ${err.message}`);
       });
     } catch (_) {}
+  };
+
+  // Trigger initial ping 10 seconds after server boot
+  initialTimeout = setTimeout(() => {
+    pingHealth().catch((err) => {
+      logger.warn(`[Keep-Alive] Initial ping error: ${err.message}`);
+    });
+    runDbSyncTasksSafely('Initial');
   }, 10000);
 
   // Schedule every 5 minutes: '*/5 * * * *'
@@ -88,22 +96,7 @@ const startKeepAlive = () => {
     pingHealth().catch((err) => {
       logger.warn(`[Keep-Alive] Scheduled ping error: ${err.message}`);
     });
-    try {
-      const {
-        autoPromoteAllExpiredUserPlans,
-        resetMonthlyUsageForAllUsers,
-        checkAndSendPlanExpiryReminders,
-      } = require('./plan.service');
-      autoPromoteAllExpiredUserPlans().catch((err) => {
-        logger.warn(`[Plan-Sync] Scheduled plan sync error: ${err.message}`);
-      });
-      resetMonthlyUsageForAllUsers().catch((err) => {
-        logger.warn(`[Usage-Sync] Scheduled monthly usage sync error: ${err.message}`);
-      });
-      checkAndSendPlanExpiryReminders().catch((err) => {
-        logger.warn(`[Plan-Reminder] Scheduled expiry reminder error: ${err.message}`);
-      });
-    } catch (_) {}
+    runDbSyncTasksSafely('Scheduled');
   });
 };
 

@@ -75,7 +75,7 @@ function JwtSignInForm() {
   const emailForm = useForm<EmailFormType>({
     mode: 'onChange',
     defaultValues: { email: '' },
-    resolver: zodResolver(emailSchema),
+    resolver: zodResolver(emailSchema as any),
   });
 
   const handleDigitChange = useCallback(
