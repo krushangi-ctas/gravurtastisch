@@ -247,7 +247,16 @@ export function DashboardPreview() {
             </div>
 
             {/* Orders Table */}
-            <div className="overflow-x-auto w-full custom-table-scrollbar">
+            <div
+              data-lenis-prevent
+              data-lenis-prevent-touch
+              data-lenis-prevent-horizontal
+              className="overflow-x-auto w-full custom-table-scrollbar overscroll-x-contain select-auto touch-pan-x"
+              style={{
+                WebkitOverflowScrolling: "touch",
+                touchAction: "pan-x pan-y",
+              }}
+            >
               <table className="w-full text-sm min-w-[620px]">
                 <thead>
                   <tr className="text-xs uppercase tracking-wider bg-gradient-to-r from-[#0032ab] to-[#155dfc] text-white">

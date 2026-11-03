@@ -142,7 +142,7 @@ router.get('/', (req, res) => {
         })
         .catch(function(err) {
           document.getElementById('redoc-container').innerHTML = 
-            '<div style=\"padding:40px; color:#dc2626; font-family:sans-serif;\">' +
+            '<div style="padding:40px; color:#dc2626; font-family:sans-serif;">' +
             '<h3>Failed to load API documentation</h3><p>' + err.message + '</p></div>';
         });
     </script>

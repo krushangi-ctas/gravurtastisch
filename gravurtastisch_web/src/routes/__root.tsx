@@ -138,6 +138,7 @@ function RootComponent() {
   useEffect(() => {
     const lenis = new Lenis({
       autoRaf: true,
+      allowNestedScroll: true,
     });
     lenisRef.current = lenis;
     (window as any).__lenis = lenis;

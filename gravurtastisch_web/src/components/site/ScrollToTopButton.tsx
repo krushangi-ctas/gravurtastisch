@@ -55,7 +55,9 @@ export function ScrollToTopButton() {
 
     try {
       document.documentElement.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-    } catch {}
+    } catch {
+      // ignore
+    }
   }, []);
 
   return (

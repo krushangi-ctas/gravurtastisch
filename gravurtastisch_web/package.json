@@ -4,6 +4,7 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
+    "start": "vite dev",
     "dev": "vite dev",
     "dev:7050": "vite dev --port 7050",
     "build": "vite build",

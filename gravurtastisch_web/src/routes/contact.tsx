@@ -457,7 +457,7 @@ function ContactPage() {
                     value={`contact-faq-${idx}`}
                     className="rounded-2xl liquid-glass border border-[#0032ab]/12 px-5 sm:px-6 shadow-2xs hover:border-[#0032ab]/30 transition-all border-b-0"
                   >
-                    <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep dark:text-white text-base sm:text-lg py-4 sm:py-5 flex gap-3.5">
+                    <AccordionTrigger className="text-left hover:no-underline font-bold text-navy-deep dark:text-white text-[15px] sm:text-base py-3.5 sm:py-4 flex gap-3.5">
                       <span className="flex items-center gap-3.5">
                         <HelpCircle className="h-5 w-5 text-brand shrink-0" />
                         <span>{faq.q}</span>
