@@ -142,6 +142,7 @@ module.exports = {
     baseUrl: envVars.SHIPROCKET_BASE_URL,
   },
   site_url: envVars.SITE_URL,
+  coreApiUrl: envVars.SITE_URL || 'http://localhost:7051',
   seller_panel_url:
     envVars.SELLER_PANEL_URL ||
     envVars.PANEL_URL,

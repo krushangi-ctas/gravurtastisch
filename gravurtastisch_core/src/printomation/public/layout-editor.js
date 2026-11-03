@@ -13,6 +13,18 @@
 //  laser-pipeline.js and before amazon.js, without `defer`/`async`. All share global
 //  lexical scope — top-level let/const are visible to each other, but NOT as window.x.
 // ═══════════════════════════════════════════════════════════════════════════
+// Early Auth Guard: sofort zu /login.html weiterleiten wenn kein JWT-Token vorliegt
+(function _earlyAuthGuard() {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get('autoexport') === '1') return;
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    if (!token) {
+      window.location.replace('/login.html');
+    }
+  } catch (_) { }
+})();
+
 // ── Grundlagen: Escape, Server-Aufruf, Konstanten, kleine Helfer ───────────────
 // HTML-Escape für user-/serverseitige Strings, die per innerHTML interpoliert werden
 // (Feld-/Layout-Namen, statischer Text). Verhindert kaputtes Markup bei < " > & und
@@ -36,16 +48,27 @@ async function _apiJson(pfad, methode = 'GET', body) {
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   }
-  const res = await fetch(BASE_URL + pfad, body === undefined ? { method: methode, headers }
-    : { method: methode, headers, body: JSON.stringify(body) });
+  const cleanPfad = (pfad.startsWith('/') ? pfad : '/' + pfad).replace(/^\/v2\/v2\//, '/v2/');
+  const fullUrl = `${BASE_URL}${cleanPfad}`.replace(/([^:]\/)\/+/g, '$1').replace(/\/v2\/v2\//g, '/v2/');
+  const res = await fetch(fullUrl, body === undefined ? { method: methode, headers, credentials: 'include' }
+    : { method: methode, headers, credentials: 'include', body: JSON.stringify(body) });
+  if (res.status === 401 && !IS_AUTOEXPORT) {
+    localStorage.removeItem('jwt_access_token');
+    localStorage.removeItem('token');
+    window.location.replace('/login.html');
+    return;
+  }
   const d = await res.json().catch(() => ({}));
   if (!res.ok || d.error || d.success === false) throw new Error(d.error || 'HTTP ' + res.status);
   return d;
 }
 const MM = 3.7795275591;
-// Basis-URL aller fetch()-Aufrufe — passt sich automatisch an localhost/VPS/Domain an
-// [EN] Base URL for all fetch() calls — adapts automatically to localhost/VPS/domain
-const BASE_URL = window.location.origin;
+// Basis-URL aller fetch()-Aufrufe — ausschließlich aus Environment (SITE_URL) via window.CONFIG.SITE_URL.
+// Entfernt eventuelle /v2, /v1 oder nachgestellte Schrägstriche, um doppelte Pfade wie /v2/v2/ strikt zu verhindern.
+const _rawBase = (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.SITE_URL) 
+  ? window.CONFIG.SITE_URL 
+  : 'http://localhost:7051';
+const BASE_URL = _rawBase.replace(/\/+$/, '').replace(/\/v[12]\/?$/, '');
 
 // ── Aufruf-Parameter der Seite ────────────────────────────────────────────────
 // EINMAL geparst — die Query steht zur Laufzeit fest (Puppeteer navigiert nie).
@@ -110,7 +133,7 @@ const _berlinToTs = (dateStr, hhmm) => {
   const naiv = Date.parse(`${dateStr}T${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}:00Z`);
   if (!Number.isFinite(naiv)) return NaN;
   const versatz = new Date(new Date(naiv).toLocaleString('en-US', { timeZone: 'Europe/Berlin' }))
-                - new Date(new Date(naiv).toLocaleString('en-US', { timeZone: 'UTC' }));
+    - new Date(new Date(naiv).toLocaleString('en-US', { timeZone: 'UTC' }));
   return naiv - versatz;
 };
 
@@ -167,7 +190,7 @@ const _matchesDatePreset = (o, preset, fromVal, toVal, fromClock, toClock) => {
   // Ohne Zeitstempel (Altbestand) auf Tagesebene zurückfallen statt die Bestellung zu schlucken
   // [EN] Without timestamp (legacy), fall back to day level instead of swallowing order
   const seitStunden = (h) => Number.isFinite(ts) ? ts >= Date.now() - h * 3600000
-                                                 : d >= _dayBerlin(Math.ceil(h / 24));
+    : d >= _dayBerlin(Math.ceil(h / 24));
   if (preset === 'today') return d === _dayBerlin();
   if (preset === 'yesterday') return d === _dayBerlin(1);
   if (preset === '7days') return d >= _dayBerlin(7);
@@ -180,7 +203,7 @@ const _matchesDatePreset = (o, preset, fromVal, toVal, fromClock, toClock) => {
     if (!Number.isFinite(ts)) return false;
     const von = _berlinToTs(fromVal || d, fromClock || '00:00');
     const bis = toClock ? _berlinToTs(toVal || fromVal || d, toClock)
-                        : _berlinToTs(toVal || _dayBerlin(), '00:00') + 86400000;
+      : _berlinToTs(toVal || _dayBerlin(), '00:00') + 86400000;
     return Number.isFinite(von) && Number.isFinite(bis) && ts >= von && ts < bis;
   }
   return true;
@@ -236,9 +259,9 @@ window.addEventListener('error', e => {
 // [EN] Check server connection — /health is lightweight (/orders scans public/ tree)
 async function checkServer() {
   try {
-    const resp = await fetch(BASE_URL + '/health', { signal: AbortSignal.timeout(5000) });
+    const resp = await fetch(BASE_URL + '/v2/health', { signal: AbortSignal.timeout(5000) });
     if (!resp.ok) showToast('⚠️ Server antwortet mit Fehler ' + resp.status, 4000);
-  } catch(e) {
+  } catch (e) {
     showToast('⚠️ Server nicht erreichbar — läuft der Server?', 5000);
   }
 }
@@ -247,6 +270,13 @@ async function checkServer() {
 // explizit statt Registrierungs-Zufall; jeder Start-Schritt gehört hier hinein.
 // [EN] THE central init — sole DOMContentLoaded handler in app. Execution order is explicit; every startup step belongs here.
 document.addEventListener('DOMContentLoaded', () => {
+  if (!IS_AUTOEXPORT) {
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    if (!token) {
+      window.location.href = '/login.html';
+      return;
+    }
+  }
   const pageTab = document.getElementById('tab-page');
   if (pageTab) pageTab.style.display = 'block';
   const loadTab = document.getElementById('tab-load');
@@ -276,10 +306,10 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!IS_AUTOEXPORT) loadSession();
   setTimeout(initPages, 500); // Seiten-Array initialisieren nachdem Canvas bereit ist / [EN] initialize pages array once canvas is ready
   // Klappbereiche (data-merken) so öffnen, wie man sie verlassen hat
-  document.querySelectorAll('details[data-merken]').forEach(d => { try { d.open = localStorage.getItem('klapp-' + d.id) === '1'; } catch (_) {} });
+  document.querySelectorAll('details[data-merken]').forEach(d => { try { d.open = localStorage.getItem('klapp-' + d.id) === '1'; } catch (_) { } });
 });
 // Auf/Zu eines Klappbereichs merken (nur Bedienkomfort, kein Zustand des Layouts)
-function _klappMerken(d) { try { localStorage.setItem('klapp-' + d.id, d.open ? '1' : '0'); } catch (_) {} }
+function _klappMerken(d) { try { localStorage.setItem('klapp-' + d.id, d.open ? '1' : '0'); } catch (_) { } }
 
 // ── Mouse wheel zoom ──────────────────────────────────────────────────────────
 function setupMouseZoom() {
@@ -296,7 +326,7 @@ function setupMouseZoom() {
 }
 
 // Zoom Buttons auch sanfter
-function zoomIn()  { setZoom(zoom + 0.1); }
+function zoomIn() { setZoom(zoom + 0.1); }
 function zoomOut() { setZoom(zoom - 0.1); }
 
 // ── Undo History ─────────────────────────────────────────────────────────────
@@ -306,8 +336,8 @@ function zoomOut() { setZoom(zoom - 0.1); }
 function _snapshot() {
   saveCurrentPageSnapshot(); // aktuelle Seite in _pages sichern
   return {
-    fields: fields.map(f=>({...f, _img: null, _imgSrc: f._imgSrc, _placement: f._placement})),
-    pages: _pages.map(pg => pg.map(f => ({...f, _img: null, _imgSrc: f._imgSrc, _placement: f._placement}))),
+    fields: fields.map(f => ({ ...f, _img: null, _imgSrc: f._imgSrc, _placement: f._placement })),
+    pages: _pages.map(pg => pg.map(f => ({ ...f, _img: null, _imgSrc: f._imgSrc, _placement: f._placement }))),
     currentPage: _currentPage,
   };
 }
@@ -335,9 +365,9 @@ window.addEventListener('beforeunload', (e) => {
 });
 
 function applyUndo(snapshot) {
-  _pages = snapshot.pages.map(pg => pg.map(f => ({...f})));
+  _pages = snapshot.pages.map(pg => pg.map(f => ({ ...f })));
   _currentPage = snapshot.currentPage;
-  fields = snapshot.fields.map(f => ({...f}));
+  fields = snapshot.fields.map(f => ({ ...f }));
   _refreshAfterPageChange();
 }
 
@@ -396,7 +426,7 @@ document.addEventListener('keydown', e => {
   // Cmd+C / Ctrl+C → copy selected field
   if ((e.metaKey || e.ctrlKey) && e.key === 'c' && sel) {
     e.preventDefault();
-    const f = fields.find(x=>x.id===sel);
+    const f = fields.find(x => x.id === sel);
     if (f) window._clipboard = JSON.parse(JSON.stringify(f));
   }
 
@@ -416,7 +446,7 @@ document.addEventListener('keydown', e => {
 
   // Cmd+Shift+Z / Ctrl+Y → Redo
   if (((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'z') ||
-      ((e.ctrlKey) && e.key === 'y')) {
+    ((e.ctrlKey) && e.key === 'y')) {
     e.preventDefault(); doRedo(); return;
   }
 
@@ -428,9 +458,9 @@ document.addEventListener('keydown', e => {
   }
 
   // Arrow keys → move selected field
-  if (sel && ['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
+  if (sel && ['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
     e.preventDefault();
-    const f = fields.find(x=>x.id===sel);
+    const f = fields.find(x => x.id === sel);
     if (!f) return;
     const step = e.shiftKey ? 5 : (e.altKey ? 0.1 : 1);
     saveUndo();
@@ -444,10 +474,10 @@ document.addEventListener('keydown', e => {
 
 // ── Tab switching ─────────────────────────────────────────────────────────────
 // Alle Reiter EINMAL aufgelistet — ein neuer Reiter kommt nur hier dazu.
-const TABS = ['load','fill','rekla','maschinen','fields','page','fonts','motive','asin','laser','overview','settings'];
+const TABS = ['load', 'fill', 'rekla', 'maschinen', 'fields', 'page', 'fonts', 'motive', 'asin', 'laser', 'overview', 'settings'];
 // Flex-Spalte = fester Kopf + scrollender Rumpf (Klasse .tab-col). Alles andere ist ein
 // einfacher Block, der als Ganzes scrollt.
-const TABS_FLEX = new Set(['load','fill','rekla','maschinen','fonts','motive','asin','laser','overview','settings']);
+const TABS_FLEX = new Set(['load', 'fill', 'rekla', 'maschinen', 'fonts', 'motive', 'asin', 'laser', 'overview', 'settings']);
 
 function switchTab(tab, btn) {
   for (const t of TABS) {
@@ -459,9 +489,9 @@ function switchTab(tab, btn) {
   // Im Reiter „Maschinen" gehört die große Fläche der Maschinen-Bühne statt dem Blatt
   document.querySelector('.workspace')?.classList.toggle('maschinen-an', tab === 'maschinen');
   // Zustandsanzeigen beim Öffnen frisch setzen, nicht erst bei der nächsten Änderung
-  if (tab === 'laser') { try { _paintLaserAktiv(); } catch(_) {} }
+  if (tab === 'laser') { try { _paintLaserAktiv(); } catch (_) { } }
   if (tab === 'rekla' && _rekWeg === 'ohne') _rmLayoutsFuellen();   // neu angelegte Layouts gleich in der Auswahl
-  if (tab === 'settings') { setTimeout(() => { try { _updateEinstStand(); } catch(_) {} }, 60); }
+  if (tab === 'settings') { setTimeout(() => { try { _updateEinstStand(); } catch (_) { } }, 60); }
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   // Keine Sonderfarben je Reiter mehr (vorher Laden Akzent, Layout Grün, Schriften Amber):
@@ -497,7 +527,7 @@ function updateCanvas() {
   const inner = document.getElementById('canvas-area-inner');
   const area = document.getElementById('canvas-area');
   if (inner && area) {
-    inner.style.minWidth  = Math.max(w + 80, area.clientWidth)  + 'px';
+    inner.style.minWidth = Math.max(w + 80, area.clientWidth) + 'px';
     inner.style.minHeight = Math.max(h + 80, area.clientHeight) + 'px';
   }
   drawCanvas();
@@ -533,8 +563,8 @@ function drawCanvas() {
     bg.width = w; bg.height = h;
     const bx = bg.getContext('2d');
     bx.fillStyle = '#fff'; bx.fillRect(0, 0, w, h);
-    bx.strokeStyle = 'rgba(124,106,255,0.2)'; bx.setLineDash([3,4]); bx.lineWidth = 0.8;
-    bx.strokeRect(m, m, w - m*2, h - m*2); bx.setLineDash([]);
+    bx.strokeStyle = 'rgba(124,106,255,0.2)'; bx.setLineDash([3, 4]); bx.lineWidth = 0.8;
+    bx.strokeRect(m, m, w - m * 2, h - m * 2); bx.setLineDash([]);
     _bgCache = { key: bgKey, canvas: bg };
   }
   ctx.drawImage(_bgCache.canvas, 0, 0);
@@ -542,19 +572,19 @@ function drawCanvas() {
   // Vorschau zeigt exakt das Export-Ergebnis (gleiche Formeln, gleicher Clip).
   const pxPerMm = MM * zoom;
   fields.forEach(f => {
-    const x = f.x*MM*zoom, y = f.y*MM*zoom, fw = f.w*MM*zoom, fh = f.h*MM*zoom;
+    const x = f.x * MM * zoom, y = f.y * MM * zoom, fw = f.w * MM * zoom, fh = f.h * MM * zoom;
     ctx.save();
     // Drehung um die Feldmitte — gleiche Optik wie Overlay (CSS) und Export (DXF/PDF)
     if (f.rotation) {
-      ctx.translate(x+fw/2, y+fh/2); ctx.rotate(f.rotation*Math.PI/180); ctx.translate(-(x+fw/2), -(y+fh/2));
+      ctx.translate(x + fw / 2, y + fh / 2); ctx.rotate(f.rotation * Math.PI / 180); ctx.translate(-(x + fw / 2), -(y + fh / 2));
     }
-    if (f.type==='image' && f._img) {
+    if (f.type === 'image' && f._img) {
       ctx.drawImage(f._img, x, y, fw, fh);
     } else if (_istMotiv(f)) {
       _drawMotiv(ctx, f, pxPerMm);
     } else {
       // Vom Export ausgeschlossene statische Felder in der Vorschau ausgrauen (sichtbar, aber als „nicht exportiert" erkennbar)
-      if (f.type==='static' && f.exportEnabled===false) ctx.globalAlpha = 0.3;
+      if (f.type === 'static' && f.exportEnabled === false) ctx.globalAlpha = 0.3;
       // Kreis-Text und „Übersteht" ragen bewusst über die Feldbox → NICHT clippen, sonst
       // sieht die Vorschau abgeschnitten aus, was der Laser voll graviert.
       if (!_textRagtUeber(f)) { ctx.beginPath(); ctx.rect(x, y, fw, fh); ctx.clip(); }
@@ -577,22 +607,22 @@ let _staticExportDefault = true;
 // Strich-Symbole statt Emoji: Emoji rendert je System bunt und in anderer Größe, die
 // Symbole hier nehmen die Typfarbe (currentColor) und sitzen überall gleich.
 const _SYM = {
-  text:     '<path d="M3.5 3.5h9M8 3.5v9.5"/>',
-  combo:    '<rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/>',
-  image:    '<rect x="2" y="2.5" width="12" height="11" rx="1.5"/><circle cx="6" cy="6.3" r="1.2"/><path d="M2.5 12.5l3.5-3.5 2.5 2.5 2-2 3 3"/>',
-  number:   '<path d="M6.3 2.5 4.8 13.5M11.3 2.5 9.8 13.5M3 6h10.5M2.5 10h10.5"/>',
-  motiv:    '<path d="M8 2 14 8 8 14 2 8z"/>',
-  ddtext:   '<path d="M3 13.5 8 2.5l5 11M5.2 9.5h5.6"/>',
-  static:   '<rect x="3.5" y="7" width="9" height="6.5" rx="1.2"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7"/>',
-  druck:    '<path d="M4.5 6V2.5h7V6"/><rect x="2" y="6" width="12" height="5.5" rx="1"/><path d="M4.5 9.5h7v4h-7z"/>',
-  ausr_left:   '<path d="M2.5 4h11M2.5 8h7M2.5 12h9"/>',
+  text: '<path d="M3.5 3.5h9M8 3.5v9.5"/>',
+  combo: '<rect x="2.5" y="2.5" width="11" height="4.5" rx="1"/><rect x="2.5" y="9" width="11" height="4.5" rx="1"/>',
+  image: '<rect x="2" y="2.5" width="12" height="11" rx="1.5"/><circle cx="6" cy="6.3" r="1.2"/><path d="M2.5 12.5l3.5-3.5 2.5 2.5 2-2 3 3"/>',
+  number: '<path d="M6.3 2.5 4.8 13.5M11.3 2.5 9.8 13.5M3 6h10.5M2.5 10h10.5"/>',
+  motiv: '<path d="M8 2 14 8 8 14 2 8z"/>',
+  ddtext: '<path d="M3 13.5 8 2.5l5 11M5.2 9.5h5.6"/>',
+  static: '<rect x="3.5" y="7" width="9" height="6.5" rx="1.2"/><path d="M5.5 7V5.2a2.5 2.5 0 0 1 5 0V7"/>',
+  druck: '<path d="M4.5 6V2.5h7V6"/><rect x="2" y="6" width="12" height="5.5" rx="1"/><path d="M4.5 9.5h7v4h-7z"/>',
+  ausr_left: '<path d="M2.5 4h11M2.5 8h7M2.5 12h9"/>',
   ausr_center: '<path d="M2.5 4h11M4.5 8h7M3.5 12h9"/>',
-  ausr_right:  '<path d="M2.5 4h11M6.5 8h7M4.5 12h9"/>',
-  pfeil:    '<path d="M6 3.5 10.5 8 6 12.5"/>',
-  muell:    '<path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/>',
-  mehrere:  '<rect x="2" y="2" width="8" height="8" rx="1.2"/><path d="M6 13.5h6.5a1 1 0 0 0 1-1V6"/>',
-  griff:    '<circle cx="6" cy="4" r=".9"/><circle cx="10" cy="4" r=".9"/><circle cx="6" cy="8" r=".9"/><circle cx="10" cy="8" r=".9"/><circle cx="6" cy="12" r=".9"/><circle cx="10" cy="12" r=".9"/>',
-  nurEditor:'<path d="M4.5 6V2.5h7V6"/><rect x="2" y="6" width="12" height="5.5" rx="1"/><path d="M2 14 14 2"/>',
+  ausr_right: '<path d="M2.5 4h11M6.5 8h7M4.5 12h9"/>',
+  pfeil: '<path d="M6 3.5 10.5 8 6 12.5"/>',
+  muell: '<path d="M3 4.5h10M6.5 4.5V3h3v1.5M4.5 4.5l.6 8.5h5.8l.6-8.5"/>',
+  mehrere: '<rect x="2" y="2" width="8" height="8" rx="1.2"/><path d="M6 13.5h6.5a1 1 0 0 0 1-1V6"/>',
+  griff: '<circle cx="6" cy="4" r=".9"/><circle cx="10" cy="4" r=".9"/><circle cx="6" cy="8" r=".9"/><circle cx="10" cy="8" r=".9"/><circle cx="6" cy="12" r=".9"/><circle cx="10" cy="12" r=".9"/>',
+  nurEditor: '<path d="M4.5 6V2.5h7V6"/><rect x="2" y="6" width="12" height="5.5" rx="1"/><path d="M2 14 14 2"/>',
 };
 function _sym(k) {
   return `<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">${_SYM[k]}</svg>`;
@@ -600,11 +630,11 @@ function _sym(k) {
 // Typfarbe wie auf dem Blatt (.cel): Gravur Akzent, Bild grün, Statisch/Nr. amber.
 // Drei Stufen je Typ: Voll (Symbol, Hover), Grund (belegt/gewählt), Rand.
 const _TYPFARBE = {
-  text:   ['var(--accent)', 'var(--accent-glow)', 'var(--accent-rand)'],
-  combo:  ['var(--combo)',  'var(--combo-dim)',  'var(--combo-rand)'],
-  image:  ['var(--green)',  'var(--green-dim)',  'var(--green-rand)'],
-  number: ['var(--amber)',  'var(--amber-dim)',  'var(--amber-rand)'],
-  static: ['var(--amber)',  'var(--amber-dim)',  'var(--amber-rand)'],
+  text: ['var(--accent)', 'var(--accent-glow)', 'var(--accent-rand)'],
+  combo: ['var(--combo)', 'var(--combo-dim)', 'var(--combo-rand)'],
+  image: ['var(--green)', 'var(--green-dim)', 'var(--green-rand)'],
+  number: ['var(--amber)', 'var(--amber-dim)', 'var(--amber-rand)'],
+  static: ['var(--amber)', 'var(--amber-dim)', 'var(--amber-rand)'],
 };
 _TYPFARBE.motiv = _TYPFARBE.ddtext = _TYPFARBE.text;
 function _typVars(t) { const [c, d, r] = _TYPFARBE[t] || _TYPFARBE.text; return `--c:${c};--c-dim:${d};--c-rand:${r};`; }
@@ -617,14 +647,14 @@ function _feldTyp(f) { return _isCombo(f) ? 'combo' : _istMotiv(f) ? 'motiv' : (
 // Kombi-Zeilen wählt man rechts. Diese Zeilen sind als Ganzes der Baustein; `zieh`/`anlegen` nur, wo
 // Ziehen bzw. Doppelklick nicht über addToCanvas laufen.
 const _BAUSTEINE = [
-  { typ: 'text',     name: 'Text',          zahl: true, tip: 'Gravur-Zeile aus der Bestellung' },
-  { typ: 'image',    name: 'Bild',          zahl: true, tip: 'Foto des Kunden — Bild 2 = sein zweites Foto' },
-  { typ: 'static',   name: 'Statisch',      zahl: true, tip: 'Fester Text — wird beim Füllen nie überschrieben' },
+  { typ: 'text', name: 'Text', zahl: true, tip: 'Gravur-Zeile aus der Bestellung' },
+  { typ: 'image', name: 'Bild', zahl: true, tip: 'Foto des Kunden — Bild 2 = sein zweites Foto' },
+  { typ: 'static', name: 'Statisch', zahl: true, tip: 'Fester Text — wird beim Füllen nie überschrieben' },
   null,
-  { typ: 'number',   name: 'Bestellnummer', tip: 'Bestellnummer — gehört zur Gravur bzw. zum Bild am selben Platz' },
-  { typ: 'motiv',    name: 'Motiv',         zieh: 'motivfeld', anlegen: 'motivFeldAnlegen()', tip: 'Vektorgrafik: fest für alle Plätze oder je Kundenantwort (z. B. Buchstabe → Monogramm)' },
-  { typ: 'ddtext',   name: 'Dropdown-Text', zieh: 'ddtextfeld', anlegen: 'ddTextFeldAnlegen()', tip: 'Antwort aus einem Dropdown (z. B. Buchstabe, Sternzeichen) in fester Schrift — der Kasten ist die Höhe eines Großbuchstabens' },
-  { typ: 'combo',    name: 'Kombi',         tip: 'Stapelt Gravur-Zeilen exakt gleich hoch. Zeilen rechts wählen.' },
+  { typ: 'number', name: 'Bestellnummer', tip: 'Bestellnummer — gehört zur Gravur bzw. zum Bild am selben Platz' },
+  { typ: 'motiv', name: 'Motiv', zieh: 'motivfeld', anlegen: 'motivFeldAnlegen()', tip: 'Vektorgrafik: fest für alle Plätze oder je Kundenantwort (z. B. Buchstabe → Monogramm)' },
+  { typ: 'ddtext', name: 'Dropdown-Text', zieh: 'ddtextfeld', anlegen: 'ddTextFeldAnlegen()', tip: 'Antwort aus einem Dropdown (z. B. Buchstabe, Sternzeichen) in fester Schrift — der Kasten ist die Höhe eines Großbuchstabens' },
+  { typ: 'combo', name: 'Kombi', tip: 'Stapelt Gravur-Zeilen exakt gleich hoch. Zeilen rechts wählen.' },
 ];
 // Anzahl Kacheln je nummeriertem Baustein; per −/+ ab 1, beim Laden mindestens 3.
 const _PAL_START = 3;
@@ -670,8 +700,8 @@ function addPal(type, d) {
   renderPal();
 }
 
-let _dt=null,_dn=0;
-function palDrag(e,type,num){ _dt=type; _dn=num; e.dataTransfer.setData('text/plain',type+':'+num); }
+let _dt = null, _dn = 0;
+function palDrag(e, type, num) { _dt = type; _dn = num; e.dataTransfer.setData('text/plain', type + ':' + num); }
 
 // Motiv aus der Bibliothek aufs Blatt ziehen. Eigener Merker statt _dn, weil ein Motiv
 // über den DATEINAMEN identifiziert wird, nicht über eine Palettennummer.
@@ -691,14 +721,14 @@ function _setupCanvasDrop() {
     if (_dt) {
       // Text-/Gravur-Feld auf ein Kombi-Feld gezogen → als Zeile aufnehmen (kein neues Feld).
       if (_dt === 'text') {
-        const combo = fields.find(f => _isCombo(f) && x>=f.x && x<=f.x+f.w && y>=f.y && y<=f.y+f.h);
-        if (combo) { addComboLine(combo.id, _dn); _dt=null; return; }
+        const combo = fields.find(f => _isCombo(f) && x >= f.x && x <= f.x + f.w && y >= f.y && y <= f.y + f.h);
+        if (combo) { addComboLine(combo.id, _dn); _dt = null; return; }
       }
-      if (_dt === 'motiv') { motivAufsBlatt(_dMotiv, x, y); _dt=null; _dMotiv=null; return; }
-      if (_dt === 'motivfeld') { motivFeldAnlegen(x, y); _dt=null; return; }
-      if (_dt === 'ddtextfeld') { ddTextFeldAnlegen(x, y); _dt=null; return; }
+      if (_dt === 'motiv') { motivAufsBlatt(_dMotiv, x, y); _dt = null; _dMotiv = null; return; }
+      if (_dt === 'motivfeld') { motivFeldAnlegen(x, y); _dt = null; return; }
+      if (_dt === 'ddtextfeld') { ddTextFeldAnlegen(x, y); _dt = null; return; }
       addToCanvas(_dt, _dn, x, y);
-      _dt=null;
+      _dt = null;
     }
   });
 }
@@ -710,28 +740,28 @@ function addToCanvas(type, num, x, y) {
   // Kombi-Feld = Textfeld mit comboPals-Array (anfangs leer → Zeilen per Drag reinziehen).
   const isCombo = type === 'combo';
   const baseType = isCombo ? 'text' : type;
-  const typeName = baseType==='image'?'Bild ':baseType==='number'?'Bestellnummer ':baseType==='static'?'Statisch ':'Gravur ';
+  const typeName = baseType === 'image' ? 'Bild ' : baseType === 'number' ? 'Bestellnummer ' : baseType === 'static' ? 'Statisch ' : 'Gravur ';
   const field = {
     id, type: baseType, palNum: isCombo ? 1 : num,
     name: isCombo ? 'Kombi' : baseType === 'number' ? 'Bestellnummer' : typeName + num,
-    x: x!=null ? Math.max(0,x) : p.m + (fields.length%4)*25,
-    y: y!=null ? Math.max(0,y) : p.m + Math.floor(fields.length/4)*25,
-    w: isCombo ? 60 : baseType==='image' ? 23 : baseType==='number' ? 40 : 60,
-    h: isCombo ? 16 : baseType==='image' ? 39 : 6,
-    fontSize: baseType==='number' ? 4 : 10, fontFamily: 'Arial',
+    x: x != null ? Math.max(0, x) : p.m + (fields.length % 4) * 25,
+    y: y != null ? Math.max(0, y) : p.m + Math.floor(fields.length / 4) * 25,
+    w: isCombo ? 60 : baseType === 'image' ? 23 : baseType === 'number' ? 40 : 60,
+    h: isCombo ? 16 : baseType === 'image' ? 39 : 6,
+    fontSize: baseType === 'number' ? 4 : 10, fontFamily: 'Arial',
     textAlign: 'center', // Ausrichtung standardmäßig mittig
     // Nur Nummern-Felder: wie viele Zeichen der Bestellnummer, von hinten oder vorne
-    numChars: baseType==='number' ? 7 : undefined,
-    numFrom:  baseType==='number' ? 'end' : undefined,
+    numChars: baseType === 'number' ? 7 : undefined,
+    numFrom: baseType === 'number' ? 'end' : undefined,
     orderId: null,
     _img: null, _text: null,
     // Statische Felder: Text wird separat gespeichert und nie vom Füllen überschrieben
-    staticText: baseType==='static' ? '' : undefined,
+    staticText: baseType === 'static' ? '' : undefined,
     // Statische Felder: Export-Standard kommt aus dem Toggle im Felder-Tab (pro Feld abschaltbar)
-    exportEnabled: baseType==='static' ? _staticExportDefault : undefined,
+    exportEnabled: baseType === 'static' ? _staticExportDefault : undefined,
     // Gravur-Text: Standard = Stauchen (Altan 15.07.) — zu lange Namen werden schmaler
     // gedrückt statt über das Feld zu ragen; per Props-Panel pro Feld umstellbar.
-    overflowMode: baseType==='text' ? 'stauch' : undefined,
+    overflowMode: baseType === 'text' ? 'stauch' : undefined,
     // Kombi-Feld: Liste der Gravur-Nummern (Zeilen). Leer = per Drag befüllen.
     comboPals: isCombo ? [] : undefined,
   };
@@ -826,10 +856,10 @@ function renderEls() {
     ? new Map(window._currentFilteredForFill.map((o, i) => [o.id, i]))
     : null;
   ov.innerHTML = fields.map(f => {
-    const x=f.x*MM*zoom, y=f.y*MM*zoom, w=f.w*MM*zoom, h=f.h*MM*zoom;
-    const isS = f.id===sel || multiSel.has(f.id);
-    const isI = f.type==='image';
-    const isSta = f.type==='static';
+    const x = f.x * MM * zoom, y = f.y * MM * zoom, w = f.w * MM * zoom, h = f.h * MM * zoom;
+    const isS = f.id === sel || multiSel.has(f.id);
+    const isI = f.type === 'image';
+    const isSta = f.type === 'static';
     // Bestellungsnummer ermitteln — Array-Kopien zeigen IMMER das Label ihres Masters
     // (gleiche Gravur = gleiche Nummer), plus ⿻-Marker
     const lblF = f.arrayOf ? (fields.find(ff => ff.arrayGroup === f.arrayOf) || f) : f;
@@ -847,21 +877,20 @@ function renderEls() {
     if (_istMotiv(f)) inner = ''; // Grafik wird auf dem Canvas gezeichnet
     else if (isI) inner = f._img ? `<img src="${f._img.src}" alt="" />` : `<div class="cel-placeholder">🖼</div>`;
     else if (isSta) inner = ''; // Text wird auf Canvas gezeichnet
-    else if (f.type==='number' && !f._text) inner = `<div class="cel-placeholder" style="color:rgba(245,166,35,0.8);font-size:var(--fs-titel);">#</div>`;
-    else if (_isCombo(f) && !f._text) inner = `<div class="cel-placeholder" style="font-size:var(--fs-mikro);line-height:1.4;color:var(--combo);text-align:center;">${f.comboPals.length ? f.comboPals.map(pp=>'Gravur '+pp).join('<br>') : '▤ Text-Feld<br>hierher ziehen'}</div>`;
+    else if (f.type === 'number' && !f._text) inner = `<div class="cel-placeholder" style="color:rgba(245,166,35,0.8);font-size:var(--fs-titel);">#</div>`;
+    else if (_isCombo(f) && !f._text) inner = `<div class="cel-placeholder" style="font-size:var(--fs-mikro);line-height:1.4;color:var(--combo);text-align:center;">${f.comboPals.length ? f.comboPals.map(pp => 'Gravur ' + pp).join('<br>') : '▤ Text-Feld<br>hierher ziehen'}</div>`;
     else if (!f._text && !f.ddText) inner = `<div class="cel-placeholder">✏️</div>`;
-    return `<div class="cel ${isI?'img-t':''} ${isSta?'sta-t':''} ${isS?'sel':''}" id="cel-${f.id}"
-      style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${f.rotation?`transform:rotate(${f.rotation}deg);`:''}"
+    return `<div class="cel ${isI ? 'img-t' : ''} ${isSta ? 'sta-t' : ''} ${isS ? 'sel' : ''}" id="cel-${f.id}"
+      style="left:${x}px;top:${y}px;width:${w}px;height:${h}px;${f.rotation ? `transform:rotate(${f.rotation}deg);` : ''}"
       onmousedown="elDown(event,${f.id})"
 >
-      <span class="cel-lbl">${
-        _istMotiv(f) ? '◆ ' + _esc(f.ddFrage ? (f._motivDatei || 'aus „' + f.ddFrage + '“') : (f.motivDatei || '—')) :
+      <span class="cel-lbl">${_istMotiv(f) ? '◆ ' + _esc(f.ddFrage ? (f._motivDatei || 'aus „' + f.ddFrage + '“') : (f.motivDatei || '—')) :
         f.type === 'number' ? 'Nr. · Best. ' + orderIdx :
-        f.type === 'image' ? 'Bild ' + f.palNum + ' · Best. ' + orderIdx :
-        f.type === 'static' ? '📝 Statisch' :
-        _isCombo(f) ? '▤ Kombi ' + (f.comboPals.length?f.comboPals.join('/'):'—') + ' · Best. ' + orderIdx :
-        f.ddText ? '▾ ' + _esc(f.ddFrage || 'Dropdown') + ' · Best. ' + orderIdx :
-        'Gravur ' + f.palNum + ' · Best. ' + orderIdx
+          f.type === 'image' ? 'Bild ' + f.palNum + ' · Best. ' + orderIdx :
+            f.type === 'static' ? '📝 Statisch' :
+              _isCombo(f) ? '▤ Kombi ' + (f.comboPals.length ? f.comboPals.join('/') : '—') + ' · Best. ' + orderIdx :
+                f.ddText ? '▾ ' + _esc(f.ddFrage || 'Dropdown') + ' · Best. ' + orderIdx :
+                  'Gravur ' + f.palNum + ' · Best. ' + orderIdx
       }${f.arrayOf ? ' ⿻' : ''}</span>
       ${inner}
       <div class="rh" onmousedown="rszDown(event,${f.id})"></div>
@@ -936,9 +965,9 @@ function _syncCelGeometry(id) {
   const f = fields.find(x => x.id === id);
   const el = document.getElementById('cel-' + id);
   if (!f || !el) return;
-  el.style.left   = (f.x * MM * zoom) + 'px';
-  el.style.top    = (f.y * MM * zoom) + 'px';
-  el.style.width  = (f.w * MM * zoom) + 'px';
+  el.style.left = (f.x * MM * zoom) + 'px';
+  el.style.top = (f.y * MM * zoom) + 'px';
+  el.style.width = (f.w * MM * zoom) + 'px';
   el.style.height = (f.h * MM * zoom) + 'px';
 }
 // Leichter Render-Pfad fürs Live-Ziehen/Resizen: nur aktives Feld bewegen + Canvas neu.
@@ -1048,7 +1077,7 @@ function _nrMusterZeigen(id) {
 const _ppOffen = (() => { try { return JSON.parse(localStorage.getItem('pp-offen')) || {}; } catch (_) { return {}; } })();
 function ppKlapp(k) {
   _ppOffen[k] = !_ppOffen[k];
-  try { localStorage.setItem('pp-offen', JSON.stringify(_ppOffen)); } catch (_) {}
+  try { localStorage.setItem('pp-offen', JSON.stringify(_ppOffen)); } catch (_) { }
   renderProps();
 }
 const _PP_TYP = { text: 'Text', combo: 'Kombi', image: 'Bild', number: 'Bestellnummer', static: 'Statischer Text', motiv: 'Motiv', ddtext: 'Dropdown-Text' };
@@ -1125,7 +1154,7 @@ function renderProps() {
     </div>`;
     return;
   }
-  const f = fields.find(x=>x.id===sel);
+  const f = fields.find(x => x.id === sel);
   if (!f) return;
   const t = _feldTyp(f);
   const id = f.id;
@@ -1187,16 +1216,16 @@ function renderProps() {
       <div class="row2">
         ${_ppFeld('Ausrichtung', _ppAusrichtung(f))}
         ${kreis ? _ppFeld('Größe (pt)', _ppPt(f, 10), 'Kreis-Text hat immer eine feste Größe')
-          : _ppFeld('Höhe', _seg([
-              [auto, `upd(${id},'autoFit',true);renderProps();drawCanvas()`, 'Auto', 'Schrift füllt die Feldhöhe exakt'],
-              [!auto, `upd(${id},'autoFit',false);renderProps();drawCanvas()`, 'Fest', 'Feste Schriftgröße in pt']]))}
+        : _ppFeld('Höhe', _seg([
+          [auto, `upd(${id},'autoFit',true);renderProps();drawCanvas()`, 'Auto', 'Schrift füllt die Feldhöhe exakt'],
+          [!auto, `upd(${id},'autoFit',false);renderProps();drawCanvas()`, 'Fest', 'Feste Schriftgröße in pt']]))}
       </div>
       ${!kreis && !auto ? _ppFeld('Größe (pt)', _ppPt(f, 10)) : ''}
       ${_ppFeld('Schrift', _ppSchrift(f), 'Gilt für alle Felder mit dieser Gravur-Nummer. Bringt die Bestellung eine eigene Schrift mit, gilt deren Schrift – außer bei „Text aus Dropdown“.')}
       ${!kreis && auto ? _ppFeld('Zu breit', _seg([
-          [f.overflowMode === 'stauch', `setOverflowMode(${id},'stauch')`, 'Stauchen', 'Höhe bleibt exakt — zu lange Namen werden nur schmaler gedrückt, bis sie ins Feld passen (wie X-Achse verkleinern an der Maschine)'],
-          [!f.overflowMode, `setOverflowMode(${id},'ok')`, 'Übersteht', 'Zu langer Text ragt links/rechts über das Feld hinaus und wird NICHT abgeschnitten — Höhe bleibt exakt'],
-          [f.overflowMode === 'hybrid', `setOverflowMode(${id},'hybrid')`, 'Hybrid', 'Erst bis 20 % stauchen; reicht das nicht, wird die Schrift zusätzlich kleiner (Gravur dann niedriger als die Feldhöhe)']])) : ''}
+            [f.overflowMode === 'stauch', `setOverflowMode(${id},'stauch')`, 'Stauchen', 'Höhe bleibt exakt — zu lange Namen werden nur schmaler gedrückt, bis sie ins Feld passen (wie X-Achse verkleinern an der Maschine)'],
+            [!f.overflowMode, `setOverflowMode(${id},'ok')`, 'Übersteht', 'Zu langer Text ragt links/rechts über das Feld hinaus und wird NICHT abgeschnitten — Höhe bleibt exakt'],
+            [f.overflowMode === 'hybrid', `setOverflowMode(${id},'hybrid')`, 'Hybrid', 'Erst bis 20 % stauchen; reicht das nicht, wird die Schrift zusätzlich kleiner (Gravur dann niedriger als die Feldhöhe)']])) : ''}
       ${_ppKreis(f)}`, 'var(--accent)'));
   }
   else if (t === 'ddtext') {
@@ -1224,8 +1253,10 @@ function renderProps() {
   else if (t === 'combo') {
     // Zeilen per Klick wählen (gefüllt = drin); Reinziehen aufs Blatt geht weiter.
     const nMax = Math.max(_palN.text, 4, ...f.comboPals);
-    const wahl = Array.from({ length: nMax }, (_, i) => { const n = i + 1, k = f.comboPals.indexOf(n); return `<button class="bs-chip${k >= 0 ? ' belegt' : ''}" title="Gravur ${n} ${k >= 0 ? 'herausnehmen' : 'aufnehmen'}"
-      onclick="${k >= 0 ? `removeComboLine(${id},${k})` : `addComboLine(${id},${n})`}">${n}</button>`; }).join('');
+    const wahl = Array.from({ length: nMax }, (_, i) => {
+      const n = i + 1, k = f.comboPals.indexOf(n); return `<button class="bs-chip${k >= 0 ? ' belegt' : ''}" title="Gravur ${n} ${k >= 0 ? 'herausnehmen' : 'aufnehmen'}"
+      onclick="${k >= 0 ? `removeComboLine(${id},${k})` : `addComboLine(${id},${n})`}">${n}</button>`;
+    }).join('');
     const mehr = f.comboPals.length > 1;
     teile.push(_ppKarte('Kombi', `
       ${_ppFeld('Zeilen', `<div class="pp-chips">${wahl}</div>`, 'Alle Zeilen exakt gleich hoch — feste Größe, unabhängig von h/g/Umlaut')}
@@ -1241,8 +1272,8 @@ function renderProps() {
         <span class="il hsb"><span>Höhe je Zeile</span><span class="pp-wert"><b id="cgap-line-${id}">${comboLineHeightsMM(f).ink.toFixed(1)}</b> mm</span></span>
       </div>
       ${_ppFeld('Leere Zeilen', _seg([
-        [f.comboCenterSingle === false, `setComboCenterSingle(${id},false)`, 'Oben bündig', 'Der Block bleibt an der Feldoberkante. Wirkt nur bei teilweise befüllten Bestellungen.'],
-        [f.comboCenterSingle !== false, `setComboCenterSingle(${id},true)`, 'Mittig', 'Weniger befüllte Zeilen → der Block rutscht mittig in den Slot (eine Zeile: ' + comboCenterShiftMM(f, 1, comboFontSizePt(f) * PT_MM).toFixed(1) + ' mm). Zeilenhöhe bleibt gleich.']]))}` : ''}
+      [f.comboCenterSingle === false, `setComboCenterSingle(${id},false)`, 'Oben bündig', 'Der Block bleibt an der Feldoberkante. Wirkt nur bei teilweise befüllten Bestellungen.'],
+      [f.comboCenterSingle !== false, `setComboCenterSingle(${id},true)`, 'Mittig', 'Weniger befüllte Zeilen → der Block rutscht mittig in den Slot (eine Zeile: ' + comboCenterShiftMM(f, 1, comboFontSizePt(f) * PT_MM).toFixed(1) + ' mm). Zeilenhöhe bleibt gleich.']]))}` : ''}
       ${_ppFeld('Ausrichtung', _ppAusrichtung(f))}
       ${!kreis ? _ppFeld('Zu breit', _seg([
         [f.overflowMode === 'stauch', `setOverflowMode(${id},'stauch')`, 'Stauchen', 'Höhe bleibt exakt — zu lange Namen werden nur schmaler gedrückt'],
@@ -1255,8 +1286,8 @@ function renderProps() {
       <div class="row2">
         ${_ppFeld('Zeichen', `<input type="number" value="${f.numChars || 7}" min="1" max="30" oninput="upd(${id},'numChars',_numIn(this.value));_nrMusterZeigen(${id})"/>`)}
         ${_ppFeld('Von', _seg([
-          [von === 'end', `upd(${id},'numFrom','end');renderProps()`, 'Hinten', 'Die letzten Zeichen'],
-          [von === 'start', `upd(${id},'numFrom','start');renderProps()`, 'Vorne', 'Die ersten Zeichen']]))}
+      [von === 'end', `upd(${id},'numFrom','end');renderProps()`, 'Hinten', 'Die letzten Zeichen'],
+      [von === 'start', `upd(${id},'numFrom','start');renderProps()`, 'Vorne', 'Die ersten Zeichen']]))}
       </div>
       ${_ppFeld('Ergebnis', `<div class="nr-muster" id="nr-muster-${id}">${_esc(_nrMuster(f))}</div>`, 'Aus ' + _esc(f.orderId || _NR_BEISPIEL))}
       ${kreis ? _ppFeld('Größe (pt)', _ppPt(f, 4), 'Kreis-Text hat immer eine feste Größe') : ''}
@@ -1272,8 +1303,8 @@ function renderProps() {
         ${_ppFeld('Ausrichtung', _ppAusrichtung(f))}
       </div>
       ${_ppFeld('Im Export', _seg([
-        [an, `setStaticExport(${id},true)`, 'Gedruckt', 'Erscheint in PDF/PNG/DXF'],
-        [!an, `setStaticExport(${id},false)`, 'Nur Editor', 'Nur im Editor sichtbar (ausgegraut), in keinem Export']]))}
+      [an, `setStaticExport(${id},true)`, 'Gedruckt', 'Erscheint in PDF/PNG/DXF'],
+      [!an, `setStaticExport(${id},false)`, 'Nur Editor', 'Nur im Editor sichtbar (ausgegraut), in keinem Export']]))}
       ${_ppKreis(f)}`, 'var(--amber)'));
   }
   else if (t === 'image') {
@@ -1306,11 +1337,11 @@ function renderProps() {
       : `<button class="btn btn-umriss btn-full" onclick="motivFestWaehlen(${id})">◆ Motiv wählen</button>`;
     teile.push(_ppKarte('Motiv', `
       ${_seg([
-        [!jeAntwort, `motivModus(${id},false)`, 'Fest', 'Eine Datei für alle Plätze'],
-        [jeAntwort, `motivModus(${id},true)`, 'Je Antwort', 'Motiv zur Antwort des Kunden, z. B. Buchstabe → Monogramm']])}
+      [!jeAntwort, `motivModus(${id},false)`, 'Fest', 'Eine Datei für alle Plätze'],
+      [jeAntwort, `motivModus(${id},true)`, 'Je Antwort', 'Motiv zur Antwort des Kunden, z. B. Buchstabe → Monogramm']])}
       <div class="pp-motiv-inhalt">${!jeAntwort ? fest
         : f.arrayOf ? '<div class="umut10">Wird am ersten Feld des Arrays eingestellt.</div>'
-        : `<div class="dd-grp">${_ddFeldHTML(f, 'motiv')}</div>`}</div>`, 'var(--accent)'));
+          : `<div class="dd-grp">${_ddFeldHTML(f, 'motiv')}</div>`}</div>`, 'var(--accent)'));
   }
 
   // ── Raster ──
@@ -1368,7 +1399,9 @@ async function _fetchOrderJson(order) {
   const key = `${order.date}/${order.id}/${fn}`;
   if (_orderJsonCache[key]) return _orderJsonCache[key];
   try {
-    const res = await fetch(`${BASE_URL}/${key}`);
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${BASE_URL}/${key}`, { headers, credentials: 'include' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     _orderJsonCache[key] = data;
@@ -1420,7 +1453,7 @@ function _kundenFotos(data) {
 async function loadImg(f, order) {
   const nr = f.palNum || 1;
   if (nr > 1) return _loadImgNr(f, order, nr);
-  const imgFile = order.files?.find(fi=>{const fn=_fileName(fi); return fn&&/\.(jpg|jpeg|png)$/i.test(fn);});
+  const imgFile = order.files?.find(fi => { const fn = _fileName(fi); return fn && /\.(jpg|jpeg|png)$/i.test(fn); });
   if (!imgFile) return;
   const fn = _fileName(imgFile);
   const imgUrl = `${BASE_URL}/${order.date}/${order.id}/${fn}`;
@@ -1439,45 +1472,45 @@ function _imgMitPlatzierung(f, imgUrl, placement) {
   // BEWUSST sequenziell (wartet bis f._img gesetzt ist): parallele Bild-Verarbeitung
   // vervielfacht den Speicherbedarf → Chromium-OOM beim Auto-Export.
   return new Promise((resolve) => {
-  const img = new Image();
-  img.crossOrigin = 'anonymous';
-  img.onload = async () => {
-    // try/catch ist Pflicht: ein Fehler darf das Promise NIE unresolved lassen,
-    // sonst hängt der gesamte Füllvorgang an diesem await.
-    try {
-    // Kein EXIF-Ausrichten nötig — Amazon liefert die Bilder bereits richtig herum.
-    if (!placement || !placement.buyerPlacement) {
-      f._img = img; _paintLoadedImg(f); resolve(); return;
-    }
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = async () => {
+      // try/catch ist Pflicht: ein Fehler darf das Promise NIE unresolved lassen,
+      // sonst hängt der gesamte Füllvorgang an diesem await.
+      try {
+        // Kein EXIF-Ausrichten nötig — Amazon liefert die Bilder bereits richtig herum.
+        if (!placement || !placement.buyerPlacement) {
+          f._img = img; _paintLoadedImg(f); resolve(); return;
+        }
 
-    // EINE Mathematik-Quelle: composePlacement — dieselbe nutzt der Export-Pfad. Zwei
-    // Fassungen könnten bei einer Amazon-Format-Änderung auseinanderlaufen.
-    const area = _placementArea(placement);
-    const RENDER_SCALE = 12; // px pro 400x400-Einheit ≈ 300-DPI-Vorschau
-    const canvas = composePlacement(img, placement, area.w * RENDER_SCALE, area.h * RENDER_SCALE);
+        // EINE Mathematik-Quelle: composePlacement — dieselbe nutzt der Export-Pfad. Zwei
+        // Fassungen könnten bei einer Amazon-Format-Änderung auseinanderlaufen.
+        const area = _placementArea(placement);
+        const RENDER_SCALE = 12; // px pro 400x400-Einheit ≈ 300-DPI-Vorschau
+        const canvas = composePlacement(img, placement, area.w * RENDER_SCALE, area.h * RENDER_SCALE);
 
-    // Auto-Export: unverändert der alte Ablauf (Daten-URL direkt hier). Schon eine andere Reihenfolge
-    // verschiebt, wie Chrome die Fotos später für den Laser skaliert (±1 Helligkeitsstufe, gemessen
-    // 25.10.2026) — die Gravurdateien sollen bitgleich bleiben.
-    if (IS_AUTOEXPORT) {
-      const result = new Image();
-      result.onload = () => { f._img = result; _paintLoadedImg(f); resolve(); };
-      result.onerror = () => resolve();
-      result.src = canvas.toDataURL('image/png');
-    } else _canvasZuBild(canvas).then(result => { if (result) { f._img = result; _paintLoadedImg(f); } resolve(); });
+        // Auto-Export: unverändert der alte Ablauf (Daten-URL direkt hier). Schon eine andere Reihenfolge
+        // verschiebt, wie Chrome die Fotos später für den Laser skaliert (±1 Helligkeitsstufe, gemessen
+        // 25.10.2026) — die Gravurdateien sollen bitgleich bleiben.
+        if (IS_AUTOEXPORT) {
+          const result = new Image();
+          result.onload = () => { f._img = result; _paintLoadedImg(f); resolve(); };
+          result.onerror = () => resolve();
+          result.src = canvas.toDataURL('image/png');
+        } else _canvasZuBild(canvas).then(result => { if (result) { f._img = result; _paintLoadedImg(f); } resolve(); });
 
-    // Placement fürs Export-Rendering merken — spart die doppelte Komprimierung
-    f._imgSrc = imgUrl;           // Original-Bild URL
-    f._placement = placement;     // Placement-Daten (position, scale, rotation)
-    } catch(e) {
-      console.error('loadImg: Fehler bei Placement-Verarbeitung', e);
-      // Fallback: wenigstens das Rohbild zeigen, statt das Feld leer zu lassen.
-      try { f._img = img; _paintLoadedImg(f); } catch(_) {}
-      resolve();
-    }
-  };
-  img.onerror = () => { showToast('⚠️ Bild konnte nicht geladen werden'); resolve(); };
-  img.src = imgUrl;
+        // Placement fürs Export-Rendering merken — spart die doppelte Komprimierung
+        f._imgSrc = imgUrl;           // Original-Bild URL
+        f._placement = placement;     // Placement-Daten (position, scale, rotation)
+      } catch (e) {
+        console.error('loadImg: Fehler bei Placement-Verarbeitung', e);
+        // Fallback: wenigstens das Rohbild zeigen, statt das Feld leer zu lassen.
+        try { f._img = img; _paintLoadedImg(f); } catch (_) { }
+        resolve();
+      }
+    };
+    img.onerror = () => { showToast('⚠️ Bild konnte nicht geladen werden'); resolve(); };
+    img.src = imgUrl;
   });
 }
 
@@ -1534,6 +1567,20 @@ function _hashStr(s) {
 // FontFace laden + registrieren — gemeinsamer Kern aller drei Font-Lade-Pfade
 // (Amazon-URL, manueller Upload, Server-Liste beim Start).
 async function _registerFontFace(name, url) {
+  if (url && (url.startsWith(BASE_URL) || url.startsWith('/v2/'))) {
+    try {
+      const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      const resp = await fetch(url, { headers, credentials: 'include' });
+      if (resp.ok) {
+        const buf = await resp.arrayBuffer();
+        const face = new FontFace(name, buf);
+        await face.load();
+        document.fonts.add(face);
+        return name;
+      }
+    } catch (_) { }
+  }
   const face = new FontFace(name, `url(${url})`);
   await face.load();
   document.fonts.add(face);
@@ -1556,7 +1603,7 @@ async function loadFontFromUrl(fontUrl, family) {
     const fontName = await _registerFontFace('amz-' + family + '-' + _hashStr(fontUrl), fontUrl);
     _fontCache[fontUrl] = fontName;
     return fontName;
-  } catch(e) {
+  } catch (e) {
     console.warn('Font konnte nicht geladen werden:', fontUrl, e);
     _fontCache[fontUrl] = family; // Fallback auf family name
     return family;
@@ -1590,8 +1637,10 @@ function _fontMetrics(fam, bold) {
     // Unterlänge hat, bekäme sonst aber still 42 px Phantom-Unterlänge, und die Zeilen
     // eines Kombi-Felds wären damit alle zu klein.
     const _d = _fitCx.measureText('g').actualBoundingBoxDescent;
-    m = { capPx: _capPx(_fitCx, _FIT_REF),   // Schrift ohne "H" (0/NaN) → Rückfall 0,7 em
-          descPx: Number.isFinite(_d) ? _d : (_FIT_REF * 0.21) };
+    m = {
+      capPx: _capPx(_fitCx, _FIT_REF),   // Schrift ohne "H" (0/NaN) → Rückfall 0,7 em
+      descPx: Number.isFinite(_d) ? _d : (_FIT_REF * 0.21)
+    };
     _fontMetricsCache[key] = m;
   }
   return m;
@@ -1673,7 +1722,7 @@ function autoFitFontSizePt(text, fontFamily, wMM, hMM, bold, fitWidth = false, e
   _fitCx.font = _canvasFont(_FIT_REF, fam, bold); // _fontMetrics kann den Font gesetzt haben
   const _a = emoji ? _teileTinte(_fitCx, _emojiTeile(first, emoji.font)).asc : _fitCx.measureText(first).actualBoundingBoxAscent;
   const _d = emoji ? _teileTinte(_fitCx, _emojiTeile(last, emoji.font)).desc : _fitCx.measureText(last).actualBoundingBoxDescent;
-  let asc  = Number.isFinite(_a) ? _a : _fm.capPx;
+  let asc = Number.isFinite(_a) ? _a : _fm.capPx;
   let desc = Number.isFinite(_d) ? _d : _fm.descPx;
   // Reiner Leerraum ("   ") misst 0/0 → ohne Rückfall wäre blockPx 0 und die Schrift
   // würde ins Absurde skalieren.
@@ -1811,7 +1860,9 @@ async function motivPfade(name) {
   if (!name) return null;
   if (name in _motivCache) return _motivCache[name];
   if (!(name in _motivLaden)) {
-    _motivLaden[name] = fetch(`${BASE_URL}/motive/${encodeURIComponent(name)}/pfade`)
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    _motivLaden[name] = fetch(`${BASE_URL}/v2/motive/${encodeURIComponent(name)}/pfade`, { headers, credentials: 'include' })
       .then(r => r.ok ? r.json() : null)
       .then(m => { _motivCache[name] = m; delete _motivLaden[name]; return m; })
       .catch(() => { _motivCache[name] = null; delete _motivLaden[name]; return null; });
@@ -1918,7 +1969,7 @@ async function renderMotive() {
   if (zaehl) zaehl.textContent = liste.length ? liste.length + ' Motive' : '';
   if (!liste.length) { el.innerHTML = '<div class="uempty" style="grid-column:1/-1;">Noch keine Motive</div>'; return; }
   el.innerHTML = liste.map(m => {
-    const kb = m.bytes > 1048576 ? (m.bytes/1048576).toFixed(1) + ' MB' : Math.round(m.bytes/1024) + ' KB';
+    const kb = m.bytes > 1048576 ? (m.bytes / 1048576).toFixed(1) + ' MB' : Math.round(m.bytes / 1024) + ' KB';
     // Dateinamen kommen aus Uploads: im Markup escapen, im onclick als JS-String (_jsStr).
     const j = _jsStr(m.name), n = _esc(m.name);
     if (m.fehler) return `<div class="mv-kachel mv-fehler" data-motiv="${n}">
@@ -1928,7 +1979,7 @@ async function renderMotive() {
       </div>`;
     const roh = m.rohPunkte ? ` von ${m.rohPunkte}` : '';
     return `<div class="mv-kachel" data-motiv="${n}" draggable="true" ondragstart="motivDrag(event,'${j}')" title="${n} — auf das Blatt ziehen">
-        <div class="mv-bild"><img src="${BASE_URL}/motive/${encodeURIComponent(m.name)}/vorschau.svg?v=${Date.now()}" alt=""/></div>
+        <div class="mv-bild"><img src="${BASE_URL}/v2/motive/${encodeURIComponent(m.name)}/vorschau.svg?v=${Date.now()}" alt=""/></div>
         <div class="mv-name">${n}${m.ausrichtung === 'spalt' ? ' <b class="mv-spalt">Spalt</b>' : ''}</div>
         <div class="mv-werkzeug">
           <button class="zp-ikon" title="Einstellungen" onclick="event.stopPropagation();motivEinstellungen('${j}')">⚙</button>
@@ -1948,9 +1999,9 @@ async function renderMotive() {
         <div class="umut10" style="margin-bottom:10px;line-height:1.5;">Kleiner = feinere Kurven, größere Datei. Größer = weniger Punkte. Unter 0,02 mm sieht der Laser keinen Unterschied mehr.</div>
         <div class="umut10" style="margin-bottom:5px;">Ausrichtung im Feld</div>
         ${_seg([
-          [m.ausrichtung !== 'spalt', `motivAusrichtung('${j}','umriss')`, 'Umriss', 'Ganze Grafik ins Feld einpassen und mittig setzen'],
-          [m.ausrichtung === 'spalt', `motivAusrichtung('${j}','spalt')`, 'Spalt (Monogramm)', 'Geteiltes Monogramm: Balken = Feldbreite, Spaltmitte = Feldmitte'],
-        ])}
+      [m.ausrichtung !== 'spalt', `motivAusrichtung('${j}','umriss')`, 'Umriss', 'Ganze Grafik ins Feld einpassen und mittig setzen'],
+      [m.ausrichtung === 'spalt', `motivAusrichtung('${j}','spalt')`, 'Spalt (Monogramm)', 'Geteiltes Monogramm: Balken = Feldbreite, Spaltmitte = Feldmitte'],
+    ])}
         <div class="umut10" style="margin:5px 0 10px;line-height:1.5;">Spalt: bei geteilten Monogrammen liegt der Spalt für den Namen bei jedem Buchstaben an derselben Stelle — auch bei J, Q oder W.${m.anker && m.anker.drehung ? ` Balken um ${String(m.anker.drehung).replace('.', ',')}° gerade gerichtet.` : ''}</div>
         <div class="ig">
           <span class="il">Name</span>
@@ -2023,14 +2074,16 @@ async function motivHochladen(files) {
   const fd = new FormData();
   for (const f of files) fd.append('motive', f);
   try {
-    const res = await fetch(BASE_URL + '/v2/motive/upload', { method: 'POST', body: fd });
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(BASE_URL + '/v2/motive/upload', { method: 'POST', headers, credentials: 'include', body: fd });
     const d = await res.json().catch(() => ({}));
     if (!res.ok) { zeig('❌ ' + (d.error || 'HTTP ' + res.status)); return; }
     const gut = (d.motive || []).filter(m => !m.fehler);
     for (const m of gut) delete _motivCache[m.name];   // gleicher Name = neue Fassung
     const schlecht = (d.motive || []).filter(m => m.fehler);
     zeig((gut.length ? `✅ ${gut.length} übernommen` : '')
-       + (schlecht.length ? `  ⚠️ ${schlecht.map(m => m.name + ': ' + m.fehler).join(', ')}` : ''));
+      + (schlecht.length ? `  ⚠️ ${schlecht.map(m => m.name + ': ' + m.fehler).join(', ')}` : ''));
     showToast(gut.length ? `✓ ${gut.length} Motiv(e) hinzugefügt` : '⚠️ Nichts übernommen', 5000);
   } catch (e) {
     zeig('❌ ' + e.message);
@@ -2045,7 +2098,7 @@ async function motivLoeschen(name) {
   try {
     nutzer = (await getServerLayouts()).filter(l => _layoutHat(l, f =>
       f.type === 'motiv' && (f.motivDatei === name || Object.values(f.ddTabelle || {}).includes(name)))).map(l => l.name);
-  } catch (_) {}
+  } catch (_) { }
   const hinweis = nutzer.length ? ` Es steckt noch in ${nutzer.length} Layout${nutzer.length === 1 ? '' : 's'} (${nutzer.slice(0, 5).join(', ')}${nutzer.length > 5 ? ' …' : ''}) — dort bliebe der Platz ohne Motiv.` : '';
   if (!await confirmModal('Motiv löschen?', `„${name}" wird vom Server entfernt.${hinweis}`, 'Löschen')) return;
   try {
@@ -2063,13 +2116,15 @@ async function handleFontFiles(files) {
   const formData = new FormData();
   for (const file of files) formData.append('fonts', file);
   try {
-    const res = await fetch(`${BASE_URL}/fonts/upload`, { method: 'POST', body: formData });
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${BASE_URL}/v2/fonts/upload`, { method: 'POST', headers, credentials: 'include', body: formData });
     const data = await res.json();
     if (data.success) {
       // Lokal laden damit sofort verfügbar
       for (const file of files) await loadUploadedFont(file);
     } else showToast('❌ Schrift nicht hochgeladen: ' + (data.error || 'HTTP ' + res.status), 5000);
-  } catch(e) {
+  } catch (e) {
     // Fallback: nur lokal laden
     for (const file of files) await loadUploadedFont(file);
   }
@@ -2088,7 +2143,7 @@ async function loadUploadedFont(file) {
     await _registerUploadedFont(fontName, url);
     renderFontsList();
     showToast('✓ Schrift geladen: ' + fontName);
-  } catch(e) {
+  } catch (e) {
     showToast('❌ Fehler beim Laden: ' + file.name);
     console.error('Font load error:', e);
   } finally {
@@ -2111,14 +2166,14 @@ async function loadFontsFromServer() {
       const fontName = _schriftStamm(filename);
       if (_uploadedFonts[fontName]) continue; // bereits geladen
       try {
-        await _registerUploadedFont(fontName, `${BASE_URL}/fonts/${encodeURIComponent(filename)}`);
+        await _registerUploadedFont(fontName, `${BASE_URL}/v2/fonts/${encodeURIComponent(filename)}`);
         loaded++;
-      } catch(e) {
+      } catch (e) {
         console.warn('Font konnte nicht geladen werden:', filename, e);
       }
     }
     if (loaded > 0) renderFontsList();
-  } catch(e) {
+  } catch (e) {
     console.warn('Fonts vom Server nicht abrufbar:', e);
   }
 }
@@ -2176,11 +2231,13 @@ async function removeFont(name) {
   // Nutzt dieselbe Liste/Logik wie der DXF-Font-Loader.
   _serverFontListCache = null; // frische Liste erzwingen
   let deleted = false;
+  const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+  const delHeaders = token ? { Authorization: `Bearer ${token}` } : {};
   try {
     const list = await getServerFontList();
     const exact = matchServerFontFile(list, name);
     if (exact) {
-      const res = await fetch(`${BASE_URL}/fonts/${encodeURIComponent(exact)}`, { method: 'DELETE' });
+      const res = await fetch(`${BASE_URL}/v2/fonts/${encodeURIComponent(exact)}`, { method: 'DELETE', headers: delHeaders, credentials: 'include' });
       // Abgelehnt (Rechte, Datei gesperrt): nicht „entfernt" melden und nicht aus der Liste nehmen
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
@@ -2189,11 +2246,11 @@ async function removeFont(name) {
       }
       deleted = true;
     }
-  } catch(e) {}
+  } catch (e) { }
   if (!deleted) {
     // Fallback: gängige Endungen (Groß-/Kleinschreibung) durchprobieren
-    for (const e of ['ttf','otf','woff2','woff','TTF','OTF']) {
-      try { if ((await fetch(`${BASE_URL}/fonts/${encodeURIComponent(name + '.' + e)}`, { method: 'DELETE' })).ok) deleted = true; } catch(_) {}
+    for (const e of ['ttf', 'otf', 'woff2', 'woff', 'TTF', 'OTF']) {
+      try { if ((await fetch(`${BASE_URL}/v2/fonts/${encodeURIComponent(name + '.' + e)}`, { method: 'DELETE', headers: delHeaders, credentials: 'include' })).ok) deleted = true; } catch (_) { }
     }
   }
   _serverFontListCache = null; // Cache nach Löschung invalidieren
@@ -2279,9 +2336,11 @@ function _textGruppen(wurzel, ereignisse) {
       if (ereignisse) ereignisse.push({ art: 'text', seite, zeile, gruppe: zeile ? gruppe : null, text: wert });
     } else if (ereignisse && node.type === 'OptionCustomization') {
       const o = node.optionSelection || {};
-      ereignisse.push({ art: 'frage', seite, name: nm, label: lbl,
-                        wert: String(o.label || o.name || node.displayValue || '').trim(),
-                        kosten: Number(o.additionalCost && o.additionalCost.amount) || 0 });
+      ereignisse.push({
+        art: 'frage', seite, name: nm, label: lbl,
+        wert: String(o.label || o.name || node.displayValue || '').trim(),
+        kosten: Number(o.additionalCost && o.additionalCost.amount) || 0
+      });
     } else if (ereignisse && node.type === 'ImageCustomization') {
       ereignisse.push({ art: 'bild', seite, hoch: !!(node.image && node.image.imageName) });
     }
@@ -2523,14 +2582,14 @@ async function getAllTexts(order) {
       const texts = [], fonts = [];
       if (data.customizationInfo?.['version3.0']?.surfaces) {
         for (const s of data.customizationInfo['version3.0'].surfaces)
-          for (const a of (s.areas||[])) if (a.text?.trim()) {
+          for (const a of (s.areas || [])) if (a.text?.trim()) {
             texts.push(a.text.trim());
             fonts.push({ family: a.fontFamily || 'Arial', url: a.fontUrl || null });
           }
       }
       return { texts, fonts, ...(dd || { ..._ddLeer(), titel: data.title || '' }) };
     }
-  } catch(e) { console.error('getAllTexts error:', e); return empty; }
+  } catch (e) { console.error('getAllTexts error:', e); return empty; }
 }
 
 // ── Dropdowns (Amazon OptionCustomization) ───────────────────────────────────
@@ -2559,8 +2618,10 @@ function _ddThemaVon(t) {
 // Die Frage, die der Kunde sieht (label), sagt mehr als der interne Name („Dropdown-Option 1").
 function _ddThema(name, label) { return _ddThemaVon(label) || _ddThemaVon(name) || 'sonstiges'; }
 const _DD_STEUERND = new Set(['personalisierung', 'vorderseite', 'rueckseite']);
-const _DD_TITEL = { personalisierung: 'Personalisierung', vorderseite: 'Vorderseite', rueckseite: 'Rückseite',
-                    geschenk: 'Verpackung', variante: 'Ausführung', buchstabe: 'Buchstabe', motiv: 'Motiv', sonstiges: 'Auswahl' };
+const _DD_TITEL = {
+  personalisierung: 'Personalisierung', vorderseite: 'Vorderseite', rueckseite: 'Rückseite',
+  geschenk: 'Verpackung', variante: 'Ausführung', buchstabe: 'Buchstabe', motiv: 'Motiv', sonstiges: 'Auswahl'
+};
 // Fragen, deren Antwort eine GRAFIK auswählt — dafür legt der Layout-Entwurf ein Motivfeld an.
 const _DD_GRAFIK = new Set(['buchstabe', 'motiv']);
 // Nein gewählt, aber trotzdem Text eingegeben: wird graviert (Kulanz) und steht als Hinweis
@@ -2577,9 +2638,11 @@ function _ddAuswerten(ereignisse, nrVon) {
   for (const ev of ereignisse || []) {
     if (ev.seite !== seite) { seite = ev.seite; steuer = null; }   // neue Produktseite
     if (ev.art === 'frage') {
-      const a = { frage: ev.label || ev.name || '', name: ev.name || '', wert: ev.wert || '',
-                  kosten: ev.kosten || 0, thema: _ddThema(ev.name, ev.label), nein: _ddIstNein(ev.wert),
-                  steuernd: false, steuert: [], bilder: 0, gefuellt: false, gesperrt: false, seite: ev.seite || '' };
+      const a = {
+        frage: ev.label || ev.name || '', name: ev.name || '', wert: ev.wert || '',
+        kosten: ev.kosten || 0, thema: _ddThema(ev.name, ev.label), nein: _ddIstNein(ev.wert),
+        steuernd: false, steuert: [], bilder: 0, gefuellt: false, gesperrt: false, seite: ev.seite || ''
+      };
       if (_DD_STEUERND.has(a.thema)) { a.steuernd = true; steuer = a; }
       // Hinter „Ohne Gravur" gilt auch eine Auswahl wie „Buchstabe" nicht mehr.
       else if (steuer && steuer.nein) a.gesperrt = true;
@@ -2624,8 +2687,10 @@ function _ddEintrag(t) {
   }
   // Nur mit ausdrücklichem Nein: eine Bestellung, die einfach leer ist, läuft wie bisher.
   const ohneGravur = !t.hatText && !t.hatBild && !t.hatGrafik && auswahl.some(a => a.steuernd && a.nein);
-  return { auswahl, hinweise, ohneGravur, hatText: !!t.hatText, hatBild: !!t.hatBild, hatGrafik: !!t.hatGrafik,
-           titel: t.titel || '' };
+  return {
+    auswahl, hinweise, ohneGravur, hatText: !!t.hatText, hatBild: !!t.hatBild, hatGrafik: !!t.hatGrafik,
+    titel: t.titel || ''
+  };
 }
 
 async function _ddVorbereiten(liste) {
@@ -2647,7 +2712,7 @@ function _ddAntwort(eintrag, frage) {
   if (!eintrag || !frage) return null;
   const f = _ddNorm(frage);
   return eintrag.auswahl.find(a => _ddNorm(a.frage) === f)
-      || eintrag.auswahl.find(a => _ddNorm(a.name) === f) || null;
+    || eintrag.auswahl.find(a => _ddNorm(a.name) === f) || null;
 }
 
 // Stufe 3: passt eine Bestellung zu „Nur Bestellungen mit …" ({ frage, werte: [...] })?
@@ -2710,7 +2775,7 @@ function _ddMotivDatei(name) {
   const liste = _ddMotivListe || [];
   const n = String(name).trim().toLowerCase();
   return liste.find(m => m.toLowerCase() === n)
-      || liste.find(m => m.toLowerCase().replace(/\.[a-z0-9]+$/, '') === n) || null;
+    || liste.find(m => m.toLowerCase().replace(/\.[a-z0-9]+$/, '') === n) || null;
 }
 // { a, name, gesetzt }: gesetzt = für diese Antwort ist etwas eingetragen — auch „kein Motiv"
 // (leerer Eintrag, z. B. bei „Kein Symbol"). Nicht gesetzt → Warnung im Lauf.
@@ -2758,7 +2823,7 @@ function _ddTraeger(f, alle) {
 // muss ein Motiv kein Textfeld überdecken, und ein Layout nur aus Motiven geht auch.
 function _ddRegelMotive(pageFields) {
   return pageFields.filter(f => _istMotiv(f) && !f.arrayOf && (f.ddFrage || f.ddWenn))
-                   .sort(_nachPosition);
+    .sort(_nachPosition);
 }
 function _ddMotiveSetzen(pageFields) {
   for (const f of pageFields) {
@@ -2802,7 +2867,7 @@ function _ddVerpackungArt(wert) {
 function _packliste(sessionData, belegtIn, datum, lauf) {
   const verp = [], ausf = [], ohne = [], hinw = [], summe = {};
   const wo = (o, e) => (belegtIn[o.id] && belegtIn[o.id].length) ? belegtIn[o.id].join(', ')
-                                                                  : (_ddKurz(e.titel, 44) || o.asin || '');
+    : (_ddKurz(e.titel, 44) || o.asin || '');
   const gesehen = new Set();
   let artikel = 0;
   for (const o of [...sessionData].sort((a, b) => String(a.id).localeCompare(String(b.id)))) {
@@ -2834,7 +2899,7 @@ function _packliste(sessionData, belegtIn, datum, lauf) {
   };
   const uhr = _berlinUhrzeit();
   const teile = [`PACKLISTE ${datum.split('-').reverse().join('.')} · Lauf ${lauf} · erstellt ${uhr} Uhr`,
-                 `${artikel} Artikel in diesem Lauf`, ''];
+  `${artikel} Artikel in diesem Lauf`, ''];
   const abschnitt = (titel, rows) => { if (rows.length) teile.push(titel, ...rows.map(zeile), ''); };
   const summeTxt = Object.entries(summe).sort((a, b) => b[1] - a[1]).map(([k, n]) => `${n} × ${k}`).join(' · ');
   abschnitt(`VERPACKUNG${summeTxt ? '  (' + summeTxt + ')' : ''}`, verp);
@@ -2899,10 +2964,10 @@ const _ddWerteSortiert = e => Object.entries((e && e.werte) || {}).sort((a, b) =
 function _ddGeschwister(f) {
   const passt = x => x && (f.type === 'text'
     ? (f.ddGruppe ? (x.type === 'text' && x.ddGruppe === f.ddGruppe)   // Baustein „Dropdown-Text“
-                  : (x.type === 'text' && !x.ddGruppe && _isCombo(x) === _isCombo(f) && (x.palNum || 1) === (f.palNum || 1)))
+      : (x.type === 'text' && !x.ddGruppe && _isCombo(x) === _isCombo(f) && (x.palNum || 1) === (f.palNum || 1)))
     : f.type === 'image' ? (x.type === 'image' && (x.palNum || 1) === (f.palNum || 1))
-    : f.ddGruppe ? (_istMotiv(x) && x.ddGruppe === f.ddGruppe)
-    : (_istMotiv(x) && !x.ddGruppe && x.motivDatei === f.motivDatei));
+      : f.ddGruppe ? (_istMotiv(x) && x.ddGruppe === f.ddGruppe)
+        : (_istMotiv(x) && !x.ddGruppe && x.motivDatei === f.motivDatei));
   const out = fields.filter(passt);
   (_pages || []).forEach((pg, i) => { if (i !== _currentPage) out.push(...pg.filter(passt)); });
   return out;
@@ -2953,7 +3018,7 @@ function _ddKachelWerte(f, e) {
   for (const w of alle) if (!out.some(x => _ddNorm(x) === _ddNorm(w))) out.push(w);
   return out;
 }
-const _ddVorschauUrl = name => `${BASE_URL}/motive/${encodeURIComponent(name)}/vorschau.svg`;
+const _ddVorschauUrl = name => `${BASE_URL}/v2/motive/${encodeURIComponent(name)}/vorschau.svg`;
 
 // Automatisch zuordnen: Datei heißt wie die Antwort oder endet auf _Antwort / -Antwort / " Antwort"
 // (Monogramm_A.svg → A, Herz.svg → Herz). Mehrdeutiges bleibt offen — das wählt man per Klick.
@@ -2974,7 +3039,7 @@ async function ddAutoZuordnen(id) {
   }
   ddSetzen(id, { ddTabelle: Object.keys(tab).length ? tab : null });
   showToast(neu ? `✅ ${neu} Motiv${neu === 1 ? '' : 'e'} zugeordnet${offen ? ` · ${offen} ohne eindeutige Datei` : ''}`
-                : `Keine passenden Dateinamen gefunden${offen ? ` (${offen} Antworten offen)` : ''}`, 4000);
+    : `Keine passenden Dateinamen gefunden${offen ? ` (${offen} Antworten offen)` : ''}`, 4000);
 }
 
 // Motiv-Auswahl per Klick: Raster mit Vorschaubildern aus ◆ Motive
@@ -3054,10 +3119,12 @@ function ddTextFeldAnlegen(x, y) {
   const belegt = new Set(_editorFelder().filter(f => f.type === 'text').flatMap(_feldGravuren));
   let nr = 99; while (belegt.has(nr) && nr > 10) nr--;
   const w = 24, h = 15;
-  const field = { id: ++idc, type: 'text', ddText: true, palNum: nr, ddGruppe: 'dt' + Date.now(), name: 'Dropdown-Text',
-                  x: x != null ? Math.max(0, x - w / 2) : p.m, y: y != null ? Math.max(0, y - h / 2) : p.m, w, h,
-                  fontFamily: 'Arial', fontSize: 10, autoFit: false, textAlign: 'center', overflowMode: 'stauch',
-                  orderId: null, _img: null, _text: null };
+  const field = {
+    id: ++idc, type: 'text', ddText: true, palNum: nr, ddGruppe: 'dt' + Date.now(), name: 'Dropdown-Text',
+    x: x != null ? Math.max(0, x - w / 2) : p.m, y: y != null ? Math.max(0, y - h / 2) : p.m, w, h,
+    fontFamily: 'Arial', fontSize: 10, autoFit: false, textAlign: 'center', overflowMode: 'stauch',
+    orderId: null, _img: null, _text: null
+  };
   _feldAufsBlatt(field);        // renderFieldList zeichnet die Palette mit (Nummer 99↓ belegt)
   _ddTextVorbelegen(field);     // erst danach: prüft, ob das Feld auf dem Blatt liegt
 }
@@ -3089,8 +3156,10 @@ function motivFeldAnlegen(x, y) {
   saveUndo();
   const p = getPg();
   const w = Math.min(30, p.w - 2 * p.m);
-  const field = { id: ++idc, type: 'motiv', palNum: 1, name: '◆ Motiv', motivDatei: '', ddGruppe: 'mo' + Date.now(),
-                  x: x != null ? Math.max(0, x) : p.m, y: y != null ? Math.max(0, y) : p.m, w, h: w, orderId: null, _img: null, _text: null };
+  const field = {
+    id: ++idc, type: 'motiv', palNum: 1, name: '◆ Motiv', motivDatei: '', ddGruppe: 'mo' + Date.now(),
+    x: x != null ? Math.max(0, x) : p.m, y: y != null ? Math.max(0, y) : p.m, w, h: w, orderId: null, _img: null, _text: null
+  };
   _feldAufsBlatt(field);
 }
 
@@ -3145,9 +3214,11 @@ async function ddMotiveAnlegen(id) {
   const frage = f.ddFrage || null;
   const passt = x => x && x.type === 'text' && !_isCombo(x) && (x.palNum || 1) === (f.palNum || 1);
   const gruppe = 'dd' + Date.now();
-  const neuFeld = t => ({ id: ++idc, type: 'motiv', palNum: 1, name: '◆ ' + (frage || 'Motiv'), motivDatei: '', ddGruppe: gruppe,
-                          x: t.x, y: t.y, w: t.w, h: t.h, ...(frage ? { ddFrage: frage } : {}),
-                          orderId: null, _img: null, _text: null });
+  const neuFeld = t => ({
+    id: ++idc, type: 'motiv', palNum: 1, name: '◆ ' + (frage || 'Motiv'), motivDatei: '', ddGruppe: gruppe,
+    x: t.x, y: t.y, w: t.w, h: t.h, ...(frage ? { ddFrage: frage } : {}),
+    orderId: null, _img: null, _text: null
+  });
   const neuHier = fields.filter(passt).map(neuFeld);
   fields.push(...neuHier);
   (_pages || []).forEach((pg, i) => { if (i !== _currentPage) pg.push(...pg.filter(passt).map(neuFeld)); });
@@ -3172,7 +3243,7 @@ async function _ddAsinListeLaden() {
 function ddAsinWaehlen(id, wert) {
   const m = String(wert || '').toUpperCase().match(/\b[A-Z0-9]{10}\b/);
   if (!m) { showToast('Keine ASIN erkannt', 3000); return; }
-  if (getSingleAsinMode()) { _fillSet('globalAsin', m[0]); try { _syncFillUI(); } catch (_) {} renderProps(); }
+  if (getSingleAsinMode()) { _fillSet('globalAsin', m[0]); try { _syncFillUI(); } catch (_) { } renderProps(); }
   else ddSetzen(id, { filterAsin: m[0] });
   showToast(`Füll-ASIN ${m[0]} — die Fragen dieses Produkts stehen jetzt zur Auswahl`, 4000);
   // Dropdown-Text ohne Frage: die Buchstaben-Frage des Produkts übernehmen — als Folge DIESER
@@ -3236,7 +3307,7 @@ function _ddFeldHTML(f, teil) {
       const werte = buchstabe ? _ddKachelWerte({}, e || { thema: 'buchstabe' }) : [..._ddWerteSortiert(e)];
       for (const x of (w.werte || [])) if (!werte.some(y => _ddNorm(y) === _ddNorm(x))) werte.push(x);
       t.push(werte.length ? _ddHaken(werte, w.werte, v => `ddWennWert(${f.id},'${_jsStr(v)}',this.checked)`, buchstabe ? ' dd-werte-raster' : '')
-                          : '<div class="umut10 dd-hinweis">Noch keine Antworten bekannt.</div>');
+        : '<div class="umut10 dd-hinweis">Noch keine Antworten bekannt.</div>');
       if (!(w.werte || []).length) t.push('<div class="umut10 dd-hinweis"><b class="dd-warn">Noch nichts angehakt — solange gilt die Bedingung nicht.</b></div>');
     }
   }
@@ -3258,7 +3329,7 @@ function _ddFeldHTML(f, teil) {
         if (name === '' || da) mit++;
         const innen = name === '' ? '<span class="dd-k-leer">kein Motiv</span>'
           : da ? `<img src="${_ddVorschauUrl(da)}" alt=""/>`
-          : name ? '<span class="dd-k-fehlt">Datei fehlt</span>' : '<span class="dd-k-offen">wählen</span>';
+            : name ? '<span class="dd-k-fehlt">Datei fehlt</span>' : '<span class="dd-k-offen">wählen</span>';
         return `<button class="dd-kachel${name == null ? ' offen' : ''}${name && !da ? ' fehlt' : ''}" title="${_esc(name ? name : name === '' ? 'kein Motiv' : 'Motiv wählen')}"
           onclick="ddMotivWaehlen(${f.id},'${_jsStr(v)}')"><span class="dd-k-wert">${_esc(v)}</span>${innen}</button>`;
       });
@@ -3330,7 +3401,7 @@ function _paintDdNur() {
   if (d) {
     const werte = [...new Set([..._ddWerteSortiert(e), ...(d.werte || [])])];
     teile.push(werte.length ? _ddHaken(werte, d.werte, w => `ddNurWert('${_jsStr(w)}',this.checked)`, '', e && e.werte)
-                            : '<div class="umut10">Noch keine Werte bekannt.</div>');
+      : '<div class="umut10">Noch keine Werte bekannt.</div>');
     teile.push(`<div class="umut10" style="margin-top:4px;line-height:1.5;">${(d.werte || []).length
       ? 'Nur Bestellungen mit einer angehakten Antwort kommen in dieses Layout.'
       : '<b style="color:var(--amber);">Noch nichts angehakt — solange gilt die Weiche nicht.</b>'}</div>`);
@@ -3365,7 +3436,7 @@ function schriftSetzen(id, name) {
 }
 
 function upd(id, key, val) {
-  const f=fields.find(x=>x.id===id); if(!f)return;
+  const f = fields.find(x => x.id === id); if (!f) return;
   // Zahlen-Inputs: unvollständige Eingaben ("-", "1e") ergeben NaN → ignorieren,
   // sonst bekommt das Feld NaN-Koordinaten und verschwindet vom Canvas.
   if (typeof val === 'number' && !Number.isFinite(val)) return;
@@ -3374,7 +3445,7 @@ function upd(id, key, val) {
   const MIN_WERTE = { w: 1, h: 1, fontSize: 1, numChars: 1 };
   if (MIN_WERTE[key] !== undefined && val < MIN_WERTE[key]) val = MIN_WERTE[key];
   _undoBurst(id + ':' + key);
-  f[key]=val;
+  f[key] = val;
   if (key === 'h') _ddTextHoeheVerteilen(id);
   scheduleRender(); renderFieldList();
 }
@@ -3396,7 +3467,7 @@ function _ohneFelder(ids) {
 function delF(id) {
   saveUndo();
   _ohneFelder(new Set([id]));
-  if(sel===id) sel=null;
+  if (sel === id) sel = null;
   scheduleRender(); renderFieldList(); renderProps();
 }
 
@@ -3446,32 +3517,32 @@ function repeatMulti(dir) {
   const { cols, rows, gapX: gx, gapY: gy } = _readGridSettings();
 
   // Get selected fields as a group (sorted by position)
-  const group = fields.filter(f => multiSel.has(f.id)).sort((a,b) => a.y-b.y || a.x-b.x);
+  const group = fields.filter(f => multiSel.has(f.id)).sort((a, b) => a.y - b.y || a.x - b.x);
   if (!group.length) return;
 
   // Calculate bounding box of the group
-  const minX = Math.min(...group.map(f=>f.x));
-  const minY = Math.min(...group.map(f=>f.y));
-  const maxX = Math.max(...group.map(f=>f.x+f.w));
-  const maxY = Math.max(...group.map(f=>f.y+f.h));
+  const minX = Math.min(...group.map(f => f.x));
+  const minY = Math.min(...group.map(f => f.y));
+  const maxX = Math.max(...group.map(f => f.x + f.w));
+  const maxY = Math.max(...group.map(f => f.y + f.h));
   const groupW = maxX - minX;
   const groupH = maxY - minY;
 
   // Reset all fields in group to placeholder
-  group.forEach(f => { f._img=null; f._text=null; f.orderId=null; });
+  group.forEach(f => { f._img = null; f._text = null; f.orderId = null; });
 
   const cloneGroup = (offsetX, offsetY) =>
     group.forEach(f => _rasterKopie(f, f.name, f.x + offsetX, f.y + offsetY));
 
   if (dir === 'right') {
-    for (let i=1; i<cols; i++) cloneGroup(i*(groupW+gx), 0);
+    for (let i = 1; i < cols; i++) cloneGroup(i * (groupW + gx), 0);
   } else if (dir === 'down') {
-    for (let i=1; i<rows; i++) cloneGroup(0, i*(groupH+gy));
+    for (let i = 1; i < rows; i++) cloneGroup(0, i * (groupH + gy));
   } else if (dir === 'grid') {
-    for (let row=0; row<rows; row++) {
-      for (let col=0; col<cols; col++) {
-        if (row===0 && col===0) continue;
-        cloneGroup(col*(groupW+gx), row*(groupH+gy));
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < cols; col++) {
+        if (row === 0 && col === 0) continue;
+        cloneGroup(col * (groupW + gx), row * (groupH + gy));
       }
     }
   }
@@ -3482,7 +3553,7 @@ function repeatMulti(dir) {
 
 // Feld als Raster (cols × rows) vervielfältigen — Werte aus der Raster-Box im Props-Panel.
 function repeatField(id) {
-  const f = fields.find(x=>x.id===id);
+  const f = fields.find(x => x.id === id);
   if (!f) return;
   saveUndo();
   // Werte aus _readGridSettings — kein Doppel-Parsing (siehe repeatMulti)
@@ -3493,10 +3564,10 @@ function repeatField(id) {
   // Grid: cols × rows, links→rechts, oben→unten; Original wird Platzhalter
   _clearFieldData(f);
   let idx = 0;
-  for (let row=0; row<rows; row++) {
-    for (let col=0; col<cols; col++) {
-      if (row===0 && col===0) continue; // Original-Position überspringen
-      _rasterKopie(f, baseName + ' (' + (idx + 2) + ')', f.x + col*(f.w+gx), f.y + row*(f.h+gy));
+  for (let row = 0; row < rows; row++) {
+    for (let col = 0; col < cols; col++) {
+      if (row === 0 && col === 0) continue; // Original-Position überspringen
+      _rasterKopie(f, baseName + ' (' + (idx + 2) + ')', f.x + col * (f.w + gx), f.y + row * (f.h + gy));
       idx++;
     }
   }
@@ -3685,8 +3756,10 @@ function createArray() {
       if (r === 0 && c === 0) continue; // Master-Position
       // Abstand = LÜCKE zwischen den Feldern → Schrittweite = Feldgröße + Lücke
       // (Feld 10 mm + Abstand 10 mm bei 2 Stück = 30 mm gesamt)
-      fields.push({ ...f, id: ++idc, arrayGroup: undefined, arrayOf: g,
-        x: f.x + c * (f.w + dx), y: f.y + r * (f.h + dy) });
+      fields.push({
+        ...f, id: ++idc, arrayGroup: undefined, arrayOf: g,
+        x: f.x + c * (f.w + dx), y: f.y + r * (f.h + dy)
+      });
     }
   }
   _syncArrayClones(fields);
@@ -3802,7 +3875,7 @@ function dlForceChange() {
 let dlInterval = null;   // Fortschritts-Poll des Downloads (s. _startDlRun)
 
 // ── SCHEDULER ──────────────────────────────────────────────────────────────────
-const DAYS_DE = ['So','Mo','Di','Mi','Do','Fr','Sa'];
+const DAYS_DE = ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'];
 // Zeitplan: der Server (schedule.json) ist die Quelle der Wahrheit; localStorage ist nur
 // Anzeige-Fallback bis die Server-Antwort da ist. try/catch ist Pflicht — ein korrupter
 // localStorage-Wert würde sonst hier auf Top-Level werfen und das GESAMTE App-Script killen.
@@ -3810,7 +3883,7 @@ let scheduleEntries = [];
 try {
   scheduleEntries = JSON.parse(localStorage.getItem('pm_schedule') || '[]');
   if (!Array.isArray(scheduleEntries)) scheduleEntries = [];
-} catch(e) { console.warn('pm_schedule unlesbar — starte leer:', e); }
+} catch (e) { console.warn('pm_schedule unlesbar — starte leer:', e); }
 
 // Erst speichern, wenn der Server-Stand da ist: bis dahin (oder wenn /schedule nicht antwortet)
 // steht hier der localStorage-Stand — als ganze Liste gespeichert, überschriebe er Einträge, die
@@ -3822,7 +3895,7 @@ function saveSchedule() {
     loadScheduleFromServer();
     return;
   }
-  try { localStorage.setItem('pm_schedule', JSON.stringify(scheduleEntries)); } catch(e) {}
+  try { localStorage.setItem('pm_schedule', JSON.stringify(scheduleEntries)); } catch (e) { }
   // Server-Antwort PRÜFEN: er lehnt ungültige Einträge mit 400 ab. Still verschluckt
   // zeigt die UI Erfolg, während der laufende Zeitplan die Änderung nie bekommen hat.
   _apiJson('/v2/schedule', 'POST', scheduleEntries)
@@ -3831,17 +3904,19 @@ function saveSchedule() {
 
 async function loadScheduleFromServer() {
   try {
-    const res = await fetch(`${BASE_URL}/schedule`);
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${BASE_URL}/v2/schedule`, { headers, credentials: 'include' });
     const data = res.ok ? await res.json() : null;
     // Server-Stand IMMER übernehmen, AUCH ein leeres Array: sonst zeigt ein zweites Gerät
     // gelöschte Einträge aus seinem localStorage weiter an und speichert sie zurück.
     if (Array.isArray(data)) {
       scheduleEntries = data;
       _zeitplanVomServer = true;
-      try { localStorage.setItem('pm_schedule', JSON.stringify(data)); } catch(e) {}
+      try { localStorage.setItem('pm_schedule', JSON.stringify(data)); } catch (e) { }
       renderSchedule();
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 
 function _uniqueId() { return Date.now() * 1000 + Math.floor(Math.random() * 1000); }
@@ -3888,33 +3963,33 @@ function renderSchedule() {
   list.innerHTML = scheduleEntries.map(e => {
     const on = e.active, offen = _zpOffen.has(e.id);
     const letzter = e.lastRun ? `<span class="zp-ok" title="Letzter Lauf">✓ ${e.lastRun} · ${e.lastCount ?? 0} Best.</span>` : '';
-    const fromTimeRow = e.fromPreset === 'fromTime' ? `<div class="zp-zeile" style="align-items:center;margin-top:6px;"><span class="umut10" style="white-space:nowrap;flex:none;">Seit gestern ab</span><input type="time" aria-label="Ab Uhrzeit (Vortag)" value="${e.fromTime||'13:00'}" onchange="updateEntry(${e.id},'fromTime',this.value)"/></div>` : '';
+    const fromTimeRow = e.fromPreset === 'fromTime' ? `<div class="zp-zeile" style="align-items:center;margin-top:6px;"><span class="umut10" style="white-space:nowrap;flex:none;">Seit gestern ab</span><input type="time" aria-label="Ab Uhrzeit (Vortag)" value="${e.fromTime || '13:00'}" onchange="updateEntry(${e.id},'fromTime',this.value)"/></div>` : '';
     const bearbeiten = offen ? `
       <div class="zp-bearbeiten">
         <div class="zp-zeile">
-          <select aria-label="Wochentag" onchange="updateEntry(${e.id},'day',+this.value)">${DAYS_DE.map((d,i)=>`<option value="${i}" ${e.day===i?'selected':''}>${d}</option>`).join('')}</select>
+          <select aria-label="Wochentag" onchange="updateEntry(${e.id},'day',+this.value)">${DAYS_DE.map((d, i) => `<option value="${i}" ${e.day === i ? 'selected' : ''}>${d}</option>`).join('')}</select>
           <input type="time" aria-label="Uhrzeit" value="${e.time}" onchange="updateEntry(${e.id},'time',this.value)"/>
         </div>
         <div class="zp-zeile" style="margin-top:6px;">
           <select aria-label="Bestellstatus" onchange="updateEntry(${e.id},'status',this.value)">
-            <option value="Unshipped,PartiallyShipped,Shipped" ${e.status==='Unshipped,PartiallyShipped,Shipped'?'selected':''}>Alle Status</option>
-            <option value="Unshipped" ${e.status==='Unshipped'?'selected':''}>Nicht versendet</option>
-            <option value="Shipped" ${e.status==='Shipped'?'selected':''}>Versendet</option>
+            <option value="Unshipped,PartiallyShipped,Shipped" ${e.status === 'Unshipped,PartiallyShipped,Shipped' ? 'selected' : ''}>Alle Status</option>
+            <option value="Unshipped" ${e.status === 'Unshipped' ? 'selected' : ''}>Nicht versendet</option>
+            <option value="Shipped" ${e.status === 'Shipped' ? 'selected' : ''}>Versendet</option>
           </select>
           <select aria-label="Zeitfenster" onchange="updateEntry(${e.id},'fromPreset',this.value);renderSchedule()">
-            <option value="last24h" ${e.fromPreset==='last24h'?'selected':''}>Letzte 24h</option>
-            <option value="last48h" ${e.fromPreset==='last48h'?'selected':''}>Letzte 48h</option>
-            <option value="today" ${e.fromPreset==='today'?'selected':''}>Seit heute 0 Uhr</option>
-            <option value="fromTime" ${e.fromPreset==='fromTime'?'selected':''}>Ab Uhrzeit…</option>
+            <option value="last24h" ${e.fromPreset === 'last24h' ? 'selected' : ''}>Letzte 24h</option>
+            <option value="last48h" ${e.fromPreset === 'last48h' ? 'selected' : ''}>Letzte 48h</option>
+            <option value="today" ${e.fromPreset === 'today' ? 'selected' : ''}>Seit heute 0 Uhr</option>
+            <option value="fromTime" ${e.fromPreset === 'fromTime' ? 'selected' : ''}>Ab Uhrzeit…</option>
           </select>
         </div>
         ${fromTimeRow}
       </div>` : '';
-    return `<div class="zp-karte ${on?'an':'aus'}${offen?' offen':''}">
+    return `<div class="zp-karte ${on ? 'an' : 'aus'}${offen ? ' offen' : ''}">
       <div class="zp-kopf">
-        <div class="aswitch${on?' on':''}" onclick="updateEntry(${e.id},'active',!scheduleEntries.find(x=>x.id===${e.id}).active)" title="${on?'Aktiv':'Pausiert'}"></div>
+        <div class="aswitch${on ? ' on' : ''}" onclick="updateEntry(${e.id},'active',!scheduleEntries.find(x=>x.id===${e.id}).active)" title="${on ? 'Aktiv' : 'Pausiert'}"></div>
         <div class="zp-was" onclick="_zpUmschalten(${e.id})" title="Bearbeiten"><b>${DAYS_DE[e.day] || '?'}</b> <span class="zp-uhr">${_esc(e.time || '')}</span></div>
-        <button class="zp-ikon${offen?' an':''}" onclick="_zpUmschalten(${e.id})" title="${offen?'Fertig':'Bearbeiten'}">${offen?'✓':'✎'}</button>
+        <button class="zp-ikon${offen ? ' an' : ''}" onclick="_zpUmschalten(${e.id})" title="${offen ? 'Fertig' : 'Bearbeiten'}">${offen ? '✓' : '✎'}</button>
         <button class="zp-ikon" onclick="repeatScheduleRun(${e.id})" title="Zeitfenster dieses Eintrags jetzt erneut laden">↻</button>
         <button class="zp-ikon" onclick="removeScheduleEntry(${e.id})" title="Eintrag löschen">✕</button>
       </div>
@@ -3982,9 +4057,9 @@ async function repeatScheduleRun(id) {
     if (tageHer > 25) hinweis = ' ⚠️ Achtung: der Lauf ist über 25 Tage her — Amazon hat die Gravurdaten dieser Bestellungen vermutlich schon gelöscht.';
   } else {
     fenster = preset === 'fromTime' ? `ab ${e.fromTime || '13:00'} Uhr des Vortags`
-            : preset === 'last48h'  ? 'letzte 48 Stunden'
-            : preset === 'today'    ? 'seit heute 0 Uhr'
-            :                         'letzte 24 Stunden';
+      : preset === 'last48h' ? 'letzte 48 Stunden'
+        : preset === 'today' ? 'seit heute 0 Uhr'
+          : 'letzte 24 Stunden';
     hinweis = ' (dieser Eintrag ist noch nie gelaufen — gerechnet wird aus der Einstellung)';
   }
   // Zwei Wege mit verschiedenen Folgen: nur Nachzügler = halbleere Bögen; ganzer Zeitraum
@@ -3998,10 +4073,15 @@ async function repeatScheduleRun(id) {
   const fillScope = wahl === 'all' ? 'window' : 'session';
 
   try {
-    await _startDlRun(`${BASE_URL}/repeat-run`,
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    await _startDlRun(`${BASE_URL}/v2/repeat-run`,
       `↻ Wiederhole ${DAYS_DE[e.day]} ${e.time} (${fenster}${fillScope === 'window' ? ', ganzer Zeitraum' : ''})…`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+      },
+      credentials: 'include',
       body: JSON.stringify({ id, fillScope })
     });
   } catch (err) {
@@ -4116,6 +4196,13 @@ function _reklaOhneBestellung(nr) {
 // Status, Kundenbilder — und gleich alle angehakten Layouts erzeugen. Ab hier gibt es keinen
 // Unterschied mehr zwischen den beiden Wegen.
 async function _reklaGeladen(data) {
+  if (data && Array.isArray(data.files)) {
+    for (const f of data.files) {
+      if (f.url && !f.url.startsWith('http') && !f.url.startsWith('blob:') && !f.url.startsWith('data:')) {
+        f.url = `${BASE_URL}${f.url.startsWith('/') ? '' : '/'}${f.url}`;
+      }
+    }
+  }
   _reklaOrder = data;
   await reklaFillLayouts();
   if (data.manuell) {
@@ -4155,7 +4242,7 @@ async function reklaFillLayouts() {
   if (!box) return;
   const asins = (_reklaOrder?.asins || []).map(_asinNorm).filter(Boolean);
   let layouts = [];
-  try { layouts = await getServerLayouts(); } catch(e) { layouts = []; }
+  try { layouts = await getServerLayouts(); } catch (e) { layouts = []; }
   _reklaLayoutsAlle = layouts;
   const vorher = box.childElementCount ? new Set(_reklaGewaehlt()) : null;
 
@@ -4170,12 +4257,12 @@ async function reklaFillLayouts() {
   if (!passend.length) passend = treffer;
   // Kein Treffer: alle zeigen, keins angehakt — sonst stünde der Bediener vor einer toten Maske.
   const andere = passend.length ? []
-               : layouts.filter(l => !passend.includes(l)).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
+    : layouts.filter(l => !passend.includes(l)).sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
   info.innerHTML = !passend.length
     ? `<span style="color:var(--amber);">⚠ Kein Layout zur ASIN ${_esc(asins.join(', ') || '—')} — bitte selbst anhaken.</span>`
     : fest ? (passend.length > 1 ? `Gewähltes Layout und ${passend.length - 1} dazugehörige — alle angehakt.` : 'Gewähltes Layout.')
-    : passend.length > 1 ? `${passend.length} Layouts zu dieser Bestellung erkannt — alle angehakt.` : 'Layout zu dieser Bestellung erkannt.';
+      : passend.length > 1 ? `${passend.length} Layouts zu dieser Bestellung erkannt — alle angehakt.` : 'Layout zu dieser Bestellung erkannt.';
 
   const zeile = (l, an) => `
     <label class="hstack" style="gap:10px;padding:8px 10px;margin-bottom:5px;border-radius:var(--r-s);cursor:pointer;background:var(--bg2);border:1px solid ${passend.includes(l) ? 'var(--green-rand)' : 'var(--line-input)'};">
@@ -4232,7 +4319,7 @@ function reklaWeg(weg) {
 async function _rmLayoutsFuellen() {
   const sel = document.getElementById('rm-layout');
   let layouts = [];
-  try { layouts = await getServerLayouts(); } catch (_) {}
+  try { layouts = await getServerLayouts(); } catch (_) { }
   _reklaLayoutsAlle = layouts;
   const vorher = sel.value;
   // Nach Ordner gruppiert, darin alphabetisch (V5 vor V10)
@@ -4310,8 +4397,10 @@ function _rmFelder(set, asin) {
   }
   for (const k of fragen.keys()) auto.delete(k);
   const nachNr = m => [...m.values()].sort((a, b) => a.nr - b.nr).map(e => ({ ...e, wo: [...e.wo].join(' · ') }));
-  return { bilder: nachNr(bilder), gravuren: nachNr(gravuren), auto: [...auto.values()],
-           fragen: [...fragen.values()].map(q => ({ frage: q.frage, werte: [...q.werte].sort((a, b) => a.localeCompare(b, 'de', { numeric: true })) })) };
+  return {
+    bilder: nachNr(bilder), gravuren: nachNr(gravuren), auto: [...auto.values()],
+    fragen: [...fragen.values()].map(q => ({ frage: q.frage, werte: [...q.werte].sort((a, b) => a.localeCompare(b, 'de', { numeric: true })) }))
+  };
 }
 
 // Eingaben der Maske im Auftrag merken — ein Neuzeichnen (anderes Produkt, neue Fassung des Layouts)
@@ -4331,7 +4420,7 @@ async function _rmSchriftVorschlag(asin, dateien, set) {
     for (const w of Object.values(p?.werte || {})) for (const [fam, n] of Object.entries(w.schriften || {})) zaehl[fam] = (zaehl[fam] || 0) + n;
   }
   const kandidaten = [...Object.entries(zaehl).sort((a, b) => b[1] - a[1]).map(e => e[0]),
-                      ...set.flatMap(l => (l.pages || []).flat()).filter(f => f && f.type === 'text').map(f => f.fontFamily)];
+  ...set.flatMap(l => (l.pages || []).flat()).filter(f => f && f.type === 'text').map(f => f.fontFamily)];
   for (const k of kandidaten) { const d = matchServerFontFile(dateien, k); if (d) return _schriftStamm(d); }
   return 'Arial';
 }
@@ -4403,8 +4492,10 @@ function _rmPlatz(b, feld) {
   const x = W / 2 - (mx * Math.cos(r) - my * Math.sin(r)), y = H / 2 - (mx * Math.sin(r) + my * Math.cos(r));
   return { w: W, h: H, x: Math.round(x * 1000) / 1000, y: Math.round(y * 1000) / 1000, bw: b.w, bh: b.h, s, winkel: b.winkel };
 }
-const _rmPlacement = p => ({ position: { x: 0, y: 0 }, dimension: { width: p.w, height: p.h },
-  buyerPlacement: { position: { x: p.x, y: p.y }, dimension: { width: p.bw, height: p.bh }, scale: { scaleX: p.s, scaleY: p.s }, angleOfRotation: p.winkel } });
+const _rmPlacement = p => ({
+  position: { x: 0, y: 0 }, dimension: { width: p.w, height: p.h },
+  buyerPlacement: { position: { x: p.x, y: p.y }, dimension: { width: p.bw, height: p.bh }, scale: { scaleX: p.s, scaleY: p.s }, angleOfRotation: p.winkel }
+});
 
 async function _rmBildGewaehlt(nr, input) {
   const rm = _rm, datei = input.files && input.files[0];
@@ -4456,15 +4547,19 @@ async function _rmErzeugen() {
   if (!texte.some(Boolean) && !bilder.length) return _rmMeldung('❌ Bitte Text eintragen oder ein Foto wählen.');
   const fragen = [...f.auto, ...f.fragen.map((q, i) => ({ frage: q.frage, wert: wert('rm-q-' + i) }))].filter(q => q.wert);
   const fd = new FormData();
-  fd.append('auftrag', JSON.stringify({ orderId: rm.orderId, name: wert('rm-name'), layout: rm.layout.name, asin: rm.asin,
-                                        texte, schrift: wert('rm-schrift'), fragen, bilder }));
+  fd.append('auftrag', JSON.stringify({
+    orderId: rm.orderId, name: wert('rm-name'), layout: rm.layout.name, asin: rm.asin,
+    texte, schrift: wert('rm-schrift'), fragen, bilder
+  }));
   for (const b of bilder) fd.append('bild' + b.nr, rm.bilder[b.nr].datei, rm.bilder[b.nr].datei.name);
   const namen = _rmSet().map(l => l.name);
   btn.disabled = true;
   btn.textContent = '⏳ Wird angelegt …';
   _rmMeldung('');
   try {
-    const res = await fetch(BASE_URL + '/v2/rekla/manuell', { method: 'POST', body: fd });
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(BASE_URL + '/v2/rekla/manuell', { method: 'POST', headers, credentials: 'include', body: fd });
     const d = await res.json().catch(() => ({}));
     if (!res.ok || d.error) throw new Error(d.error || 'HTTP ' + res.status);
     if (_rm !== rm) return;   // inzwischen anderes Layout gewählt
@@ -4496,8 +4591,8 @@ const _RF_STUFEN = {
   '-3': { inkMax: 0.35, localContrast: 0.8, densityTarget: 0.13 },
   '-2': { inkMax: 0.40, localContrast: 0.8, densityTarget: 0.16 },
   '-1': { inkMax: 0.45, localContrast: 0.8, densityTarget: 0.19 },
-  '1':  { densityTarget: 0.26 },
-  '2':  { inkMax: 0.45, densityTarget: 0.26 },
+  '1': { densityTarget: 0.26 },
+  '2': { inkMax: 0.45, densityTarget: 0.26 },
 };
 const _RF_MIN = -3, _RF_MAX = 2;
 // „Zu kantig / wie gezeichnet" (Augen schwarz ohne Pupillen, Münder gezeichnet — Befund
@@ -4506,7 +4601,7 @@ const _RF_MIN = -3, _RF_MAX = 2;
 // Am Werkstück noch NICHT erprobt — die Urteile (rekla-urteile.json) zeigen, ob es trägt.
 const _RF_KANTEN = {
   '-1': { faktor: 0.53, sharpen: 0.5 },
-  '-2': { faktor: 0.2,  sharpen: 0.3 },
+  '-2': { faktor: 0.2, sharpen: 0.3 },
 };
 function _rfKantenWerte(stufe, l) {
   const k = _RF_KANTEN[stufe];
@@ -4528,8 +4623,8 @@ const _RF_GESICHT = {
   '-1': { gesicht: 0.78, rest: 1 },
   // Erste Galerie (08.10.): Gesicht ×1,2 machte die Gesichter schon zur weißen Platte — der
   // Gewinn kommt aus dem dunkleren Rest, die Dichte-Regelung schiebt die Punkte dann ins Gesicht.
-  '1':  { gesicht: 1.0, rest: 0.45 },
-  '2':  { gesicht: 1.1, rest: 0.28 },
+  '1': { gesicht: 1.0, rest: 0.45 },
+  '2': { gesicht: 1.1, rest: 0.28 },
 };
 // Werkstück-Simulation: örtliche Dichte (Kastenfilter ≈ Gauß σ 2 px) → Helligkeit, ab
 // dieser Dichte reinweiß. Geeicht am 08.10.2026: mit 25 % zeigt sie den alten V6-Stand
@@ -4550,6 +4645,27 @@ const _RF_VARIANTEN = [
 ];
 let _reklaLayoutsAlle = [];
 let _reklaFoto = {};                         // Layoutname → Zustand (s. _rfZustand)
+function _rfNormalize(d) {
+  if (!d) return d;
+  for (const o of (d.ordner || [])) {
+    for (const p of (o.plaetze || [])) {
+      if (p.url && !p.url.startsWith('http') && !p.url.startsWith('blob:') && !p.url.startsWith('data:')) {
+        p.url = `${BASE_URL}${p.url.startsWith('/') ? '' : '/'}${p.url}`;
+      }
+    }
+    for (const f of (o.dateien || [])) {
+      if (f.url && !f.url.startsWith('http') && !f.url.startsWith('blob:') && !f.url.startsWith('data:')) {
+        f.url = `${BASE_URL}${f.url.startsWith('/') ? '' : '/'}${f.url}`;
+      }
+    }
+  }
+  for (const a of (d.alle || [])) {
+    if (a.url && !a.url.startsWith('http') && !a.url.startsWith('blob:') && !a.url.startsWith('data:')) {
+      a.url = `${BASE_URL}${a.url.startsWith('/') ? '' : '/'}${a.url}`;
+    }
+  }
+  return d;
+}
 let _rfDaten = { status: 0, ordner: [] };    // letzte Antwort von /rekla/bilder
 let _rfLaeuft = false;                       // ein Export zur Zeit — sonst verwechselt das Warten die Ergebnisse
 
@@ -4573,7 +4689,10 @@ async function _rfArtLesen(l) {
   const d = o && (o.dateien || []).find(f => f.name === 'belegung.txt');
   if (!d) return null;
   // Fehlerantwort NICHT als leere Liste lesen — sonst verschwände die Zeile still (Aufrufer behält den alten Stand).
-  const r = await fetch(d.url + '?t=' + Math.round(d.zeit), { cache: 'no-store' });
+  const u = d.url.startsWith('http') ? d.url : `${BASE_URL}${d.url.startsWith('/') ? '' : '/'}${d.url}`;
+  const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const r = await fetch(u + '?t=' + Math.round(d.zeit), { headers, credentials: 'include', cache: 'no-store' });
   if (!r.ok) throw new Error('belegung.txt: HTTP ' + r.status);
   const text = await r.text();
   const { plaetze } = _ezBelegungLesen(text);
@@ -4598,7 +4717,7 @@ function _rfArtZeile(z) {
   const text = z.als ? `Als ${_RF_ART[z.als]} gerechnet` : `${e.teils ? 'Teils als' : 'Als'} ${_RF_ART[e.art]} erkannt`;
   const tip = z.als ? `Wieder so rechnen, wie das Bild erkannt wurde (${_RF_ART[e.art]})`
     : ziel === 'foto' ? 'Wenn Schrift oder Bild lückenhaft oder zerfressen herauskommt: mit Fotoaufbereitung rechnen'
-    : 'Wenn Schrift oder Logo gepunktet statt satt herauskommt: ohne Raster rechnen, harte Kanten';
+      : 'Wenn Schrift oder Logo gepunktet statt satt herauskommt: ohne Raster rechnen, harte Kanten';
   return `
       <div class="rf-art"><b>${text}</b>
         <button class="btn${z.als ? ' btn-accent' : ''}"${aus} onclick="_rfArt(this)" title="${tip}">Als ${_RF_ART[ziel]} rechnen</button></div>`;
@@ -4633,8 +4752,10 @@ function _rfText(z, l) {
 }
 // Steht im Layout die Gesichts-Automatik, stellt sie jedes Gesicht auf `gesichtZiel` — ohne Nachziehen
 // täten „zu hell/zu dunkel" und „Gesicht heller/dunkler" im Gesicht nichts mehr. Faktoren je Stufe.
-const _RF_GESICHT_ZIEL = { stufe: { '-3': 0.6, '-2': 0.7, '-1': 0.85, '1': 1.2, '2': 1.4 },
-                           gesicht: { '-2': 0.7, '-1': 0.85, '1': 1.2, '2': 1.4 } };
+const _RF_GESICHT_ZIEL = {
+  stufe: { '-3': 0.6, '-2': 0.7, '-1': 0.85, '1': 1.2, '2': 1.4 },
+  gesicht: { '-2': 0.7, '-1': 0.85, '1': 1.2, '2': 1.4 }
+};
 // Die Stufen sind bei Dichte 21,3 % (500 DPI) erprobt. Ein Layout mit anderer Basis (F02 schwarz seit 13.10.2026:
 // 32 % bei 275 DPI) bekommt sie im selben Verhältnis — sonst machte „heller" (Dichte 26 %) das Bild dunkler.
 const _RF_BASIS_DICHTE = 0.213;
@@ -4666,7 +4787,7 @@ function _rfWerteAus(z, l) {
     if (m > 0 && m < 1) {
       const heller = (z.stufe > 0) === _rfDunkelLack(l);
       Object.assign(o, heller ? { densityFaktorMin: m, densityFaktorMax: 100 }
-                              : { densityFaktorMin: 0, densityFaktorMax: sb.densityFaktorMax > 1 ? sb.densityFaktorMax : 1 / m });
+        : { densityFaktorMin: 0, densityFaktorMax: sb.densityFaktorMax > 1 ? sb.densityFaktorMax : 1 / m });
     }
   }
   // Abgedunkelten Rest NICHT vom Bereichsausgleich wieder aufhellen lassen — genau das machte
@@ -4845,7 +4966,7 @@ async function _rfExportUndWarten(namen, extra, echt = false) {
     await new Promise(r => setTimeout(r, 1000));
     if (_reklaOrder !== auftrag) throw new Error('andere Bestellung geladen');   // auch dieselbe Nummer neu geladen
     const d = await _apiJson(`/v2/rekla/bilder?orderId=${encodeURIComponent(id)}${echt ? '' : '&quelle=vorschau'}`).catch(() => null);
-    if (d && d.status > data.zeit) { if (echt) _reklaOrdner = d; else _rfDaten = d; return; }
+    if (d && d.status > data.zeit) { if (echt) _reklaOrdner = _rfNormalize(d); else _rfDaten = _rfNormalize(d); return; }
   }
   throw new Error('dauert ungewöhnlich lange — läuft gerade ein anderer Export? Gleich noch einmal versuchen.');
 }
@@ -5019,10 +5140,12 @@ let _rfVSync = false;
 function _rfVOeffnen(art, n) {
   if (!n) return;
   const alt = _rfV && _rfV.layout === n ? _rfV : null;
-  _rfV = { art, layout: n,
-           ansicht: alt ? alt.ansicht : (art === 'galerie' ? 'feuerzeug' : 'pixel'),
-           faktor: alt ? alt.faktor : (art === 'galerie' ? 0 : 1),
-           u: alt ? alt.u : 0.5, v: alt ? alt.v : 0.4 };
+  _rfV = {
+    art, layout: n,
+    ansicht: alt ? alt.ansicht : (art === 'galerie' ? 'feuerzeug' : 'pixel'),
+    faktor: alt ? alt.faktor : (art === 'galerie' ? 0 : 1),
+    u: alt ? alt.u : 0.5, v: alt ? alt.v : 0.4
+  };
   _rfVZeichnen();
 }
 function _rfVSchliessen() {
@@ -5038,8 +5161,10 @@ function _rfVFelder() {
   if (_rfV.art === 'galerie') {
     return (z.probe || []).map(k => {
       const v = _RF_VARIANTEN.find(x => x.k === k);
-      return v && { titel: _rfText(_rfVz(v, z), l), ordner: 'Varianten/' + basis + ' ' + k, k,
-                    gewaehlt: _rfText(_rfVz(v, z), l) === _rfText(z, l) };
+      return v && {
+        titel: _rfText(_rfVz(v, z), l), ordner: 'Varianten/' + basis + ' ' + k, k,
+        gewaehlt: _rfText(_rfVz(v, z), l) === _rfText(z, l)
+      };
     }).filter(Boolean);
   }
   // Links bleibt IMMER der Standard stehen (Wunsch 08.10.) — auch nach dunkler → zurück auf Standard.
@@ -5067,7 +5192,7 @@ function _rfVZeichnen() {
       <div style="margin-right:auto;min-width:0;">
         <b class="u11">${galerie ? 'Alle Versionen' : 'Ansehen & nachbessern'} · ${_esc(l.name)}</b>
         <div class="umut10">${galerie ? 'Ins Bild klicken = näher ran (alle gleichzeitig). Passende Version: „Diese nehmen".'
-                                     : 'Ins Bild klicken = näher ran. Links der Standard, rechts jetzt — derselbe Ausschnitt.'}</div>
+      : 'Ins Bild klicken = näher ran. Links der Standard, rechts jetzt — derselbe Ausschnitt.'}</div>
       </div>
       <div class="rf-segment">
         <button class="${_rfV.ansicht === 'pixel' ? 'an' : ''}" onclick="_rfV.ansicht='pixel';_rfVZeichnen()">Pixel</button>
@@ -5183,7 +5308,10 @@ async function _rfZip(eintraege, name) {   // eintraege: [{ url, name }]
   await _ensureJSZip();
   const zip = new JSZip();
   for (const e of eintraege) {
-    const r = await fetch(e.url, { cache: 'no-store' });
+    const u = e.url.startsWith('http') ? e.url : `${BASE_URL}${e.url.startsWith('/') ? '' : '/'}${e.url}`;
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const r = await fetch(u, { headers, credentials: 'include', cache: 'no-store' });
     // Fehlerantwort nicht ins ZIP — sonst läge eine HTML-Seite als .bmp darin, ohne Meldung.
     if (!r.ok) throw new Error(`${e.name}: HTTP ${r.status}`);
     zip.file(e.name, await r.blob());
@@ -5236,12 +5364,12 @@ function _rtKarte(l, i) {
       ${fotoDruck ? `<div class="rf-unter">Kundenfoto</div>
       <div class="rt-bild rt-foto">${foto ? `<img src="${_esc(foto.url)}" alt="Kundenfoto"/>` : '<span class="umut10">kein Foto</span>'}</div>` : `<div class="rf-unter">Kunde hat geschrieben</div>
       <div class="rt-kunde">${texte.length ? texte.map(t => `<div><span class="umut10">${_esc(t.feld || 'Text')}:</span> ${t.wert.trim() ? `<b>${_esc(t.wert)}</b>` : '<span class="umut10">(leer)</span>'}</div>`).join('')
-                                          : '<span class="umut10">kein Text — nur Foto/Auswahl</span>'}
+      : '<span class="umut10">kein Text — nur Foto/Auswahl</span>'}
         ${schriften.length ? `<div class="umut10" style="margin-top:3px;">Schrift: ${schriften.map(_esc).join(', ')}</div>` : ''}
       </div>`}
       <div class="rf-unter">Wird graviert</div>
       <div class="rt-vorschau">${laeuft ? '<div class="rf-leer rt-leer">⏳ wird erzeugt …</div>'
-        : dateien.length ? dateien.map((f, j) => `<div class="rt-datei" onclick="this.classList.toggle('rt-gross')" title="Antippen: größer / kleiner">
+      : dateien.length ? dateien.map((f, j) => `<div class="rt-datei" onclick="this.classList.toggle('rt-gross')" title="Antippen: größer / kleiner">
               <div class="rt-bild" id="rt-${i}-${j}"></div><div class="umut10">${_esc(f.name.split('/').pop())}</div></div>`).join('')
         : '<div class="rf-leer rt-leer">keine Gravurdatei — für diese Bestellung kein Text</div>'}</div>
       ${hinweise.map(h => `<div class="rt-hinweis">⚠ ${_esc(h)}</div>`).join('')}
@@ -5255,7 +5383,7 @@ function _rtVorschauFuellen(l, i) {
     try {
       if (/\.pdf$/i.test(f.name)) {
         const im = new Image();
-        im.src = `${BASE_URL}/rekla/pdfbild?orderId=${encodeURIComponent(_reklaOrder.orderId)}&quelle=vorschau&datei=${encodeURIComponent(f.name)}&t=${f.groesse}`;
+        im.src = `${BASE_URL}/v2/rekla/pdfbild?orderId=${encodeURIComponent(_reklaOrder.orderId)}&quelle=vorschau&datei=${encodeURIComponent(f.name)}&t=${f.groesse}`;
         await im.decode();
         ziel.appendChild(_rtPdfAusschnitt(im));
       } else {
@@ -5395,7 +5523,7 @@ function _reklaAbschlussZeichnen() {
         return `<div class="rf-zeile" data-layout="${_esc(l.name)}" style="margin-bottom:6px;">
           <span class="umut10" style="flex:1;">${fotos.length > 1 ? _esc(l.name) : 'Nach dem Gravieren:'}</span>
           ${z.urteil ? `<span class="umut10" style="color:var(--green);">✓ ${z.urteil === 'gut' ? 'gut' : 'schlecht'} notiert</span>`
-                     : `<button class="btn"${aus} onclick="_rfUrteil(this, true)">👍 gut</button>
+            : `<button class="btn"${aus} onclick="_rfUrteil(this, true)">👍 gut</button>
                         <button class="btn"${aus} onclick="_rfUrteil(this, false)">👎 schlecht</button>`}
         </div>`;
       }).join('');
@@ -5416,8 +5544,8 @@ async function _reklaDateienLaden() {
 async function _rfDatenLaden() {
   if (!_reklaOrder) return;
   const id = encodeURIComponent(_reklaOrder.orderId);
-  _rfDaten = await _apiJson(`/v2/rekla/bilder?orderId=${id}&quelle=vorschau`).catch(() => _rfDaten);
-  _reklaOrdner = await _apiJson(`/v2/rekla/bilder?orderId=${id}`).catch(() => _reklaOrdner);
+  _rfDaten = _rfNormalize(await _apiJson(`/v2/rekla/bilder?orderId=${id}&quelle=vorschau`).catch(() => _rfDaten));
+  _reklaOrdner = _rfNormalize(await _apiJson(`/v2/rekla/bilder?orderId=${id}`).catch(() => _reklaOrdner));
   _reklaAbschlussZeichnen();
 }
 // „✅ Reklamation erstellen": die angehakten Layouts mit den jetzigen Einstellungen in den
@@ -5451,7 +5579,10 @@ async function _rfVarianteLaden(k) {
   const l = _rfLayout(_rfV?.layout), v = _RF_VARIANTEN.find(x => x.k === k);
   const o = l && v && _rfDaten.ordner.find(x => x.ordner === 'Varianten/' + _vorlageName(l) + ' ' + k);
   if (!o) return;
-  const r = await fetch(o.plaetze[0].url, { cache: 'no-store' });
+  const u = o.plaetze[0].url.startsWith('http') ? o.plaetze[0].url : `${BASE_URL}${o.plaetze[0].url.startsWith('/') ? '' : '/'}${o.plaetze[0].url}`;
+  const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
+  const r = await fetch(u, { headers, credentials: 'include', cache: 'no-store' });
   if (!r.ok) return showToast('❌ Herunterladen fehlgeschlagen: HTTP ' + r.status, 4000);
   const blob = await r.blob();
   _rfSpeichern(blob, _rfDateiname(`${_reklaName()}_${l.name}_${_rfText(_rfVz(v, _rfZustand(l.name)), l)}`) + '.bmp');
@@ -5479,9 +5610,11 @@ function _rfWaehlen(k) {
 async function _rfUrteil(el, gut) {
   const n = _rfName(el), z = _rfZustand(n);
   try {
-    await _apiJson('/v2/rekla/urteil', 'POST', { orderId: _reklaOrder.orderId, layout: n, stufe: z.stufe, kanten: z.kanten,
-                                              sprenkel: z.sprenkel, gesicht: z.gesicht, als: z.als || '', erkannt: z.erkannt?.art || '',
-                                              urteil: gut ? 'gut' : 'schlecht' });
+    await _apiJson('/v2/rekla/urteil', 'POST', {
+      orderId: _reklaOrder.orderId, layout: n, stufe: z.stufe, kanten: z.kanten,
+      sprenkel: z.sprenkel, gesicht: z.gesicht, als: z.als || '', erkannt: z.erkannt?.art || '',
+      urteil: gut ? 'gut' : 'schlecht'
+    });
     z.urteil = gut ? 'gut' : 'schlecht'; z.fehler = '';
   } catch (e) { z.fehler = 'Urteil nicht gespeichert: ' + e.message; }
   reklaFotoZeichnen();
@@ -5494,25 +5627,25 @@ async function _rfVorlage(el) {
   // Was liegt dort gerade? Ein noch nicht gravierter Tageslauf wäre sonst still ersetzt.
   let jetzt = '', warnung = '';
   try {
-    const u = await _apiJson('/vorlage/uebersicht');
+    const u = await _apiJson('/v2/vorlage/uebersicht');
     const v = (u.ordner || []).find(x => x.ordner === _vorlageName(l));
     if (v) {
       const st = v.stand || {};
       const heute = _dayBerlin();
       const was = /Reklamation/.test(st.pfad || '') ? `eine Reklamation (${String(st.pfad).split('/')[1] || ''})`
-                : st.quelle === 'lauf' ? `der Tageslauf vom ${st.tag === heute ? 'HEUTE' : st.tag || '?'}`
-                : st.tag ? `der Stand vom ${st.tag}` : 'ein älterer Stand';
+        : st.quelle === 'lauf' ? `der Tageslauf vom ${st.tag === heute ? 'HEUTE' : st.tag || '?'}`
+          : st.tag ? `der Stand vom ${st.tag}` : 'ein älterer Stand';
       jetzt = `Dort liegt gerade ${was} — ${v.belegt} von ${v.plaetze} Plätzen belegt.`;
       if (st.quelle === 'lauf' && st.tag === heute && v.belegt > 0) warnung = '\n\n⚠ Ist der Tageslauf schon graviert? Sonst ERST den Tageslauf gravieren!';
     }
-  } catch (_) {}
+  } catch (_) { }
   const ok = await confirmModal('In die Vorlage legen?',
     `Der Vorlage-Ordner „${_vorlageName(l)}" bekommt diese Reklamation (${_reklaName()}). `
     + (jetzt ? jetzt + ' ' : '') + 'Das wird ersetzt — über „Tag laden" lässt es sich zurückholen.' + warnung,
     'In Vorlage legen');
   if (!ok) return;
   try {
-    await _apiJson('/vorlage/laden', 'POST', { pfad: o.pfad });
+    await _apiJson('/v2/vorlage/laden', 'POST', { pfad: o.pfad });
     _reklaAbschlussText = `<span style="color:var(--green);">✅ Liegt in der Vorlage ${_esc(_vorlageName(l))} — in Ezcad die .ezd neu öffnen und gravieren.</span>`;
     _reklaGraviert = true;
   } catch (e) { _reklaAbschlussText = `<span style="color:var(--red);">❌ Nicht in die Vorlage gelegt: ${_esc(e.message)}</span>`; }
@@ -5527,7 +5660,7 @@ async function downloadAndLoad() {
 
     // Zeitfenster NICHT im Browser rechnen (lokales Datum + 'Z' ließ „Heute" real um
     // 02:00 Berlin beginnen). Nur das Preset senden — der Server rechnet Berlin-korrekt.
-    let url = `${BASE_URL}/start-cron/24?status=${encodeURIComponent(status)}&preset=${encodeURIComponent(preset)}`;
+    let url = `${BASE_URL}/v2/start-cron/24?status=${encodeURIComponent(status)}&preset=${encodeURIComponent(preset)}`;
     if (preset === 'custom') {
       const from = document.getElementById('dl-from').value;
       const to = document.getElementById('dl-to').value;
@@ -5545,7 +5678,7 @@ async function downloadAndLoad() {
     if (document.getElementById('dl-force')?.checked) url += '&force=1';
 
     await _startDlRun(url);
-  } catch(e) {
+  } catch (e) {
     // If Amazon not reachable, just load locally
     document.getElementById('dl-msg').textContent = 'Lade lokal gespeicherte Bestellungen…';
     await loadOrders();
@@ -5561,7 +5694,12 @@ async function cancelDownload() {
   // OK-Label ≠ "Abbrechen": so heißt schon der Abbrechen-Knopf des Dialogs.
   const ok = await confirmModal('Download abbrechen?', 'Bereits geladene Bestellungen bleiben gespeichert.', 'Ja, stoppen');
   if (!ok) return;
-  try { await fetch(BASE_URL + '/v2/cancel-download', { method: 'POST' }); showToast('⏹ Download wird gestoppt…'); } catch(e) { showToast('❌ ' + e.message, 3000); }
+  try {
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    await fetch(BASE_URL + '/v2/cancel-download', { method: 'POST', headers, credentials: 'include' });
+    showToast('⏹ Download wird gestoppt…');
+  } catch (e) { showToast('❌ ' + e.message, 3000); }
 }
 
 // Poll-Abbruch-Helfer: Interval stoppen + Button wieder freigeben
@@ -5581,10 +5719,12 @@ let _dlPollErrors = 0;
 async function pollDlProgress() {
   let data;
   try {
-    const res = await fetch(`${BASE_URL}/progress`);
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${BASE_URL}/v2/progress`, { headers, credentials: 'include' });
     data = await res.json();
     _dlPollErrors = 0;
-  } catch(e) {
+  } catch (e) {
     // Server nicht erreichbar (z.B. Neustart): nach ~30 s aufgeben, sonst bleibt der
     // Knopf dauerhaft auf "Läuft…" gesperrt.
     if (++_dlPollErrors >= 20) {
@@ -5612,7 +5752,7 @@ async function pollDlProgress() {
       bar.style.width = '30%';
       msg.textContent = data.message || 'Bestellungen werden gesucht…';
     } else if (data.phase === 'download') {
-      const pct = data.total > 0 ? 30 + Math.round((data.current/data.total)*60) : 50;
+      const pct = data.total > 0 ? 30 + Math.round((data.current / data.total) * 60) : 50;
       bar.style.width = pct + '%';
       msg.textContent = (data.message || 'Informationen werden geladen…') + (data.total > 0 ? ' (' + data.current + '/' + data.total + ')' : '');
     } else if (data.phase === 'done') {
@@ -5630,14 +5770,16 @@ async function pollDlProgress() {
     } else if (data.phase === 'error') {
       _stopDlPoll('❌ ' + (data.error || 'Fehler'));
     }
-  } catch(e) {}
+  } catch (e) { }
 }
 
 // Rückgabe: true = Stand vom Server übernommen. Der Auto-Export braucht das — eine stille
 // leere Session sähe dort aus wie „heute keine Bestellungen".
 async function loadSession() {
   try {
-    const res = await fetch(`${BASE_URL}/session`);
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${BASE_URL}/v2/session`, { headers, credentials: 'include' });
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
     sessionOrders = data.orders || [];
@@ -5655,12 +5797,14 @@ async function loadSession() {
     // Layout-Liste zeigt die Bestellungen des Laufs je Layout — nach neuem Lauf neu zeichnen
     if (!IS_AUTOEXPORT && _savedDataCache) renderSaved(true);
     return true;
-  } catch(e) { return false; }
+  } catch (e) { return false; }
 }
 
 async function loadOrders() {
   try {
-    const res = await fetch(`${BASE_URL}/orders`);
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const res = await fetch(`${BASE_URL}/v2/orders`, { headers, credentials: 'include' });
     if (!res.ok) { showToast('⚠️ Bestellungen konnten nicht geladen werden (' + res.status + ')', 4000); return; }
     const allOrders = await res.json();
     // Neue Bestellungen → Slot-Tabellen je ASIN neu lernen (sonst galt der erste Stand).
@@ -5685,18 +5829,18 @@ async function loadOrders() {
     }
     const asinCount = _orderAsins().length;
     const yesterday = _dayBerlin(1);
-    const dateLabel = preset==='today' ? 'Heute ('+today+')' :
-                      preset==='yesterday' ? 'Gestern ('+yesterday+')' :
-                      preset==='7days' ? 'Letzte 7 Tage' :
-                      preset==='last24h' ? 'Letzte 24 Stunden' :
-                      preset==='last48h' ? 'Letzte 48 Stunden' : 'Eigener Zeitraum';
+    const dateLabel = preset === 'today' ? 'Heute (' + today + ')' :
+      preset === 'yesterday' ? 'Gestern (' + yesterday + ')' :
+        preset === '7days' ? 'Letzte 7 Tage' :
+          preset === 'last24h' ? 'Letzte 24 Stunden' :
+            preset === 'last48h' ? 'Letzte 48 Stunden' : 'Eigener Zeitraum';
     document.getElementById('dl-info').innerHTML =
       '<div style="color:var(--text);font-weight:600;margin-bottom:2px;">' + orders.length + ' Bestellungen im Ordner</div>' +
       '<div><span style="color:var(--green);">' + dateLabel + '</span> · ' + asinCount + ' ASINs</div>';
     // Kein ASIN-Filter beim DOWNLOAD: der lädt immer alle personalisierten Bestellungen.
     // Gefiltert wird beim Füllen (_fillCfg.globalAsin bzw. filterAsin pro Feld).
     renderProps();
-  } catch(e) {
+  } catch (e) {
     document.getElementById('orders-status').textContent = 'Offline';
   }
 }
@@ -5715,12 +5859,12 @@ const _fillCfg = {
 // Befüllen-Controls an _fillCfg angleichen — NUR Richtung Cfg → UI (die Gegenrichtung
 // sind ausschließlich die onchange/onclick-Handler).
 function _syncFillUI() {
-  const sel  = document.getElementById('fill-date-preset');
+  const sel = document.getElementById('fill-date-preset');
   if (sel) sel.value = _fillCfg.datePreset;
   const from = document.getElementById('fill-date-from');
-  const to   = document.getElementById('fill-date-to');
+  const to = document.getElementById('fill-date-to');
   if (from) from.value = _fillCfg.dateFrom || '';
-  if (to)   to.value   = _fillCfg.dateTo || '';
+  if (to) to.value = _fillCfg.dateTo || '';
   const asin = document.getElementById('global-asin');
   if (asin) asin.value = _fillCfg.globalAsin || '';
   _paintDatePreset(); _paintSingleAsin(); _paintQty(); _paintEmptyMode(); _paintMultiPage(); _paintDdNur();
@@ -5741,15 +5885,15 @@ function _fillSet(key, val) {
 //   from: Layout → Cfg-Wert (inkl. Default)
 //   norm: normalisiert einen Cfg-Wert — fürs Schreiben UND den Vergleich
 const _FILL_FIELDS = [
-  { cfg: 'datePreset',     key: 'fillDatePreset', from: l => l.fillDatePreset || 'session',             norm: v => v || 'session' },
-  { cfg: 'dateFrom',       key: 'fillDateFrom',   from: l => l.fillDateFrom || '',                      norm: v => v || '' },
-  { cfg: 'dateTo',         key: 'fillDateTo',     from: l => l.fillDateTo || '',                        norm: v => v || '' },
-  { cfg: 'singleAsinMode', key: 'singleAsinMode', from: l => l.singleAsinMode ?? true,                  norm: v => !!v },
-  { cfg: 'globalAsin',     key: 'globalAsin',     from: l => (l.globalAsin || '').trim().toUpperCase(), norm: v => (v || '').trim().toUpperCase() },
-  { cfg: 'useQty',         key: 'useQty',         from: l => l.useQty !== false,                        norm: v => v !== false },
-  { cfg: 'emptyMode',      key: 'emptyMode',      from: l => l.emptyMode || 'strich',                   norm: v => v || 'strich' },
-  { cfg: 'multiPage',      key: 'multiPage',      from: l => l.multiPage !== false,                     norm: v => v !== false },
-  { cfg: 'ddNur',          key: 'ddNur',          from: l => _ddNurNorm(l.ddNur),                       norm: _ddNurNorm },
+  { cfg: 'datePreset', key: 'fillDatePreset', from: l => l.fillDatePreset || 'session', norm: v => v || 'session' },
+  { cfg: 'dateFrom', key: 'fillDateFrom', from: l => l.fillDateFrom || '', norm: v => v || '' },
+  { cfg: 'dateTo', key: 'fillDateTo', from: l => l.fillDateTo || '', norm: v => v || '' },
+  { cfg: 'singleAsinMode', key: 'singleAsinMode', from: l => l.singleAsinMode ?? true, norm: v => !!v },
+  { cfg: 'globalAsin', key: 'globalAsin', from: l => (l.globalAsin || '').trim().toUpperCase(), norm: v => (v || '').trim().toUpperCase() },
+  { cfg: 'useQty', key: 'useQty', from: l => l.useQty !== false, norm: v => v !== false },
+  { cfg: 'emptyMode', key: 'emptyMode', from: l => l.emptyMode || 'strich', norm: v => v || 'strich' },
+  { cfg: 'multiPage', key: 'multiPage', from: l => l.multiPage !== false, norm: v => v !== false },
+  { cfg: 'ddNur', key: 'ddNur', from: l => _ddNurNorm(l.ddNur), norm: _ddNurNorm },
 ];
 
 // Layout → _fillCfg (beim Laden). Setzt ALLE Felder, auch fehlende (dann ihr Default) —
@@ -5797,7 +5941,7 @@ async function _updateLoadedLayout(mutate, okMsg) {
 
 async function applyFillCfgToLayout() {
   if (await _updateLoadedLayout(_fillCfgToLayout,
-        l => '✅ Befüllung im Layout "' + l.name + '" gespeichert')) {
+    l => '✅ Befüllung im Layout "' + l.name + '" gespeichert')) {
     _updateFillDirty();
   }
 }
@@ -5842,9 +5986,9 @@ function getGlobalAsin() {
 // runAutoExport pro Layout window._autoExportSortOrder (= layout.exportOrder).
 function _orderSort(a, b) {
   const ord = window._autoExportSortOrder;
-  if (ord === 'date-asc') return (a.purchaseDate||a.date||'').localeCompare(b.purchaseDate||b.date||'');
-  if (ord === 'ordernr')  return (a.id||'').localeCompare(b.id||'');
-  return (b.purchaseDate||b.date||'').localeCompare(a.purchaseDate||a.date||''); // date-desc (Standard)
+  if (ord === 'date-asc') return (a.purchaseDate || a.date || '').localeCompare(b.purchaseDate || b.date || '');
+  if (ord === 'ordernr') return (a.id || '').localeCompare(b.id || '');
+  return (b.purchaseDate || b.date || '').localeCompare(a.purchaseDate || a.date || ''); // date-desc (Standard)
 }
 
 function toggleQtyMode() { _toggleFillFlag('useQty', _paintQty); }
@@ -5985,7 +6129,7 @@ async function _feldSchriftSetzen(field, fontInfo) {
 function _applyNumberToField(nf, orderId) {
   nf.orderId = orderId;
   const chars = nf.numChars || 7;
-  const from  = nf.numFrom || 'end';
+  const from = nf.numFrom || 'end';
   nf._text = from === 'end' ? orderId.slice(-chars) : orderId.slice(0, chars);
 }
 
@@ -6119,7 +6263,7 @@ async function fillWithData(isNextPage = false) {
   const showDash = getShowDash();
 
   // Anzahl Slots = maximale Feldanzahl pro palNum-Gruppe
-  const palNums = Object.keys(txtByPal).sort((a,b) => a-b);
+  const palNums = Object.keys(txtByPal).sort((a, b) => a - b);
   const slotCount = Math.max(...palNums.map(p => txtByPal[p].length), 0);
 
   const slotOrders = [];   // Bestellung je Platz — Regel-Motive binden sich daran (s. unten)
@@ -6214,7 +6358,7 @@ async function fillWithData(isNextPage = false) {
   _ddMotiveSetzen(fields);  // Dropdown-Motive: je Platz das Motiv zur Antwort
   _syncArrayClones(fields); // Array-Kopien = Inhalt ihres Masters
   renderEls(); drawCanvas();
-  const filled = [...imgFields, ...txtFields, ...numFields].filter(f=>f.orderId).length;
+  const filled = [...imgFields, ...txtFields, ...numFields].filter(f => f.orderId).length;
   const total = fields.length;
   if (fillProg) { fillBar.style.width = '100%'; fillMsgEl.textContent = `✅ ${filled} von ${total} Feldern gefüllt`; }
   setTimeout(() => { if (fillProg) fillProg.classList.remove('visible'); if (fillBar) fillBar.style.width = '0%'; }, 3000);
@@ -6245,11 +6389,11 @@ let _currentPage = 0; // Aktuelle Seite (0-basiert)
 // Neue Seite mit `felder` einfügen (hinter der aktuellen oder am Ende) und dorthin wechseln.
 function _seiteEinfuegen(felder, hinterAktueller) {
   saveUndo();
-  if (_pages.length === 0) _pages = [fields.map(f => ({...f}))];
+  if (_pages.length === 0) _pages = [fields.map(f => ({ ...f }))];
   saveCurrentPageSnapshot();
   _currentPage = hinterAktueller ? _currentPage + 1 : _pages.length;
   _pages.splice(_currentPage, 0, felder);
-  fields = felder.map(f => ({...f}));
+  fields = felder.map(f => ({ ...f }));
   _refreshAfterPageChange(); // sel zurücksetzen + Canvas/Liste/Panel/Navigator (eine Stelle)
   switchTab('page', document.getElementById('nav-page'));
 }
@@ -6313,7 +6457,7 @@ function _clearFieldData(fieldOrArray, opts = {}) {
 // Canvas im mm→px-Maßstab erzeugen (für PDF/PNG/BMP-Exporte)
 function _makeCanvas(pageObj, scale) {
   const c = document.createElement('canvas');
-  c.width  = Math.round(pageObj.w * scale);
+  c.width = Math.round(pageObj.w * scale);
   c.height = Math.round(pageObj.h * scale);
   const ctx = c.getContext('2d');
   // Hochwertige Interpolation für JEDEN Export — Browser-Default 'low' ergibt sichtbar
@@ -6328,7 +6472,7 @@ async function _buildSublimationCanvas() {
   const p = getPg();
   const PX_PER_MM = SUBLIMATION_DPI / 25.4; // fest 300 DPI — muss zum "300dpi" im Dateinamen passen
   const c = document.createElement('canvas');
-  c.width  = Math.round(p.w * PX_PER_MM);
+  c.width = Math.round(p.w * PX_PER_MM);
   c.height = Math.round(p.h * PX_PER_MM);
   const ctx = c.getContext('2d', { colorSpace: 'srgb' });
   // Reiner weißer Hintergrund — kritisch für Sublimation (Farben sind transparent)
@@ -6389,7 +6533,7 @@ async function _downloadPerPageOutputs(outputs, singleName, zipName) {
 
 // Seite speichern
 function saveCurrentPageSnapshot() {
-  _pages[_currentPage] = fields.map(f => ({...f}));
+  _pages[_currentPage] = fields.map(f => ({ ...f }));
 }
 
 // Navigator anzeigen/aktualisieren
@@ -6428,7 +6572,7 @@ function updatePageNavigator() {
 // Regel dieses Zustands (s. saveCurrentPageSnapshot).
 function _zeigeSeite(i) {
   _currentPage = i;
-  fields = _pages[_currentPage].map(f => ({...f}));
+  fields = _pages[_currentPage].map(f => ({ ...f }));
   _refreshAfterPageChange();
 }
 
@@ -6479,7 +6623,7 @@ async function exportCurrentPage() {
 
 // Beim ersten Layout-Laden Seiten-Array initialisieren
 function initPages() {
-  _pages = [fields.map(f => ({...f}))];
+  _pages = [fields.map(f => ({ ...f }))];
   _currentPage = 0;
   updatePageNavigator();
 }
@@ -6527,8 +6671,8 @@ function isSyncedLayout(pages) {
     const counts = {};
     pg.forEach(f => {
       if (f.type === 'static' || f.arrayOf) return; // Kopien ändern die Struktur nicht
-      const k = `${f.type}:${f.palNum||1}`;
-      counts[k] = (counts[k]||0) + 1;
+      const k = `${f.type}:${f.palNum || 1}`;
+      counts[k] = (counts[k] || 0) + 1;
     });
     return Object.keys(counts).sort().map(k => `${k}=${counts[k]}`).join(',');
   };
@@ -6636,10 +6780,10 @@ async function buildSyncedPool(templatePages) {
 
   const batchSize = Math.max(...templatePages.map(syncSlotCount), 1);
   console.log('[Synchron-Pool] nach Datums-Filter:', afterDate,
-              '| nach ASIN-Filter (' + (layoutAsin || '—') + '):', afterAsin,
-              '| qty-expandiert:', orders.length,
-              '| nach Skip-Empty (Text:', skipTxt, 'Bild:', skipImg, '):', finalOrders.length,
-              '| batchSize:', batchSize);
+    '| nach ASIN-Filter (' + (layoutAsin || '—') + '):', afterAsin,
+    '| qty-expandiert:', orders.length,
+    '| nach Skip-Empty (Text:', skipTxt, 'Bild:', skipImg, '):', finalOrders.length,
+    '| batchSize:', batchSize);
   return { orders: finalOrders, textCache, batchSize };
 }
 
@@ -6658,7 +6802,7 @@ async function fillLayoutPages(templates) {
   if (templates.some(pg => pg.some(f => _istMotiv(f) && f.ddFrage))) await _ddMotivListeLaden(true);
 
   // Saubere Vorlagen-Kopien (keine alten _img/_text/orderId-Reste)
-  const tpls = templates.map(pg => pg.map(f => ({...f, _img:null, _text:null, orderId:null})));
+  const tpls = templates.map(pg => pg.map(f => ({ ...f, _img: null, _text: null, orderId: null })));
 
   // Synchron: mehrere Seiten mit UNTERSCHIEDLICHEN palNum-Verteilungen (Vorderseite
   // palNum 1, Rückseite palNum 2 — derselbe Auftrag, andere Texte)
@@ -6676,7 +6820,7 @@ async function fillLayoutPages(templates) {
       let unitFilled = 0;
       const unitStart = out.length;
       for (let k = 0; k < K; k++) {
-        const inst = tpls[k].map(f => ({...f, id: ++idc, _img:null, _text:null, orderId:null}));
+        const inst = tpls[k].map(f => ({ ...f, id: ++idc, _img: null, _text: null, orderId: null }));
         unitFilled += await fillSyncedPage(inst, orders, base, textCache);
         out.push(inst);
         inst.forEach(f => { if (f.orderId) filledIds.add(f.orderId); });
@@ -6688,8 +6832,10 @@ async function fillLayoutPages(templates) {
       return { pages: tpls, filledOrderIds: [], mode: 'synchron', diagnose: { reason: 'fill-failed' } };
     }
 
-    return { pages: out, filledOrderIds: [...filledIds], mode: 'synchron',
-             diagnose: { sets: Math.ceil(out.length / K), batchSize, ordersInPool: orders.length } };
+    return {
+      pages: out, filledOrderIds: [...filledIds], mode: 'synchron',
+      diagnose: { sets: Math.ceil(out.length / K), batchSize, ordersInPool: orders.length }
+    };
   }
 
   // Stapel: eine Seite ODER identische Seiten (Massenproduktion) → fillWithData.
@@ -6714,7 +6860,7 @@ async function _fillStackPages(template) {
   // fillWithData soll _allTxtOrders NICHT leeren (es ist bereits gebaut)
 
   // Globale 'fields' auf Template setzen — fillWithData arbeitet auf 'fields'
-  fields = template.map(f => ({...f, _img:null, _text:null, orderId:null}));
+  fields = template.map(f => ({ ...f, _img: null, _text: null, orderId: null }));
 
   let pageNum = 1;
   let uebrig = false;   // „Automatisch mehrseitig" aus, aber Bestellungen übrig (s. runAutoExport)
@@ -6727,7 +6873,7 @@ async function _fillStackPages(template) {
 
     await fillWithData(pageNum > 1);
 
-    const pageSnapshot = fields.map(f => ({...f}));
+    const pageSnapshot = fields.map(f => ({ ...f }));
     const filledCount = pageSnapshot.filter(f => f.orderId).length;
     // ALLE drei Pointer prüfen — bei reinen Bild-Layouts bewegt sich nur _imgSlotPointers
     const pointerAdvanced = _sessionPointer > pointerBefore
@@ -6745,7 +6891,7 @@ async function _fillStackPages(template) {
     pageNum++;
 
     // Neue Seite anlegen: Template mit frischen IDs
-    fields = template.map(f => ({...f, id: ++idc, _img:null, _text:null, orderId:null}));
+    fields = template.map(f => ({ ...f, id: ++idc, _img: null, _text: null, orderId: null }));
   }
   // Grenze erreicht, obwohl noch Bestellungen da sind → laut melden (status.txt), nicht still.
   const abgeschnitten = pageNum > MAX_PAGES;
@@ -6812,11 +6958,11 @@ async function fillAllPagesAuto() {
   // Gefüllt wird aus _pages, editiert wird in `fields` — ohne diesen Abgleich ignoriert
   // das Füllen ungespeicherte Änderungen (ein frisch erstelltes Array z.B. füllte nur
   // den Master, weil saveUndo den Stand VOR den Kopien gesichert hat).
-  if (_pages.length === 0) _pages = [fields.map(f => ({...f}))];
+  if (_pages.length === 0) _pages = [fields.map(f => ({ ...f }))];
   else saveCurrentPageSnapshot();
 
   // Original merken (Schutz: bei 0 Treffern wird die User-Struktur erhalten)
-  const _origPages = _pages.map(pg => pg.map(f => ({...f, _img:null, _text:null, orderId:null})));
+  const _origPages = _pages.map(pg => pg.map(f => ({ ...f, _img: null, _text: null, orderId: null })));
 
   // Helper: UI nach Abschluss freigeben
   const _unlock = () => { clearTimeout(_fillLockTimeout); _setFillLock(false); };
@@ -6824,7 +6970,7 @@ async function fillAllPagesAuto() {
   let result;
   try {
     result = await fillLayoutPages(_origPages);
-  } catch(e) {
+  } catch (e) {
     console.error('Füllen Fehler:', e);
     _unlock();
     showToast('⚠️ Füllen Fehler: ' + e.message, 4000);
@@ -6844,7 +6990,7 @@ async function fillAllPagesAuto() {
   // Ergebnis in den UI-State übernehmen
   _pages = result.pages;
   _currentPage = 0;
-  fields = _pages[0].map(f => ({...f}));
+  fields = _pages[0].map(f => ({ ...f }));
   recalcIdc();
   updatePageNavigator();
   scheduleRender();
@@ -6854,7 +7000,7 @@ async function fillAllPagesAuto() {
   // Toast je nach Modus
   if (result.mode === 'synchron') {
     const { sets, batchSize, ordersInPool } = result.diagnose;
-    showToast(`✅ Synchron gefüllt: ${result.pages.length} Seite(n) · ${sets} Satz/Sätze · ${Math.min(ordersInPool, sets*batchSize)} Bestellungen`, 4000);
+    showToast(`✅ Synchron gefüllt: ${result.pages.length} Seite(n) · ${sets} Satz/Sätze · ${Math.min(ordersInPool, sets * batchSize)} Bestellungen`, 4000);
   } else {
     const remaining = (window._currentSessionTotal || 0) - _sessionPointer;
     if (_fillCfg.multiPage) {
@@ -6881,7 +7027,7 @@ function fitPage() {
 // ── Zoom ──────────────────────────────────────────────────────────────────────
 function setZoom(z) {
   zoom = Math.max(0.1, Math.min(5, parseFloat(z)));
-  document.getElementById('zl').textContent = Math.round(zoom*100)+'%';
+  document.getElementById('zl').textContent = Math.round(zoom * 100) + '%';
   updateCanvas();
 }
 
@@ -6894,8 +7040,8 @@ async function loadOverview() {
   if (!el) return;
 
   let activities = [], layouts = [];
-  try { activities = await _apiJson('/activity'); } catch(e) {}
-  try { layouts = await getServerLayouts(); } catch(e) {}
+  try { activities = await _apiJson('/v2/activity'); } catch (e) { }
+  try { layouts = await getServerLayouts(); } catch (e) { }
   if (!Array.isArray(activities)) activities = [];
   if (!Array.isArray(layouts)) layouts = [];
 
@@ -6919,10 +7065,10 @@ async function loadOverview() {
   //   Akzent (Kobalt) = LADEN · Grün = EXPORT · Grau = Struktur, weder noch
   // Dieselbe Zuordnung nutzen „Heute"/„Gestern" und die Aktivitätenliste (_OV_COLORS).
   const cards = [
-    { num: sessionOrders.length, lbl: 'Im Lauf',     col: 'var(--accent)' },
-    { num: orders.length,        lbl: 'Im Ordner',   col: 'var(--accent)' },
-    { num: layouts.length,       lbl: 'Layouts',     col: 'var(--accent)' },
-    { num: autoLayouts,          lbl: 'Auto-Export', col: 'var(--green)' },
+    { num: sessionOrders.length, lbl: 'Im Lauf', col: 'var(--accent)' },
+    { num: orders.length, lbl: 'Im Ordner', col: 'var(--accent)' },
+    { num: layouts.length, lbl: 'Layouts', col: 'var(--accent)' },
+    { num: autoLayouts, lbl: 'Auto-Export', col: 'var(--green)' },
   ];
   const grid = document.createElement('div');
   grid.className = 'ov-grid';
@@ -6951,9 +7097,9 @@ async function loadOverview() {
     row.className = 'ov-grid';
     row.style.gridTemplateColumns = 'repeat(3, minmax(0, 1fr))';
     [
-      { num: dl,  lbl: 'Geladen', col: 'var(--accent)' },
+      { num: dl, lbl: 'Geladen', col: 'var(--accent)' },
       { num: exp, lbl: 'Exporte', col: 'var(--green)' },
-      { num: err, lbl: 'Fehler',  col: err ? 'var(--red)' : 'var(--text-muted)' },
+      { num: err, lbl: 'Fehler', col: err ? 'var(--red)' : 'var(--text-muted)' },
     ].forEach(c => row.appendChild(_ovKarte(c, true)));
     el.appendChild(row);
   };
@@ -7066,19 +7212,28 @@ function _makeServerStore(route, lsKey, fallbackToast, label) {
     get ausBackup() { return _ausBackup; },
     async load() {
       try {
-        const res = await fetch(BASE_URL + route);
+        const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+        const loadHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+        const targetUrl = `${BASE_URL}${route.startsWith('/') ? route : '/' + route}`.replace(/([^:]\/)\/+/g, '$1').replace(/\/v2\/v2\//g, '/v2/');
+        const res = await fetch(targetUrl, { headers: loadHeaders, credentials: 'include' });
+        if (res.status === 401 && !IS_AUTOEXPORT) {
+          localStorage.removeItem('jwt_access_token');
+          localStorage.removeItem('token');
+          window.location.replace('/login.html');
+          return [];
+        }
         if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         if (!Array.isArray(data)) throw new Error('Unerwartete Antwort');
         _etag = res.headers.get('ETag'); // null = Server ohne ETag → Verhalten wie bisher
         _ausBackup = false;
         return data;
-      } catch(e) {
+      } catch (e) {
         _etag = null; // aus dem Backup geladen → kein gültiger Stand zum Vergleichen
         _ausBackup = true;
         if (fallbackToast) showToast(fallbackToast, 5000);
         try { const b = JSON.parse(localStorage.getItem(lsKey) || '[]'); return Array.isArray(b) ? b : []; }
-        catch(_) { return []; }
+        catch (_) { return []; }
       }
     },
     async save(data) {
@@ -7087,25 +7242,38 @@ function _makeServerStore(route, lsKey, fallbackToast, label) {
         return false;
       }
       try { localStorage.setItem(lsKey, JSON.stringify(data)); }
-      catch(e) { console.warn(`Lokales ${lsKey}-Backup fehlgeschlagen:`, e); }
+      catch (e) { console.warn(`Lokales ${lsKey}-Backup fehlgeschlagen:`, e); }
       try {
-        const res = await fetch(BASE_URL + route, {
+        const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+        const postHeaders = Object.assign(
+          { 'Content-Type': 'application/json' },
+          _etag ? { 'If-Match': _etag } : {},
+          token ? { Authorization: `Bearer ${token}` } : {}
+        );
+        const targetUrl = `${BASE_URL}${route.startsWith('/') ? route : '/' + route}`.replace(/([^:]\/)\/+/g, '$1').replace(/\/v2\/v2\//g, '/v2/');
+        const res = await fetch(targetUrl, {
           method: 'POST',
-          headers: Object.assign({ 'Content-Type': 'application/json' },
-                                 _etag ? { 'If-Match': _etag } : {}),
+          headers: postHeaders,
+          credentials: 'include',
           body: JSON.stringify(data),
         });
+        if (res.status === 401 && !IS_AUTOEXPORT) {
+          localStorage.removeItem('jwt_access_token');
+          localStorage.removeItem('token');
+          window.location.replace('/login.html');
+          return false;
+        }
         if (res.status === 409) {
           _etag = null; // erzwingt beim nächsten load() einen frischen Stand
           showToast(`⚠️ ${label || 'Daten'} wurden in einem anderen Tab geändert — deine Änderung wurde NICHT gespeichert. Ansicht wird neu geladen, bitte erneut ausführen.`, 9000);
           _savedDataCache = null;
-          try { await renderSaved(); } catch(_) {}
+          try { await renderSaved(); } catch (_) { }
           return false;
         }
         if (!res.ok) throw new Error('HTTP ' + res.status);
         _etag = res.headers.get('ETag'); // frisches ETag → gleicher Tab kann weiterspeichern
         return true;
-      } catch(e) {
+      } catch (e) {
         // Der Store meldet selbst; Aufrufer prüfen nur noch das Ergebnis.
         console.error(`${lsKey} speichern fehlgeschlagen:`, e);
         showToast(`⚠️ ${label || 'Daten'} konnten nicht gespeichert werden (${e.message}) — Änderung ist NICHT übernommen.`, 7000);
@@ -7114,13 +7282,13 @@ function _makeServerStore(route, lsKey, fallbackToast, label) {
     },
   };
 }
-const _layoutStore = _makeServerStore('/layouts', 'layouts', '⚠️ Layouts vom Server nicht lesbar — lokales Backup geladen', 'Layouts');
-const _folderStore = _makeServerStore('/folders', 'folders', null, 'Ordner');
-const _laserPresetStore = _makeServerStore('/laser-presets', 'laser-presets', null, 'Laser-Presets');
+const _layoutStore = _makeServerStore('/v2/layouts', 'layouts', '⚠️ Layouts vom Server nicht lesbar — lokales Backup geladen', 'Layouts');
+const _folderStore = _makeServerStore('/v2/folders', 'folders', null, 'Ordner');
+const _laserPresetStore = _makeServerStore('/v2/laser-presets', 'laser-presets', null, 'Laser-Presets');
 // Dünne Wrapper — alle bestehenden Aufrufer bleiben unverändert
-const getServerLayouts  = () => _layoutStore.load();
+const getServerLayouts = () => _layoutStore.load();
 const saveServerLayouts = (layouts) => _layoutStore.save(layouts);
-const getServerFolders  = () => _folderStore.load();
+const getServerFolders = () => _folderStore.load();
 const saveServerFolders = (folders) => _folderStore.save(folders);
 
 // Feld für die Ablage in layouts.json entschlacken. Der Session-Zustand gehört NICHT in eine Vorlage:
@@ -7139,8 +7307,10 @@ function _stripFieldForSave(f) {
 }
 
 // Blattgröße so, wie sie im Layout gespeichert wird (Werte der Eingabefelder).
-const _blattFuerLayout = () => ({ w: document.getElementById('pw').value, h: document.getElementById('ph').value,
-                                  m: document.getElementById('pm').value });
+const _blattFuerLayout = () => ({
+  w: document.getElementById('pw').value, h: document.getElementById('ph').value,
+  m: document.getElementById('pm').value
+});
 
 // 💾 Speichern. Ist ein Layout geladen, fragt der Knopf: dieses Layout überschreiben oder ein
 // neues anlegen. Bis 08.10.2026 legte er IMMER ein neues an — ohne Ordner, Format, Auto-Export
@@ -7222,11 +7392,13 @@ async function _layoutUeberschreiben() {
 // ACHTUNG: echte Hex-Werte, KEINE var(--…)-Tokens. Diese Farben werden in folders.json
 // gespeichert (sind also Daten, nicht Gestaltung), als `${c}22` um einen Alpha-Anteil
 // ergänzt und als SVG-fill gesetzt — in beiden Fällen ist var() ungültig.
-const FOLDER_COLORS = ['#7c6aff','#39d98a','#f5a623','#ff4d6a','#38bdf8','#f472b6','#a3e635','#fb923c'];
+const FOLDER_COLORS = ['#7c6aff', '#39d98a', '#f5a623', '#ff4d6a', '#38bdf8', '#f472b6', '#a3e635', '#fb923c'];
 // Anzeige-Töne zu den gespeicherten Ordnerfarben (folders.json bleibt unverändert): die Leuchtfarben
 // des dunklen Stils wirkten auf Weiß grell — gezeigt wird je Farbe ein gedeckter Ton derselben Familie.
-const _ORDNER_TON = { '#7c6aff': '#5B6BD6', '#39d98a': '#3E9B6B', '#f5a623': '#C88A1E', '#ff4d6a': '#D0565F',
-                      '#38bdf8': '#3F93C2', '#f472b6': '#C9638F', '#a3e635': '#7FA33A', '#fb923c': '#D27A3E' };
+const _ORDNER_TON = {
+  '#7c6aff': '#5B6BD6', '#39d98a': '#3E9B6B', '#f5a623': '#C88A1E', '#ff4d6a': '#D0565F',
+  '#38bdf8': '#3F93C2', '#f472b6': '#C9638F', '#a3e635': '#7FA33A', '#fb923c': '#D27A3E'
+};
 const _ordnerTon = c => _ORDNER_TON[String(c || '').toLowerCase()] || c;
 let _expandedGroups = new Set();   // ausgeklappte Ordner (Standard: alles eingeklappt; Name, '' = Ohne Ordner)
 let _dragLayoutId = null;           // aktuell gezogenes Layout
@@ -7275,8 +7447,8 @@ function _layoutThumb(l) {
   // Hex, nicht var(): fill ist ein SVG-Präsentationsattribut und kennt keine CSS-Variablen.
   const col = t => t === 'image' ? '#2E8B57' : (t === 'static' || t === 'number') ? '#B7740A' : '#3B5BDB';
   const rects = (pg || []).slice(0, 150).map(f => {
-    const x = Math.max(0, (f.x||0)*sx), y = Math.max(0, (f.y||0)*sy);
-    const w = Math.max(0.6, (f.w||0)*sx), h = Math.max(0.6, (f.h||0)*sy);
+    const x = Math.max(0, (f.x || 0) * sx), y = Math.max(0, (f.y || 0) * sy);
+    const w = Math.max(0.6, (f.w || 0) * sx), h = Math.max(0.6, (f.h || 0) * sy);
     return `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="${col(f.type)}" opacity="0.85"/>`;
   }).join('');
   return `<svg width="${tw}" height="${th}" viewBox="0 0 ${tw} ${th}" style="border:1px solid var(--border);border-radius:var(--r-xs);background:#fff;flex-shrink:0;" aria-hidden="true">${rects}</svg>`;
@@ -7322,7 +7494,7 @@ function _folderSection(name, color, items, collapsed, ohneOrdner = false) {
          ondragover="onFolderDragOver(event,'${c}')" ondragleave="onFolderDragLeave(event)"
          ondrop="onFolderDrop(event,'${_jsStr(name)}')">
       <div class="ord-kopf"${ohneOrdner ? ' style="background:none;"' : ''} onclick="toggleGroupCollapse('${_jsStr(name)}')">
-        <span class="ord-pfeil" style="transform:rotate(${collapsed?'-90deg':'0deg'});">▾</span>
+        <span class="ord-pfeil" style="transform:rotate(${collapsed ? '-90deg' : '0deg'});">▾</span>
         ${ohneOrdner ? '' : `<span style="width:8px;height:8px;border-radius:50%;background:${ton};flex-shrink:0;box-shadow:0 0 0 3px ${ton}22;"></span>`}
         <span class="ord-name"${ohneOrdner ? ' style="font-weight:400;color:var(--text-muted);"' : ''}>${_esc(name || 'Ohne Ordner')}</span>
         ${lauf ? `<span class="ord-lauf" title="${_laufTitel(lauf)}">${lauf}</span>` : ''}
@@ -7333,9 +7505,9 @@ function _folderSection(name, color, items, collapsed, ohneOrdner = false) {
           <button class="zp-ikon" onclick="event.stopPropagation();openFolderMenu(event,'${_jsStr(name)}')" title="Ordner-Optionen">⋯</button>
         </span>`}
       </div>
-      <div class="ord-inhalt" style="display:${collapsed?'none':'flex'};">
+      <div class="ord-inhalt" style="display:${collapsed ? 'none' : 'flex'};">
         ${items.length ? items.map(l => _savedCard(l, !collapsed)).join('')
-          : `<div class="ord-leer">${ohneOrdner ? 'Alles einsortiert ✓' : 'Leer — Layout hierher ziehen'}</div>`}
+      : `<div class="ord-leer">${ohneOrdner ? 'Alles einsortiert ✓' : 'Leer — Layout hierher ziehen'}</div>`}
       </div>
     </div>`;
 }
@@ -7402,7 +7574,7 @@ async function renderSaved(useCache) {
   const [saved, folders] = (useCache && _savedDataCache)
     ? _savedDataCache
     : (_savedDataCache = await Promise.all([getServerLayouts(), getServerFolders()]));
-  if (!saved.length) { el.innerHTML='<div class="uempty">Noch keine gespeicherten Layouts</div>'; return; }
+  if (!saved.length) { el.innerHTML = '<div class="uempty">Noch keine gespeicherten Layouts</div>'; return; }
 
   const q = (document.getElementById('layout-search')?.value || '').trim().toLowerCase();
   const matches = l => (!q || l.name.toLowerCase().includes(q)) && (!_nurOhneAuto || !l.autoExport);
@@ -7445,7 +7617,7 @@ async function renderSaved(useCache) {
 function onLayoutDragStart(e, id) {
   _dragLayoutId = id;
   e.dataTransfer.effectAllowed = 'move';
-  try { e.dataTransfer.setData('text/plain', String(id)); } catch(_) {}
+  try { e.dataTransfer.setData('text/plain', String(id)); } catch (_) { }
   e.currentTarget.style.opacity = '0.45';
 }
 function onLayoutDragEnd(e) { e.currentTarget.style.opacity = ''; _dragLayoutId = null; }
@@ -7494,7 +7666,7 @@ function createFolderPrompt() {
   const m = document.createElement('div');
   m.id = 'create-folder-modal';
   m.style.cssText = 'position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;';   // Abdunkelung: Stilvorlage
-  const sw = FOLDER_COLORS.map((c, i) => `<span onclick="_pickFolderColor(this,'${c}')" style="width:26px;height:26px;border-radius:var(--r-s);background:${_ordnerTon(c)};cursor:pointer;display:inline-block;border:2px solid ${i===0?'var(--text)':'transparent'};box-shadow:inset 0 0 0 2px var(--bg2);box-sizing:border-box;"></span>`).join('');
+  const sw = FOLDER_COLORS.map((c, i) => `<span onclick="_pickFolderColor(this,'${c}')" style="width:26px;height:26px;border-radius:var(--r-s);background:${_ordnerTon(c)};cursor:pointer;display:inline-block;border:2px solid ${i === 0 ? 'var(--text)' : 'transparent'};box-shadow:inset 0 0 0 2px var(--bg2);box-sizing:border-box;"></span>`).join('');
   m.innerHTML = `<div class="dlg-kasten" style="min-width:320px;max-width:400px;">
     <div class="dlg-titel" style="margin-bottom:16px;">Neuer Ordner</div>
     <div class="il" style="margin-bottom:5px;">Name</div>
@@ -7531,7 +7703,7 @@ function openFolderMenu(e, name) {
   const pop = document.createElement('div');
   pop.className = 'folder-menu-pop';
   const r = e.currentTarget.getBoundingClientRect();
-  pop.style.cssText = `position:fixed;top:${r.bottom+4}px;left:${Math.max(8, Math.min(r.left-140, window.innerWidth-188))}px;z-index:10001;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-m);padding:10px;min-width:186px;box-shadow:var(--shadow-l);`;
+  pop.style.cssText = `position:fixed;top:${r.bottom + 4}px;left:${Math.max(8, Math.min(r.left - 140, window.innerWidth - 188))}px;z-index:10001;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-m);padding:10px;min-width:186px;box-shadow:var(--shadow-l);`;
   const sw = FOLDER_COLORS.map(c => `<span onclick="recolorFolder('${_jsStr(name)}','${c}');this.closest('.folder-menu-pop').remove()" style="width:20px;height:20px;border-radius:var(--r-xs);background:${_ordnerTon(c)};cursor:pointer;display:inline-block;"></span>`).join('');
   pop.innerHTML = `<div class="ulabel" style="margin-bottom:6px;">Farbe</div>
     <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">${sw}</div>
@@ -7603,11 +7775,11 @@ function _applyLayoutState(layout, interactive) {
 
   // Füll-Reste IMMER strippen: _img/_text/orderId sind Session-Zustand,
   // _imgSrc/_placement sind domain-spezifisch (sonst cross-origin/veraltete Bilder).
-  const clean = f => ({...f, _img:null, _text:null, orderId:null, _imgSrc:null, _placement:null});
+  const clean = f => ({ ...f, _img: null, _text: null, orderId: null, _imgSrc: null, _placement: null });
   // Jedes Layout hat `pages` (das Alt-Format mit nur `fields` gibt es seit Juli 2026 nicht mehr)
   _pages = (layout.pages && layout.pages.length ? layout.pages : [[]]).map(pg => pg.map(clean));
   _currentPage = Math.min(layout.currentPage || 0, _pages.length - 1);
-  fields = _pages[_currentPage].map(f => ({...f}));
+  fields = _pages[_currentPage].map(f => ({ ...f }));
   recalcIdc();
   // Bild-Caches gehören zum ALTEN Layout — sonst greift der Export auf dessen Bilder
   // zurück (Feld-IDs wiederholen sich pro Layout, s. _clearOriginalImgs).
@@ -7639,7 +7811,7 @@ function _applyLayoutState(layout, interactive) {
 
 async function loadLayout(id) {
   const saved = await getServerLayouts();
-  const layout = saved.find(l=>l.id===id);
+  const layout = saved.find(l => l.id === id);
   if (!layout) return;
   if (fields && fields.length > 0) {
     const ok = await confirmModal('Layout laden?', 'Aktuelles Layout wird ersetzt durch "' + layout.name + '".', 'Laden');
@@ -7676,7 +7848,7 @@ async function deleteSaved(id) {
   if (!layout) return;
   const ok = await confirmModal('Layout löschen?', '"' + layout.name + '" wird unwiderruflich gelöscht.', 'Löschen');
   if (!ok) return;
-  if (!await saveServerLayouts(saved.filter(l=>l.id!==id))) return;
+  if (!await saveServerLayouts(saved.filter(l => l.id !== id))) return;
   renderSaved();
   showToast('🗑 Layout gelöscht');
 }
@@ -7834,8 +8006,8 @@ function updateDitherSettings() {
   if (gdef) gdef.textContent = ditherSettings.autoGamma
     ? 'Auto-Gamma an: wirkt als Faktor auf den Wert je Foto (1,00 = unverändert)'
     : (ditherSettings.invert
-        ? 'invertiert: höher = heller im Bild = MEHR Gravur'
-        : 'höher = heller = weniger Gravur');
+      ? 'invertiert: höher = heller im Bild = MEHR Gravur'
+      : 'höher = heller = weniger Gravur');
 
   _laserCalibBadge();
   _refreshLaserPreview();
@@ -7916,14 +8088,14 @@ function _refreshLaserPreview() {
 const MATERIAL_PRESETS = {
   // Material-unabhängige Foto-Grundeinstellung = LASER_DEFAULTS. Ohne Kalibrierung,
   // weil ohne Material nichts zu kalibrieren ist.
-  'foto':          { ...LASER_DEFAULTS },
-  'kein':          { active: false, threshold: 128, contrast: 0,  algorithm: 'floyd-steinberg', gamma: 1.00, sharpen: 0,    autoContrast: false, invert: false, dpi: 500, dotGain: 0,    inkMin: 0,    inkMax: 1    , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
-  'holz':          { active: true,  threshold: 140, contrast: 10, algorithm: 'floyd-steinberg', gamma: 1.10, sharpen: 0.6,  autoContrast: true,  invert: false, dpi: 500, dotGain: 0.25, inkMin: 0.03, inkMax: 0.92 , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
-  'metall':        { active: true,  threshold: 120, contrast: 15, algorithm: 'stucki',          gamma: 0.95, sharpen: 0.8,  autoContrast: true,  invert: false, dpi: 500, dotGain: 0.15, inkMin: 0.02, inkMax: 0.95 , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
-  'metall-poliert':{ active: true,  threshold: 128, contrast: 10, algorithm: 'stucki',          gamma: 1.05, sharpen: 0.8,  autoContrast: true,  invert: true,  dpi: 500, dotGain: 0.15, inkMin: 0.02, inkMax: 0.95 , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
-  'acryl':         { active: true,  threshold: 128, contrast: 0,  algorithm: 'bayer',           gamma: 1.00, sharpen: 0,    autoContrast: false, invert: false, dpi: 500, dotGain: 0.10, inkMin: 0.02, inkMax: 0.95 , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
-  'schiefer':      { active: true,  threshold: 110, contrast: 20, algorithm: 'floyd-steinberg', gamma: 1.15, sharpen: 0.5,  autoContrast: true,  invert: false, dpi: 500, dotGain: 0.20, inkMin: 0.05, inkMax: 0.90 , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
-  'leder':         { active: true,  threshold: 135, contrast: 5,  algorithm: 'floyd-steinberg', gamma: 1.05, sharpen: 0.4,  autoContrast: true,  invert: false, dpi: 500, dotGain: 0.30, inkMin: 0.05, inkMax: 0.88 , autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'foto': { ...LASER_DEFAULTS },
+  'kein': { active: false, threshold: 128, contrast: 0, algorithm: 'floyd-steinberg', gamma: 1.00, sharpen: 0, autoContrast: false, invert: false, dpi: 500, dotGain: 0, inkMin: 0, inkMax: 1, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'holz': { active: true, threshold: 140, contrast: 10, algorithm: 'floyd-steinberg', gamma: 1.10, sharpen: 0.6, autoContrast: true, invert: false, dpi: 500, dotGain: 0.25, inkMin: 0.03, inkMax: 0.92, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'metall': { active: true, threshold: 120, contrast: 15, algorithm: 'stucki', gamma: 0.95, sharpen: 0.8, autoContrast: true, invert: false, dpi: 500, dotGain: 0.15, inkMin: 0.02, inkMax: 0.95, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'metall-poliert': { active: true, threshold: 128, contrast: 10, algorithm: 'stucki', gamma: 1.05, sharpen: 0.8, autoContrast: true, invert: true, dpi: 500, dotGain: 0.15, inkMin: 0.02, inkMax: 0.95, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'acryl': { active: true, threshold: 128, contrast: 0, algorithm: 'bayer', gamma: 1.00, sharpen: 0, autoContrast: false, invert: false, dpi: 500, dotGain: 0.10, inkMin: 0.02, inkMax: 0.95, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'schiefer': { active: true, threshold: 110, contrast: 20, algorithm: 'floyd-steinberg', gamma: 1.15, sharpen: 0.5, autoContrast: true, invert: false, dpi: 500, dotGain: 0.20, inkMin: 0.05, inkMax: 0.90, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
+  'leder': { active: true, threshold: 135, contrast: 5, algorithm: 'floyd-steinberg', gamma: 1.05, sharpen: 0.4, autoContrast: true, invert: false, dpi: 500, dotGain: 0.30, inkMin: 0.05, inkMax: 0.88, autoGamma: false, autoGammaTarget: 0.45, localContrast: 0, edgeBoost: 0, densityTarget: 0, inkDropout: 0 },
 };
 
 // ── Rezepte ──────────────────────────────────────────────────────────────────
@@ -7934,11 +8106,11 @@ const MATERIAL_PRESETS = {
 // Nachjustieren, sie bestraft genau das, was der Regler tun soll.
 // „zu hell“ und „flau“ wirken RELATIV zum aktuellen Stand, die drei Rezepte absolut.
 const _LASER_REZEPTE = {
-  hell:   { rel: { densityTarget: -0.04 } },
+  hell: { rel: { densityTarget: -0.04 } },
   dunkel: { abs: { ..._RF_STUFEN['2'] } },   // eine Quelle: Reklamation Stufe +2
-  sw:     { abs: { inkMax: 0.30, densityTarget: 0.30 } },
-  zu:     { abs: { inkMax: 0.40, localContrast: 0.80, densityTarget: 0.22 } },
-  flau:   { abs: { ..._RF_SPRENKEL } },     // eine Quelle: „Punkte im Schwarz"
+  sw: { abs: { inkMax: 0.30, densityTarget: 0.30 } },
+  zu: { abs: { inkMax: 0.40, localContrast: 0.80, densityTarget: 0.22 } },
+  flau: { abs: { ..._RF_SPRENKEL } },     // eine Quelle: „Punkte im Schwarz"
 };
 // Namen wie an den Reglern („Tiefen (max. Gravur)" usw.) — für die Meldung nach dem Setzen
 const _REZEPT_NAMEN = { inkMax: 'max. Gravur', densityTarget: 'Dichte', localContrast: 'lokaler Kontrast', inkDropout: 'Sprenkel-Schnitt' };
@@ -8082,7 +8254,7 @@ function renderCustomPresets() {
   const eigene = _customPresets.map(p => opt(p.name, '★ ' + p.name)).join('');
   const standard = Object.keys(MATERIAL_PRESETS).map(k => opt(k, MATERIAL_LABELS[k] || k)).join('');
   sel.innerHTML = (eigene ? `<optgroup label="Eigene Presets">${eigene}</optgroup>` : '')
-                + `<optgroup label="Standard-Materialien">${standard}</optgroup>`;
+    + `<optgroup label="Standard-Materialien">${standard}</optgroup>`;
   _markMaterialBtn(); // aktuelle Voreinstellung im Feld zeigen
 }
 
@@ -8232,7 +8404,7 @@ async function _lpCanvasToUrl(c) {
   return url;
 }
 function _lpReleaseUrls() {
-  for (const u of _lpBlobUrls) { try { URL.revokeObjectURL(u); } catch (_) {} }
+  for (const u of _lpBlobUrls) { try { URL.revokeObjectURL(u); } catch (_) { } }
   _lpBlobUrls = [];
 }
 
@@ -8257,7 +8429,7 @@ function _lpRenderHead(slotCount) {
     (perSlot
       ? `<div class="hstack" style="gap:4px;margin-left:8px;flex-shrink:0;">
            <button class="btn btn-muted btn-xs" onclick="_lpSlotStep(-1)">◀</button>
-           <span style="font-size:var(--fs-klein);color:var(--text-dim);font-family:var(--mono);min-width:56px;text-align:center;">Foto ${_lpSlot+1}/${slotCount}</span>
+           <span style="font-size:var(--fs-klein);color:var(--text-dim);font-family:var(--mono);min-width:56px;text-align:center;">Foto ${_lpSlot + 1}/${slotCount}</span>
            <button class="btn btn-muted btn-xs" onclick="_lpSlotStep(1)">▶</button>
          </div>`
       : '');
@@ -8304,9 +8476,9 @@ async function showLaserPreview(opts) {
     }
     body.innerHTML = `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%;align-content:start;">` +
       tiles.map(t => `
-        <div style="border:2px solid ${t.active?'var(--accent)':'transparent'};border-radius:var(--r-s);padding:4px;background:var(--bg3);">
+        <div style="border:2px solid ${t.active ? 'var(--accent)' : 'transparent'};border-radius:var(--r-s);padding:4px;background:var(--bg3);">
           <img src="${t.url}" style="width:100%;image-rendering:pixelated;background:#fff;border-radius:var(--r-xs);"/>
-          <div style="font-size:var(--fs-klein);color:${t.active?'var(--accent)':'var(--text-dim)'};text-align:center;margin-top:4px;">${t.label}${t.active?' ·  aktiv':''}</div>
+          <div style="font-size:var(--fs-klein);color:${t.active ? 'var(--accent)' : 'var(--text-dim)'};text-align:center;margin-top:4px;">${t.label}${t.active ? ' ·  aktiv' : ''}</div>
           <div style="font-size:var(--fs-mikro);color:var(--text-muted);text-align:center;">${t.pct.toFixed(1)} % graviert</div>
         </div>`).join('') + `</div>`;
     stats.innerHTML = `Derselbe Slot in allen fünf Verfahren · Gamma ${Number(s.gamma).toFixed(2)} · Schwelle ${s.threshold}`
@@ -8349,9 +8521,9 @@ async function showLaserPreview(opts) {
     stats.innerHTML = dims
       + `<br>Gravierte Fläche: <b>${pct.toFixed(1)} %</b> — ${_lpVerdict(pct, s.invert)}`
       + `<br><span style="color:var(--text-muted);">${s.algorithm} · Gamma ${Number(s.gamma).toFixed(2)} · Schwelle ${s.threshold} · Kontrast ${s.contrast}`
-      + `${s.autoContrast ? ' · Auto-Kontrast' : ''}${s.localContrast ? ' · lokaler Kontrast ' + Math.round(s.localContrast*100) + '%' : ''}${s.konturen ? ' · Konturen ' + Math.round(s.konturen*100) + '%' : (s.edgeBoost ? ' · Kanten ' + Math.round(s.edgeBoost*100) + '%' : '')}${s.regionImmer ? ' · Bereiche immer ' + Math.round((s.regionImmer === true ? s.regionAusgleich : s.regionImmer)*100) + '%' : ''}${s.densityTarget ? ' · Dichte-Regelung ' + Math.round(s.densityTarget*100) + '%' : ''}${s.gesichtAuto ? ' · Gesichter ' + Math.round((s.gesichtZiel ?? 0.15)*100) + '%' : ''}${s.sharpen ? ' · Schärfen ' + Math.round(s.sharpen*100) + '%' : ''}`
-      + `${s.dotGain ? ' · Ausgleich ' + Math.round(s.dotGain*100) + '%' : ''}${s.inkDropout ? ' · Schnitt ' + Math.round(s.inkDropout*100) + '%' : ''}${s.schattenAuf && s.inkDropout ? ' · Dunkelgrau ≥ ' + Math.round(s.schattenAuf*100) + '%' : ''}`
-      + `${(s.inkMin > 0 || s.inkMax < 1) ? ' · Tonwert ' + Math.round(s.inkMin*100) + '–' + Math.round(s.inkMax*100) + '%' : ''}`
+      + `${s.autoContrast ? ' · Auto-Kontrast' : ''}${s.localContrast ? ' · lokaler Kontrast ' + Math.round(s.localContrast * 100) + '%' : ''}${s.konturen ? ' · Konturen ' + Math.round(s.konturen * 100) + '%' : (s.edgeBoost ? ' · Kanten ' + Math.round(s.edgeBoost * 100) + '%' : '')}${s.regionImmer ? ' · Bereiche immer ' + Math.round((s.regionImmer === true ? s.regionAusgleich : s.regionImmer) * 100) + '%' : ''}${s.densityTarget ? ' · Dichte-Regelung ' + Math.round(s.densityTarget * 100) + '%' : ''}${s.gesichtAuto ? ' · Gesichter ' + Math.round((s.gesichtZiel ?? 0.15) * 100) + '%' : ''}${s.sharpen ? ' · Schärfen ' + Math.round(s.sharpen * 100) + '%' : ''}`
+      + `${s.dotGain ? ' · Ausgleich ' + Math.round(s.dotGain * 100) + '%' : ''}${s.inkDropout ? ' · Schnitt ' + Math.round(s.inkDropout * 100) + '%' : ''}${s.schattenAuf && s.inkDropout ? ' · Dunkelgrau ≥ ' + Math.round(s.schattenAuf * 100) + '%' : ''}`
+      + `${(s.inkMin > 0 || s.inkMax < 1) ? ' · Tonwert ' + Math.round(s.inkMin * 100) + '–' + Math.round(s.inkMax * 100) + '%' : ''}`
       + `${s.invert ? ' · <b style="color:var(--amber);">invertiert</b>' : ''}</span>`;
   }
 
@@ -8455,7 +8627,7 @@ async function exportCalibrationWedge() {
     // gravierte 90 %) und verdrehte jeden abgelesenen Ausgleich.
     const v = Math.round(255 * (s.invert ? ink : 1 - ink));
     for (let k = 0; k < img.data.length; k += 4) {
-      img.data[k] = img.data[k+1] = img.data[k+2] = v; img.data[k+3] = 255;
+      img.data[k] = img.data[k + 1] = img.data[k + 2] = v; img.data[k + 3] = 255;
     }
     // _MESS_AUS ist hier zwingend (s. dort): die Felder sind je ein konstanter Grauwert,
     // und jede Regelung zieht genau so ein Feld auf ihren Zielwert — alle elf Felder kämen
@@ -8464,8 +8636,10 @@ async function exportCalibrationWedge() {
     // Keil soll NUR die Rasterung zeigen, ohne stille Zutaten.
     // CLAHE ebenso: es spreizt auch ein einfarbiges Feld (gemessen F02 schwarz: 0 % → 0,9 %, 10 % → 11,2 %).
     applyLaserPipeline(img.data, patchPx, patchPx,
-      { ...s, ..._MESS_AUS, gamma: 1.0, contrast: 0, autoContrast: false, clahe: 0, sharpen: 0,
-        edgeBoost: 0, localContrast: 0, dotGain: 0, inkMin: 0, inkMax: 1 }, null);
+      {
+        ...s, ..._MESS_AUS, gamma: 1.0, contrast: 0, autoContrast: false, clahe: 0, sharpen: 0,
+        edgeBoost: 0, localContrast: 0, dotGain: 0, inkMin: 0, inkMax: 1
+      }, null);
     tctx.putImageData(img, 0, 0);
     ctx.drawImage(tile, x, y); // 1:1 — keine Skalierung, Punktmuster bleibt exakt
     tile.width = tile.height = 0;
@@ -8481,8 +8655,8 @@ async function exportCalibrationWedge() {
   // „ohne Ausgleich" ist eine Zusage, keine Momentaufnahme: der Keil wird IMMER
   // unkompensiert gerastert, sonst passt die Beschriftung nicht zum Tinten-Anteil.
   const head1 = `Kalibrier-Keil · ${s.algorithm} · ${dpi} DPI${s.invert ? ' · invertiert' : ''}`
-              + ` · ohne Ausgleich, ohne Automatik (Messblatt)`
-              + ` · ${new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' })}`;
+    + ` · ohne Ausgleich, ohne Automatik (Messblatt)`
+    + ` · ${new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' })}`;
   // Die Ableseregel steht auf dem BLATT, für jeden der drei Regler getrennt: wer den Keil
   // in zwei Wochen wiederfindet, soll ihn ohne diese Datei auswerten können.
   const head2 = 'Ablesen 1: erstes Feld ohne weisse Struktur = alles zugelaufen. 100 minus dieser Wert = Tonwert-Ausgleich.';
@@ -8513,8 +8687,10 @@ function _testVorbereiten(was) {
 // Kacheln gleicher Größe (bb) in cols × rows unter dem Kopfbereich: Blattmaße + Pixel-Lage.
 function _testRaster(bb, cols, rows) {
   const cellH = bb.h + TESTGRID_LABEL_MM;
-  return { w: cols * bb.w + (cols - 1) * TESTGRID_GAP_MM, h: TESTGRID_HEAD_MM + rows * cellH + (rows - 1) * TESTGRID_GAP_MM,
-           lage: (mm, col, row) => [mm(col * (bb.w + TESTGRID_GAP_MM)), mm(TESTGRID_HEAD_MM + row * (cellH + TESTGRID_GAP_MM))] };
+  return {
+    w: cols * bb.w + (cols - 1) * TESTGRID_GAP_MM, h: TESTGRID_HEAD_MM + rows * cellH + (rows - 1) * TESTGRID_GAP_MM,
+    lage: (mm, col, row) => [mm(col * (bb.w + TESTGRID_GAP_MM)), mm(TESTGRID_HEAD_MM + row * (cellH + TESTGRID_GAP_MM))]
+  };
 }
 // Kopfzeilen [Text, Schrift-mm, y-mm] — auf Blattbreite eingepasst.
 function _testKopf({ c, ctx, mm }, zeilen) {
@@ -8554,7 +8730,7 @@ async function exportTestGrid() {
   const cols = byThreshold
     ? _spread3(Math.round(s.threshold), 25, 1, 254).map(Math.round)
     : _spread3(Math.round(s.sharpen * 100), 30, 0, 200).map(Math.round);   // bis 200 wie der Regler (F02 schwarz: 150)
-  const colOv  = (v) => byThreshold ? { threshold: v } : { sharpen: v / 100 };
+  const colOv = (v) => byThreshold ? { threshold: v } : { sharpen: v / 100 };
   const colLbl = (v) => byThreshold ? `S ${v}` : `Sch ${v}%`;
   const colAxis = byThreshold ? 'Schwellenwert' : 'Schärfen';
 
@@ -8569,11 +8745,11 @@ async function exportTestGrid() {
   // Kopfbereich, zwei Zeilen: was FEST ist, und was die Achsen bedeuten — sonst ist das
   // gebrannte Blatt in zwei Wochen nicht mehr zuzuordnen.
   const head1 = `${s.algorithm} · Kontrast ${s.contrast}${s.clahe > 0 ? ' (CLAHE ' + String(s.clahe).replace('.', ',') + ')' : s.autoContrast ? ' (auto)' : ''}`
-              + `${s.autoGamma ? ' · Auto-Gamma für den Test aus' : ''}`
-              + `${s.densityTarget ? ' · Dichte-Regelung für den Test aus' : ''}`
-              + `${byThreshold && s.sharpen ? ' · Schärfen ' + Math.round(s.sharpen * 100) + '%' : ''}`
-              + `${!byThreshold ? ' · Schwelle ' + s.threshold : ''}`
-              + `${s.invert ? ' · invertiert' : ''} · ${dpi} DPI · ${new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' })}`;
+    + `${s.autoGamma ? ' · Auto-Gamma für den Test aus' : ''}`
+    + `${s.densityTarget ? ' · Dichte-Regelung für den Test aus' : ''}`
+    + `${byThreshold && s.sharpen ? ' · Schärfen ' + Math.round(s.sharpen * 100) + '%' : ''}`
+    + `${!byThreshold ? ' · Schwelle ' + s.threshold : ''}`
+    + `${s.invert ? ' · invertiert' : ''} · ${dpi} DPI · ${new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' })}`;
   const head2 = `Zeilen: Gamma (G)   ·   Spalten: ${colAxis}   ·   % = gravierte Fläche`;
   _testKopf(blatt, [[head1, 3.2, 3], [head2, 2.6, 7.5]]);
 
@@ -8593,7 +8769,7 @@ async function exportTestGrid() {
   }
 
   _testSpeichern(blatt, dpi, `testgitter-${dpi}dpi.bmp`,
-    `✓ Testgitter gespeichert — Gamma ${gammas.map(v=>v.toFixed(2)).join('/')} × ${colAxis} ${cols.join('/')}`);
+    `✓ Testgitter gespeichert — Gamma ${gammas.map(v => v.toFixed(2)).join('/')} × ${colAxis} ${cols.join('/')}`);
 }
 
 // ── Tiefen-Reihe ─────────────────────────────────────────────────────────────
@@ -8618,8 +8794,8 @@ async function exportTiefenReihe() {
   showToast(`⏳ Tiefen-Reihe wird gerendert (${TIEFEN_STUFEN.length} Varianten)…`, 4000);
 
   const head1 = `Tiefen-Reihe · ${s.algorithm} · ${dpi} DPI · ${_gammaText(s)}`
-              + `${s.densityTarget ? ' · Dichte-Regelung für den Test aus' : ''}`
-              + `${s.invert ? ' · invertiert' : ''} · ${new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' })}`;
+    + `${s.densityTarget ? ' · Dichte-Regelung für den Test aus' : ''}`
+    + `${s.invert ? ' · invertiert' : ''} · ${new Date().toLocaleDateString('de-DE', { timeZone: 'Europe/Berlin' })}`;
   const head2 = 'Beste Kachel = Wangen hell UND noch Zeichnung darin. Deren Wert als Tiefen-Grenze eintragen.';
   _testKopf(blatt, [[head1, 3.2, 3.5], [head2, 2.6, 8]]);
 
@@ -8678,7 +8854,7 @@ async function exportDpiReihe() {
   }
   const ok = await _downloadPerPageOutputs(outputs, 'dpi-reihe.bmp', 'dpi-reihe.zip');
   showToast(ok ? `✓ DPI-Reihe gespeichert — ${DPI_REIHE.join(' / ')} DPI. Auf JEDER Maschine brennen und die beste ablesen.`
-               : '⚠️ Keine Datei erzeugt', 7000);
+    : '⚠️ Keine Datei erzeugt', 7000);
 }
 
 function toggleLaserPreviewZoom(img) {
@@ -8721,7 +8897,7 @@ function _ynLaden() {
       ort.env.wasm.numThreads = 1;
       ort.env.wasm.wasmPaths = basis + 'onnxruntime/';
       const sitzung = await ort.InferenceSession.create(basis + 'yunet/face_detection_yunet_2023mar.onnx',
-                                                        { executionProviders: ['wasm'] });
+        { executionProviders: ['wasm'] });
       return { ort, sitzung };
     })();
     _ynSitzung.catch(() => { _ynSitzung = null; });
@@ -8790,8 +8966,10 @@ async function _buildLaserCanvas(settings, opts = {}) {
   // Leinwand auf GANZE Pixel abrunden, nicht runden: ein 33-mm-Feld ist bei 500 DPI 649,6 px breit;
   // gerundet war die letzte Spalte nur zu 60 % Foto — nach Schärfen und Invertieren eine voll gravierte
   // Linie am rechten Rand („weißer Streifen rechts“). Abgerundet fehlen höchstens 0,05 mm Foto.
-  const { c, ctx } = _makeCanvas({ w: Math.max(1, Math.floor(bb.w * scale + 1e-6)) / scale,
-                                   h: Math.max(1, Math.floor(bb.h * scale + 1e-6)) / scale }, scale);
+  const { c, ctx } = _makeCanvas({
+    w: Math.max(1, Math.floor(bb.w * scale + 1e-6)) / scale,
+    h: Math.max(1, Math.floor(bb.h * scale + 1e-6)) / scale
+  }, scale);
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0, 0, c.width, c.height);
   ctx.translate(-bb.x * scale, -bb.y * scale);
@@ -8825,7 +9003,7 @@ async function _buildLaserCanvas(settings, opts = {}) {
     // sehen — im Nachtlauf steht es damit in logs/index.log (Präfix „Browser:").
     if (s.autoGamma && _lpInfo?.gammas?.length) {
       console.log('Auto-Gamma (Ziel ' + Math.round((s.autoGammaTarget ?? 0.45) * 100) + ' %):',
-                  _lpInfo.gammas.map(g => (g == null ? '–' : g.toFixed(2))).join(' / '));
+        _lpInfo.gammas.map(g => (g == null ? '–' : g.toFixed(2))).join(' / '));
     }
     // Der Faktor der Dichte-Regelung ist der STÄRKSTE Hebel im ganzen Bild (gemessen
     // zwischen 0,15 und 1,73) — er wurde bisher berechnet, zurückgegeben und
@@ -8833,7 +9011,7 @@ async function _buildLaserCanvas(settings, opts = {}) {
     // die Regelung gezogen hat. Jetzt steht er neben dem Auto-Gamma im Nachtlauf-Log.
     if (_lpInfo?.geregelt != null) {
       console.log('Dichte-Regelung (Ziel ' + Math.round(s.densityTarget * 100) + ' %): Gamma-Faktor '
-                  + _lpInfo.geregelt.toFixed(3));
+        + _lpInfo.geregelt.toFixed(3));
     }
     // Bereiche einzeln belichtet (s. _regionAusgleichRegion in laser-pipeline.js): nur bei
     // Plätzen, die sonst Zeichnung verlieren. Steht im Log und in der Belegungsliste —
@@ -8849,8 +9027,8 @@ async function _buildLaserCanvas(settings, opts = {}) {
     if (_letzteWeich) console.log('Grafik mit Verläufen: Tonwerte der Vorlage, ohne Dichte-Regelung und Ausgleich');
     if (_letzteRegion) {
       console.log('Bereiche einzeln belichtet: Zeichnung verloren ' + Math.round(_letzteRegion.vorher * 100)
-                  + ' % → ' + (_letzteRegion.nachher == null ? '–' : Math.round(_letzteRegion.nachher * 100) + ' %')
-                  + (_letzteRegion.uebernommen ? ' — übernommen' : ' — verworfen, kein Gewinn'));
+        + ' % → ' + (_letzteRegion.nachher == null ? '–' : Math.round(_letzteRegion.nachher * 100) + ' %')
+        + (_letzteRegion.uebernommen ? ' — übernommen' : ' — verworfen, kein Gewinn'));
     }
     // Verlorene Zeichnung (s. laser-pipeline.js): reine Diagnose, greift nicht ins Bild ein.
     // Sie steht in der Vorschau über jeder Kachel und im Nachtlauf-Log — damit VOR dem
@@ -8859,7 +9037,7 @@ async function _buildLaserCanvas(settings, opts = {}) {
       _letzteDiagnose = _lpInfo.verloren;
       if (_lpInfo.verloren.vonDetail >= _VERLOREN_GRENZE)
         console.warn('Verlorene Zeichnung ' + Math.round(_lpInfo.verloren.vonDetail * 100)
-                     + ' % — Platz prüfen (Grenze ' + Math.round(_VERLOREN_GRENZE * 100) + ' %)');
+          + ' % — Platz prüfen (Grenze ' + Math.round(_VERLOREN_GRENZE * 100) + ' %)');
     } else {
       _letzteDiagnose = null;
     }
@@ -8868,7 +9046,7 @@ async function _buildLaserCanvas(settings, opts = {}) {
     _letzteDichte = _lpInfo?.dichte || null;
     if (_letzteDichte?.verfehlt)
       console.warn('Dichte-Regelung verfehlt: Ziel ' + Math.round(_letzteDichte.ziel * 100)
-                   + ' %, erreicht ' + (_letzteDichte.ist * 100).toFixed(1) + ' %');
+        + ' %, erreicht ' + (_letzteDichte.ist * 100).toFixed(1) + ' %');
     ctx.putImageData(imageData, 0, 0);
     imageData = null; // ~4 Byte/Pixel sofort freigeben (Auto-Export ist OOM-empfindlich)
 
@@ -8977,13 +9155,13 @@ async function _buildBmpBlobsProSlot(ditherOpts) {
 // Maschine fährt ausschließlich echte Linien statt eine Bitmap-Fläche abzutasten.
 // Preis: Linienoptik statt Punktraster, und die Datei wird deutlich größer.
 async function _fotoHalbton(f, s, opt = {}) {
-  const zeile  = opt.pitch  || 0.35;   // mm Zeilenabstand
-  const schritt= opt.step   || 0.18;   // mm Abtastschritt entlang der Zeile
+  const zeile = opt.pitch || 0.35;   // mm Zeilenabstand
+  const schritt = opt.step || 0.18;   // mm Abtastschritt entlang der Zeile
   const lambda = opt.lambda || 0.9;    // mm Wellenlänge
-  const min    = opt.min    || 0.10;   // darunter: keine Linie
+  const min = opt.min || 0.10;   // darunter: keine Linie
   const px = 10;                        // Abtastauflösung px/mm
   const c = document.createElement('canvas');
-  c.width  = Math.max(1, Math.round(f.w * px));
+  c.width = Math.max(1, Math.round(f.w * px));
   c.height = Math.max(1, Math.round(f.h * px));
   const ctx = c.getContext('2d');
   ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height);
@@ -8991,10 +9169,10 @@ async function _fotoHalbton(f, s, opt = {}) {
   await renderFieldToCtx(ctx, f, px, { useOriginal: true, invert: !!(s && s.invert) });
   const dat = ctx.getImageData(0, 0, c.width, c.height).data;
   const dunkel = (mx, my) => {
-    const ix = Math.min(c.width  - 1, Math.max(0, Math.round((mx - f.x) * px)));
+    const ix = Math.min(c.width - 1, Math.max(0, Math.round((mx - f.x) * px)));
     const iy = Math.min(c.height - 1, Math.max(0, Math.round((my - f.y) * px)));
     const o = (iy * c.width + ix) * 4;
-    const l = (0.299 * dat[o] + 0.587 * dat[o+1] + 0.114 * dat[o+2]) / 255;
+    const l = (0.299 * dat[o] + 0.587 * dat[o + 1] + 0.114 * dat[o + 2]) / 255;
     return s && s.invert ? l : 1 - l; // auf Schwarz wird das Negativ graviert
   };
   const linien = [];
@@ -9029,9 +9207,11 @@ async function _bmpVorlageDateien(ditherOpts) {
     let blob, belegt = !!(f._img || f._imgSrc), diagnose = null, dichte = null, region = null, logo = false, weich = false, grafik = false, gesichter = null;
     if (belegt) {
       const r = await _buildLaserCanvas(ditherOpts, { only: f });
-      if (r) { blob = _laserBmp(r, s);
-               diagnose = _letzteDiagnose; dichte = _letzteDichte; region = _letzteRegion; logo = _letzteLogo;
-               weich = _letzteWeich; grafik = _letzteGrafik; gesichter = _letzteGesichter; }
+      if (r) {
+        blob = _laserBmp(r, s);
+        diagnose = _letzteDiagnose; dichte = _letzteDichte; region = _letzteRegion; logo = _letzteLogo;
+        weich = _letzteWeich; grafik = _letzteGrafik; gesichter = _letzteGesichter;
+      }
       else belegt = false;
     }
     if (!blob) {
@@ -9058,7 +9238,7 @@ async function _bmpVorlageDateien(ditherOpts) {
 // weil kein Vorlagen-Layout Text auf der Fotoseite hat, und wurde entfernt.
 function _deckelTextFelder() {
   return fields.filter(f => (f.type === 'text' || f.type === 'number' || f.type === 'static') && !f.arrayOf)
-               .sort(_nachPosition);
+    .sort(_nachPosition);
 }
 
 // Deckeltexte auf die zwölf Plätze verteilen — DIE eine Quelle für gravurN.dxf UND für die Vorschau
@@ -9073,9 +9253,9 @@ function _deckelTextFelder() {
 // Bestellungen hält der Auto-Export aus dem Text-Layout heraus (_istTextPartner/_nurMitFoto).
 function _deckelProPlatz(layoutFelder, vorlageSeiten, satz = 0) {
   const gefuellt = (vorlageSeiten.get(satz + '|0') || []).slice()
-                     .sort(_nachPosition);
+    .sort(_nachPosition);
   const alle = (layoutFelder || []).slice()
-                 .sort(_nachPosition);
+    .sort(_nachPosition);
   return alle.map((f, i) => gefuellt[i] || { ...f, _text: '', orderId: null });
 }
 
@@ -9090,7 +9270,7 @@ async function _gravurSlotDxf(f, layout) {
   const o = _dxfOpts(layout);
   const felder = _hasVecText(text) ? [text] : [];
   return new Blob([await buildDXFContent(felder, o.isFilled, o.isVector, false, o.asBlock, true, true, o.zusammen)],
-                  { type: 'application/dxf' });
+    { type: 'application/dxf' });
 }
 
 // Belegungsliste zur Vorlage: welcher Platz trägt heute welche Bestellung, dazu die Ezcad-Position JE
@@ -9099,17 +9279,17 @@ async function _gravurSlotDxf(f, layout) {
 function _bmpBelegungsListe(teile, layoutName, bestellungenProPlatz) {
   const p = getPg();
   const z = [`Belegung ${layoutName} — ${new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin' })}`,
-             `Blatt ${p.w} x ${p.h} mm, Nullpunkt = Blattmitte (Ezcad)`,
-             `Ezcad-Vorlage je Bitmap: "Dynamic File" AN, "Fixed DPI" ${(teile.find(t => t && t.dpi) || {}).dpi || 500}, "Fixed Size X/Y" AUS,`,
-             `"Fixed position" auf MITTE (sonst sitzt das Bild oben rechts daneben).`,
-             `Position X/Y aus dieser Liste. Die Werte ändern sich nur, wenn das Layout`,
-             `selbst verschoben wird. Array rechnet mit der LÜCKE, nicht mit dem Mittenabstand.`, ''];
+  `Blatt ${p.w} x ${p.h} mm, Nullpunkt = Blattmitte (Ezcad)`,
+  `Ezcad-Vorlage je Bitmap: "Dynamic File" AN, "Fixed DPI" ${(teile.find(t => t && t.dpi) || {}).dpi || 500}, "Fixed Size X/Y" AUS,`,
+    `"Fixed position" auf MITTE (sonst sitzt das Bild oben rechts daneben).`,
+    `Position X/Y aus dieser Liste. Die Werte ändern sich nur, wenn das Layout`,
+    `selbst verschoben wird. Array rechnet mit der LÜCKE, nicht mit dem Mittenabstand.`, ''];
   z.push('Platz  Datei          X (mm)     Y (mm)   Breite   Hoehe  Flaeche  Zeichng  Bestellung');
   const warnliste = [];
   for (const t of teile) {
     const [mx, my] = _ezcadMitte(t.bb, p);
     const wer = t.belegt ? (bestellungenProPlatz[t.platz] || 'belegt')
-                         : '— leer (weiß, wird nicht graviert)';
+      : '— leer (weiß, wird nicht graviert)';
     // Spalte „Zeichng" = Anteil verlorener Zeichnung (s. laser-pipeline.js). Nur eine
     // Meldung; an der Gravurdatei ändert sie nichts.
     let dg = '     —';
@@ -9295,7 +9475,7 @@ async function _vorlageLeerSchreiben(layout, formats, today, mode) {
     if (formats.includes('dxf')) {
       const o = _dxfOpts(layout);
       const leer = new Blob([await buildDXFContent([], o.isFilled, o.isVector, o.frame, o.asBlock, o.centerOrigin, o.bildRahmen, o.zusammen)],
-                            { type: 'application/dxf' });
+        { type: 'application/dxf' });
       const seiten = mode === 'synchron' ? (layout.pages?.length || 1) : 1;   // wie basePages im Export
       for (let r = 0; r < seiten; r++) {
         if (_seiteHatGravur(layout, r)) await uploadExportToServer(leer, _vorlageDxfName(r), today, layout.group, ordner);
@@ -9326,7 +9506,9 @@ const _asinDatum = (iso) => iso
 
 async function _asinProfil(asin) {
   try {
-    const r = await fetch(`${BASE_URL}/v2/asin-check/${encodeURIComponent(asin)}`);
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const r = await fetch(`${BASE_URL}/v2/asin-check/${encodeURIComponent(asin)}`, { headers, credentials: 'include' });
     return r.ok ? await r.json() : null;
   } catch (_) { return null; }
 }
@@ -9368,7 +9550,7 @@ async function asinZeigen() {
   try {
     const s = await _apiJson('/v2/asin-check/scan');
     if (s && s.running) _asinPoll(s.asin, false); else _asinStatus(null);
-  } catch (_) {}
+  } catch (_) { }
 }
 
 // Prüfen erst mit vollständiger ASIN — ein leeres oder halbes Feld kann nichts auslösen.
@@ -9394,7 +9576,7 @@ async function _asinListe() {
 
 function asinFilterSetzen(f) {
   _asinFilter = f;
-  try { localStorage.setItem('asinFilter', f); } catch (_) {}
+  try { localStorage.setItem('asinFilter', f); } catch (_) { }
   _asinListeZeichnen();
 }
 
@@ -9409,8 +9591,8 @@ function _asinListeZeichnen() {
   if (fbox) {
     fbox.innerHTML = layoutsOk
       ? _segBtn(_asinFilter === 'alle', "asinFilterSetzen('alle')", `Alle (${n.alle})`, 'Alle bekannten Produkte')
-        + _segBtn(_asinFilter === 'mit', "asinFilterSetzen('mit')", `Mit Layout (${n.mit})`, 'Produkte, die ein Layout füllt')
-        + _segBtn(_asinFilter === 'ohne', "asinFilterSetzen('ohne')", `Ohne (${n.ohne})`, 'Produkte ohne Layout — ihre Bestellungen werden nicht exportiert')
+      + _segBtn(_asinFilter === 'mit', "asinFilterSetzen('mit')", `Mit Layout (${n.mit})`, 'Produkte, die ein Layout füllt')
+      + _segBtn(_asinFilter === 'ohne', "asinFilterSetzen('ohne')", `Ohne (${n.ohne})`, 'Produkte ohne Layout — ihre Bestellungen werden nicht exportiert')
       : '<div class="umut10">Layouts nicht lesbar — Filter aus.</div>';
   }
   if (!liste.length) {
@@ -9517,14 +9699,14 @@ async function asinNachladen(asin) {
 }
 
 async function asinScanAbbrechen() {
-  try { await fetch(`${BASE_URL}/v2/asin-check/scan/abbrechen`, { method: 'POST' }); } catch (_) {}
+  try { await _apiJson('/v2/asin-check/scan/abbrechen', 'POST'); } catch (_) { }
 }
 
 function _asinPoll(asin, oeffnen) {
   clearTimeout(_asinPollTimer);
   const tick = async () => {
     let s = null;
-    try { s = await _apiJson('/v2/asin-check/scan'); } catch (_) {}
+    try { s = await _apiJson('/v2/asin-check/scan'); } catch (_) { }
     _asinStatus(s);
     if (s && s.running) { _asinPollTimer = setTimeout(tick, 2000); return; }
     _asinListe();
@@ -9574,9 +9756,11 @@ function _asinSeiten(baum, werte, nummer) {
   const seiten = [];
   const neueSeite = (n) => {
     const bilder = Object.entries((werte[n.k] || {}).bilder || {}).sort((a, b) => b[1].n - a[1].n);
-    const s = { k: n.k, name: n.name || '', label: n.label || n.name || 'Personalisierung',
-                raster: n.raster || null, bild: bilder.length ? { url: bilder[0][0], ...bilder[0][1] } : null,
-                texte: [], bilder: [], auswahl: [], schriften: {}, farben: {}, folge: [] };
+    const s = {
+      k: n.k, name: n.name || '', label: n.label || n.name || 'Personalisierung',
+      raster: n.raster || null, bild: bilder.length ? { url: bilder[0][0], ...bilder[0][1] } : null,
+      texte: [], bilder: [], auswahl: [], schriften: {}, farben: {}, folge: []
+    };
     seiten.push(s);
     return s;
   };
@@ -9591,16 +9775,20 @@ function _asinSeiten(baum, werte, nummer) {
     const platz = c.platz && c.platz.dimension && c.platz.position
       ? { x: c.platz.position.x, y: c.platz.position.y, w: c.platz.dimension.width, h: c.platz.dimension.height } : null;
     if (n.type === 'TextCustomization') {
-      const t = { k: n.k, label: n.label || '', platzLabel: (c.platz && (c.platz.label || c.platz.name)) || '',
-                  container: c.container || '', platz, nr: nummer[n.k] ?? null, stat: w };
+      const t = {
+        k: n.k, label: n.label || '', platzLabel: (c.platz && (c.platz.label || c.platz.name)) || '',
+        container: c.container || '', platz, nr: nummer[n.k] ?? null, stat: w
+      };
       seiteFuer(c).texte.push(t);
       seiteFuer(c).folge.push({ art: 'text', t });
     } else if (n.type === 'ImageCustomization') {
       seiteFuer(c).bilder.push({ k: n.k, label: n.label || '', platz, stat: w });
       seiteFuer(c).folge.push({ art: 'bild' });
     } else if (n.type === 'OptionCustomization') {
-      const a = { k: n.k, label: n.label || n.name || '', name: n.name || '', stat: w,
-                  thema: _ddThema(n.name, n.label), nrs: [], bilder: 0 };
+      const a = {
+        k: n.k, label: n.label || n.name || '', name: n.name || '', stat: w,
+        thema: _ddThema(n.name, n.label), nrs: [], bilder: 0
+      };
       seiteFuer(c).auswahl.push(a);
       seiteFuer(c).folge.push({ art: 'frage', a });
     } else if (n.type === 'FontCustomization') {
@@ -9700,8 +9888,10 @@ function _asinAbgleich(asin, layouts, fassung) {
     hinweise.push({ warn: true, text: `${b.name}: Bildfeld vorhanden, das Produkt hat aber keinen Foto-Upload` });
   }
   if (!hinweise.length) {
-    hinweise.push({ warn: false, text: 'Alles abgedeckt'
-      + (nrs.size ? ` — Gravur ${_asinBereiche([...nrs])}` : '') + (fassung.bilder.length ? ' und Kundenfoto' : '') });
+    hinweise.push({
+      warn: false, text: 'Alles abgedeckt'
+        + (nrs.size ? ` — Gravur ${_asinBereiche([...nrs])}` : '') + (fassung.bilder.length ? ' und Kundenfoto' : '')
+    });
   }
   const zeilen = bel.map(b => {
     const teile = [];
@@ -9737,7 +9927,7 @@ function _asinVorschau(s, beispielUrl) {
          onerror="if(this.dataset.produkt&&this.getAttribute('src')!==this.dataset.produkt){this.src=this.dataset.produkt}else{this.style.visibility='hidden'}">` : ''}
     <svg viewBox="0 0 ${r.w} ${r.h}" preserveAspectRatio="none">
       ${rects.map(q => `<rect class="${q.cls}" x="${q.x}" y="${q.y}" width="${q.w}" height="${q.h}"/>`
-        + `<text x="${q.x + 3}" y="${q.y + fs}" font-size="${fs}" class="${q.cls}-t">${_esc(q.lbl)}</text>`).join('')}
+    + `<text x="${q.x + 3}" y="${q.y + fs}" font-size="${fs}" class="${q.cls}-t">${_esc(q.lbl)}</text>`).join('')}
     </svg>
   </div>`;
 }
@@ -9834,7 +10024,7 @@ async function _asinBeispiel(asin, fassung) {
     .sort((a, b) => String(b.purchaseDate || '').localeCompare(String(a.purchaseDate || '')));
   for (const o of kandidaten.slice(0, 6)) {
     let d = null;
-    try { d = await _fetchOrderJson(o); } catch (_) {}
+    try { d = await _fetchOrderJson(o); } catch (_) { }
     if (!d || !d.customizationData) continue;
     const seiten = _seitenNamen(d.customizationData);
     if (!seiten.length || !seiten.every(nm => namen.has(nm))) continue;
@@ -9924,7 +10114,7 @@ async function asinOeffnen(asin, p) {
   if (nr !== _asinOeffnenNr) return;
   if (!p) { showToast('Zu dieser ASIN liegt noch keine Bestellung vor — „Prüfen" lädt nach Rückfrage bei Amazon nach', 5000); return; }
   let layouts = [];
-  try { layouts = await getServerLayouts(); } catch (_) {}
+  try { layouts = await getServerLayouts(); } catch (_) { }
   const analyse = _asinAnalyse(p);
   const beispiel = await _asinBeispiel(asin, analyse.fassungen[0]).catch(() => null);
   if (nr !== _asinOeffnenNr) return;
@@ -9935,7 +10125,7 @@ async function asinOeffnen(asin, p) {
   _asinBeispielKnopf();
   document.getElementById('asin-overlay').style.display = 'flex';
   // Läuft gerade ein Nachladen für diese ASIN, gehört sein Fortschritt in den Dialog.
-  try { _asinStatus(await _apiJson('/v2/asin-check/scan')); } catch (_) {}
+  try { _asinStatus(await _apiJson('/v2/asin-check/scan')); } catch (_) { }
 }
 
 function asinSchliessen() {
@@ -9964,7 +10154,7 @@ async function asinEntwurf() {
   const seiten = f.seiten.filter(s => s.texte.some(t => t.platz && t.nr != null) || s.bilder.some(b => b.platz) || grafikFragen(s).length);
   if (!seiten.length) { showToast('Diese Fassung hat keine Gravur- oder Bildflächen mit Position', 4000); return; }
   if (fields.length && !(await confirmModal('Arbeitsfläche ersetzen?',
-      `Die ${fields.length} Felder dieser Seite werden durch den Entwurf ersetzt (Strg+Z macht es rückgängig).`, 'Ersetzen'))) return;
+    `Die ${fields.length} Felder dieser Seite werden durch den Entwurf ersetzt (Strg+Z macht es rückgängig).`, 'Ersetzen'))) return;
   await _ddMotivListeLaden(true);
   saveUndo();
   fields = []; sel = null; multiSel.clear();
@@ -9978,8 +10168,10 @@ async function asinEntwurf() {
     // ohne Textfeld mittig in der Spalte — Lage und Größe stellt man danach ein.
     const motivFeld = (frage, box) => {
       motivN++;
-      fields.push({ id: ++idc, type: 'motiv', palNum: 1, name: '◆ ' + frage, motivDatei: '', ddGruppe: 'dd' + Date.now() + '_' + motivN, ...box,
-                    ddFrage: frage, orderId: null, _img: null, _text: null });
+      fields.push({
+        id: ++idc, type: 'motiv', palNum: 1, name: '◆ ' + frage, motivDatei: '', ddGruppe: 'dd' + Date.now() + '_' + motivN, ...box,
+        ddFrage: frage, orderId: null, _img: null, _text: null
+      });
     };
     if (!els.length) {
       const w = +(breit * 0.6).toFixed(2);
@@ -9990,18 +10182,24 @@ async function asinEntwurf() {
     const minX = Math.min(...els.map(e => e.platz.x)), minY = Math.min(...els.map(e => e.platz.y));
     const maxX = Math.max(...els.map(e => e.platz.x + e.platz.w)), maxY = Math.max(...els.map(e => e.platz.y + e.platz.h));
     const mass = Math.min(breit / Math.max(1, maxX - minX), (p.h - 2 * p.m) / Math.max(1, maxY - minY));
-    const lage = e => ({ x: +(x0 + (e.platz.x - minX) * mass).toFixed(2), y: +(p.m + (e.platz.y - minY) * mass).toFixed(2),
-                         w: +Math.max(1, e.platz.w * mass).toFixed(2), h: +Math.max(1, e.platz.h * mass).toFixed(2) });
+    const lage = e => ({
+      x: +(x0 + (e.platz.x - minX) * mass).toFixed(2), y: +(p.m + (e.platz.y - minY) * mass).toFixed(2),
+      w: +Math.max(1, e.platz.w * mass).toFixed(2), h: +Math.max(1, e.platz.h * mass).toFixed(2)
+    });
     for (const t of s.texte.filter(t => t.platz && t.nr != null)) {
       textN++;
-      fields.push({ id: ++idc, type: 'text', palNum: t.nr, name: 'Gravur ' + t.nr, ...lage(t),
-                    fontSize: 10, fontFamily: 'Arial', textAlign: 'center', orderId: null, _img: null, _text: null,
-                    overflowMode: 'stauch' });
+      fields.push({
+        id: ++idc, type: 'text', palNum: t.nr, name: 'Gravur ' + t.nr, ...lage(t),
+        fontSize: 10, fontFamily: 'Arial', textAlign: 'center', orderId: null, _img: null, _text: null,
+        overflowMode: 'stauch'
+      });
     }
     for (const b of s.bilder.filter(b => b.platz)) {
       bildN++;
-      fields.push({ id: ++idc, type: 'image', palNum: bildN, name: 'Bild ' + bildN, ...lage(b),
-                    fontSize: 10, fontFamily: 'Arial', textAlign: 'center', orderId: null, _img: null, _text: null });
+      fields.push({
+        id: ++idc, type: 'image', palNum: bildN, name: 'Bild ' + bildN, ...lage(b),
+        fontSize: 10, fontFamily: 'Arial', textAlign: 'center', orderId: null, _img: null, _text: null
+      });
     }
     const texte = s.texte.filter(t => t.platz && t.nr != null);
     for (const q of grafikFragen(s)) {
@@ -10027,7 +10225,7 @@ async function asinEntwurf() {
   // Füll-ASIN gleich mitsetzen: beim Speichern landet sie im Layout (_fillCfgToLayout).
   _fillCfg.singleAsinMode = true;
   _fillCfg.globalAsin = a.asin;
-  try { _syncFillUI(); _updateFillDirty(); renderSaved(true); } catch (_) {}
+  try { _syncFillUI(); _updateFillDirty(); renderSaved(true); } catch (_) { }
   scheduleRender(); renderFieldList(); renderProps();
   asinSchliessen();
   showToast(`▦ Entwurf für ${a.asin}: ${textN} Gravurfeld${textN === 1 ? '' : 'er'}${bildN ? `, ${bildN} Bildfeld${bildN === 1 ? '' : 'er'}` : ''}${motivN ? `, ${motivN} Motivfeld${motivN === 1 ? '' : 'er'} (Motiv je Antwort)` : ''}. `
@@ -10071,7 +10269,7 @@ async function lightburnKonzept() {
   if (!box) return;
   let ordner = [..._ezDaten.values()].map(x => x.o);
   if (!ordner.length) {
-    try { ordner = (await _apiJson('/vorlage/uebersicht')).ordner || []; }
+    try { ordner = (await _apiJson('/v2/vorlage/uebersicht')).ordner || []; }
     catch (e) { box.innerHTML = `<div class="umut10">${_esc(e.message)}</div>`; return; }
   }
   if (_maschineWahl !== 'lightburn') return;
@@ -10181,9 +10379,9 @@ async function ezdZurueckholen(ordner, datei, selId) {
   const sel = document.getElementById(selId);
   if (!sel || !sel.value) return;
   if (!await confirmModal('Sicherung zurückholen?', `${datei}: Stand vom ${sel.options[sel.selectedIndex].textContent}\n\n`
-      + 'Der jetzige Stand wird vorher selbst gesichert. In Ezcad die Datei danach neu öffnen.', 'Zurückholen')) return;
+    + 'Der jetzige Stand wird vorher selbst gesichert. In Ezcad die Datei danach neu öffnen.', 'Zurückholen')) return;
   try {
-    await _apiJson('/vorlage/zurueck', 'POST', { ordner, datei, name: sel.value });
+    await _apiJson('/v2/vorlage/zurueck', 'POST', { ordner, datei, name: sel.value });
     showToast(`✅ ${datei}: Sicherung zurückgeholt — in Ezcad neu öffnen`, 7000);
   } catch (e) {
     showToast('❌ ' + e.message, 8000);
@@ -10259,8 +10457,10 @@ function _ezSaetze(o, archiv) {
   if (!e || e.pruef) return { satz: 1, saetze: 1, naechster: null };
   const gleich = archiv.filter(a => a.tag === e.tag && _ezLauf(a.pfad) === _ezLauf(e.pfad));
   const satz = e.satz || 1;
-  return { satz, saetze: Math.max(satz, ...gleich.map(a => a.satz || 1)),
-           naechster: gleich.find(a => (a.satz || 1) === satz + 1) || null };
+  return {
+    satz, saetze: Math.max(satz, ...gleich.map(a => a.satz || 1)),
+    naechster: gleich.find(a => (a.satz || 1) === satz + 1) || null
+  };
 }
 const _ezSatzKnopf = (ordner, a, saetze, klasse) =>
   `<button class="${klasse}" onclick="ezcadSatzLaden('${_jsStr(ordner)}','${_jsStr(a.pfad)}',${a.satz},${saetze})">Satz ${a.satz} laden</button>`;
@@ -10285,7 +10485,7 @@ const _EZ_BEST_RE = /\d{3}-\d{7}-\d{7}/;
 function _ezBelegungLesen(text) {
   const plaetze = new Map();
   const abschnitte = [['DICHTE-REGELUNG', 'dichte'], ['GESICHTS-AUTOMATIK', 'gesicht'], ['BEREICHE EINZELN', 'bereich'],
-                      ['ALS LOGO', 'logo'], ['ALS GRAFIK', 'grafik'], ['ACHTUNG', 'achtung']];
+  ['ALS LOGO', 'logo'], ['ALS GRAFIK', 'grafik'], ['ACHTUNG', 'achtung']];
   let abschnitt = null;
   for (const zeile of String(text).split(/\r?\n/)) {
     const t = zeile.match(/^\s*(\d+)\s+platz\d+\.bmp\s/i);
@@ -10293,8 +10493,10 @@ function _ezBelegungLesen(text) {
       const n = Number(t[1]);
       const zg = zeile.match(/\s(!?)\s*(\d+)%\s+(?:\d{3}-|—|belegt)/);
       const fl = zeile.match(/\s(\d+(?:\.\d+)?)%\s/);
-      plaetze.set(n, { n, bestellung: (zeile.match(_EZ_BEST_RE) || [])[0] || null, leer: /— leer/.test(zeile),
-                       flaeche: fl ? Number(fl[1]) : null, zeichnung: zg ? Number(zg[2]) : null, zeichnungWarn: !!zg?.[1], notizen: {} });
+      plaetze.set(n, {
+        n, bestellung: (zeile.match(_EZ_BEST_RE) || [])[0] || null, leer: /— leer/.test(zeile),
+        flaeche: fl ? Number(fl[1]) : null, zeichnung: zg ? Number(zg[2]) : null, zeichnungWarn: !!zg?.[1], notizen: {}
+      });
       continue;
     }
     const kopf = abschnitte.find(([k]) => zeile.startsWith(k));
@@ -10322,7 +10524,7 @@ function _ezBelegungHolen(dat) {
       if (jetzt?.fertig) _ezKopfMarke(jetzt);   // Warnungen zählen für „startklar" mit
       if (ordner === _ezAuswahl) _ezBuehneZeichnen();
     })
-    .catch(() => {});
+    .catch(() => { });
   return null;
 }
 
@@ -10332,7 +10534,7 @@ function _ezBelegungHolen(dat) {
 // gestrichelt die Felder des Layouts, daneben die Startklar-Liste. Umschaltbar auf den Entwurf,
 // falls es einen gibt. (Ansichten zum Anschauen sind eigene Layouts, z. B. F02_*_PNG — nicht hier.)
 const _ezDaten = new Map();   // Ordner → { o, archiv, layout, haupt, ezd: [{ datei, d, probleme }], fertig }
-const _ezMerk = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (_) {} return null; };
+const _ezMerk = (k, v) => { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (_) { } return null; };
 let _ezAuswahl = _ezMerk('ezcad.auswahl') || '';
 let _ezAnsicht = _ezMerk('ezcad.ansicht') || 'blech';
 const _ezBildZustand = new Map();   // Bild-URL → 'leer' | 'fehlt' | 'ok'
@@ -10379,7 +10581,7 @@ function _ezBuehneZeichnen(meldung) {
     <div class="mb-kopf">
       <div class="mb-titel"><b>${_esc(o.ordner)}</b><span class="marke ${ampel[0]}">${ampel[1]}</span></div>
       ${ansichten.length > 1 ? `<div class="seg mb-ansicht">${ansichten.map(([k, t]) =>
-        `<button class="seg-b${k === ansicht ? ' an' : ''}" onclick="ezBuehneAnsicht('${k}')">${t}</button>`).join('')}</div>` : ''}
+    `<button class="seg-b${k === ansicht ? ' an' : ''}" onclick="ezBuehneAnsicht('${k}')">${t}</button>`).join('')}</div>` : ''}
       <div class="mb-unter">${unter}</div>
     </div>
     <div class="mb-rumpf">
@@ -10523,18 +10725,20 @@ function _ezObjekte(d, o, ctx) {
   const obj = d.objekte || [];
   if (!obj.length) return '';
   const fremd = _ezFremd(o);
-  const typ = { image: ['▦', 'Bild'], vectorfile: ['✎', 'DXF'], hatch: ['▧', 'Füllung'], text: ['T', 'Text'],
-                group: ['◫', 'Gruppe'], combine: ['◫', 'Kombi'] };
+  const typ = {
+    image: ['▦', 'Bild'], vectorfile: ['✎', 'DXF'], hatch: ['▧', 'Füllung'], text: ['T', 'Text'],
+    group: ['◫', 'Gruppe'], combine: ['◫', 'Kombi']
+  };
   let nrOben = 0;
   const zeilen = obj.map(x => {
     const [sym, art] = typ[x.typ] || ['·', x.typ];
     const name = x.pfad ? String(x.pfad).split('\\').pop().replace(/\.(bmp|dxf|png|jpe?g|plt|ai|svg)$/i, '')
       : x.typ === 'hatch' ? (x.saetze || []).map(z => _ezZahl(z.abstand) + ' mm').join(' + ') || art
-      : x.typ === 'text' ? '„' + (x.text || '') + '"' : (x.label || art);
+        : x.typ === 'text' ? '„' + (x.text || '') + '"' : (x.label || art);
     const titel = [art + (x.label ? ' „' + x.label + '"' : ''), x.pfad || '',
-      typeof x.x === 'number' ? `X ${_ezZahl(Math.round(x.x * 1000) / 1000)} · Y ${_ezZahl(Math.round(x.y * 1000) / 1000)}` : '',
-      x.breite ? `${_ezZahl(Math.round(x.breite * 100) / 100)} × ${_ezZahl(Math.round(x.hoehe * 100) / 100)} mm` : '',
-      typeof x.flags === 'number' ? (x.flags & 0x1000 ? 'Dynamic File an' : 'Dynamic File aus') : ''].filter(Boolean).join('\n');
+    typeof x.x === 'number' ? `X ${_ezZahl(Math.round(x.x * 1000) / 1000)} · Y ${_ezZahl(Math.round(x.y * 1000) / 1000)}` : '',
+    x.breite ? `${_ezZahl(Math.round(x.breite * 100) / 100)} × ${_ezZahl(Math.round(x.hoehe * 100) / 100)} mm` : '',
+    typeof x.flags === 'number' ? (x.flags & 0x1000 ? 'Dynamic File an' : 'Dynamic File aus') : ''].filter(Boolean).join('\n');
     const xy = v => typeof v === 'number' ? _ezZahl(Math.round(v * 10) / 10) : '';   // genau: Tooltip/Prüfung
     // Bilder und DXF-Gravuren tragen ihre Lage für „✎ Lage ändern" mit (Dateiname + genaue Mitte).
     // Eine Gravur verschiebt der Server samt ihrer Füllung.
@@ -10546,7 +10750,7 @@ function _ezObjekte(d, o, ctx) {
   });
   const knopf = ctx && obj.some(x => x.typ === 'image' || x.typ === 'vectorfile')
     ? `<div class="hsb ez-lage-kopf"><span class="umut10">Lage in mm · Mitte des Blechs = 0/0</span>`
-      + `<button class="ez-knopf" data-ordner="${_esc(ctx.ordner)}" data-datei="${_esc(ctx.datei)}" onclick="ezdLageBearbeiten(this)" title="Lage der Bilder und Gravuren ändern (als Entwurf)">✎ Lage ändern</button></div>` : '';
+    + `<button class="ez-knopf" data-ordner="${_esc(ctx.ordner)}" data-datei="${_esc(ctx.datei)}" onclick="ezdLageBearbeiten(this)" title="Lage der Bilder und Gravuren ändern (als Entwurf)">✎ Lage ändern</button></div>` : '';
   return `<details class="ez-aufklapp ez-objekte"><summary>Objekte (${obj.filter(x => !x.in).length})</summary>
       ${knopf}
       <div class="ez-objliste"><div class="ez-obj ez-obj-kopf"><span>#</span><i></i><span>Objekt</span><span>Stift</span><span>X</span><span>Y</span></div>${zeilen.join('')}</div>
@@ -10560,10 +10764,10 @@ function _ezObjekte(d, o, ctx) {
 const _ezAuftraege = {};   // vorbereitete Aufträge der Knöpfe („wie Layout setzen")
 async function _ezdObjekteSenden(ordner, datei, auftrag, frage, text) {
   if (!await confirmModal(frage, text + '\n\nGespeichert wird ein ENTWURF neben der echten Datei. Den kannst du in Ezcad '
-      + 'öffnen und ansehen — erst „Übernehmen" ersetzt die echte Datei (mit Sicherung).', 'Entwurf speichern')) return;
+    + 'öffnen und ansehen — erst „Übernehmen" ersetzt die echte Datei (mit Sicherung).', 'Entwurf speichern')) return;
   showToast('⏳ Entwurf wird geschrieben …', 20000);
   try {
-    const r = await _apiJson('/vorlage/objekte', 'POST', { ordner, datei, auftrag });
+    const r = await _apiJson('/v2/vorlage/objekte', 'POST', { ordner, datei, auftrag });
     showToast(`✅ ${r.entwurf} gespeichert — in Ezcad ansehen, dann übernehmen`, 8000);
   } catch (e) {
     showToast('❌ ' + e.message, 9000);
@@ -10578,12 +10782,12 @@ function ezdAuftrag(key) {
 async function ezdEntwurf(ordner, datei, uebernehmen) {
   const ok = await confirmModal(uebernehmen ? 'Entwurf übernehmen?' : 'Entwurf verwerfen?',
     uebernehmen ? `${datei} wird durch den Entwurf ersetzt. Die bisherige Datei wird gesichert (↶ holt sie zurück). `
-                  + 'In Ezcad die Datei danach neu öffnen.'
-                : `Der Entwurf zu ${datei} wird gelöscht. Die echte Datei bleibt, wie sie ist.`,
+      + 'In Ezcad die Datei danach neu öffnen.'
+      : `Der Entwurf zu ${datei} wird gelöscht. Die echte Datei bleibt, wie sie ist.`,
     uebernehmen ? 'Übernehmen' : 'Verwerfen');
   if (!ok) return;
   try {
-    await _apiJson('/vorlage/entwurf', 'POST', { ordner, datei, uebernehmen });
+    await _apiJson('/v2/vorlage/entwurf', 'POST', { ordner, datei, uebernehmen });
     showToast(uebernehmen ? `✅ ${datei}: Entwurf übernommen — in Ezcad neu öffnen` : '✅ Entwurf verworfen', 7000);
   } catch (e) {
     showToast('❌ ' + e.message, 8000);
@@ -10640,7 +10844,7 @@ async function ezcadLaden(still, vorab) {
   let daten, layouts;
   try {
     [daten, layouts] = await Promise.all([
-      vorab || _apiJson('/vorlage/uebersicht'),
+      vorab || _apiJson('/v2/vorlage/uebersicht'),
       getServerLayouts(),
     ]);
   } catch (e) {
@@ -10666,7 +10870,7 @@ async function ezcadLaden(still, vorab) {
     o, archiv: daten.archiv.filter(a => a.ordner === o.ordner),
     // Das Foto-Layout (bmp) zuerst — seit 13.10. schreibt auch die PNG-Ansicht in den Ordner
     layout: layouts.find(l => _vorlageName(l) === o.ordner && _istVorlageLayout(l) && _formate(l).includes('bmp'))
-         || layouts.find(l => _vorlageName(l) === o.ordner && _istVorlageLayout(l)) || null,
+      || layouts.find(l => _vorlageName(l) === o.ordner && _istVorlageLayout(l)) || null,
     // Die echte .ezd zählt für „startklar" und vergleicht sich mit den Geschwistern — nicht ein
     // Entwurf oder eine Testkopie
     haupt: (o.ezd.find(e => !_ezNebendatei(e.datei)) || o.ezd[0])?.datei || null,
@@ -10712,7 +10916,7 @@ setInterval(async () => {
   if (document.hidden || _maschineWahl !== 'ezcad' || !document.querySelector('.workspace.maschinen-an')) return;
   if (!_ezStandSig || _ezBearbeitetGerade()) return;
   let daten;
-  try { daten = await _apiJson('/vorlage/uebersicht'); } catch (_) { return; }
+  try { daten = await _apiJson('/v2/vorlage/uebersicht'); } catch (_) { return; }
   if (JSON.stringify(daten) === _ezStandSig || _ezBearbeitetGerade()) return;
   ezcadLaden(true, daten);
 }, _EZ_AKTUALISIEREN_MS);
@@ -10758,7 +10962,7 @@ function _ezcadKarte(o, archiv) {
   const s = _ezSaetze(o, archiv), mehr = s.saetze - s.satz;
   const tag = e && e.pruef ? '<span class="marke ez-fehler">Prüfgravur</span>'
     : e ? (e.tag === heute && e.satz <= 1 ? '' : `<span class="marke ez-warn" title="${_esc(tagTitel)}">${_ezcadDatum(e.tag)}${e.satz > 1 ? ' S' + e.satz : ''}</span>`)
-    : _ezcadLeer(o) ? '' : '<span class="marke ez-warn">kein Tag</span>';   // leer: „0/12" sagt es schon
+      : _ezcadLeer(o) ? '' : '<span class="marke ez-warn">kein Tag</span>';   // leer: „0/12" sagt es schon
   // Vorauswahl: der jüngste NORMALE Tageslauf („<Tag>/…") — nicht ein Testblech, eine Reklamation
   // oder ein „Lauf 2", die zufällig neuer sind. Deren Herkunft steht in der Auswahl dabei.
   const vorwahl = (archiv.find(a => !a.pruef && !_ezHerkunft(a.pfad)) || {}).pfad;
@@ -10783,7 +10987,7 @@ function _ezcadKarte(o, archiv) {
         <div id="${id}-ezd">
           ${o.ezd.length ? o.ezd.map(e => `<div id="${_ezBlockId(o.ordner, e.datei)}" class="ez-block">
               ${_ezPfad([..._EZCAD_WURZEL, o.ordner], e.datei, false, _ezcadZeit(e.geaendert), 'zuletzt gespeichert')}<div class="umut10">wird gelesen …</div></div>`).join('')
-                         : '<div class="ez-meldung ez-warn">Keine .ezd in diesem Ordner</div>'}
+      : '<div class="ez-meldung ez-warn">Keine .ezd in diesem Ordner</div>'}
         </div>
       </div>
     </details>`;
@@ -10808,19 +11012,19 @@ async function ezcadTagLaden(ordner, id) {
   if (!sel || !sel.value) return;
   const text = sel.options[sel.selectedIndex].textContent;
   if (!await confirmModal('Tag in den Arbeitsordner laden?',
-      `${ordner}: ${text}\n\nDie Bilder und Gravuren im Arbeitsordner werden ersetzt. Der nächste Tageslauf überschreibt sie wieder.`,
-      'Laden')) return;
+    `${ordner}: ${text}\n\nDie Bilder und Gravuren im Arbeitsordner werden ersetzt. Der nächste Tageslauf überschreibt sie wieder.`,
+    'Laden')) return;
   _ezcadPfadLaden(ordner, sel.value);
 }
 async function ezcadSatzLaden(ordner, pfad, satz, saetze) {
   if (!await confirmModal(`Satz ${satz} laden?`,
-      `${ordner}: Satz ${satz} von ${saetze} in den Arbeitsordner laden.\n\nErst, wenn Satz ${satz - 1} graviert ist — die Bilder und Gravuren im Arbeitsordner werden ersetzt.`,
-      'Laden')) return;
+    `${ordner}: Satz ${satz} von ${saetze} in den Arbeitsordner laden.\n\nErst, wenn Satz ${satz - 1} graviert ist — die Bilder und Gravuren im Arbeitsordner werden ersetzt.`,
+    'Laden')) return;
   _ezcadPfadLaden(ordner, pfad);
 }
 async function _ezcadPfadLaden(ordner, pfad) {
   try {
-    const d = await _apiJson('/vorlage/laden', 'POST', { pfad });
+    const d = await _apiJson('/v2/vorlage/laden', 'POST', { pfad });
     showToast(`✅ ${ordner}: ${d.tag ? _ezcadDatum(d.tag) : 'Prüfgravur'}${d.satz > 1 ? ' Satz ' + d.satz : ''} geladen${d.geleert.length ? ' (' + d.geleert.join(', ') + ' geleert)' : ''} — Blech prüfen`, 6000);
     ezcadLaden();
   } catch (e) {
@@ -10837,7 +11041,7 @@ async function _ezcadPruefen(o, e, layout, lauf) {
   const kopf = _ezPfad([..._EZCAD_WURZEL, o.ordner], e.datei, false, _ezcadZeit(e.geaendert), 'zuletzt gespeichert');
   let d;
   try {
-    d = await _apiJson(`/vorlage/ezd?ordner=${encodeURIComponent(o.ordner)}&datei=${encodeURIComponent(e.datei)}`);
+    d = await _apiJson(`/v2/vorlage/ezd?ordner=${encodeURIComponent(o.ordner)}&datei=${encodeURIComponent(e.datei)}`);
     if (lauf !== _ezcadLauf) return { gelesen: [], probleme: [] };   // inzwischen neu eingelesen
   } catch (err) {
     el.innerHTML = kopf + `<div class="ez-meldung ez-fehler">${_esc(err.message)}</div>`;
@@ -10893,9 +11097,11 @@ async function _ezcadPruefen(o, e, layout, lauf) {
       // Lage lässt sich aus dem Layout übernehmen; die Größe nicht (die gibt das BMP vor)
       const knopf = ziele.length && aendern ? (() => {
         const key = id + '-lage';
-        _ezAuftraege[key] = { ordner: o.ordner, datei: echt, auftrag: { bilder: ziele },
+        _ezAuftraege[key] = {
+          ordner: o.ordner, datei: echt, auftrag: { bilder: ziele },
           frage: 'Lage wie im Layout?', text: `${ziele.length === 1 ? '1 Platz' : ziele.length + ' Plätze'} in ${echt} auf die Mitte aus dem Layout ${layout.name} setzen`
-            + ` (Abweichung bis ${_ezZahl(Math.round(maxMm * 100) / 100)} mm).` };
+            + ` (Abweichung bis ${_ezZahl(Math.round(maxMm * 100) / 100)} mm).`
+        };
         return ` <button class="ez-knopf" onclick="ezdAuftrag('${key}')" title="Als Entwurf speichern">wie Layout setzen</button>`;
       })() : '';
       if (abw.length && abw.length <= 3) { abw.forEach(a => fehler(a)); probleme[probleme.length - 1].html += knopf; }
@@ -10962,8 +11168,8 @@ async function _ezcadPruefen(o, e, layout, lauf) {
 function _bmpPlatzierungsListe(teile, layoutName, seiteTag, dateiVon) {
   const p = getPg();
   const z = [`Platzierung der Einzel-BMP — ${layoutName}${seiteTag}`,
-             `Blatt ${p.w} x ${p.h} mm, Nullpunkt = Blattmitte (Ezcad)`,
-             `In Ezcad je Bitmap laden und unter Position X / Y eintragen.`, ''];
+  `Blatt ${p.w} x ${p.h} mm, Nullpunkt = Blattmitte (Ezcad)`,
+    `In Ezcad je Bitmap laden und unter Position X / Y eintragen.`, ''];
   z.push('Platz  Datei                                   X (mm)     Y (mm)    Breite  Hoehe');
   for (const t of teile) {
     const [mx, my] = _ezcadMitte(t.bb, p);
@@ -10985,12 +11191,12 @@ async function _exportLaserPages(ext, makeBlob, singleName, okToast, startToast)
     // _buildLaserCanvas startet stets beim Original — ein „Anwenden" im Editor kann
     // nicht doppelt wirken.
     const blob = await makeBlob();
-    if (blob) outputs.push({ name: `seite-${i+1}.${ext}`, blob });
+    if (blob) outputs.push({ name: `seite-${i + 1}.${ext}`, blob });
   });
   const base = singleName.replace(/\.\w+$/, '');
   const ok = await _downloadPerPageOutputs(outputs, singleName, `${base}-${outputs.length}seiten.zip`);
   showToast(ok ? okToast
-               : '⚠️ Keine Datei erzeugt — kein Bildfeld dieser Seiten hat ein geladenes Bild', 5000);
+    : '⚠️ Keine Datei erzeugt — kein Bildfeld dieser Seiten hat ein geladenes Bild', 5000);
 }
 
 async function exportBMP() {
@@ -10999,7 +11205,7 @@ async function exportBMP() {
   return _exportLaserPages('bmp', () => _buildBmpBlob(ditherSettings),
     'laser-gravur.bmp', '✓ BMP exportiert — bereit für Ezcad2!',
     ditherSettings.active ? '⏳ BMP wird erstellt…'
-                          : 'ℹ️ Dithering ist aus — Fotos werden hart geschnitten statt gerastert');
+      : 'ℹ️ Dithering ist aus — Fotos werden hart geschnitten statt gerastert');
 }
 
 function swapImage(id, input) {
@@ -11070,11 +11276,11 @@ async function debugFindOrder() {
   const input = document.getElementById('debug-order-input')?.value?.trim();
   const resultEl = document.getElementById('debug-order-result');
   if (!resultEl) return;
-  if (!input) { resultEl.style.display='none'; return; }
+  if (!input) { resultEl.style.display = 'none'; return; }
 
   resultEl.style.display = 'block';
   const lines = [];
-  const ok  = s => `<span style="color:var(--green)">✅ ${s}</span>`;
+  const ok = s => `<span style="color:var(--green)">✅ ${s}</span>`;
   const err = s => `<span style="color:var(--red)">❌ ${s}</span>`;
   const warn = s => `<span style="color:var(--amber)">⚠️ ${s}</span>`;
   const info = s => `<span style="color:var(--text-muted)">${s}</span>`;
@@ -11137,7 +11343,7 @@ async function debugFindOrder() {
   lines.push(info(`→ Aktueller Pointer: ${_sessionPointer}`));
 
   if (idxInAll < _sessionPointer) {
-    lines.push(err(`Vom Pointer übersprungen — bereits auf einer früheren Seite gefüllt (Position ${idxInAll+1} < Pointer ${_sessionPointer})`));
+    lines.push(err(`Vom Pointer übersprungen — bereits auf einer früheren Seite gefüllt (Position ${idxInAll + 1} < Pointer ${_sessionPointer})`));
     lines.push(warn('Tipp: neu füllen — „Füllen" beginnt wieder bei der ersten Bestellung'));
     resultEl.innerHTML = lines.join('<br>');
     return;
@@ -11226,20 +11432,20 @@ function setEmptyMode(mode) {
 function _paintEmptyMode() {
   // Nur die Klasse umschalten — Rahmen, Grund, Punkt und Titelfarbe der aktiven Zeile
   // stehen im Stylesheet (.an / .an .rdot / .an .opt-title), keine Farbtabelle hier.
-  for (const m of ['leer','strich','ueberspringen']) {
+  for (const m of ['leer', 'strich', 'ueberspringen']) {
     _setAn('empty-opt-' + m, m === _fillCfg.emptyMode);
   }
 }
 
 // Getter für die Fill-Logik: „Überspringen" gilt für Text- UND Bildfelder gleich.
-function getSkipEmpty()  { return _fillCfg.emptyMode === 'ueberspringen'; }
-function getShowDash()   { return _fillCfg.emptyMode === 'strich'; }
+function getSkipEmpty() { return _fillCfg.emptyMode === 'ueberspringen'; }
+function getShowDash() { return _fillCfg.emptyMode === 'strich'; }
 
 // ── Modals ───────────────────────────────────────────────────────────────────
 // Blockierende Dialoge. shortcuts-overlay steht bewusst NICHT in der Liste: es ist
 // reine Hilfe-Anzeige und wird selbst per "?" wieder geschlossen.
 const _BLOCKING_OVERLAYS = ['app-modal', 'create-folder-modal', 'dxf-modal',
-                            'laser-preview-overlay', 'layout-settings-overlay', 'asin-overlay'];
+  'laser-preview-overlay', 'layout-settings-overlay', 'asin-overlay'];
 // Liegt ein Dialog über der Oberfläche? Die Tastenkürzel fragen das ab, sonst wirken sie
 // auf den Editor DAHINTER: Entf löschte das ausgewählte Feld, Strg+S überschrieb den
 // laufenden Dialog im gemeinsamen Container und dessen Promise blieb für immer offen.
@@ -11378,14 +11584,14 @@ async function _copyText(text) {
       showToast('📋 Kopiert: ' + text);
       return;
     }
-  } catch(e) { /* fällt unten auf execCommand zurück */ }
+  } catch (e) { /* fällt unten auf execCommand zurück */ }
   try {
     const ta = document.createElement('textarea');
     ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-1000px'; ta.style.opacity = '0';
     document.body.appendChild(ta); ta.focus(); ta.select();
     const ok = document.execCommand('copy'); ta.remove();
     showToast(ok ? ('📋 Kopiert: ' + text) : '⚠️ Kopieren fehlgeschlagen');
-  } catch(e) { showToast('⚠️ Kopieren fehlgeschlagen'); }
+  } catch (e) { showToast('⚠️ Kopieren fehlgeschlagen'); }
 }
 
 // ── Toast ────────────────────────────────────────────────────────────────────
@@ -11493,9 +11699,9 @@ function _drawText(ctx, f, x, y, w, h, pxPerMm) {
     // Auto-Fit: Text füllt die Feldhöhe, schrumpft nur für die Breite.
     // Kreis-Text: immer feste Größe (Auto-Fit ist am Bogen nicht definiert).
     const pt = _isCombo(f) ? comboFontSizePt(f)
-               : f.ddText ? _ddTextPt(f, usedFont)
-               : (f.autoFit === false || f.circleDia > 0) ? (f.fontSize || 10)
-               : autoFitFontSizePt(f._text, usedFont, f.w, f.h, f.bold, f.type === 'number', _bz ? { font: _ot } : null);
+      : f.ddText ? _ddTextPt(f, usedFont)
+        : (f.autoFit === false || f.circleDia > 0) ? (f.fontSize || 10)
+          : autoFitFontSizePt(f._text, usedFont, f.w, f.h, f.bold, f.type === 'number', _bz ? { font: _ot } : null);
     let fontSize = ptToPx(pt);
     ctx.font = _canvasFont(fontSize, usedFont, f.bold);
     if (f.circleDia > 0) {
@@ -11534,7 +11740,7 @@ function _drawText(ctx, f, x, y, w, h, pxPerMm) {
     const _erste = Math.max(0, _lines.findIndex(l => l.trim()));
     const capAsc = _isAuto
       ? ((_teile ? _teileTinte(ctx, _teile[_erste] || [{ s: '' }]).asc
-                 : ctx.measureText(_lines.find(l => l.trim()) || _lines[0] || '').actualBoundingBoxAscent) || (fontSize * 0.7))
+        : ctx.measureText(_lines.find(l => l.trim()) || _lines[0] || '').actualBoundingBoxAscent) || (fontSize * 0.7))
       : _capPx(ctx, fontSize);
     let ly = y + _dy + capAsc;
     // Stauchung horizontal um den Ausrichtungs-Anker (tx) — mittig gestauchter Text
@@ -11618,8 +11824,10 @@ function _fokusAnwenden(im, f) {
   const d = x.getImageData(0, 0, w, h), px = d.data;
   const gesicht = f.gesicht ?? 1, rest = f.rest ?? 1;
   // Ellipse etwas größer als der Kasten (Haare, Kinn), weich auslaufend bis zum 1,8-Fachen.
-  const E = (f.g || []).map(([gx, gy, gb, gh]) => ({ cx: (gx + gb / 2) * w, cy: (gy + gh / 2) * h,
-                                                   rx: Math.max(1, gb * w * 0.68), ry: Math.max(1, gh * h * 0.8) }));
+  const E = (f.g || []).map(([gx, gy, gb, gh]) => ({
+    cx: (gx + gb / 2) * w, cy: (gy + gh / 2) * h,
+    rx: Math.max(1, gb * w * 0.68), ry: Math.max(1, gh * h * 0.8)
+  }));
   for (let y = 0; y < h; y++) {
     for (let xx = 0; xx < w; xx++) {
       let t = 0;
@@ -11643,7 +11851,7 @@ function _fokusAnwenden(im, f) {
 // und loadImg (Vorschau-Größe).
 function _placementArea(pl) {
   return {
-    x: pl.position?.x || 0,       y: pl.position?.y || 0,
+    x: pl.position?.x || 0, y: pl.position?.y || 0,
     w: pl.dimension?.width || 129, h: pl.dimension?.height || 229,
   };
 }
@@ -11670,13 +11878,13 @@ function composePlacement(src, placement, outW, outH, fuellung) {
   const scaleX = bp.scale?.scaleX || 1;
   const scaleY = bp.scale?.scaleY || 1;
   const angleRad = (bp.angleOfRotation || 0) * Math.PI / 180;
-  const scaledW = (bp.dimension?.width  || areaW) * scaleX;
+  const scaledW = (bp.dimension?.width || areaW) * scaleX;
   const scaledH = (bp.dimension?.height || areaH) * scaleY;
   const bpX = bp.position?.x || 0;
   const bpY = bp.position?.y || 0;
 
   const canvas = document.createElement('canvas');
-  canvas.width  = Math.max(1, Math.round(outW));
+  canvas.width = Math.max(1, Math.round(outW));
   canvas.height = Math.max(1, Math.round(outH));
   const ctx = canvas.getContext('2d');
   ctx.imageSmoothingEnabled = true;
@@ -11706,7 +11914,7 @@ async function renderFieldToCtx(ctx, f, scale, opts) {
   ctx.save();
   // Drehung um die Feldmitte (identisch zu Vorschau/DXF)
   if (f.rotation) {
-    ctx.translate(x + w/2, y + h/2); ctx.rotate(f.rotation * Math.PI / 180); ctx.translate(-(x + w/2), -(y + h/2));
+    ctx.translate(x + w / 2, y + h / 2); ctx.rotate(f.rotation * Math.PI / 180); ctx.translate(-(x + w / 2), -(y + h / 2));
   }
   // Kreis-Text UND „Übersteht"-Modus (overflowMode leer) ragen bewusst über die Feldbox
   // hinaus → nicht clippen (Export identisch zu Vorschau/DXF, kein abgeschnittener Überstand).
@@ -11726,7 +11934,7 @@ async function renderFieldToCtx(ctx, f, scale, opts) {
         // Bildschirm-/PDF-Vorschau zeigt den Überstand weiter weiß.
         // opts.invert = Polarität der Einstellungen, mit denen gerastert wird (nicht die des Editors).
         const randFarbe = (opts && opts.useOriginal
-                           && (opts.invert ?? ditherSettings.invert)) ? '#000' : '#fff';
+          && (opts.invert ?? ditherSettings.invert)) ? '#000' : '#fff';
         const composed = composePlacement(src, f._placement, w, h, randFarbe);
         ctx.drawImage(composed, x, y, w, h);
       } catch (e) {
@@ -11901,7 +12109,7 @@ async function fillAndExportManual() {
         ? `✅ ${ok.length} Datei(en) exportiert → ${ziel}`
         : '⚠️ Keine Dateien erzeugt — enthalten die Seiten Gravur-Inhalt?', 6000);
     }
-  } catch(e) {
+  } catch (e) {
     console.error('Manuell-Export Fehler:', e);
     showToast('❌ Füllen + Export fehlgeschlagen: ' + e.message, 6000);
   } finally {
@@ -11934,7 +12142,7 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
     // Nicht gesetzt = jede Seite eine eigene Datei. (Das Alt-Feld exportPages zählte nur
     // bei reinen PDF-Layouts ohne diese Schalter — davon gibt es keins mehr.)
     const basePages = (result.mode === 'synchron') ? (layout.pages?.length || 1) : 1;
-    const splitSatz  = layout.splitSatz  ?? true;
+    const splitSatz = layout.splitSatz ?? true;
     const splitSeite = layout.splitSeite ?? true;
     // ── Ezcad-Vorlage ('vorlage'/'beides') ──
     // In den Arbeitsordner _Vorlage/<Ordner>/ kommt NUR Satz 1: die .ezd kennt genau diesen
@@ -11961,8 +12169,10 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
         && meineFormate.some(f => belegt.formate.includes(f));
       if (ueberschneidung) {
         vorlageKonflikt = true;
-        results.push({ layout: layout.name, ok: false,
-          error: `Vorlagen-Ordner „${vorlageOrdner}" wird schon von ${belegt.name} im selben Format beschrieben — Ordnername im Layout ändern` });
+        results.push({
+          layout: layout.name, ok: false,
+          error: `Vorlagen-Ordner „${vorlageOrdner}" wird schon von ${belegt.name} im selben Format beschrieben — Ordnername im Layout ändern`
+        });
       } else if (belegt && belegt.name !== layout.name) {
         belegt.formate = belegt.formate.concat(meineFormate);   // Ordner geteilt, Formate getrennt
       } else {
@@ -11972,8 +12182,8 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
     const arbeitsordner = satzIdx => (satzIdx === 0 && !_reklaOrderId && !vorlageKonflikt) ? vorlageOrdner : null;
     // Tagesarchiv direkt im Gruppenordner: <Tag>/<Gruppe>/<Ordner>/ (bis 14.09.2026 mit
     // Zwischenebene „Vorlage/" — auf Wunsch weg, sie wurde mit dem Arbeitsordner verwechselt).
-    const archivOrdner  = satzIdx => (vorlageKonflikt ? layout.name : vorlageOrdner)
-                                   + (satzIdx > 0 ? ` Satz${satzIdx + 1}` : '');
+    const archivOrdner = satzIdx => (vorlageKonflikt ? layout.name : vorlageOrdner)
+      + (satzIdx > 0 ? ` Satz${satzIdx + 1}` : '');
     // Eine Vorlagen-Datei ins Tagesarchiv UND (falls der Satz einen hat) in den Arbeitsordner.
     // Erledigt ist sie, wenn der Arbeitsordner sie hat — ohne Arbeitsordner ist das Archiv
     // die einzige Kopie und zählt selbst. Gemeinsam für gravurN.dxf, gravur.dxf/rueckseite.dxf.
@@ -12001,12 +12211,14 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
       const sS = splitSatz, sR = splitSeite && basePages > 1;
       // satz/role/sR reisen mit: das Namensmuster und die Vorlage-DXF brauchen sie.
       const g = { satz, role, sR };
-      if (sS && sR) return { ...g, key: 'p' + i,       suffix: '_' + orderTag + '_Seite' + (role + 1) };
-      if (sS)       return { ...g, key: 'satz' + satz,
-                             suffix: einzelBestellung
-                               ? '_' + orderTag + (einseitig ? '' : '_Blatt' + (satz + 1))
-                               : '_Blatt' + (satz + 1) };
-      if (sR)       return { ...g, key: 'role' + role, suffix: '_Seite' + (role + 1) };
+      if (sS && sR) return { ...g, key: 'p' + i, suffix: '_' + orderTag + '_Seite' + (role + 1) };
+      if (sS) return {
+        ...g, key: 'satz' + satz,
+        suffix: einzelBestellung
+          ? '_' + orderTag + (einseitig ? '' : '_Blatt' + (satz + 1))
+          : '_Blatt' + (satz + 1)
+      };
+      if (sR) return { ...g, key: 'role' + role, suffix: '_Seite' + (role + 1) };
       return { ...g, key: 'all', suffix: '' };
     };
     // Dateiname nach Muster aus den Layout-Einstellungen (`layout.dateiname`), z. B.
@@ -12018,10 +12230,12 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
       const eine = orderIds.length === 1;
       const nr = _nrStart + grp.satz + 1;
       _nrMax = Math.max(_nrMax, nr);
-      const w = { layout: layout.name, datum: today, nr, seite: grp.role + 1,
-                  bestellnr: eine ? String(orderIds[0]) : 'Satz' + (grp.satz + 1),
-                  kurznr:    eine ? String(orderIds[0]).slice(-7) : 'Satz' + (grp.satz + 1),
-                  platz: platz || nr };   // Blatt-Datei ohne Platz: {platz} = {nr}
+      const w = {
+        layout: layout.name, datum: today, nr, seite: grp.role + 1,
+        bestellnr: eine ? String(orderIds[0]) : 'Satz' + (grp.satz + 1),
+        kurznr: eine ? String(orderIds[0]).slice(-7) : 'Satz' + (grp.satz + 1),
+        platz: platz || nr
+      };   // Blatt-Datei ohne Platz: {platz} = {nr}
       let s = muster.replace(/\{(\w+)\}/g, (m, k) => (k in w ? String(w[k]) : m));
       if (grp.sR && !/\{seite\}/.test(muster)) s += '_Seite' + w.seite;
       if (platz && !/\{platz\}/.test(muster)) s += '_Platz' + platz;
@@ -12055,7 +12269,7 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
       }
 
       // Felder global setzen, damit buildExportCanvas + generateExportBlob die Seite sehen
-      fields = pageFields.map(f => ({...f}));
+      fields = pageFields.map(f => ({ ...f }));
       // Die Editor-Vorschau ist NUR für den Menschen davor: headless baut renderEls()
       // das Overlay per innerHTML neu und dekodiert alle dataURL mit — Rechenzeit und
       // Speicher für ein Bild, das niemand sieht. Der Export liest nur `fields`.
@@ -12078,7 +12292,7 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
       // also nur hier.
       if (layout.fotoVektor && formats.includes('dxf')) {
         const bilder = pageFields.filter(f => f.type === 'image' && f._img)
-                                 .sort(_nachPosition);
+          .sort(_nachPosition);
         const alle = _bildPlaetze(pageFields);
         for (const f of bilder) {
           f._platz = alle.indexOf(f) + 1;
@@ -12094,14 +12308,16 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
           const p = getPg();
           const gk = fmt + '|' + grp.key;
           let g = pdfGroups[gk];
-          if (!g) g = pdfGroups[gk] = { doc: await _newPdfDoc(p), count: 0, suffix: grp.suffix, orders: new Set(),
-                                        grp, ids: orderIdsOnPage };
+          if (!g) g = pdfGroups[gk] = {
+            doc: await _newPdfDoc(p), count: 0, suffix: grp.suffix, orders: new Set(),
+            grp, ids: orderIdsOnPage
+          };
           else g.doc.addPage([p.w, p.h], _pageOrient(p));
           g.doc.addImage(url, 'JPEG', 0, 0, p.w, p.h);
           g.count++; orderIdsOnPage.forEach(o => g.orders.add(o));
         } else if (fmt === 'dxf') {
           // DXF: Felder der Seite sammeln (Bild wird gleich freigegeben → truthy Marker fürs Kästchen)
-          const dxfFelder = pageFields.filter(f => _hasVecText(f) || f._img || (_istMotiv(f) && _motivAktiv(f, pageFields))).map(f => ({...f, _img: f._img ? true : null}));
+          const dxfFelder = pageFields.filter(f => _hasVecText(f) || f._img || (_istMotiv(f) && _motivAktiv(f, pageFields))).map(f => ({ ...f, _img: f._img ? true : null }));
           // Vorlage: jede Seite EINZELN merken (gravur.dxf / rueckseite.dxf je Satz),
           // unabhängig davon, wie die Tagesordner-Dateien gebündelt werden.
           if (vorlageModus) vorlageSeiten.set(grp.satz + '|' + grp.role, dxfFelder);
@@ -12130,15 +12346,19 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
               const ordner = arbeitsordner(satzIdx);            // null = nur Archiv
               const proPlatz = {};
               _bildPlaetze(fields)
-                    .forEach((f, k) => { if (f.orderId) proPlatz[k + 1] = f.orderId; });
+                .forEach((f, k) => { if (f.orderId) proPlatz[k + 1] = f.orderId; });
               for (const t of (ordner ? slots : [])) {
                 const name = `platz${t.platz}.bmp`;
                 if (await uploadExportToServer(t.blob, name, today, layout.group, ordner)) {
-                  results.push({ layout: layout.name, file: `_Vorlage/${ordner}/${name}`, ok: true,
-                                 count: orderIdsOnPage.length });
+                  results.push({
+                    layout: layout.name, file: `_Vorlage/${ordner}/${name}`, ok: true,
+                    count: orderIdsOnPage.length
+                  });
                 } else {
-                  results.push({ layout: layout.name, file: name, ok: false,
-                                 error: `Upload von _Vorlage/${ordner}/${name} fehlgeschlagen` });
+                  results.push({
+                    layout: layout.name, file: name, ok: false,
+                    error: `Upload von _Vorlage/${ordner}/${name} fehlgeschlagen`
+                  });
                 }
               }
               // belegung.txt NICHT in den Arbeitsordner (dort nur, was Ezcad liest); sie liegt im Tagesarchiv.
@@ -12152,13 +12372,15 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
               const tagesUnter = archivOrdner(satzIdx);
               for (const t of slots) {
                 const ok = await uploadExportToServer(t.blob, `platz${t.platz}.bmp`, today,
-                                                      layout.group, null, tagesUnter);
+                  layout.group, null, tagesUnter);
                 // Ohne Arbeitsordner (Satz 2+, Reklamation) ist das Archiv die EINZIGE Kopie —
                 // dann gehört ein Fehlschlag in die Bilanz.
                 if (!ordner) results.push(ok
                   ? { layout: layout.name, file: `${tagesUnter}/platz${t.platz}.bmp`, ok: true, count: orderIdsOnPage.length }
-                  : { layout: layout.name, file: `platz${t.platz}.bmp`, ok: false,
-                      error: `Upload von ${tagesUnter}/platz${t.platz}.bmp fehlgeschlagen` });
+                  : {
+                    layout: layout.name, file: `platz${t.platz}.bmp`, ok: false,
+                    error: `Upload von ${tagesUnter}/platz${t.platz}.bmp fehlgeschlagen`
+                  });
               }
               // Deckeltexte nur auf der Seite mit den Fotos. Die Rückseite hat keine Bildfelder
               // (slots leer) — sonst überschrieben ihre Texte die gravurN-Dateien. Je Platz als
@@ -12206,9 +12428,11 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
               teile = slots.map(t => ({ blob: t.blob, stamm: _stamm(grp, orderIdsOnPage, sfx, t.platz) }));
               // Platzierungsliste als .txt daneben — sonst weiß niemand, wohin die
               // Einzelbilder in Ezcad gehören.
-              if (slots.length) teile.push({ blob: _bmpPlatzierungsListe(slots, layout.name, sfx,
-                                               t => _stamm(grp, orderIdsOnPage, sfx, t.platz) + '.bmp'),
-                                             stamm: _stamm(grp, orderIdsOnPage, sfx) + '_Platzierung', ext: 'txt' });
+              if (slots.length) teile.push({
+                blob: _bmpPlatzierungsListe(slots, layout.name, sfx,
+                  t => _stamm(grp, orderIdsOnPage, sfx, t.platz) + '.bmp'),
+                stamm: _stamm(grp, orderIdsOnPage, sfx) + '_Platzierung', ext: 'txt'
+              });
             } else if (pngVorlage) {
               // Ansicht als PNG (F02_*_PNG, „Speichern in: Ezcad-Vorlage", seit 13.10.2026): fester Name
               // <Layout>.png in den Ordner des Satzes im Tagesarchiv — neben platzN.bmp und
@@ -12217,11 +12441,13 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
               const blob = await generateExportBlob(fmt, _dxfOpts(layout), layout.ditherSettings);
               const satzIdx = Math.floor(i / basePages);
               if (blob) await _vorlageHoch(blob, `${layout.name}.png`, arbeitsordner(satzIdx), archivOrdner(satzIdx),
-                                           orderIdsOnPage.length);
+                orderIdsOnPage.length);
               teile = layout.bmpModus === 'beides' ? [{ blob, stamm: _stamm(grp, orderIdsOnPage, sfx) }] : [];
             } else {
-              teile = [{ blob: await generateExportBlob(fmt, _dxfOpts(layout), layout.ditherSettings),
-                         stamm: _stamm(grp, orderIdsOnPage, sfx) }];
+              teile = [{
+                blob: await generateExportBlob(fmt, _dxfOpts(layout), layout.ditherSettings),
+                stamm: _stamm(grp, orderIdsOnPage, sfx)
+              }];
             }
             const echte = teile.filter(t => t.blob);
             if (!echte.length && bmpModus !== 'vorlage' && !pngVorlage) {
@@ -12236,15 +12462,19 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
                   results.push({ layout: layout.name, file: filename, ok: true, count: orderIdsOnPage.length });
                   console.log('Exportiert:', filename);
                 } else {
-                  results.push({ layout: layout.name, file: filename, ok: false,
-                                 error: `Upload von ${filename} fehlgeschlagen` });
+                  results.push({
+                    layout: layout.name, file: filename, ok: false,
+                    error: `Upload von ${filename} fehlgeschlagen`
+                  });
                 }
               }
             }
-          } catch(e) {
+          } catch (e) {
             console.error(logPrefix, layout.name, '—', fmt, 'Seite', page, 'fehlgeschlagen:', e);
-            results.push({ layout: layout.name, ok: false,
-                           error: `${fmt.toUpperCase()} Seite ${page}: ${e.message}` });
+            results.push({
+              layout: layout.name, ok: false,
+              error: `${fmt.toUpperCase()} Seite ${page}: ${e.message}`
+            });
           }
         }
       }
@@ -12269,11 +12499,13 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
             results.push({ layout: layout.name, file: wo, ok: true, count: bestellungen });
             console.log(`Exportiert (${art}):`, wo, `— ${seiten} Seite(n)`);
           } else {
-            results.push({ layout: layout.name, file: wo, ok: false,
-                           error: `Upload von ${wo} fehlgeschlagen (${seiten} Seite(n) verloren)` });
+            results.push({
+              layout: layout.name, file: wo, ok: false,
+              error: `Upload von ${wo} fehlgeschlagen (${seiten} Seite(n) verloren)`
+            });
           }
         }
-      } catch(e) {
+      } catch (e) {
         console.error(logPrefix, layout.name, `— ${art}`, filename, 'fehlgeschlagen:', e);
         results.push({ layout: layout.name, file: filename, ok: false, error: `${art} ${filename}: ${e.message}` });
       }
@@ -12302,7 +12534,7 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
         return new Blob([content], { type: 'application/dxf' });
       };
       await ladeGruppe('DXF', _uniq(`${_stamm(g.grp, g.ids, g.suffix)}.dxf`), bauen,
-                       nonEmpty.length, g.orders.size, dxfUnter);
+        nonEmpty.length, g.orders.size, dxfUnter);
     }
     // Vorlage: je Satz und Layout-Seite eine DXF an festem Namen — Seite 1 `gravur.dxf`, Seite 2
     // (Rückseite) `rueckseite.dxf`. Immer EINE Seite je Datei (gestapelt lägen sie neben dem Blech).
@@ -12312,7 +12544,7 @@ async function _exportFilledPages(layout, result, formats, today, logPrefix = 'A
     if (vorlageModus && formats.includes('dxf')) {
       const o = _dxfOpts(layout);
       const baue = felder => buildDXFContent(felder, o.isFilled, o.isVector, o.frame, o.asBlock, o.centerOrigin, o.bildRahmen, o.zusammen)
-                               .then(c => new Blob([c], { type: 'application/dxf' }));
+        .then(c => new Blob([c], { type: 'application/dxf' }));
       let leer = null;
       for (let satzIdx = 0; satzIdx < saetze; satzIdx++) {
         for (let role = 0; role < basePages; role++) {
@@ -12375,7 +12607,7 @@ async function runAutoExport() {
   const nurLayout = URL_Q.get('onlyLayout') || '';
   const nurNamen = nurLayout ? nurLayout.split('\n') : [];
   const autoLayouts = nurLayout ? saved.filter(l => nurNamen.includes(l.name))
-                                : saved.filter(l => l.autoExport);
+    : saved.filter(l => l.autoExport);
   // Foto-Nachbesserung aus der Reklamation (Stufe „zu hell/zu dunkel" usw.): `laserJe` =
   // { Layoutname: Werte }, gilt nur für dieses Layout. Gesetzt wird am LAYOUT-Objekt, nicht an der
   // globalen `ditherSettings` — der BMP-Weg liest `layout.ditherSettings` (s. _bmpVorlageDateien).
@@ -12398,9 +12630,11 @@ async function runAutoExport() {
     if (Array.isArray(vs) && vs.length && nurLayout) {
       const basis = autoLayouts.splice(0);
       for (const l of basis) for (const v of vs) {
-        autoLayouts.push({ ...l, vorlageOrdner: 'Varianten/' + _vorlageName(l) + ' ' + v.k,
-                           ditherSettings: _laserSettings({ ...l.ditherSettings, ...(v.werte || {}) }),
-                           _fokus: v.fokus && Object.keys(v.fokus).length ? v.fokus : null });
+        autoLayouts.push({
+          ...l, vorlageOrdner: 'Varianten/' + _vorlageName(l) + ' ' + v.k,
+          ditherSettings: _laserSettings({ ...l.ditherSettings, ...(v.werte || {}) }),
+          _fokus: v.fokus && Object.keys(v.fokus).length ? v.fokus : null
+        });
       }
       _variantenModus = true;
       console.log('Reklamation: alles ausprobieren —', vs.length, 'Varianten');
@@ -12411,7 +12645,7 @@ async function runAutoExport() {
 
   if (!autoLayouts.length) {
     console.log(nurLayout ? `Auto-Export: Layout „${nurLayout}" nicht gefunden`
-                          : 'Auto-Export: keine Layouts mit Auto-Flag');
+      : 'Auto-Export: keine Layouts mit Auto-Flag');
     // "Nichts zu tun" ist ein Erfolg — ohne dieses Flag wartete Puppeteer die vollen
     // 10 Minuten auf _autoExportDone und meldete dann einen falschen Timeout-Fehler.
     window._autoExportDone = true;
@@ -12452,7 +12686,7 @@ async function runAutoExport() {
           await loadLayoutSilent(layout);
           await document.fonts.ready;
           await _vorlageLeerSchreiben(layout, _formate(layout), today,
-                                      (layout.pages?.length || 1) > 1 ? 'synchron' : 'stapel');
+            (layout.pages?.length || 1) > 1 ? 'synchron' : 'stapel');
         } catch (e) {
           console.error('Auto-Export: Vorlagen-Ordner von', layout.name, 'nicht geleert:', e);
         }
@@ -12530,17 +12764,21 @@ async function runAutoExport() {
 
       const layoutResults = await _exportFilledPages(layout, result, formats, today);
       results.push(...layoutResults);
-      if (result.diagnose?.abgeschnitten) results.push({ layout: layout.name, ok: false,
-        error: 'Mehr als 50 Seiten — weitere Bestellungen NICHT exportiert, bitte manuell nachholen' });
+      if (result.diagnose?.abgeschnitten) results.push({
+        layout: layout.name, ok: false,
+        error: 'Mehr als 50 Seiten — weitere Bestellungen NICHT exportiert, bitte manuell nachholen'
+      });
       // „Automatisch mehrseitig" aus: was nicht aufs eine Blatt passte, fehlt im Lauf — laut melden
       // statt still weglassen (F02_xxx_V5 stand bis 11.10.2026 so, ab der 13. Bestellung fehlte das Foto).
-      if (result.diagnose?.uebrig) results.push({ layout: layout.name, ok: false,
-        error: 'Blatt voll und „Automatisch mehrseitig" ist aus — weitere Bestellungen NICHT exportiert, bitte manuell nachholen' });
+      if (result.diagnose?.uebrig) results.push({
+        layout: layout.name, ok: false,
+        error: 'Blatt voll und „Automatisch mehrseitig" ist aus — weitere Bestellungen NICHT exportiert, bitte manuell nachholen'
+      });
       for (const id of result.filledOrderIds) {
         const l = belegtIn[id] || (belegtIn[id] = []);
         if (!l.includes(layout.name)) l.push(layout.name);
       }
-    } catch(e) {
+    } catch (e) {
       console.error('Auto-Export Fehler bei', layout.name, e);
       results.push({ layout: layout.name, error: e.message, ok: false });
     }
@@ -12559,9 +12797,9 @@ async function runAutoExport() {
       await _ddVorbereiten(sessionData);
       const pl = _packliste(sessionData, belegtIn, today, _exportRun);
       const ok = await uploadExportToServer(new Blob([pl.text], { type: 'text/plain;charset=utf-8' }),
-                                            'packliste.txt', today, null, null, null);
+        'packliste.txt', today, null, null, null);
       extra.push(ok ? { layout: 'Packliste', file: 'packliste.txt', ok: true }
-                    : { layout: 'Packliste', error: 'packliste.txt nicht gespeichert', ok: false });
+        : { layout: 'Packliste', error: 'packliste.txt nicht gespeichert', ok: false });
       for (const h of [...pl.hinweise, ..._ddWarnungen]) extra.push({ layout: 'Dropdown', hinweis: h, ok: true });
       console.log('Auto-Export: Packliste geschrieben,', pl.hinweise.length, 'Hinweis(e),', _ddWarnungen.size, 'Warnung(en)');
     } catch (e) {
@@ -12612,7 +12850,9 @@ async function loadLayoutSilent(layout) {
 async function fetchOrdersForFill() {
   try {
     // Schritt 1: orders global befüllen (hat files + date) — genau wie beim manuellen Laden
-    const ordersRes = await fetch(BASE_URL + '/v2/orders');
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    const ordersRes = await fetch(BASE_URL + '/v2/orders', { headers, credentials: 'include' });
     if (!ordersRes.ok) throw new Error('orders nicht erreichbar');
     orders = await ordersRes.json(); // globale orders Variable setzen
 
@@ -12627,7 +12867,7 @@ async function fetchOrdersForFill() {
     // Reklamation ohne Bestellung (000-…): steht nicht unter /orders (s. REKLA_MANUELL in index.js),
     // der Server liefert sie einzeln — in die globale Liste, über die der Session-Filter läuft.
     if (/^000-\d{7}-\d{7}$/.test(nurOrder)) {
-      const eintraege = (await _apiJson('/rekla/manuell/' + encodeURIComponent(nurOrder))).eintraege || [];
+      const eintraege = (await _apiJson('/v2/rekla/manuell/' + encodeURIComponent(nurOrder))).eintraege || [];
       orders = orders.concat(eintraege);
       console.log('fetchOrdersForFill: Reklamation ohne Bestellung', nurOrder, '→', eintraege.length, 'Artikel');
       return eintraege;
@@ -12649,7 +12889,7 @@ async function fetchOrdersForFill() {
     const filtered = getFillDateFilteredOrders();
     console.log('fetchOrdersForFill: orders geladen:', orders.length, '| Session:', sessionOrders.length, '| gefiltert:', filtered.length);
     return filtered;
-  } catch(e) {
+  } catch (e) {
     // null, NICHT []: leer hieße „heute keine Bestellungen" — der Lauf meldete Erfolg, leerte
     // beim ersten Lauf die Ezcad-Arbeitsordner, und die Bestellungen des Tages fehlten still.
     console.error('fetchOrdersForFill Fehler:', e);
@@ -12664,15 +12904,15 @@ function _dxfOpts(l) {
     isFilled: l?.dxfStyle === 'filled',
     zusammen: l?.dxfStyle !== 'einzeln', // Standard: Buchstaben je Zeile vereinigt (s. _konturenVereinigen)
     isVector: l?.dxfTextMode !== 'text', // Standard = Vektor
-    frame:    !!l?.dxfFrame,
-    asBlock:  !!l?.dxfTextAsBlock,
+    frame: !!l?.dxfFrame,
+    asBlock: !!l?.dxfTextAsBlock,
     centerOrigin: !!l?.dxfCenterOrigin, // Nullpunkt in die Blattmitte (Ezcad), s. _dxfOriginToCenter
     // Rechteck um jedes Bildfeld (Layer „Bild“) nur, wenn das Layout KEIN BMP erzeugt — eine
     // Positionierhilfe für eine DXF, die allein dasteht. Mit BMP ist die Lage definiert, und zwölf Rahmen
     // würden nur mitgraviert. dxfBildRahmen im Layout schlägt die Automatik — nötig für F02_xxx_V5_Text
     // (kein BMP, die Bildflächen kommen vom Schwester-Layout).
     bildRahmen: (l && l.dxfBildRahmen !== undefined) ? !!l.dxfBildRahmen
-              : !_formate(l).includes('bmp'),
+      : !_formate(l).includes('bmp'),
   };
 }
 
@@ -12714,7 +12954,7 @@ async function generateExportBlob(format, dxfOpts, ditherOpts) {
     }
     console.warn('generateExportBlob: unbekanntes Format', format);
     return null;
-  } catch(e) {
+  } catch (e) {
     // Weiterwerfen statt null: null heißt „nichts zu exportieren" und wird still
     // übersprungen — ein echter Renderfehler würde so zur lautlos fehlenden Datei.
     console.error('generateExportBlob Fehler bei Format', format, ':', e);
@@ -12771,10 +13011,10 @@ async function _tsFotoSetzen(pageFields) {
   const bild = pageFields.filter(f => f.type === 'image');
   if (!bild.length) return;
   if (_tsFotoPlatz === undefined) {
-    const res = await fetch(`${BASE_URL}/testfoto/standardbild-placement.json`);
+    const res = await fetch(`${BASE_URL}/v2/testfoto/standardbild-placement.json`);
     _tsFotoPlatz = (res.ok && _kundenFotos(await res.json())[0]?.placement) || null;
   }
-  await _imgMitPlatzierung(bild[0], `${BASE_URL}/testfoto/standardbild.jpg`, _tsFotoPlatz);
+  await _imgMitPlatzierung(bild[0], `${BASE_URL}/v2/testfoto/standardbild.jpg`, _tsFotoPlatz);
   for (const f of bild.slice(1)) _bildZustandKopieren(f, bild[0]);
 }
 
@@ -12797,7 +13037,7 @@ async function _tsOneLayout(layout, z1, z2, today, wahl = {}) {
       // Unterscheidung kämen zwei byte-gleiche Bleche heraus.
       // Kombi-Feld stapelt beide Zeilen über "\n".
       if (_isCombo(f)) f._text = b ? (a + '\n' + b) : a;
-      else             f._text = ((f.palNum || 1) >= 2 && b) ? b : a;
+      else f._text = ((f.palNum || 1) >= 2 && b) ? b : a;
       if (wahl.schrift) await _feldSchriftSetzen(f, { family: wahl.schrift, url: null });
     }
     if (wahl.foto) await _tsFotoSetzen(fields);
@@ -12889,12 +13129,12 @@ async function runTestSheets() {
     foto: inhalt.bild && document.getElementById('ts-foto')?.checked !== false,
   };
   if (layouts.length > 10 && !await confirmModal('Testblatt erzeugen?',
-      `${layouts.length} Layouts — das dauert einige Minuten.`, 'Starten')) return;
+    `${layouts.length} Layouts — das dauert einige Minuten.`, 'Starten')) return;
   // Der Lauf schiebt Layout für Layout durch den Editor und stellt den Stand danach
   // wieder her — gefüllte Bilder überstehen das aber nicht.
   if (_layoutDirty && !await confirmModal('Testblatt erzeugen?',
-      'Das aktuelle Layout hat ungespeicherte Änderungen. Der Editor wird danach '
-      + 'wiederhergestellt, geladene Bilder gehen dabei aber verloren.', 'Weiter')) return;
+    'Das aktuelle Layout hat ungespeicherte Änderungen. Der Editor wird danach '
+    + 'wiederhergestellt, geladene Bilder gehen dabei aber verloren.', 'Weiter')) return;
 
   // Kompletter Stand VOR dem Lauf — `_loadedLayout` allein reicht nicht: war kein Layout
   // geladen, bliebe das zuletzt durchgelaufene samt Blindtext im Canvas stehen.
@@ -12902,13 +13142,13 @@ async function runTestSheets() {
   saveCurrentPageSnapshot();
   const vorher = {
     layout: _loadedLayout,
-    pages:  _pages.map(pg => pg.map(f => ({ ...f }))),
-    seite:  _currentPage,
-    blatt:  getPg(),
-    dirty:  _layoutDirty,
+    pages: _pages.map(pg => pg.map(f => ({ ...f }))),
+    seite: _currentPage,
+    blatt: getPg(),
+    dirty: _layoutDirty,
     // loadLayoutSilent überschreibt beides — sonst gälten die Werte des letzten Test-Layouts.
-    laser:  ditherSettings,
-    fill:   { ..._fillCfg },
+    laser: ditherSettings,
+    fill: { ..._fillCfg },
   };
   const today = _dayBerlin(); // Berliner Tag wie im Auto-Export, nicht der des Browsers
   _testSheetRun = true;
@@ -12947,10 +13187,10 @@ async function runTestSheets() {
   }
   const ziel = `exports/${today} Testblatt`;
   const rest = (leer ? ` · ${leer} ohne Gravur-Inhalt übersprungen` : '')
-             + (fehler ? ` · ${fehler} fehlgeschlagen` : '');
+    + (fehler ? ` · ${fehler} fehlgeschlagen` : '');
   if (info) { info.style.display = 'block'; info.textContent = `${dateien} Datei(en) → ${ziel}${rest}`; }
   showToast(dateien ? `✅ ${dateien} Testblatt-Datei(en) → ${ziel}${rest}`
-                    : `⚠️ Keine Datei erzeugt${rest}`, 7000);
+    : `⚠️ Keine Datei erzeugt${rest}`, 7000);
 }
 
 // Nummer des Export-Durchlaufs: 1 = Tagesordner, ab 2 legt der SERVER den Nachbarordner
@@ -12975,12 +13215,12 @@ let _testSheetRun = false;
 // geschrieben — lieber am gewohnten Ort als gar nicht.
 async function openExportRun(date) {
   try {
-    const data = await _apiJson('/export-run', 'POST', { date });
+    const data = await _apiJson('/v2/export-run', 'POST', { date });
     if (Number.isInteger(data.run)) {
       console.log('Export-Lauf:', data.folder || date);
       return data.run;
     }
-  } catch(e) {
+  } catch (e) {
     console.warn('Export-Lauf nicht eröffnet:', e.message, '— schreibe in den Tagesordner.');
   }
   return 1;
@@ -13014,14 +13254,16 @@ async function uploadExportToServer(blob, filename, date, group, vorlageOrdner, 
     if (unterordner) formData.append('unterordner', unterordner); // z.B. Einzeln / Gesamt
     if (_nichtUeberschreiben && !vorlageOrdner) formData.append('neu', '1');
     try {
-      const res = await fetch(BASE_URL + '/v2/export-upload', { method: 'POST', body: formData });
+      const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+      const uploadHeaders = token ? { Authorization: `Bearer ${token}` } : {};
+      const res = await fetch(BASE_URL + '/v2/export-upload', { method: 'POST', headers: uploadHeaders, credentials: 'include', body: formData });
       const data = await res.json().catch(() => ({}));
       if (res.ok && data.success) {
         console.log('Upload:', filename, '✅' + (attempt > 1 ? ` (Versuch ${attempt})` : ''));
         return true;
       }
       lastErr = data.error || `HTTP ${res.status}`;
-    } catch(e) {
+    } catch (e) {
       lastErr = e.message || String(e);
     }
     console.warn(`Upload fehlgeschlagen (${attempt}/${ATTEMPTS}):`, filename, '—', lastErr);
@@ -13037,11 +13279,13 @@ async function sendExportStatus(date, results) {
     // test MUSS mit — sonst schreibt der Server die Bilanz eines Testblatt-Laufs in den
     // Tagesordner der Produktion (s. /export-status). Gleiche Flags wie beim Upload.
     // _apiJson prüft die Antwort — bis 08.10.2026 ging ein abgelehnter Status still verloren.
-    await _apiJson('/export-status', 'POST', { date, results, run: _exportRun,
-                                               rekla: _reklaOrderId ? '1' : '', orderId: _reklaOrderId,
-                                               vorschau: _reklaOrderId && URL_Q.get('vorschau') === '1' ? '1' : '',
-                                               test: _testSheetRun ? '1' : '' });
-  } catch(e) {
+    await _apiJson('/v2/export-status', 'POST', {
+      date, results, run: _exportRun,
+      rekla: _reklaOrderId ? '1' : '', orderId: _reklaOrderId,
+      vorschau: _reklaOrderId && URL_Q.get('vorschau') === '1' ? '1' : '',
+      test: _testSheetRun ? '1' : ''
+    });
+  } catch (e) {
     console.error('Status Fehler:', e);
   }
 }
@@ -13069,13 +13313,13 @@ async function _forEachExportPage(perPageFn) {
   saveCurrentPageSnapshot();
   const savedPage = _currentPage;
   for (let i = 0; i < _pages.length; i++) {
-    fields = _pages[i].map(f => ({...f}));
+    fields = _pages[i].map(f => ({ ...f }));
     await new Promise(r => setTimeout(r, 50));
     await perPageFn(i);
   }
   // Ursprüngliche Seite wiederherstellen
   _currentPage = savedPage;
-  fields = _pages[_currentPage].map(f => ({...f}));
+  fields = _pages[_currentPage].map(f => ({ ...f }));
   scheduleRender();
 }
 
@@ -13092,7 +13336,7 @@ async function _exportPDF(dpi, boost, quality, filename) {
   showToast(`✓ PDF mit ${_pages.length} Seite(n) exportiert`);
 }
 
-async function exportPDFPrint()    { return _exportPDF(_PDF_PRINT.dpi, _PDF_PRINT.boost, _PDF_PRINT.q, 'layout-print-hq.pdf'); }
+async function exportPDFPrint() { return _exportPDF(_PDF_PRINT.dpi, _PDF_PRINT.boost, _PDF_PRINT.q, 'layout-print-hq.pdf'); }
 async function exportPDFStandard() { return _exportPDF(150, false, 0.92, 'layout-standard.pdf'); }
 
 // Raster-Bild (PNG/JPG) in EXPORT_DPI: eine Datei pro Seite, ggf. als ZIP.
@@ -13104,7 +13348,7 @@ async function _exportRaster(ext, mime, quality) {
   await _forEachExportPage(async (i) => {
     const c = await buildExportCanvas(EXPORT_DPI);
     if (frame) _drawSheetFrameOnCanvas(c); // Vollblatt-Rahmen (sichtbare Linie am Blattrand)
-    outputs.push({ name: multi ? `seite-${i+1}.${ext}` : single, blob: await _canvasToBlob(c, mime, quality) });
+    outputs.push({ name: multi ? `seite-${i + 1}.${ext}` : single, blob: await _canvasToBlob(c, mime, quality) });
   });
   await _downloadPerPageOutputs(outputs, single, `layout-${EXPORT_DPI}dpi-${_pages.length}seiten.zip`);
 }
@@ -13127,7 +13371,7 @@ async function exportSublimation() {
   await _forEachExportPage(async (i) => {
     // PNG mit maximaler Qualität (keine Komprimierung = keine Artefakte)
     const c = await _buildSublimationCanvas();
-    outputs.push({ name: multi ? `seite-${i+1}.png` : `${baseName}.png`, blob: await _canvasToBlob(c, 'image/png') });
+    outputs.push({ name: multi ? `seite-${i + 1}.png` : `${baseName}.png`, blob: await _canvasToBlob(c, 'image/png') });
   });
 
   await _downloadPerPageOutputs(outputs, `${baseName}.png`, `${baseName}-${_pages.length}seiten.zip`);
@@ -13148,7 +13392,7 @@ function _paintDxfRadio(checkedId, aLbl, bLbl) {
   document.getElementById(aLbl).style.borderColor = on ? 'var(--accent)' : 'var(--border)';
   document.getElementById(bLbl).style.borderColor = on ? 'var(--border)' : 'var(--accent)';
 }
-function updateDxfMode()     { _paintDxfRadio('dxf-single',  'dxf-single-lbl',  'dxf-batch-lbl');  }
+function updateDxfMode() { _paintDxfRadio('dxf-single', 'dxf-single-lbl', 'dxf-batch-lbl'); }
 
 async function doExportDXF() {
   document.getElementById('dxf-modal').style.display = 'none';
@@ -13169,7 +13413,7 @@ const _otFontCache = {}; // cacheKey → opentype.Font | null
 // Gemerkt wird das Versprechen: gleichzeitige Aufrufe beim Start fragten sonst jeder für sich an.
 let _serverFontListCache = null;
 function getServerFontList() {
-  if (!_serverFontListCache) _serverFontListCache = _apiJson('/fonts').then(l => (Array.isArray(l) ? l : []), e => {
+  if (!_serverFontListCache) _serverFontListCache = _apiJson('/v2/fonts').then(l => (Array.isArray(l) ? l : []), e => {
     // Fehlschlag NICHT merken: sonst zeichnete der ganze Lauf mit Ersatzschrift.
     console.error('Schriftliste nicht ladbar:', e.message);
     _serverFontListCache = null;
@@ -13211,27 +13455,37 @@ async function loadOTFont(fontName, opts = {}) {
   for (const n of [opts.rawFamily, opts.url, fontName]) {
     const file = matchServerFontFile(list, n);
     if (file) {
-      const u = `${BASE_URL}/fonts/${encodeURIComponent(file)}`;
+      const u = `${BASE_URL}/v2/fonts/${encodeURIComponent(file)}`;
       if (!candidates.includes(u)) candidates.push(u);
     }
   }
   // 2) Fallback: geratene Endungen (falls Liste leer/nicht erreichbar)
-  if (opts.rawFamily) candidates.push(`${BASE_URL}/fonts/${encodeURIComponent(opts.rawFamily + '.ttf')}`);
+  if (opts.rawFamily) candidates.push(`${BASE_URL}/v2/fonts/${encodeURIComponent(opts.rawFamily + '.ttf')}`);
   if (opts.url) {
     // Server legt die Bestell-Schrift evtl. unter dem Original-Dateinamen ab (z.B. <uuid>.ttf)
     const base = opts.url.split('/').pop().split('?')[0];
-    if (base) candidates.push(`${BASE_URL}/fonts/${encodeURIComponent(base)}`);
+    if (base) candidates.push(`${BASE_URL}/v2/fonts/${encodeURIComponent(base)}`);
   }
-  if (fontName) candidates.push(`${BASE_URL}/fonts/${encodeURIComponent(fontName + '.ttf')}`);
+  if (fontName) candidates.push(`${BASE_URL}/v2/fonts/${encodeURIComponent(fontName + '.ttf')}`);
   if (opts.url) candidates.push(opts.url); // letzter Versuch: direkt von Amazon (kann an CORS scheitern)
 
   for (const url of candidates) {
     try {
-      const font = await opentype.load(url);
+      let font;
+      if (url.startsWith(BASE_URL) || url.startsWith('/v2/')) {
+        const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+        const headers = token ? { Authorization: `Bearer ${token}` } : {};
+        const resp = await fetch(url, { headers, credentials: 'include' });
+        if (!resp.ok) continue;
+        const buf = await resp.arrayBuffer();
+        font = opentype.parse(buf);
+      } else {
+        font = await opentype.load(url);
+      }
       _gsubExtensionAuspacken(font);
       _otFontCache[cacheKey] = font;
       return font;
-    } catch(e) { /* nächsten Kandidaten versuchen */ }
+    } catch (e) { /* nächsten Kandidaten versuchen */ }
   }
   console.warn('opentype: Schrift nicht ladbar → Fallback auf TEXT-Entity. name:', fontName, '| family:', opts.rawFamily || '-', '| url:', opts.url || '-');
   // Fehlschläge bewusst NICHT cachen: Wird die Schrift später hochgeladen,
@@ -13293,7 +13547,7 @@ function _emojiLaden() {
       catch (e) { console.warn('Emoji-Schrift nicht ladbar:', datei, e.message); return null; }
     };
     const [noto, dejavu, arial] = await Promise.all([lade('NotoEmoji.ttf'), lade('DejaVuSans.ttf'),
-      loadOTFont('Arial', { rawFamily: 'Arial' }).catch(() => null)]);
+    loadOTFont('Arial', { rawFamily: 'Arial' }).catch(() => null)]);
     _arialOT = arial || null;
     await _emojiEinstellungLaden();
     if (noto || dejavu) _emojiSchriften = {
@@ -13308,7 +13562,7 @@ function _emojiLaden() {
   return _emojiLadenP;
 }
 async function _emojiEinstellungLaden() {
-  try { _emojiAn = _emojiSchalterAn(await _apiJson('/settings')); }
+  try { _emojiAn = _emojiSchalterAn(await _apiJson('/v2/settings')); }
   catch (_) { /* Server nicht erreichbar → Standard: an */ }
 }
 
@@ -13525,7 +13779,7 @@ async function _otFeldSchriftLaden(f, txt) {
   if (_otFeldMemo.has(key) && _otFeldMemo.get(key) !== undefined) return _otFeldMemo.get(key);
   _otFeldMemo.set(key, undefined);
   let font = null;
-  try { font = await loadOTFontFuerText(_feldSchrift(f), { url: f._fontUrl, rawFamily: f._fontRawFamily, bild: true }, txt); } catch (_) {}
+  try { font = await loadOTFontFuerText(_feldSchrift(f), { url: f._fontUrl, rawFamily: f._fontRawFamily, bild: true }, txt); } catch (_) { }
   if (_otFeldMemo.size > 3000) _otFeldMemo.clear();
   _otFeldMemo.set(key, font || null);
   return font || null;
@@ -13621,14 +13875,14 @@ function _konturenVereinigen(otPath) {
       const [x0, y0] = pv;
       for (let s = 1; s <= 12; s++) {
         const t = s / 12, mt = 1 - t;
-        pt(mt*mt*mt*x0 + 3*mt*mt*t*cmd.x1 + 3*mt*t*t*cmd.x2 + t*t*t*cmd.x,
-           mt*mt*mt*y0 + 3*mt*mt*t*cmd.y1 + 3*mt*t*t*cmd.y2 + t*t*t*cmd.y);
+        pt(mt * mt * mt * x0 + 3 * mt * mt * t * cmd.x1 + 3 * mt * t * t * cmd.x2 + t * t * t * cmd.x,
+          mt * mt * mt * y0 + 3 * mt * mt * t * cmd.y1 + 3 * mt * t * t * cmd.y2 + t * t * t * cmd.y);
       }
     } else if (cmd.type === 'Q') {
       const [x0, y0] = pv;
       for (let s = 1; s <= 8; s++) {
         const t = s / 8, mt = 1 - t;
-        pt(mt*mt*x0 + 2*mt*t*cmd.x1 + t*t*cmd.x, mt*mt*y0 + 2*mt*t*cmd.y1 + t*t*cmd.y);
+        pt(mt * mt * x0 + 2 * mt * t * cmd.x1 + t * t * cmd.x, mt * mt * y0 + 2 * mt * t * cmd.y1 + t * t * cmd.y);
       }
     }
   }
@@ -13664,37 +13918,37 @@ function otPathToDXF(otPath, offsetX, offsetY, scaleX, scaleY, layer, rot) {
   const flush = () => {
     if (pts.length < 2) { pts = []; return; }
     // R12: POLYLINE → n×VERTEX → SEQEND
-    const seg = ['0','POLYLINE','8',layer,'66','1','70','0'];
-    pts.forEach(function(p) {
-      const [X, Y] = tp(offsetX + p[0]*scaleX, offsetY - p[1]*scaleY);
-      seg.push('0','VERTEX','8',layer);
-      seg.push('10',X.toFixed(4));
-      seg.push('20',Y.toFixed(4));
-      seg.push('30','0.0');
+    const seg = ['0', 'POLYLINE', '8', layer, '66', '1', '70', '0'];
+    pts.forEach(function (p) {
+      const [X, Y] = tp(offsetX + p[0] * scaleX, offsetY - p[1] * scaleY);
+      seg.push('0', 'VERTEX', '8', layer);
+      seg.push('10', X.toFixed(4));
+      seg.push('20', Y.toFixed(4));
+      seg.push('30', '0.0');
     });
-    seg.push('0','SEQEND');
+    seg.push('0', 'SEQEND');
     lines.push(seg.join('\n'));
     pts = [];
   };
-  otPath.commands.forEach(function(cmd) {
-    if (cmd.type==='M') { flush(); pts.push([cmd.x,cmd.y]); }
-    else if (cmd.type==='L') { pts.push([cmd.x,cmd.y]); }
-    else if (cmd.type==='C') {
-      const pv = pts.length ? pts[pts.length-1] : [0,0];
-      for (let s=1;s<=12;s++) {
-        const t=s/12, mt=1-t;
-        pts.push([mt*mt*mt*pv[0]+3*mt*mt*t*cmd.x1+3*mt*t*t*cmd.x2+t*t*t*cmd.x,
-                  mt*mt*mt*pv[1]+3*mt*mt*t*cmd.y1+3*mt*t*t*cmd.y2+t*t*t*cmd.y]);
+  otPath.commands.forEach(function (cmd) {
+    if (cmd.type === 'M') { flush(); pts.push([cmd.x, cmd.y]); }
+    else if (cmd.type === 'L') { pts.push([cmd.x, cmd.y]); }
+    else if (cmd.type === 'C') {
+      const pv = pts.length ? pts[pts.length - 1] : [0, 0];
+      for (let s = 1; s <= 12; s++) {
+        const t = s / 12, mt = 1 - t;
+        pts.push([mt * mt * mt * pv[0] + 3 * mt * mt * t * cmd.x1 + 3 * mt * t * t * cmd.x2 + t * t * t * cmd.x,
+        mt * mt * mt * pv[1] + 3 * mt * mt * t * cmd.y1 + 3 * mt * t * t * cmd.y2 + t * t * t * cmd.y]);
       }
-    } else if (cmd.type==='Q') {
-      const pv=pts.length ? pts[pts.length-1] : [0,0];
-      for (let s=1;s<=8;s++) {
-        const t=s/8, mt=1-t;
-        pts.push([mt*mt*pv[0]+2*mt*t*cmd.x1+t*t*cmd.x,
-                  mt*mt*pv[1]+2*mt*t*cmd.y1+t*t*cmd.y]);
+    } else if (cmd.type === 'Q') {
+      const pv = pts.length ? pts[pts.length - 1] : [0, 0];
+      for (let s = 1; s <= 8; s++) {
+        const t = s / 8, mt = 1 - t;
+        pts.push([mt * mt * pv[0] + 2 * mt * t * cmd.x1 + t * t * cmd.x,
+        mt * mt * pv[1] + 2 * mt * t * cmd.y1 + t * t * cmd.y]);
       }
-    } else if (cmd.type==='Z') {
-      if (pts.length) pts.push([pts[0][0],pts[0][1]]);
+    } else if (cmd.type === 'Z') {
+      if (pts.length) pts.push([pts[0][0], pts[0][1]]);
       flush();
     }
   });
@@ -13706,7 +13960,7 @@ function otPathToDXF(otPath, offsetX, offsetY, scaleX, scaleY, layer, rot) {
 // vertikal, damit mehrere überlappungsfrei in EINER DXF gestapelt werden können.
 async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, asBlock = false, blockCtr = { n: 0 }, bildRahmen = true, zusammen = false) {
   const p = getPg();
-  const flipY = (y, h=0) => p.h - y - h + yOffset;
+  const flipY = (y, h = 0) => p.h - y - h + yOffset;
   let d = [];
   const blocks = []; // BLOCK-Definitionen (nur wenn asBlock) — jede = 1 Text = 1 Objekt in Ezcad
 
@@ -13730,18 +13984,20 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
       const m = _motivCache[name] || await motivPfade(name);
       const g = m && motivGeometrie(f, m);
       if (!g) { console.warn('DXF: Motiv fehlt oder unlesbar —', name); continue; }
-      const rotM = f.rotation ? { a: -f.rotation * Math.PI / 180,
-        cx: f.x + f.w / 2, cy: flipY(f.y, f.h) + f.h / 2 } : null;
+      const rotM = f.rotation ? {
+        a: -f.rotation * Math.PI / 180,
+        cx: f.x + f.w / 2, cy: flipY(f.y, f.h) + f.h / 2
+      } : null;
       for (const pf of m.pfade) {
         const pts = pf.pts.map(([px, py]) => {
           let X = g.ox + px * g.s, Y = flipY(g.oy + py * g.s);
           if (rotM) { const r = _rotPt(X, Y, rotM); X = r[0]; Y = r[1]; }
           return [X, Y];
         });
-        if (pf.zu && (pts[0][0] !== pts[pts.length-1][0] || pts[0][1] !== pts[pts.length-1][1])) pts.push(pts[0]);
-        d.push('0','POLYLINE','8','Motiv','66','1','70','1');
-        for (const [X, Y] of pts) d.push('0','VERTEX','8','Motiv','10',X.toFixed(4),'20',Y.toFixed(4),'30','0.0');
-        d.push('0','SEQEND','8','Motiv');
+        if (pf.zu && (pts[0][0] !== pts[pts.length - 1][0] || pts[0][1] !== pts[pts.length - 1][1])) pts.push(pts[0]);
+        d.push('0', 'POLYLINE', '8', 'Motiv', '66', '1', '70', '1');
+        for (const [X, Y] of pts) d.push('0', 'VERTEX', '8', 'Motiv', '10', X.toFixed(4), '20', Y.toFixed(4), '30', '0.0');
+        d.push('0', 'SEQEND', '8', 'Motiv');
       }
       continue;
     }
@@ -13765,7 +14021,7 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
       // feste Gravurhöhe, zu langer Text wird länger.
       const txtLines = f.type === 'static'
         ? _wrapTextLines(_textLines(txt), f.w - STATIC_WRAP_INSET_MM,
-            s => _measureTextMM(s, _feldSchrift(f), f.bold, fsMM))
+          s => _measureTextMM(s, _feldSchrift(f), f.bold, fsMM))
         : _textLines(txt);
       const lineAdvMM = _isCombo(f) ? _comboLineAdvMM(f, fsMM) : fsMM * LINE_SPACING;
       // Kombi mit „einzelne Zeile mittig": Verschiebung nach unten (DXF y-up → minus).
@@ -13773,8 +14029,10 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
       const comboShiftMM = comboCenterShiftMM(f, txtLines.length, fsMM);
       // Drehung (Grad, im Uhrzeigersinn wie Vorschau) um die Feldmitte.
       // DXF ist y-up → Winkel negieren, damit die Optik der Vorschau entspricht.
-      const rot = f.rotation ? { a: -f.rotation * Math.PI / 180,
-        cx: f.x + f.w / 2, cy: flipY(f.y, f.h) + f.h / 2 } : null;
+      const rot = f.rotation ? {
+        a: -f.rotation * Math.PI / 180,
+        cx: f.x + f.w / 2, cy: flipY(f.y, f.h) + f.h / 2
+      } : null;
 
       // Vektor-Schrift EINMAL für Kreis- und geraden Zweig; mit Bildzeichen (Emoji) erst die Ersatzschriften.
       const _vektor = isVector && typeof opentype !== 'undefined';
@@ -13856,7 +14114,7 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
           // Manuell/Statik: feste fsMM, Cap-Oberkante an der Feldoberkante.
           // Kombi-Feld: NICHT exactFit (feste comboFontSizePt) → alle Zeilen gleich hoch.
           const exactFit = f.type !== 'static' && f.autoFit !== false && !(f.circleDia > 0)
-                           && !_isCombo(f) && txtLines.some(l => l.trim());
+            && !_isCombo(f) && txtLines.some(l => l.trim());
           const lineAdvEm = upm * LINE_SPACING;
           let scale = fsMM / upm, blockTopEm = null;
           if (exactFit) {
@@ -13899,8 +14157,8 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
             // Horizontal je Zeile ausrichten (echte Zeilenbreite, wie ctx.textAlign in der Vorschau)
             const advMM = vorschub(li) * scale * sxW;
             const x = align === 'center' ? f.x + (f.w - advMM) / 2
-                    : align === 'right'  ? f.x + f.w - advMM
-                    : f.x;
+              : align === 'right' ? f.x + f.w - advMM
+                : f.x;
             // Auto-Fit: Block-Oberkante bündig an Feldoberkante (Block-Höhe == f.h).
             // Sonst: Cap-Oberkante an Feldoberkante mit fester Zeilenhöhe.
             const yLine = blockTopEm !== null
@@ -13922,10 +14180,10 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
           // identisch (INSERT@0,0, Maßstab 1 → absolute Koordinaten).
           if (asBlock && fieldGlyphs.length) {
             const bn = 'T' + (++blockCtr.n);
-            blocks.push([ '0','BLOCK','8',gravLayer,'2',bn,'70','0','10','0.0','20','0.0','30','0.0','3',bn ].join('\n')
+            blocks.push(['0', 'BLOCK', '8', gravLayer, '2', bn, '70', '0', '10', '0.0', '20', '0.0', '30', '0.0', '3', bn].join('\n')
               + '\n' + fieldGlyphs.join('\n') + '\n'
-              + [ '0','ENDBLK','8',gravLayer ].join('\n'));
-            d.push('0','INSERT','8',gravLayer,'2',bn,'10','0.0','20','0.0','30','0.0');
+              + ['0', 'ENDBLK', '8', gravLayer].join('\n'));
+            d.push('0', 'INSERT', '8', gravLayer, '2', bn, '10', '0.0', '20', '0.0', '30', '0.0');
           }
           continue;
         }
@@ -13942,13 +14200,13 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
         const yLine = yBase - comboShiftMM - li * lineAdvMM;
         const [px0, py0] = _rotPt(f.x, yLine, rot);   // Einfügepunkt (72=0 bzw. Pflichtfeld)
         const [pax, pay] = _rotPt(ax, yLine, rot);    // Ausrichtepunkt bei zentriert/rechts
-        d.push('0','TEXT','8',gravLayer);
-        d.push('10', px0.toFixed(4),'20', py0.toFixed(4),'30','0.0');
-        d.push('40', fsMM.toFixed(4),'1', line,'7','Standard','72', String(just));
+        d.push('0', 'TEXT', '8', gravLayer);
+        d.push('10', px0.toFixed(4), '20', py0.toFixed(4), '30', '0.0');
+        d.push('40', fsMM.toFixed(4), '1', line, '7', 'Standard', '72', String(just));
         // Drehung: Gruppencode 50 (Grad, CCW)
         if (f.rotation) d.push('50', String(-f.rotation));
         // Bei zentriert/rechts: Ausrichtepunkt (11/21) setzen — sonst ignoriert DXF die Justierung
-        if (just !== 0) d.push('11', pax.toFixed(4),'21', pay.toFixed(4),'31','0.0');
+        if (just !== 0) d.push('11', pax.toFixed(4), '21', pay.toFixed(4), '31', '0.0');
       });
 
     } else if (f.type === 'image' && f._halbton && f._halbton.length) {
@@ -13959,11 +14217,11 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
       const lay = `Foto_${f._platz || 1}`;
       for (const linie of f._halbton) {
         if (!linie || linie.length < 2) continue;
-        d.push('0','POLYLINE','8',lay,'66','1','70','0');
+        d.push('0', 'POLYLINE', '8', lay, '66', '1', '70', '0');
         for (const pt of linie) {
-          d.push('0','VERTEX','8',lay,'10',pt.x.toFixed(4),'20',flipY(pt.y).toFixed(4),'30','0.0');
+          d.push('0', 'VERTEX', '8', lay, '10', pt.x.toFixed(4), '20', flipY(pt.y).toFixed(4), '30', '0.0');
         }
-        d.push('0','SEQEND');
+        d.push('0', 'SEQEND');
       }
 
     } else if (f.type === 'image' && f._img && bildRahmen) {
@@ -13975,12 +14233,12 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
         ? { a: -f.rotation * Math.PI / 180, cx: f.x + f.w / 2, cy: y1 + f.h / 2 }
         : null;
       // R12: POLYLINE statt LWPOLYLINE
-      d.push('0','POLYLINE','8','Bild','66','1','70','1');
-      const corners = [[x1,y1],[x2,y1],[x2,y2],[x1,y2]].map(([px,py]) => _rotPt(px, py, imgRot));
-      for (const [cx,cy] of corners) {
-        d.push('0','VERTEX','8','Bild','10',cx.toFixed(4),'20',cy.toFixed(4),'30','0.0');
+      d.push('0', 'POLYLINE', '8', 'Bild', '66', '1', '70', '1');
+      const corners = [[x1, y1], [x2, y1], [x2, y2], [x1, y2]].map(([px, py]) => _rotPt(px, py, imgRot));
+      for (const [cx, cy] of corners) {
+        d.push('0', 'VERTEX', '8', 'Bild', '10', cx.toFixed(4), '20', cy.toFixed(4), '30', '0.0');
       }
-      d.push('0','SEQEND');
+      d.push('0', 'SEQEND');
     }
   }
   return { entities: d, blocks };
@@ -13988,21 +14246,21 @@ async function _buildDXFEntities(fieldsSubset, isFilled, isVector, yOffset = 0, 
 
 function _dxfHeaderTables(p, extMinY, extMaxY, extraLayers = []) {
   let d = [];
-  d.push('0','SECTION','2','HEADER');
-  d.push('9','$ACADVER','1','AC1009'); // R12 — maximale Kompatibilität mit Ezcad2
-  d.push('9','$INSUNITS','70','4');    // mm
-  d.push('9','$EXTMIN','10','0.0','20',extMinY.toString(),'30','0.0');
-  d.push('9','$EXTMAX','10',p.w.toString(),'20',extMaxY.toString(),'30','0.0');
-  d.push('0','ENDSEC');
-  d.push('0','SECTION','2','TABLES');
-  d.push('0','TABLE','2','LAYER','70', String(4 + extraLayers.length));
-  d.push('0','LAYER','2','Gravur','70','0','62','7','6','Continuous');
-  d.push('0','LAYER','2','Gravur-Hatch','70','0','62','7','6','Continuous');
-  d.push('0','LAYER','2','Bild','70','0','62','5','6','Continuous');
-  d.push('0','LAYER','2','Rahmen','70','0','62','1','6','Continuous'); // Positions-Anker (rot), nicht gravieren
+  d.push('0', 'SECTION', '2', 'HEADER');
+  d.push('9', '$ACADVER', '1', 'AC1009'); // R12 — maximale Kompatibilität mit Ezcad2
+  d.push('9', '$INSUNITS', '70', '4');    // mm
+  d.push('9', '$EXTMIN', '10', '0.0', '20', extMinY.toString(), '30', '0.0');
+  d.push('9', '$EXTMAX', '10', p.w.toString(), '20', extMaxY.toString(), '30', '0.0');
+  d.push('0', 'ENDSEC');
+  d.push('0', 'SECTION', '2', 'TABLES');
+  d.push('0', 'TABLE', '2', 'LAYER', '70', String(4 + extraLayers.length));
+  d.push('0', 'LAYER', '2', 'Gravur', '70', '0', '62', '7', '6', 'Continuous');
+  d.push('0', 'LAYER', '2', 'Gravur-Hatch', '70', '0', '62', '7', '6', 'Continuous');
+  d.push('0', 'LAYER', '2', 'Bild', '70', '0', '62', '5', '6', 'Continuous');
+  d.push('0', 'LAYER', '2', 'Rahmen', '70', '0', '62', '1', '6', 'Continuous'); // Positions-Anker (rot), nicht gravieren
   // Zeilen-Layer "Gravur_N" sowie — nur wenn benutzt — "Motiv" und "Foto_N"
-  for (const ln of extraLayers) d.push('0','LAYER','2',ln,'70','0','62','7','6','Continuous');
-  d.push('0','ENDTAB','0','ENDSEC');
+  for (const ln of extraLayers) d.push('0', 'LAYER', '2', ln, '70', '0', '62', '7', '6', 'Continuous');
+  d.push('0', 'ENDTAB', '0', 'ENDSEC');
   return d;
 }
 
@@ -14020,11 +14278,11 @@ function _collectRowLayers(entities) {
 // „nicht gravieren" stellen). Hält die Position beim Import — Ezcad zentriert nicht.
 function _dxfFrameEntities(p, yOffset = 0) {
   const x1 = 0, x2 = p.w, y1 = yOffset, y2 = p.h + yOffset;
-  const d = ['0','POLYLINE','8','Rahmen','66','1','70','1']; // 70=1 → geschlossen
-  for (const [cx, cy] of [[x1,y1],[x2,y1],[x2,y2],[x1,y2]]) {
-    d.push('0','VERTEX','8','Rahmen','10',cx.toFixed(4),'20',cy.toFixed(4),'30','0.0');
+  const d = ['0', 'POLYLINE', '8', 'Rahmen', '66', '1', '70', '1']; // 70=1 → geschlossen
+  for (const [cx, cy] of [[x1, y1], [x2, y1], [x2, y2], [x1, y2]]) {
+    d.push('0', 'VERTEX', '8', 'Rahmen', '10', cx.toFixed(4), '20', cy.toFixed(4), '30', '0.0');
   }
-  d.push('0','SEQEND');
+  d.push('0', 'SEQEND');
   return d;
 }
 
@@ -14086,10 +14344,10 @@ async function buildDXFContentMultiPage(pagesFieldsList, isFilled, isVector, fra
   }
   const totalH = pagesFieldsList.length * p.h + (pagesFieldsList.length - 1) * GAP_MM;
   let d = _dxfHeaderTables(p, -(totalH - p.h), p.h, _collectRowLayers([...allEntities, ...allBlocks]));
-  if (allBlocks.length) { d.push('0','SECTION','2','BLOCKS'); _anhaengen(d, allBlocks); d.push('0','ENDSEC'); }
-  d.push('0','SECTION','2','ENTITIES');
+  if (allBlocks.length) { d.push('0', 'SECTION', '2', 'BLOCKS'); _anhaengen(d, allBlocks); d.push('0', 'ENDSEC'); }
+  d.push('0', 'SECTION', '2', 'ENTITIES');
   _anhaengen(d, allEntities);
-  d.push('0','ENDSEC','0','EOF');
+  d.push('0', 'ENDSEC', '0', 'EOF');
   const txt = d.join('\n') + '\n';
   // Mehrseitig: die erste Seite landet mittig, die weiteren wie gehabt darunter.
   return centerOrigin ? _dxfOriginToCenter(txt, p) : txt;
@@ -14145,7 +14403,7 @@ async function exportDXFSingle(isFilled = false, isVector = true, frame = false)
   // wie beim Batch-Export. Layout-Einstellungen EINMAL ableiten.
   const { asBlock, centerOrigin, bildRahmen, zusammen } = _dxfOpts(_loadedLayout);
   const buildOrderDXF = (entries) => {
-    const pageIdxs = [...new Set(entries.map(e => e.pageIdx))].sort((a,b) => a-b);
+    const pageIdxs = [...new Set(entries.map(e => e.pageIdx))].sort((a, b) => a - b);
     if (pageIdxs.length <= 1) return buildDXFContent(entries.map(e => e.f), isFilled, isVector, frame, asBlock, centerOrigin, bildRahmen, zusammen);
     const grouped = pageIdxs.map(pi => entries.filter(e => e.pageIdx === pi).map(e => e.f));
     return buildDXFContentMultiPage(grouped, isFilled, isVector, frame, asBlock, centerOrigin, bildRahmen, zusammen);
@@ -14196,21 +14454,28 @@ let _settingsDirty = false;
 // der erste ANDERE Benutzer löscht das Cookie (sites-available/printomation, map $pm_abmelden).
 async function abmelden() {
   let benutzer = null;
-  try { ({ benutzer } = await (await fetch('/wer-bin-ich', { cache: 'no-store' })).json()); } catch {}
-  if (!benutzer) return showToast('Ohne Anmeldung geöffnet — nichts abzumelden', 2500);
+  try {
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    ({ benutzer } = await (await fetch(BASE_URL + '/v2/wer-bin-ich', { headers, credentials: 'include', cache: 'no-store' })).json());
+  } catch { }
   const ok = await confirmModal('Abmelden?',
-    `Du bist als „${benutzer}" angemeldet. Danach fragt der Browser nach Benutzer und Passwort — dort einen anderen Benutzer eintragen (Safari füllt oft den alten ein: überschreiben). Nicht Gespeichertes geht verloren.`,
+    benutzer ? `Du bist als „${benutzer}“ angemeldet. Möchtest du dich wirklich abmelden?` : 'Möchtest du dich abmelden?',
     'Abmelden');
   if (!ok) return;
-  document.cookie = `pm_abgemeldet=${encodeURIComponent(benutzer)}; Path=/; Max-Age=300; Secure; SameSite=Lax`;
-  location.href = '/layout-editor.html';
+  localStorage.removeItem('jwt_access_token');
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  document.cookie = 'jwt_access_token=; Path=/; Max-Age=0; SameSite=Lax';
+  try { await fetch(BASE_URL + '/v1/auth/logout', { method: 'POST', credentials: 'include' }); } catch (_) { }
+  location.href = 'login.html';
 }
 
 async function loadSettings() {
   try {
-    _currentSettings = await _apiJson('/settings'); // Server merged bereits über die Defaults
+    _currentSettings = await _apiJson('/v2/settings'); // Server merged bereits über die Defaults
     applySettingsToUI(_currentSettings);
-  } catch(e) {
+  } catch (e) {
     _currentSettings = null;
     setSettingsDirty(false);
     showToast('⚠️ Einstellungen nicht ladbar — Panel gesperrt. Server prüfen, Tab erneut öffnen.', 5000);
@@ -14220,8 +14485,8 @@ async function loadSettings() {
 // Downloads und Exports unterscheiden sich nur in Element-IDs und Settings-Schlüssel.
 // Eine dritte Gruppe wäre hier eine Zeile.
 const SETTINGS_GROUPS = [
-  { key: 'downloads', check: 'dl-auto-delete',  row: 'dl-days-row'  },
-  { key: 'exports',   check: 'exp-auto-delete', row: 'exp-days-row' },
+  { key: 'downloads', check: 'dl-auto-delete', row: 'dl-days-row' },
+  { key: 'exports', check: 'exp-auto-delete', row: 'exp-days-row' },
 ];
 
 // Zeigt/versteckt die Tage-Auswahl passend zum Schalter. Rückgabe: Zustand des Schalters.
@@ -14264,8 +14529,8 @@ function _updateEinstStand() {
 
 // Tages-Buttons (Einstellungen): beide 6er-Grids sind identisch — werden generiert statt doppelt im Markup zu stehen
 document.querySelectorAll('.day-grid').forEach(g => {
-  g.innerHTML = [1,2,3,7,14,30].map(d =>
-    `<button class="settings-day-btn" data-group="${g.dataset.group}" data-val="${d}" onclick="selectDays('${g.dataset.group}',${d})">${d===1?'1 Tag':d+' Tage'}</button>`
+  g.innerHTML = [1, 2, 3, 7, 14, 30].map(d =>
+    `<button class="settings-day-btn" data-group="${g.dataset.group}" data-val="${d}" onclick="selectDays('${g.dataset.group}',${d})">${d === 1 ? '1 Tag' : d + ' Tage'}</button>`
   ).join('');
 });
 
@@ -14315,13 +14580,13 @@ function setSettingsDirty(dirty) {
 async function saveSettings() {
   if (!_currentSettings || !_settingsDirty) return;
   try {
-    await _apiJson('/settings', 'POST', _currentSettings);
+    await _apiJson('/v2/settings', 'POST', _currentSettings);
     setSettingsDirty(false);
     // Emoji-Schalter wirkt sofort auf Vorschau und manuellen Export (Auto-Export liest ihn je Lauf)
     _emojiAn = _emojiSchalterAn(_currentSettings);
     _fitPtCache.clear(); scheduleRender();
     showToast('✅ Einstellungen gespeichert');
-  } catch(e) {
+  } catch (e) {
     showToast('⚠️ Fehler beim Speichern: ' + e.message);
   }
 }
@@ -14365,22 +14630,24 @@ async function openLayoutSettings(id) {
   for (const f of (l.pages?.[0] || []))
     if (!f.arrayOf && (f.type === 'text' || f.type === 'image')) _proNr[f.palNum || 1] = (_proNr[f.palNum || 1] || 0) + 1;
   const _s0 = l.pages?.[0] || [];
-  _lsBeispiel = { seiten: l.pages?.length || 1, mehrere: Object.values(_proNr).some(n => n > 1),
-                  // für die festen Vorlagen-Namen (s. Vorlage-Zweig in _exportFilledPages)
-                  gravurSeiten: (l.pages || []).map((p, r) => _seiteHatGravur(l, r)),
-                  nurText: _s0.length > 0 && !_s0.some(f => f.type === 'image'),
-                  gruppe: l.group || '' };
+  _lsBeispiel = {
+    seiten: l.pages?.length || 1, mehrere: Object.values(_proNr).some(n => n > 1),
+    // für die festen Vorlagen-Namen (s. Vorlage-Zweig in _exportFilledPages)
+    gravurSeiten: (l.pages || []).map((p, r) => _seiteHatGravur(l, r)),
+    nurText: _s0.length > 0 && !_s0.some(f => f.type === 'image'),
+    gruppe: l.group || ''
+  };
   document.getElementById('ls-modal-name').textContent = l.name;
   // Name (editierbar → Umbenennen)
   document.getElementById('ls-name').value = l.name || '';
   const fmt = _formate(l);
   for (const f of LS_FORMATS) { const box = _lsFmtBox(f); if (box) box.checked = fmt.includes(f); }
-  document.getElementById('ls-dxf-style').value      = l.dxfStyle === 'einzeln' ? 'einzeln' : 'outline';
-  document.getElementById('ls-dxf-frame').checked    = !!l.dxfFrame;
-  document.getElementById('ls-dxf-center').checked   = !!l.dxfCenterOrigin;
+  document.getElementById('ls-dxf-style').value = l.dxfStyle === 'einzeln' ? 'einzeln' : 'outline';
+  document.getElementById('ls-dxf-frame').checked = !!l.dxfFrame;
+  document.getElementById('ls-dxf-center').checked = !!l.dxfCenterOrigin;
   document.getElementById('ls-dxf-textblock').checked = !!l.dxfTextAsBlock;
   // bmpModus trägt zwei Dinge: blech/platz (BMP-Aufteilung) und vorlage/beides (Ablage)
-  document.getElementById('ls-ablage').value    = _istVorlageLayout(l) ? l.bmpModus : 'tag';
+  document.getElementById('ls-ablage').value = _istVorlageLayout(l) ? l.bmpModus : 'tag';
   document.getElementById('ls-bmp-modus').value = l.bmpModus === 'platz' ? 'platz' : 'blech';
   document.getElementById('ls-vorlage-ordner').value = l.vorlageOrdner || '';
   // Muster, das einem Listeneintrag entspricht, wählt diesen — alles andere ist „eigen".
@@ -14394,7 +14661,7 @@ async function openLayoutSettings(id) {
   lsToggleBmpOptions();
   lsAufteilungFuellen(l);
   document.getElementById('ls-auto-export').checked = !!l.autoExport;
-  document.getElementById('ls-order').value         = l.exportOrder || 'date-desc'; // Default = wie runAutoExport (neueste zuerst)
+  document.getElementById('ls-order').value = l.exportOrder || 'date-desc'; // Default = wie runAutoExport (neueste zuerst)
   lsAsinZeigen(l);
   lsAbrufZeitenZeigen();   // async — füllt den Satz unter dem Auto-Haken nach
   document.getElementById('ls-erweitert').open = false;
@@ -14418,7 +14685,7 @@ function lsToggleDxfOptions() {
 // platzN.bmp, dort gibt es nichts zu wählen.
 function lsToggleBmpOptions() {
   const on = document.getElementById('ls-fmt-bmp').checked
-          && document.getElementById('ls-ablage').value === 'tag';
+    && document.getElementById('ls-ablage').value === 'tag';
   document.getElementById('ls-bmp-options').style.display = on ? 'block' : 'none';
   lsPaintChips();
 }
@@ -14496,7 +14763,11 @@ async function lsAbrufZeitenZeigen() {
   const el = document.getElementById('ls-auto-wann');
   const rest = 'werden die neuen Bestellungen dieses Layouts sofort als Datei gespeichert.';
   let zeiten = '';
-  try { zeiten = _lsZeitplanText(await (await fetch('/v2/schedule')).json()); } catch (_) {}
+  try {
+    const token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
+    zeiten = _lsZeitplanText(await (await fetch(BASE_URL + '/v2/schedule', { headers, credentials: 'include' })).json());
+  } catch (_) { }
   el.textContent = zeiten ? `Nach jedem Bestell-Abruf (${zeiten}) ${rest}` : `Nach jedem automatischen Bestell-Abruf ${rest}`;
 }
 
@@ -14509,15 +14780,15 @@ function lsAufteilungFuellen(l) {
   const zwei = (l.pages?.length || 1) > 1;
   const opts = zwei
     ? [['blatt-seite', 'Jedes Blatt einzeln, Vorder- und Rückseite getrennt (Standard)'],
-       ['blatt',       'Jedes Blatt einzeln, Vorder- und Rückseite in einer Datei'],
-       ['seite',       'Alle Vorderseiten in eine Datei, alle Rückseiten in eine'],
-       ['eine',        'Alles in eine einzige Datei']]
+    ['blatt', 'Jedes Blatt einzeln, Vorder- und Rückseite in einer Datei'],
+    ['seite', 'Alle Vorderseiten in eine Datei, alle Rückseiten in eine'],
+    ['eine', 'Alles in eine einzige Datei']]
     : [['blatt-seite', 'Jedes Blatt eine eigene Datei (Standard)'],
-       ['eine',        'Alle Blätter in eine einzige Datei']];
+    ['eine', 'Alle Blätter in eine einzige Datei']];
   sel.innerHTML = opts.map(([v, txt]) => `<option value="${v}">${txt}</option>`).join('');
   const s = l.splitSatz ?? true, r = l.splitSeite ?? true;
   sel.value = !zwei ? (s ? 'blatt-seite' : 'eine')
-            : (s && r) ? 'blatt-seite' : s ? 'blatt' : r ? 'seite' : 'eine';
+    : (s && r) ? 'blatt-seite' : s ? 'blatt' : r ? 'seite' : 'eine';
 }
 
 // Beispiel-Dateinamen — dieselben Regeln wie _fileGroup/_stamm im Export: „_Seite" nur
@@ -14552,14 +14823,16 @@ function lsDateinameVorschau() {
     }
     if (_lsFmtBox('png')?.checked) dat.push(`${name}.png (Ansicht)`);
     zeilen.push(`_Vorlage/${ordner}/  →  ${dat.join(' · ') || '—'}`,
-                `Kopie für jeden Tag: <Tag>/${_lsBeispiel.gruppe ? _lsBeispiel.gruppe + '/' : ''}${ordner}/`);
+      `Kopie für jeden Tag: <Tag>/${_lsBeispiel.gruppe ? _lsBeispiel.gruppe + '/' : ''}${ordner}/`);
     if (ablage === 'beides') zeilen.push('plus die normalen Dateien im Tagesordner');
   } else if (m) {
     const bsp = (nr, bestellnr) => {
-      const w = { layout: name, datum: _dayBerlin(), nr, seite: 1, bestellnr,
-                  kurznr: bestellnr.slice(-7), platz: 1 };
+      const w = {
+        layout: name, datum: _dayBerlin(), nr, seite: 1, bestellnr,
+        kurznr: bestellnr.slice(-7), platz: 1
+      };
       return m.replace(/\{(\w+)\}/g, (x, k) => (k in w ? String(w[k]) : x))
-              .replace(/[<>:"\/\\|?*]/g, '_')
+        .replace(/[<>:"\/\\|?*]/g, '_')
         + (nachSeite && !/\{seite\}/.test(m) ? '_Seite1' : '');
     };
     zeilen.push(`${bsp(1, '305-1234567-1234567')}.${ext}`, `${bsp(2, '302-7654321-7654321')}.${ext}`);
@@ -14570,7 +14843,7 @@ function lsDateinameVorschau() {
   } else {
     const sfx = auf === 'blatt' ? '_Blatt1' : (zwei ? '_Seite1' : '');
     zeilen.push(`${name}_1234567${sfx}.${ext}` + (nachSeite ? `  +  …_Seite2.${ext}` : '')
-                + '  (1234567 = Ende der Bestellnummer)');
+      + '  (1234567 = Ende der Bestellnummer)');
     if (_lsBeispiel.mehrere)
       zeilen.push(`${name}_${nachSeite ? 'Satz1_Seite1' : 'Blatt1'}.${ext}  (mehrere Bestellungen auf einem Blatt)`);
   }
@@ -14610,8 +14883,8 @@ async function saveLayoutSettings() {
   // Ohne Format fiel der Export bis 08.10.2026 still auf PDF zurück
   if (!fmts.length) { showToast('⚠️ Bitte mindestens ein Dateiformat wählen', 5000); return; }
   if (newName) l.name = newName;
-  l.dxfStyle    = document.getElementById('ls-dxf-style').value;
-  l.dxfFrame    = document.getElementById('ls-dxf-frame').checked;
+  l.dxfStyle = document.getElementById('ls-dxf-style').value;
+  l.dxfFrame = document.getElementById('ls-dxf-frame').checked;
   l.dxfCenterOrigin = document.getElementById('ls-dxf-center').checked;
   // bmpModus trägt zwei Dinge: vorlage/beides (Ablage) ODER blech/platz (BMP-Aufteilung)
   const _ablage = document.getElementById('ls-ablage').value;
@@ -14631,15 +14904,15 @@ async function saveLayoutSettings() {
   if (!l.dateiname) delete l.dateiname;
   l.fotoVektor = document.getElementById('ls-foto-vektor').checked;
   l.dxfTextAsBlock = document.getElementById('ls-dxf-textblock').checked;
-  l.exportFormat  = fmts.length ? fmts.join('+') : 'pdf';
+  l.exportFormat = fmts.length ? fmts.join('+') : 'pdf';
   // Aufteilung → die zwei gespeicherten Schalter (s. lsAufteilungFuellen). Einseitig wirkt
   // splitSeite nicht (s. _fileGroup) und bleibt, wie es war.
   const _auf = document.getElementById('ls-aufteilung').value;
-  l.splitSatz     = _auf === 'blatt-seite' || _auf === 'blatt';   // neue Datei pro Blatt
-  l.splitSeite    = (l.pages?.length || 1) > 1 ? (_auf === 'blatt-seite' || _auf === 'seite')
-                                               : (l.splitSeite ?? true);
-  l.autoExport    = document.getElementById('ls-auto-export').checked;
-  l.exportOrder   = document.getElementById('ls-order').value;
+  l.splitSatz = _auf === 'blatt-seite' || _auf === 'blatt';   // neue Datei pro Blatt
+  l.splitSeite = (l.pages?.length || 1) > 1 ? (_auf === 'blatt-seite' || _auf === 'seite')
+    : (l.splitSeite ?? true);
+  l.autoExport = document.getElementById('ls-auto-export').checked;
+  l.exportOrder = document.getElementById('ls-order').value;
   delete l.exportPages; // Alt-Feld, abgelöst durch splitSatz/splitSeite
   // Füll-Verhalten und ditherSettings gehören NICHT hierher: sie laufen über den
   // Befüllen-Bereich bzw. den Laser-Tab („ins Layout übernehmen").
@@ -14649,7 +14922,7 @@ async function saveLayoutSettings() {
   showToast('✅ Einstellungen gespeichert');
 }
 
-document.getElementById('layout-settings-overlay').addEventListener('click', function(e) {
+document.getElementById('layout-settings-overlay').addEventListener('click', function (e) {
   if (e.target === this) closeLayoutSettings();
 });
 // Ein Zuhörer für den ganzen Dialog statt eines onchange je Häkchen; `input` für die

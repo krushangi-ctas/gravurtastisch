@@ -8,6 +8,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const envVarsSchema = Joi.object()
   .keys({
     PORT: Joi.number(),
+    SITE_URL: Joi.string().allow('').default('http://localhost:7051'),
     NODE_ENV: Joi.string()
       .valid('production', 'development', 'test')
       .required(),
@@ -31,6 +32,7 @@ if (error) {
 module.exports = {
   env: envVars.NODE_ENV,
   port: envVars.PORT || 3002,
+  coreApiUrl: (envVars.SITE_URL || 'http://localhost:7051').trim(),
   // Betriebsdaten (Layouts, Zeitplan, Ledger, Sitzung …) — getrennt vom Code, seit 24.10.2026.
   // [EN] Operational data (layouts, schedule, ledger, session ...) — separated from code since Oct 24, 2026.
   datenDir: path.join(__dirname, 'daten'),
