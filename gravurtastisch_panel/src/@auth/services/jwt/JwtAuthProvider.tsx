@@ -57,12 +57,14 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 	}, [authState]);
 
 	/**
-	 * Attempt to auto login with the HttpOnly cookie
+	 * Attempt to auto login with the HttpOnly cookie or stored token
 	 */
 	useEffect(() => {
 		const attemptAutoLogin = async () => {
 			try {
-				const response = await authSignInWithToken();
+				const storedToken =
+					typeof window !== 'undefined' ? window.localStorage.getItem('jwt_access_token') : null;
+				const response = await authSignInWithToken(storedToken || undefined);
 				return { response };
 			} catch (error) {
 				if (error instanceof HTTPError) {
@@ -109,6 +111,11 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 					throw new Error(data.message);
 				}
 
+				const accessToken = data.tokens?.access?.token;
+				if (accessToken && typeof window !== 'undefined') {
+					window.localStorage.setItem('jwt_access_token', accessToken);
+				}
+
 				const session = {
 					user: {
 						...data.user,
@@ -116,10 +123,8 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 						displayName: data.user?.name || data.user?.displayName || data.user?.email
 					},
 					message: data.message,
-					access_token: ''
+					access_token: accessToken || ''
 				};
-
-				clearAuthStorage();
 
 				setAuthState({
 					authStatus: 'authenticated',
@@ -164,18 +169,27 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 		[]
 	);
 
+	const isSigningOutRef = useRef(false);
+
 	/**
 	 * Sign out
 	 */
-	const signOut: JwtAuthContextType['signOut'] = useCallback(() => {
-		logout();
-		clearAuthStorage();
-		removeGlobalHeaders(['Authorization']);
-		setAuthState({
-			authStatus: 'unauthenticated',
-			isAuthenticated: false,
-			user: null
-		});
+	const signOut: JwtAuthContextType['signOut'] = useCallback(async () => {
+		if (isSigningOutRef.current) return;
+		isSigningOutRef.current = true;
+		try {
+			await logout();
+		} catch (_) {
+		} finally {
+			clearAuthStorage();
+			removeGlobalHeaders(['Authorization']);
+			setAuthState({
+				authStatus: 'unauthenticated',
+				isAuthenticated: false,
+				user: null
+			});
+			isSigningOutRef.current = false;
+		}
 	}, []);
 
 	/**
@@ -234,8 +248,18 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 		updateUser
 	}));
 
+	const isIgnoredAuthUrl = (url: any): boolean => {
+		const str = typeof url === 'string' ? url : (url as Request)?.url || '';
+		return (
+			str.includes('/auth/verify-otp') ||
+			str.includes('/auth/send-otp') ||
+			str.includes('/users/sign-in-with-token') ||
+			str.includes('/auth/logout')
+		);
+	};
+
 	/**
-	 * Intercept fetch requests to refresh the access token
+	 * Intercept fetch requests to catch unauthenticated sessions
 	 */
 	const interceptFetch = useCallback(() => {
 		const { fetch: originalFetch } = window;
@@ -245,14 +269,18 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 			try {
 				const response = await originalFetch(resource, config);
 
-				if (response.status === 401) {
+				if (response.status === 401 && !isIgnoredAuthUrl(resource)) {
 					signOut();
 					console.error('Unauthorized request. User was signed out.');
 				}
 
 				return response;
 			} catch (error) {
-				if (error instanceof HTTPError && error.response.status === 401) {
+				if (
+					error instanceof HTTPError &&
+					error.response.status === 401 &&
+					!isIgnoredAuthUrl(resource)
+				) {
 					signOut();
 					console.error('Unauthorized request. User was signed out.');
 				}

@@ -1,7 +1,13 @@
 export async function fetchWithAuth(url: string, options: RequestInit = {}, isFile = false): Promise<any> {
 	const isFormData = options.body instanceof FormData;
 
-	const passedAuth = (options.headers as any)?.Authorization || (options.headers as any)?.authorization;
+	let passedAuth = (options.headers as any)?.Authorization || (options.headers as any)?.authorization;
+	if (!passedAuth && typeof window !== 'undefined') {
+		const token = window.localStorage.getItem('jwt_access_token');
+		if (token) {
+			passedAuth = `Bearer ${token.replace(/^["']+|["']+$/g, '').trim()}`;
+		}
+	}
 
 	const headers: HeadersInit = {
 		...(options.headers || {}),
@@ -26,7 +32,8 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}, isFi
 				typeof window !== 'undefined' &&
 				!url.includes('/auth/verify-otp') &&
 				!url.includes('/auth/send-otp') &&
-				!url.includes('/users/sign-in-with-token')
+				!url.includes('/users/sign-in-with-token') &&
+				!url.includes('/auth/logout')
 			) {
 				window.dispatchEvent(new CustomEvent('auth:unauthorized'));
 			}

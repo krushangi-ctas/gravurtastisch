@@ -36,7 +36,7 @@ function SignInPageForm() {
 	const { control, formState, handleSubmit, reset } = useForm<FormType>({
 		mode: 'onChange',
 		defaultValues,
-		resolver: zodResolver(schema)
+		resolver: zodResolver(schema as any)
 	});
 
 	const { isValid, dirtyFields, errors } = formState;

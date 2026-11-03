@@ -115,7 +115,7 @@ function AccountTabView() {
   const { control, handleSubmit, formState, reset, setError } = useForm<FormType>({
     defaultValues,
     mode: 'onChange',
-    resolver: zodResolver(accountSchema),
+    resolver: zodResolver(accountSchema as any),
   });
 
   const { isValid, dirtyFields, errors } = formState;

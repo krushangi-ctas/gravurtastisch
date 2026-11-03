@@ -58,7 +58,7 @@ function SecurityTabView() {
   const { control, reset, handleSubmit, formState } = useForm<FormType>({
     defaultValues,
     mode: 'onChange',
-    resolver: zodResolver(schema),
+    resolver: zodResolver(schema as any),
   });
 
   const { isValid, dirtyFields, errors } = formState;

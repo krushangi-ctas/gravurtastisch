@@ -23,17 +23,20 @@ export async function authRefreshToken(): Promise<Response> {
  * Sign in with token
  */
 export async function authSignInWithToken(accessToken?: string): Promise<any> {
-	const headers = accessToken ? { Authorization: `Bearer ${accessToken}` } : undefined;
+	const token =
+		accessToken ||
+		(typeof window !== 'undefined' ? window.localStorage.getItem('jwt_access_token') : undefined);
+	const headers = token ? { Authorization: `Bearer ${token.replace(/^["']+|["']+$/g, '').trim()}` } : undefined;
 	return fetchWithAuth(`${baseBackendApiUrl}/users/sign-in-with-token`, {
 		...(headers ? { headers } : {})
 	}).then((data) => ({
 		user: {
 			...data,
 			role: 'admin',
-			_id: data.id,
+			_id: data.id || data._id,
 			displayName: data.name || data.displayName || data.email
 		},
-		access_token: accessToken || ''
+		access_token: token || ''
 	}));
 }
 

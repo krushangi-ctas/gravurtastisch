@@ -50,10 +50,14 @@ export const register = async (payload) => {
 
 export const logout = async () => {
   try {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('jwt_access_token') : null;
     await fetch(`${logoutUrl}`, {
       method: 'POST',
       credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token.replace(/^["']+|["']+$/g, '').trim()}` } : {}),
+      },
     });
   } catch (error) {
     console.error('Logout error:', error);

@@ -30,7 +30,7 @@ function UnlockSessionPageForm() {
 	const { control, formState, handleSubmit, reset } = useForm({
 		mode: 'onChange',
 		defaultValues,
-		resolver: zodResolver(schema)
+		resolver: zodResolver(schema as any)
 	});
 
 	const { isValid, dirtyFields, errors } = formState;
