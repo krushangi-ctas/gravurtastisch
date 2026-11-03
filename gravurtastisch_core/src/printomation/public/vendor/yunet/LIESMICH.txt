@@ -1,0 +1,2 @@
+YuNet face_detection_yunet_2023mar.onnx (OpenCV Zoo, MIT, s. LICENSE) — Gesichtsfinder der Gesichts-Automatik.
+Vergleich 11.10.2026 an 46 Kundenfotos (82 Gesichter): YuNet 83 %, MediaPipe 49 %, SCRFD 93 % (SCRFD-Gewichte nur nicht-kommerziell).

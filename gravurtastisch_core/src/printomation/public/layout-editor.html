@@ -1,0 +1,1554 @@
+<!DOCTYPE html>
+<!--
+  ═══════════════════════════════════════════════════════════════════════════
+   PRINTOMATION — Layout-Editor.  WO LIEGT WAS?
+  ═══════════════════════════════════════════════════════════════════════════
+     layout-editor.html   ← DU BIST HIER.  Markup (Reiter, Dialoge).
+     layout-editor.js     Gesamte Bedienlogik.
+     layout-editor.css    Sämtliche Stile.
+     laser-pipeline.js    Bildmathematik der Gravur (Rasterung, BMP, Zuschnitt) —
+                          ohne DOM-Zugriff und deshalb in Node prüfbar.
+
+   FUNKTION NICHT GEFUNDEN? Dann steht sie in laser-pipeline.js: applyLaserPipeline,
+   _errorDiffuse, bayer, thresholdDither, _autoLevels, _applyGamma, _unsharpMask,
+   _applyDotGain, _applyInkLimits, imgTo1BitBMP, _fieldAABB, _imageFieldsBBox,
+   _fieldRectsPx, _capLaserDpi, _lpBlackPct, _lpVerdict, _spread3, LASER_DEFAULTS.
+
+   REIHENFOLGE IST PFLICHT: laser-pipeline.js wird per <script src> VOR layout-editor.js
+   geladen. Kein `defer`, kein `type="module"`, nicht verschieben — sonst ist
+   _laserSettings beim Auswerten von `let ditherSettings` noch nicht da.
+
+   NACH EINER ÄNDERUNG AM EXPORT gegen den Vorher-Stand prüfen (DXF und Rasterung
+   byte-für-byte). Rezept: Projektnotizen „Layout-Editor testen".
+  ═══════════════════════════════════════════════════════════════════════════
+-->
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- Datums-/Auswahl-Aufklapper und Bildlaufleisten im hellen Systemschema — passend zur hellen
+       Oberfläche (Stil „Kalk & Graphit", 17.10.2026; vorher dunkel). -->
+  <meta name="color-scheme" content="light" />
+  <title>Printomation</title>
+  <link rel="icon" href="data:,"/><!-- leeres Favicon: verhindert /favicon.ico 404 in der Konsole -->
+  <!-- Schriften lokal (vendor/fonts), nicht von Google: kein Abruf bei jedem Öffnen und Export.
+       Oberfläche: Geist + Geist Mono (SIL OFL 1.1). -->
+  <link rel="stylesheet" href="vendor/fonts/fonts.css" />
+  <link rel="stylesheet" href="layout-editor.css"/>
+  <link rel="stylesheet" href="/amazon-bereich/amazon.css"/><!-- Bereich „Amazon": eigener Ordner /var/www/printomation/amazon-bereich -->
+  <!-- Lokal gebündelt (public/vendor/) — Export funktioniert damit auch ohne Internet.
+       SourceMap-Kommentare wurden beim Bündeln entfernt (keine .map-404-Warnungen). -->
+  <script src="vendor/opentype.min.js"></script>
+  <script src="vendor/clipper.js"></script><!-- Clipper 6.4.2: Schrift-Konturen vereinigen (DXF) -->
+</head>
+<body>
+<noscript>
+  <div style="padding:24px;font-family:sans-serif;color:#1f1e1c;background:#eeece7;">
+    <b>JavaScript ist deaktiviert.</b><br/>
+    Printomation ist ein reines Browser-Werkzeug — ohne JavaScript bleibt die Oberfläche leer.
+    Bitte im Browser aktivieren und neu laden.
+  </div>
+</noscript>
+<div class="app">
+  <header>
+    <div class="hstack" style="gap:14px;min-width:0;">
+      <div class="logo"><div class="logo-dot"></div>PRINTOMATION</div>
+      <!-- Kontext: was ist gerade offen? Steht fest an einer Stelle statt in einer
+           Meldung, die nach drei Sekunden verschwindet. -->
+      <div class="kopf-kontext" id="kopf-kontext" hidden>
+        <span class="kopf-kontext-name" id="kopf-layout">—</span>
+        <span class="kopf-kontext-meta" id="kopf-blatt"></span>
+      </div>
+    </div>
+    <div class="hstack" style="gap:8px;flex:1;justify-content:center;min-width:0;">
+      <span id="orders-status" class="umut">← Zeitraum wählen &amp; Bestellungen laden</span>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-muted btn-ikon" id="btn-undo" onclick="doUndo()" title="Rückgängig (Ctrl+Z)" aria-label="Rückgängig" disabled><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg></button>
+      <button class="btn btn-muted btn-ikon" id="btn-redo" onclick="doRedo()" title="Wiederholen (Ctrl+Shift+Z)" aria-label="Wiederholen" disabled><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg></button>
+      <button class="btn btn-muted btn-ikon" onclick="toggleShortcuts()" title="Tastenkürzel anzeigen" aria-label="Tastenkürzel"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><rect x="2.5" y="5.5" width="19" height="13" rx="2"/><path d="M6.5 9.5h.01M10 9.5h.01M14 9.5h.01M17.5 9.5h.01M6.5 13h.01M17.5 13h.01M8.5 15.5h7M10 13h4"/></svg></button>
+
+      <!-- Werkzeug-Insel: steht immer an derselben Stelle, ohne gewähltes Feld gedämpft
+           (Klasse „sichtbar“, s. _updateModifyBar). -->
+      <div class="kopf-insel" id="modify-insel">
+        <span class="kopf-insel-titel">Feld</span>
+        <div class="dd-wrap">
+          <button class="btn btn-muted" id="btn-array" disabled onclick="toggleArrayPopover(event)" title="Array — Feld vervielfältigen, alle Kopien mit GLEICHER Gravur (wie an der Maschine)">Array</button>
+          <div id="array-popover" class="popover" style="min-width:240px;padding:14px" onclick="event.stopPropagation()">
+            <div class="ulabel" style="margin-bottom:10px;">Array — gleiche Gravur</div>
+            <div class="row2" style="margin-bottom:6px;">
+              <div class="ig"><span class="il">Anzahl X</span><input type="number" id="arr-nx" value="1" min="1" max="30" aria-label="Anzahl X"/></div>
+              <div class="ig"><span class="il">Anzahl Y</span><input type="number" id="arr-ny" value="10" min="1" max="50" aria-label="Anzahl Y"/></div>
+            </div>
+            <div class="row2" style="margin-bottom:8px;">
+              <div class="ig"><span class="il">Abstand X (mm)</span><input type="number" id="arr-dx" value="2" step="0.5" aria-label="Abstand X (mm)"/></div>
+              <div class="ig"><span class="il">Abstand Y (mm)</span><input type="number" id="arr-dy" value="2" step="0.5" aria-label="Abstand Y (mm)"/></div>
+            </div>
+            <div class="umut10" style="margin-bottom:8px;line-height:1.4;">Abstand = <b style="color:var(--text-dim);">Lücke zwischen den Feldern</b> (Feld-Ende bis Feld-Anfang). Beispiel: Feld 10&nbsp;mm hoch, Abstand&nbsp;Y 10&nbsp;mm, 2 Stück → gesamt 30&nbsp;mm. Alle Kopien zeigen <b style="color:var(--text-dim);">dieselbe Bestellung</b> wie das gewählte Feld.</div>
+            <button class="btn btn-accent btn-full" onclick="createArray()">Array erstellen</button>
+            <button class="btn btn-muted" id="btn-array-dissolve" style="width:100%;justify-content:center;margin-top:6px;display:none;" onclick="dissolveArray()">Array auflösen</button>
+          </div>
+        </div>
+        <div class="dd-wrap">
+          <button class="btn btn-muted" id="btn-circle" disabled onclick="toggleCirclePopover(event)" title="Kreis-Text — Gravur entlang eines Kreisbogens (für runde Objekte)">Kreis</button>
+          <div id="circle-popover" class="popover" style="min-width:250px;padding:14px" onclick="event.stopPropagation()">
+            <div class="ulabel" style="margin-bottom:10px;">Kreis-Text</div>
+            <div class="row2" style="margin-bottom:6px;">
+              <div class="ig"><span class="il">Durchmesser (mm)</span><input type="number" id="circ-d" value="40" min="4" step="0.5" aria-label="Durchmesser (mm)"/></div>
+              <div class="ig"><span class="il">Position</span>
+                <select id="circ-side" aria-label="Position">
+                  <option value="top">Oben ⌒</option>
+                  <option value="bottom">Unten ⌄</option>
+                </select>
+              </div>
+            </div>
+            <div class="ig" style="margin-bottom:8px;"><span class="il">Zeichenabstand (×)</span><input type="number" id="circ-spread" value="1" min="0.5" max="3" step="0.05" aria-label="Zeichenabstand (×)"/></div>
+            <div class="umut10" style="margin-bottom:8px;line-height:1.4;">Durchmesser = Kreis der <b style="color:var(--text-dim);">Schrift-Grundlinie</b> (ans runde Produkt anpassen). Text wird automatisch mittig auf dem Bogen zentriert.</div>
+            <button class="btn btn-accent btn-full" onclick="applyCircle()">Anwenden</button>
+            <button class="btn btn-muted" id="btn-circle-off" style="width:100%;justify-content:center;margin-top:6px;display:none;" onclick="removeCircle()">Kreis entfernen</button>
+          </div>
+        </div>
+        <input type="number" id="rot-input" step="1" min="-180" max="180" value="0" disabled title="Drehung des Felds in Grad (im Uhrzeigersinn, wirkt in Vorschau + Export)" style="width:52px;" onchange="applyRotation(_numIn(this.value))"/><span class="umut">°</span>
+      </div>
+
+      <button class="btn btn-muted" id="btn-save" onclick="saveLayout()" title="Speichern (Ctrl+S)"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8"/><path d="M7 3v5h8"/></svg>Speichern</button>
+
+      <!-- Aktionen Dropdown -->
+      <div class="dd-wrap">
+        <button class="btn btn-muted" onclick="_toggleMenu(event,'actions-menu')">Aktionen<svg class="ik ik-klein" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <div id="actions-menu" class="popover" style="min-width:200px;padding:6px">
+          <div class="export-sep">AUSWAHL</div>
+          <button class="export-item" id="multisel-btn" onclick="toggleMultiMode()">Mehrfach-Auswahl</button>
+          <div class="export-sep">LEEREN</div>
+          <button class="export-item" onclick="clearImages()">Inhalt leeren</button>
+          <button class="export-item" style="color:var(--red)" onclick="clearAll()">Alles leeren</button>
+        </div>
+      </div>
+
+      <!-- Export Dropdown -->
+      <div class="dd-wrap">
+        <button class="btn btn-accent" onclick="_toggleMenu(event,'export-menu')"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg>Export<svg class="ik ik-klein" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+        <!-- Export-Menü nach ZWECK gruppiert, in der Reihenfolge, in der sie hier
+             gebraucht werden: Laser ist das Tagesgeschäft, Druck der Nebenweg,
+             Sublimation der Sonderfall. Der Punkt vor dem Format trägt die Gruppenfarbe (amber =
+             Laser, grau = Druck, grün = Sublimation), alle Formate ohne Zwischenklick. -->
+        <div id="export-menu" class="popover" style="min-width:230px;padding:6px">
+          <div class="export-sep">LASER</div>
+          <button class="export-item" onclick="openDxfModal()"><i class="ex-punkt" style="--c:var(--amber)"></i>DXF — Ezcad2</button>
+          <button class="export-item" onclick="exportBMP()"><i class="ex-punkt" style="--c:var(--amber)"></i>BMP 1-bit</button>
+          <div class="export-sep">DRUCK</div>
+          <button class="export-item" onclick="exportPDFPrint()"><i class="ex-punkt"></i>PDF Print (450 DPI)</button>
+          <button class="export-item" onclick="exportPDFStandard()"><i class="ex-punkt"></i>PDF Standard</button>
+          <button class="export-item" onclick="exportPNG()"><i class="ex-punkt"></i>PNG (verlustfrei)</button>
+          <button class="export-item" onclick="exportJPG()"><i class="ex-punkt"></i>JPG (komprimiert)</button>
+          <div class="export-sep">SUBLIMATION</div>
+          <button class="export-item" onclick="exportSublimation()"><i class="ex-punkt" style="--c:var(--green)"></i>PNG Sublimation</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <!-- Icon Nav -->
+    <div class="icon-nav">
+      <!-- Drei benannte Gruppen statt acht gleichrangiger Knöpfe: erst das Blatt
+           einrichten, dann die Tagesarbeit, unten was man selten braucht. (Reihenfolge so gewollt —
+           Umstellung „Arbeit zuerst" am 17.10.2026 auf Nutzerwunsch zurückgenommen.) -->
+      <span class="nav-gruppe">Blatt</span>
+      <button class="nav-btn active" title="Blattgröße" onclick="switchTab('page',this)" id="nav-page"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg><span class="nav-btn-lbl">Seite</span></button>
+      <button class="nav-btn" title="Felder" onclick="switchTab('fields',this)" id="nav-fields"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="3.5" width="7" height="7" rx="1.5"/><rect x="3.5" y="13.5" width="7" height="7" rx="1.5"/><rect x="13.5" y="13.5" width="7" height="7" rx="1.5"/></svg><span class="nav-btn-lbl">Felder</span></button>
+      <button class="nav-btn" title="Schriftarten" onclick="switchTab('fonts',this)" id="nav-fonts"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5h16v2"/><path d="M9 19h6"/><path d="M12 5v14"/></svg><span class="nav-btn-lbl">Schriften</span></button>
+      <button class="nav-btn" title="Motive (Vektorgrafiken)" onclick="switchTab('motive',this);renderMotive()" id="nav-motive"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg><span class="nav-btn-lbl">Motive</span></button>
+
+      <span class="nav-gruppe">Arbeit</span>
+      <button class="nav-btn" title="Bestellungen laden" onclick="switchTab('load',this)" id="nav-load"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><path d="m7 10 5 5 5-5"/><path d="M12 15V3"/></svg><span class="nav-btn-lbl">Laden</span></button>
+      <button class="nav-btn" title="ASIN-Check: welche Personalisierung hat ein Produkt?" onclick="switchTab('asin',this);asinZeigen()" id="nav-asin"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.3-4.3"/></svg><span class="nav-btn-lbl">ASIN-Check</span></button>
+      <button class="nav-btn" title="Layouts: laden, mit Bestellungen füllen, exportieren" onclick="switchTab('fill',this)" id="nav-fill"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5 2.5 7.5l9.5 5 9.5-5-9.5-5z"/><path d="m2.5 16.5 9.5 5 9.5-5"/><path d="m2.5 12 9.5 5 9.5-5"/></svg><span class="nav-btn-lbl">Layout</span></button>
+      <button class="nav-btn" title="Reklamation: einzelne Bestellung nachladen" onclick="switchTab('rekla',this)" id="nav-rekla"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg><span class="nav-btn-lbl">Reklamation</span></button>
+
+      <span style="flex:1"></span>
+      <span class="nav-gruppe">Mehr</span>
+      <button class="nav-btn" title="Maschinen & Programme (Ezcad …)" onclick="switchTab('maschinen',this);maschinenZeigen()" id="nav-maschinen"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9l-3.8 3.8z"/></svg><span class="nav-btn-lbl">Maschinen</span></button>
+      <button class="nav-btn" title="Dithering — Fotos für den Laser aufbereiten" onclick="switchTab('laser',this)" id="nav-laser"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18a9 9 0 0 0 0-18z" fill="currentColor" stroke="none"/></svg><span class="nav-btn-lbl">Dithering</span></button>
+      <button class="nav-btn" title="Übersicht & Statistik" onclick="switchTab('overview',this);loadOverview()" id="nav-overview"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg><span class="nav-btn-lbl">Übersicht</span></button>
+      <button class="nav-btn" title="Einstellungen" onclick="switchTab('settings',this);loadSettings();renderTestSheetUI()" id="nav-settings"><svg class="ik" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.2 2h-.4a2 2 0 0 0-2 2v.2a2 2 0 0 1-1 1.7l-.4.3a2 2 0 0 1-2 0l-.2-.1a2 2 0 0 0-2.7.7l-.2.4a2 2 0 0 0 .7 2.7l.2.1a2 2 0 0 1 1 1.7v.5a2 2 0 0 1-1 1.7l-.2.1a2 2 0 0 0-.7 2.7l.2.4a2 2 0 0 0 2.7.7l.2-.1a2 2 0 0 1 2 0l.4.3a2 2 0 0 1 1 1.7v.2a2 2 0 0 0 2 2h.4a2 2 0 0 0 2-2v-.2a2 2 0 0 1 1-1.7l.4-.3a2 2 0 0 1 2 0l.2.1a2 2 0 0 0 2.7-.7l.2-.4a2 2 0 0 0-.7-2.7l-.2-.1a2 2 0 0 1-1-1.7v-.5a2 2 0 0 1 1-1.7l.2-.1a2 2 0 0 0 .7-2.7l-.2-.4a2 2 0 0 0-2.7-.7l-.2.1a2 2 0 0 1-2 0l-.4-.3a2 2 0 0 1-1-1.7V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg><span class="nav-btn-lbl">Einstellungen</span></button>
+    </div>
+
+    <!-- Left Panel -->
+    <div class="left-panel">
+
+      <!-- TAB: Laden -->
+      <div id="tab-load" class="tab-col">
+        <div class="panel-sec" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0;">
+
+          <div class="tab-titel"><span class="tab-titel-name">Bestellungen laden</span></div>
+          <!-- ── MANUELL LADEN ─────────────────────────── -->
+          <div style="padding-bottom:20px;margin-bottom:18px;border-bottom:1px solid var(--border);">
+            <div class="sec-title">Manuell</div>
+
+            <div class="ig" style="margin-bottom:10px;">
+              <span class="il">Zeitraum</span>
+              <select id="dl-preset" onchange="dlPresetChange()" aria-label="Zeitraum">
+                <option value="today">Heute</option>
+                <option value="yesterday">Gestern</option>
+                <option value="last24h">Letzte 24 Stunden</option>
+                <option value="last48h">Letzte 48 Stunden</option>
+                <option value="7days" selected>Letzte 7 Tage</option>
+                <option value="custom">Eigener Zeitraum…</option>
+              </select>
+            </div>
+
+            <div id="dl-custom" style="display:none;margin-bottom:8px;">
+              <div class="ig" style="margin-bottom:6px;">
+                <span class="il">Von</span>
+                <div style="display:flex;gap:5px;">
+                  <input type="date" id="dl-from" aria-label="Von-Datum" style="flex:1;min-width:0;"/>
+                  <input type="time" id="dl-from-time" aria-label="Von-Uhrzeit" style="width:86px;flex-shrink:0;"/>
+                </div>
+              </div>
+              <div class="ig">
+                <span class="il">Bis</span>
+                <div style="display:flex;gap:5px;">
+                  <input type="date" id="dl-to" aria-label="Bis-Datum" style="flex:1;min-width:0;"/>
+                  <input type="time" id="dl-to-time" aria-label="Bis-Uhrzeit" style="width:86px;flex-shrink:0;"/>
+                </div>
+              </div>
+              <div class="umut10" style="margin-top:5px;">Uhrzeit leer = ganze Tage (00:00 bis Ende des Bis-Tages).</div>
+            </div>
+
+            <div class="ig" style="margin-bottom:12px;">
+              <span class="il">Status</span>
+              <select id="dl-status" aria-label="Status">
+                <option value="Unshipped,PartiallyShipped,Shipped" selected>Alle</option>
+                <option value="Unshipped">Nicht versendet</option>
+                <option value="Shipped">Versendet</option>
+              </select>
+            </div>
+
+            <!-- Kein ASIN-Filter beim Download: der lädt IMMER alle personalisierten
+                 Bestellungen. Gefiltert wird beim FÜLLEN (globale ASIN bzw. pro Feld). -->
+
+            <button class="btn btn-accent btn-full btn-lg" id="dl-btn" onclick="downloadAndLoad()">Bestellungen laden</button>
+            <!-- Erneut laden erzwingen: der einzige Weg zurück, wenn Bestellordner von
+                 Hand gelöscht wurden — ihre IDs bleiben im Ledger und der Vorfilter wirft
+                 sie sonst dauerhaft raus. NICHT gespeichert und beim Seitenladen wieder
+                 aus: dauerhaft an würde jeder Lauf das ganze Fenster erneut ziehen.
+                 Steht seit 17.10.2026 UNTER dem Knopf: direkt darüber wurde er leicht mitgeklickt. -->
+            <label class="hsb schaltkarte" id="dl-force-lbl" style="gap:12px;margin-top:10px;padding:8px 12px;">
+              <span>
+                <span class="u11" style="display:block;">Erneut laden erzwingen</span>
+                <span class="umut10" id="dl-force-hint" style="display:block;margin-top:2px;">Auch schon geladene Bestellungen — für gelöschte Ordner.</span>
+              </span>
+              <span class="tgl">
+                <input type="checkbox" class="tgl-cb" id="dl-force" onchange="dlForceChange()"/>
+                <span class="tgl-track"></span><span class="tgl-knob"></span>
+              </span>
+            </label>
+            <div id="dl-progress" class="lade-kasten" style="display:none;">
+              <div style="background:var(--bg);border-radius:var(--r-xs);height:8px;overflow:hidden;margin-bottom:8px;">
+                <div id="dl-bar" style="height:100%;background:var(--accent);width:0%;transition:width 0.4s ease;border-radius:var(--r-xs);"></div>
+              </div>
+              <!-- Phase steht in dl-msg, der Fortschritt im Balken + Zähler. -->
+              <div class="hsb" style="margin-bottom:6px;">
+                <div class="u11"><span id="dl-current">0</span> / <span id="dl-total">?</span> Bestellungen</div>
+              </div>
+              <div id="dl-msg" style="font-size:var(--fs-klein);color:var(--text-dim);border-top:1px solid var(--border);padding-top:6px;margin-top:4px;"></div>
+              <button class="btn btn-red btn-full" onclick="cancelDownload()" style="margin-top:10px;">Download abbrechen</button>
+            </div>
+            <div id="dl-info" class="umut info-kasten">Noch nicht geladen</div>
+          </div>
+
+          <!-- ── AUTOMATISCH ───────────────────────────── -->
+          <div>
+            <div class="sec-title">
+              <span>Automatisch</span>
+              <button class="btn btn-umriss btn-xs" onclick="addScheduleEntry()">+ Tag</button>
+            </div>
+            <div id="schedule-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+            <div id="schedule-empty" class="umut" style="text-align:center;padding:12px;">Noch kein Zeitplan — + Tag hinzufügen</div>
+          </div>
+
+        </div><!-- end scrollable -->
+      </div><!-- end tab-load -->
+
+      <!-- TAB: Reklamation — eine einzelne Bestellung nachladen und daraus eine
+           Gravurdatei erzeugen. Bewusst getrennt vom normalen Laden: hier zählt eine
+           einzelne Nummer, nicht ein Zeitraum, und der Dublettenschutz wird umgangen. -->
+      <div id="tab-rekla" class="tab-col">
+        <div class="panel-sec" style="flex:1;overflow-y:auto;">
+
+          <div class="tab-titel"><span class="tab-titel-name">Reklamation</span></div>
+
+          <!-- Zwei Wege (26.10.2026): eine Amazon-Bestellung neu laden — oder ohne Bestellung ein Layout
+               wählen und Text/Bild selbst eintragen (Aufträge von außerhalb, alte Bestellungen). Ab
+               „② Layouts" ist der Ablauf für beide derselbe. -->
+          <div class="seg rk-weg">
+            <button type="button" class="seg-b an" id="rk-weg-nr" onclick="reklaWeg('nr')">Mit Bestellnummer</button>
+            <button type="button" class="seg-b" id="rk-weg-ohne" onclick="reklaWeg('ohne')">Ohne Bestellung</button>
+          </div>
+
+          <div id="rk-nr">
+            <div class="tab-titel-text">
+              Bestellnummer eingeben oder einfügen — die Bestellung wird neu von Amazon geholt
+              und die Gravurdateien entstehen sofort.
+            </div>
+
+            <div class="rk-schritt">① Bestellung</div>
+            <div class="ig" style="margin-bottom:8px;">
+              <input type="text" id="rekla-order" placeholder="306-2753695-3819554" autocomplete="off"
+                     spellcheck="false" aria-label="Bestellnummer"
+                     oninput="_reklaEingabe(this, false)" onpaste="setTimeout(() => _reklaEingabe(this, true))"
+                     onkeydown="if(event.key==='Enter'){event.preventDefault();reklaLoad();}"/>
+            </div>
+
+            <button class="btn btn-accent btn-full" id="rekla-load-btn" onclick="reklaLoad()" style="margin-bottom:12px;">Bestellung laden</button>
+          </div>
+
+          <div id="rk-ohne" hidden>
+            <div class="tab-titel-text">
+              Für Aufträge, die nicht (mehr) bei Amazon liegen: Layout wählen, Text oder Bild eintragen.
+            </div>
+            <div class="rk-schritt">① Layout &amp; Inhalt</div>
+            <div class="ig" style="margin-bottom:8px;">
+              <select id="rm-layout" aria-label="Layout" onchange="_rmLayoutGewaehlt()"></select>
+            </div>
+            <!-- Felder des gewählten Layouts (und seiner Partner zur selben ASIN): Bild N, Gravur N, Schrift -->
+            <div id="rm-felder"></div>
+          </div>
+
+          <div id="rekla-status" style="display:none;font-size:var(--fs-klein);line-height:1.6;padding:8px 10px;border-radius:var(--r-s);margin-bottom:10px;"></div>
+
+          <!-- Erst nach erfolgreichem Laden: die Layouts zur ASIN sind schon angehakt (wie im
+               Tageslauf); weitere lassen sich dazuklicken. -->
+          <div id="rekla-export" style="display:none;">
+            <div class="rk-schritt">② Layouts</div>
+            <div id="rekla-layout-info" class="umut10" style="margin-bottom:6px;line-height:1.5;"></div>
+            <div id="rekla-layouts" style="max-height:260px;overflow-y:auto;margin-bottom:8px;"></div>
+            <!-- Nur bei Foto-Gravur (BMP-Layout mit Bildfeld): Werkstück-Vorschau und Nachbessern -->
+            <div id="rekla-foto" hidden></div>
+            <!-- Fertige Dateien: herunterladen bzw. in die Ezcad-Vorlage legen — über dem Erzeugen-Knopf -->
+            <div id="rekla-abschluss"></div>
+          </div>
+
+          <!-- Dateien der Bestellung (Kundenfoto zum Herunterladen) — unter der Arbeit, damit
+               Layouts und Foto-Prüfung ohne Scrollen zu sehen sind. -->
+          <div id="rekla-files" style="display:none;margin:14px 0 8px;"></div>
+
+        </div>
+      </div><!-- end tab-rekla -->
+
+      <!-- TAB: Maschinen — oben die Auswahl der Maschine bzw. ihres Programms, darunter dessen
+           Ordner. Eingerichtet ist EzCad2 Lite (Arbeitsordner der Laser-Vorlagen, Tag laden, .ezd
+           lesen/prüfen); LightBurn ist seit 20.10.2026 auswählbar, zeigt aber nur das Konzept (ohne
+           Funktion). Eine weitere einrichten = Eintrag in _MASCHINEN + Block id="maschine-<id>". Die Ordner
+           auf der Platte heißen weiter exports/_Vorlage/… — die .ezd verweisen auf diese Pfade (Umzug erst
+           zusammen mit dem Umschreiben der Pfade). -->
+      <div id="tab-maschinen" class="tab-col">
+        <div class="panel-sec" style="flex:1;overflow-y:auto;">
+          <div class="tab-titel">
+            <span class="tab-titel-name">Maschinen</span>
+            <button class="btn btn-muted btn-xs" onclick="maschinenZeigen()" title="Neu einlesen">↻ Neu einlesen</button>
+          </div>
+          <select id="maschinen-wahl" onchange="maschineWaehlen(this.value)" aria-label="Maschine" style="width:100%;margin-bottom:12px;"></select>
+          <div id="maschine-ezcad" class="maschine-block">
+            <div id="ezcad-liste"><div class="umut10">Lädt …</div></div>
+          </div>
+          <!-- LightBurn: nur Konzept. Links die Projektdateien, die es je Vorlagen-Ordner gäbe, die
+               Knöpfe sind gesperrt; den Ablauf zeigt die Bühne (_lbKonzeptZeichnen). -->
+          <div id="maschine-lightburn" class="maschine-block" hidden>
+            <div class="lb-hinweis"><span class="marke ez-warn">Konzept</span>noch ohne Funktion</div>
+            <div class="il-block">Projektdateien</div>
+            <div id="lb-dateien" class="lb-dateien"><div class="umut10">Lädt …</div></div>
+            <div class="lb-knoepfe">
+              <button class="btn btn-accent btn-full" disabled title="Kommt mit der LightBurn-Anbindung">Projektdateien erzeugen</button>
+              <button class="btn btn-umriss btn-full" disabled title="Kommt mit der LightBurn-Anbindung">In LightBurn öffnen</button>
+            </div>
+          </div>
+        </div>
+      </div><!-- end tab-maschinen -->
+
+      <!-- TAB: ASIN-Check — welche Personalisierung hat ein Produkt bei Amazon? Die Profile
+           lernt der Server aus echten Bestellungen (asin-check.controller.js); die Auswertung
+           öffnet groß im Dialog #asin-overlay. -->
+      <div id="tab-asin" class="tab-col">
+        <div class="panel-sec" style="flex:1;overflow-y:auto;">
+          <div class="tab-titel"><span class="tab-titel-name">ASIN-Check</span></div>
+          <div class="tab-titel-text" title="Erkennt aus echten Bestellungen Gravurzeilen, Rückseite, Bild und Auswahlfelder eines Produkts und prüft sie gegen die Layouts.">Welche Personalisierung hat ein Produkt — und passt das Layout?</div>
+          <div class="ig" style="margin-bottom:8px;" title="Prüft nur die eingegebene ASIN. Amazon wird erst nach Rückfrage gefragt.">
+            <span class="il">Eine ASIN prüfen</span>
+            <div class="hstack" style="gap:6px;">
+              <input type="text" id="asin-eingabe" placeholder="B0HFKYQM8B" autocomplete="off" spellcheck="false"
+                     aria-label="ASIN" style="text-transform:uppercase;flex:1;min-width:0;font-family:var(--mono);" maxlength="10"
+                     oninput="_asinEingabeGeaendert()"
+                     onkeydown="if(event.key==='Enter'){event.preventDefault();asinPruefen();}"/>
+              <button class="btn btn-accent" id="asin-pruef-btn" onclick="asinPruefen()" disabled>Prüfen</button>
+            </div>
+          </div>
+          <div class="hstack" style="gap:8px;margin-bottom:6px;">
+            <span class="umut10" style="white-space:nowrap;">Bei Amazon nachladen:</span>
+            <select id="asin-tage" aria-label="Zeitraum, falls bei Amazon nachgeladen wird" style="flex:1;min-width:0;padding-top:5px;padding-bottom:5px;font-size:var(--fs-mikro);">
+              <option value="7" selected>letzte 7 Tage</option>
+              <option value="14">letzte 14 Tage</option>
+            </select>
+          </div>
+          <div id="asin-status" class="asin-status" hidden></div>
+          <div class="il-block">Bekannte Produkte</div>
+          <div id="asin-filter" class="hstack" style="gap:4px;margin-bottom:8px;"></div>
+          <input type="text" id="asin-suche" class="such-feld" placeholder="ASIN oder Name suchen …" autocomplete="off" spellcheck="false"
+                 aria-label="Produkte durchsuchen" oninput="_asinListeZeichnen()" style="width:100%;margin-bottom:8px;"/>
+          <div id="asin-liste"><div class="umut10">Lädt …</div></div>
+        </div>
+      </div><!-- end tab-asin -->
+
+      <!-- TAB: Füllen -->
+      <div id="tab-fill" class="tab-col">
+        <div class="panel-sec scrolly">
+
+          <!-- ── Layouts (oben): laden, ⚙, Ordner — ehemaliger Tab „Gespeichert" ── -->
+          <div class="tab-titel"><span class="tab-titel-name">Layouts</span><button class="btn btn-umriss btn-xs" onclick="createFolderPrompt()">+ Ordner</button></div>
+          <input id="layout-search" class="such-feld" placeholder="Layout suchen …" oninput="scheduleLayoutSearch()" style="margin-bottom:8px;"/>
+          <div class="hsb" style="margin-bottom:8px;gap:6px;">
+            <select id="layout-sort" onchange="setLayoutSort(this.value)" aria-label="Sortierung"
+                    style="flex:1;">
+              <option value="ordner">Reihenfolge im Ordner</option>
+              <option value="name">Name A–Z</option>
+              <option value="neu">Neueste zuerst</option>
+              <option value="alt">Älteste zuerst</option>
+            </select>
+          </div>
+          <div id="layout-zaehler" class="umut10" style="margin-bottom:10px;line-height:1.5;"></div>
+          <div class="saved-list" id="saved-list">
+            <div class="uempty">Noch keine gespeicherten Layouts</div>
+          </div>
+
+          <!-- ── Manuell füllen (darunter) ── -->
+          <div style="border-top:1px solid var(--border);margin:20px -16px 16px;"></div>
+          <div class="sec-title">Befüllen</div>
+
+          <!-- ⚠ Abweichung vom gespeicherten Layout -->
+          <div id="fill-dirty-hint" style="display:none;align-items:center;gap:8px;font-size:var(--fs-klein);color:var(--amber);background:var(--amber-dim);border:1px solid var(--amber);border-radius:var(--r-s);padding:6px 8px;margin-bottom:8px;">
+            <span style="flex:1;">⚠ Weicht vom gespeicherten Layout ab</span>
+            <button class="btn btn-muted btn-xs" onclick="applyFillCfgToLayout()">ins Layout übernehmen</button>
+          </div>
+
+          <!-- Zeitraum Filter -->
+          <div style="margin-bottom:10px;">
+            <span class="il" style="margin-bottom:5px;display:block;">Zeitraum</span>
+            <select id="fill-date-preset" onchange="fillDatePresetChange()" style="width:100%;margin-bottom:6px;" aria-label="Zeitraum">
+              <option value="session" selected>Letzte Session</option>
+              <option value="today">Nur heute</option>
+              <option value="yesterday">Nur gestern</option>
+              <option value="7days">Letzte 7 Tage</option>
+              <option value="all">Alle Bestellungen</option>
+              <option value="custom">Eigener Zeitraum…</option>
+            </select>
+            <div id="session-info" style="font-size:var(--fs-klein);color:var(--green);margin-bottom:4px;background:var(--green-dim);border:1px solid var(--green-rand);border-radius:var(--r-s);padding:7px 10px;line-height:1.45;">
+              Noch nichts geladen — erst im Reiter „Laden" holen.
+            </div>
+            <div id="fill-date-custom" style="display:none;">
+              <div class="ig" style="margin-bottom:4px;"><span class="il">Von</span><input type="date" id="fill-date-from" onchange="_fillSet('dateFrom',this.value)" aria-label="Von"/></div>
+              <div class="ig"><span class="il">Bis</span><input type="date" id="fill-date-to" onchange="_fillSet('dateTo',this.value)" aria-label="Bis"/></div>
+            </div>
+          </div>
+
+          <!-- Füll-Einstellungen, die zum LAYOUT gehören (mit „ins Layout übernehmen" gespeichert): im Alltag
+               nicht anfassen, deshalb zugeklappt (17.10.2026). Weicht etwas ab, steht der Hinweis darüber. -->
+          <details class="klapp-block" id="fill-einst" data-merken ontoggle="_klappMerken(this)">
+            <summary title="ASIN-Modus, Nur Bestellungen mit, Leere Einträge, Menge × Felder, mehrseitig — gehören zum Layout">Weitere Füll-Einstellungen</summary>
+            <div class="klapp-rumpf">
+              <!-- ASIN Modus: Alle gleich oder pro Feld -->
+              <div style="margin-bottom:10px;">
+                <div class="hsb" style="margin-bottom:8px;">
+                  <span class="ulabel">ASIN-Modus</span>
+                  <div class="hstack" style="gap:8px;">
+                    <span id="single-asin-lbl-txt" style="font-size:var(--fs-klein);color:var(--accent);font-weight:600;">Gleiche ASIN</span>
+                    <div id="single-asin-toggle" class="aswitch on" onclick="toggleSingleAsinMode()"></div>
+                  </div>
+                </div>
+                <div id="single-asin-input" style="margin-bottom:6px;">
+                  <div class="umut10" style="margin-bottom:4px;">ASIN für alle Felder:</div>
+                  <input id="global-asin" placeholder="z. B. B0DH55FZDR" style="font-family:var(--mono);text-transform:uppercase;" oninput="this.value=this.value.toUpperCase();_fillSet('globalAsin',this.value.trim())"/>
+                </div>
+              </div>
+
+              <!-- Dropdown-Weiche: nur Bestellungen mit einer bestimmten Antwort (z. B. Farbe) -->
+              <div id="dd-nur" style="margin-bottom:10px;">
+                <div class="ulabel" style="margin-bottom:8px;">Nur Bestellungen mit</div>
+                <div id="dd-nur-inhalt"></div>
+              </div>
+
+              <!-- ASIN-Filter Hinweis (nur im Pro-Feld-Modus) -->
+              <div id="fill-asin-hint" class="umut10" style="margin-bottom:8px;padding:7px 10px;background:var(--bg3);border-radius:var(--r-s);border:1px solid var(--border);display:none;">
+                ASIN pro Feld rechts in den Eigenschaften einstellen
+              </div>
+
+              <!-- Leere Einträge — einheitlich für Text + Bild -->
+              <div style="margin-bottom:10px;">
+                <div class="ulabel" style="margin-bottom:8px;">Leere Einträge</div>
+                <div style="display:flex;flex-direction:column;gap:6px;">
+                  <div onclick="setEmptyMode('leer')" id="empty-opt-leer" class="hstack schaltkarte" style="gap:8px;">
+                    <div class="rdot"></div>
+                    <div>
+                      <div class="opt-title">Leer lassen</div>
+                      <div class="umut10">Feld leer — Bestellung wird gedruckt</div>
+                    </div>
+                  </div>
+                  <div onclick="setEmptyMode('strich')" id="empty-opt-strich" class="hstack schaltkarte" style="gap:8px;">
+                    <div class="rdot"></div>
+                    <div>
+                      <div class="opt-title">— Strich</div>
+                      <div class="umut10">Zeigt — wenn kein Text · Bild leer</div>
+                    </div>
+                  </div>
+                  <div onclick="setEmptyMode('ueberspringen')" id="empty-opt-ueberspringen" class="hstack schaltkarte an-gruen" style="gap:8px;">
+                    <div class="rdot"></div>
+                    <div>
+                      <div class="opt-title">Überspringen</div>
+                      <div class="umut10">Nächste Bestellung rückt nach</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Menge × Felder -->
+              <div style="margin-bottom:10px;">
+                <div onclick="toggleQtyMode()" id="qty-toggle-lbl" class="hsb schaltkarte an-gruen an">
+                  <div>
+                    <div class="opt-title">Menge × Felder</div>
+                    <div id="qty-toggle-desc" class="umut10" style="margin-top:2px;">Bestellung mit Menge 2 → belegt 2 Felder</div>
+                  </div>
+                  <div id="qty-toggle-pill" class="aswitch green on"></div>
+                </div>
+              </div>
+
+              <!-- Multi-Seiten Toggle -->
+              <div onclick="toggleMultiPage()" id="multipage-toggle-lbl" class="hsb schaltkarte an" style="margin-bottom:10px;">
+                <div>
+                  <div class="opt-title">Automatisch mehrseitig</div>
+                  <div id="multipage-toggle-desc" class="umut10" style="margin-top:2px;">Volle Seite → neue Seite wird automatisch erstellt</div>
+                </div>
+                <div id="multipage-toggle-pill" class="aswitch on"></div>
+              </div>
+            </div>
+          </details>
+
+        </div><!-- end scrollable area -->
+
+        <!-- Sticky Footer: Füllen / Füllen+Export + Fortschritt -->
+        <div style="padding:14px 16px;border-top:1px solid var(--border);background:var(--bg2);">
+          <button class="btn btn-muted btn-full btn-lg" id="fill-btn" onclick="fillAllPagesAuto()">Füllen</button>
+          <button class="btn btn-accent btn-full btn-lg" id="fill-export-btn" onclick="fillAndExportManual()" title="Füllt und exportiert wie der Nacht-Lauf: Formate/Aufteilung aus dem Layout, Dateien in den Export-Ordner des Tages" style="margin-top:8px;">Füllen + Export</button>
+          <div class="fill-progress" id="fill-progress">
+            <div class="fill-bar-wrap"><div class="fill-bar" id="fill-bar"></div></div>
+            <div class="fill-msg" id="fill-msg">Lade Bilder…</div>
+          </div>
+        </div>
+
+        <!-- Bestellung suchen / Debug (standardmäßig eingeklappt) -->
+        <div style="border-top:1px solid var(--border);background:var(--bg3);padding:12px 16px;">
+          <div onclick="var b=document.getElementById('debug-body');var o=b.style.display==='none';b.style.display=o?'block':'none';this.querySelector('span').style.transform=o?'rotate(0deg)':'rotate(-90deg)';"
+               style="font-size:var(--fs-mikro);font-weight:600;letter-spacing:var(--ls-label);text-transform:uppercase;color:var(--text-muted);cursor:pointer;display:flex;align-items:center;gap:6px;user-select:none;">
+            <span style="transform:rotate(-90deg);transition:transform .15s;display:inline-block;">▾</span> Bestellung suchen
+            <span style="flex:1;"></span>
+          </div>
+          <div id="debug-body" style="display:none;margin-top:8px;">
+            <div style="display:flex;gap:6px;">
+              <input id="debug-order-input" type="text" placeholder="303-1234567-1234567"
+                style="flex:1;font-family:var(--mono);"
+                onkeydown="if(event.key==='Enter') debugFindOrder()"/>
+              <button class="btn btn-muted" onclick="debugFindOrder()">Suchen</button>
+            </div>
+            <div id="debug-order-result" style="margin-top:8px;font-size:var(--fs-klein);line-height:1.6;display:none;"></div>
+          </div>
+        </div>
+
+      </div><!-- end tab-fill -->
+
+      <!-- TAB: Fields -->
+      <!-- Zwei Blöcke, keine Erklärtexte: oben die Bausteine (Zeilen je Feldtyp, gebaut von
+           renderPal), unten was schon auf dem Blatt liegt. Erklärungen stehen im title. -->
+      <div id="tab-fields" style="display:none;">
+        <div class="panel-sec">
+          <div class="tab-titel"><span class="tab-titel-name">Felder</span></div>
+          <div class="sec-title">Aufs Blatt ziehen</div>
+          <div class="bs-liste" id="bausteine"></div>
+        </div>
+        <div class="panel-sec" style="flex:1;">
+          <div class="sec-title">Auf dem Blatt <span class="bs-zahl" id="fc">0</span></div>
+          <div id="field-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Page -->
+      <div id="tab-page" style="display:none;">
+        <div class="panel-sec">
+          <div class="tab-titel"><span class="tab-titel-name">Seite</span></div>
+          <div class="sec-title">Blattgröße</div>
+          <div class="presets">
+            <div class="preset" onclick="setPg(210,297)">A4</div>
+            <div class="preset" onclick="setPg(297,210)">A4 quer</div>
+            <div class="preset" onclick="setPg(148,210)">A5</div>
+            <div class="preset" onclick="setPg(300,200)">300×200</div>
+            <div class="preset" onclick="setPg(400,300)">400×300</div>
+            <div class="preset" onclick="setPg(500,350)">500×350</div>
+          </div>
+          <div class="row2">
+            <div class="ig"><span class="il">Breite (mm)</span><input type="number" id="pw" value="210" min="10" oninput="updateCanvas()" aria-label="Breite (mm)"/></div>
+            <div class="ig"><span class="il">Höhe (mm)</span><input type="number" id="ph" value="297" min="10" oninput="updateCanvas()" aria-label="Höhe (mm)"/></div>
+          </div>
+          <div class="ig" style="margin-top:8px;"><span class="il">Rand (mm)</span><input type="number" id="pm" value="10" min="0" oninput="drawCanvas()" aria-label="Rand (mm)"/></div>
+        </div>
+        <div class="panel-sec">
+          <div class="sec-title">Seiten</div>
+          <div id="pages-overview" style="margin-bottom:12px;display:flex;flex-direction:column;gap:6px;"></div>
+          <button class="btn btn-muted btn-full" onclick="duplicateCurrentPage()" style="margin-bottom:8px;">Aktuelle Seite duplizieren</button>
+          <button class="btn btn-muted btn-full" onclick="addBlankPage()" style="border-style:dashed;">+ Neue leere Seite</button>
+        </div>
+      </div>
+
+      <!-- TAB: Laser -->
+      <div id="tab-laser" class="tab-col">
+        <div class="panel-sec scrolly">
+          <div class="tab-titel"><span class="tab-titel-name">Dithering</span></div>
+
+          <!-- Master Toggle -->
+          <label id="dither-master-lbl" class="hstack schaltkarte" style="gap:12px;margin-bottom:18px;">
+            <span class="tgl"><input type="checkbox" class="tgl-cb" id="dither-active" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+            <div>
+              <div style="font-size:var(--fs-basis);font-weight:600;color:var(--text);">Dithering aktiv</div>
+              <div class="umut">Bilder für Laser SW konvertieren</div>
+            </div>
+          </label>
+
+          <!-- ── Voreinstellungen ────────────────────────────────────────────────
+               EIN Auswahlfeld statt zwölf Knöpfe. Oben die eigenen, am Material gemessenen Presets, darunter die
+               acht eingebauten Startwerte. Das Feld zeigt immer, was gerade gilt — auch einen Namen aus dem Layout,
+               der zu keinem Preset gehört (dann unter „Aus dem Layout“). Die Liste baut renderCustomPresets(). -->
+          <div class="ulabel" style="margin-bottom:8px;">Voreinstellungen</div>
+          <div class="hsb" style="gap:6px;margin-bottom:6px;">
+            <select id="laser-preset" style="flex:1;min-width:0;" onchange="setMaterial(this.value)" aria-label="Voreinstellung"></select>
+            <button class="btn btn-muted btn-xs" id="laser-preset-loeschen" title="Eigenes Preset löschen"
+                    onclick="deleteCustomPreset(document.getElementById('laser-preset').value)">✕</button>
+          </div>
+          <button class="btn btn-muted btn-full" onclick="saveCustomPreset()" style="margin-bottom:4px;">+ Aktuelle Werte speichern</button>
+
+          <!-- Feineinstellung (17.10.2026 zugeklappt): Raster, Bild und Kalibrierung sind Einrichtungsarbeit. Im
+               Alltag genügen Voreinstellung, Gravur-Vorschau und „Ins Layout übernehmen". Auf/Zu merkt sich der Browser. -->
+          <details class="klapp-block" id="laser-fein" data-merken ontoggle="_klappMerken(this)" style="margin-top:12px;">
+            <summary title="Raster, Bild und Kalibrierung — Einrichtungsarbeit, im Alltag zu lassen">Feineinstellung</summary>
+            <div class="klapp-rumpf">
+              <!-- ── 1 · Raster ────────────────────────────────────────────────────────
+                   Raster VOR Bild: Verfahren und Auflösung sind Materialentscheidungen, die einmal fallen; die
+                   Bildregler darunter werden danach eingestellt. Erklärtexte je Regler auf eine Zeile beschränkt —
+                   Längeres gehört in die Projektnotizen, nicht ins Panel. -->
+              <div class="il-block">1 · Raster</div>
+              <div class="ig" style="margin-bottom:8px;">
+                <span class="il">Verfahren</span>
+                <select id="dither-algo" onchange="updateDitherSettings()" aria-label="Verfahren">
+                  <option value="floyd-steinberg">Floyd-Steinberg (Standard)</option>
+                  <option value="atkinson">Atkinson (hart — Logos, Grafik)</option>
+                  <option value="stucki">Stucki (weich, für Porträts)</option>
+                  <option value="jarvis">Jarvis (weichster)</option>
+                  <option value="burkes">Burkes (wie Stucki, kürzer)</option>
+                  <option value="sierra">Sierra</option>
+                  <option value="sierra-lite">Sierra Lite (körnig)</option>
+                  <option value="bayer">Bayer (geordnet)</option>
+                  <option value="threshold">Schwellenwert (einfach)</option>
+                </select>
+              </div>
+              <div class="ig" style="margin-bottom:8px;">
+                <span class="il">Auflösung</span>
+                <select id="dither-dpi" onchange="updateDitherSettings()" aria-label="Auflösung">
+                  <option value="250">250 DPI (F02 Feuerzeug schwarz)</option>
+                  <option value="275">275 DPI</option>
+                  <option value="300">300 DPI</option>
+                  <option value="400">400 DPI</option>
+                  <option value="500" selected>500 DPI</option>
+                  <option value="600">600 DPI (fein, langsam)</option>
+                </select>
+                <label class="hstack" style="gap:6px;margin-top:4px;font-size:var(--fs-klein);">
+                  <input type="checkbox" id="dither-datei500" onchange="updateDitherSettings()"/>
+                  <span>Datei mit 500 DPI schreiben <span class="umut10">· EzCad bleibt auf „Fixed DPI 500“ (nur bei 250 DPI) · F02: an</span></span>
+                </label>
+              </div>
+              <div id="dither-thresh-box" style="margin-bottom:12px;" hidden>
+                <div class="srow">
+                  <span class="il">Schwellenwert</span>
+                  <span id="dither-thresh-val" class="sval">128</span>
+                </div>
+                <input type="range" id="dither-thresh" min="0" max="255" value="128" style="width:100%;" oninput="_reglerZeigen('dither-thresh-val',this.value);updateDitherSettings()" aria-label="Schwellenwert"/>
+                <div id="dither-thresh-def" class="umut10" style="margin-top:2px;">höher = mehr Gravur</div>
+              </div>
+
+              <!-- ── 2 · Bild ──────────────────────────────────────────────────────────
+                   Reihenfolge wie in der Pipeline. Jeder Automatik-Schalter steht DIREKT
+                   ÜBER seinem Regler (Nutzerwunsch 16.09.2026); Regler, die zu einem
+                   Schalter gehören, sind eingeklappt, solange er aus ist. -->
+              <div class="il-block">2 · Bild</div>
+
+              <!-- Rezepte: die am Werkstück bestätigten Griffe als ein Klick. Die Beschriftung
+                   ist bewusst die Beschwerde, nicht die Technik — so wird ausgewählt. -->
+              <div style="margin-bottom:10px;">
+                <div class="umut10" style="margin-bottom:6px;">Rezept für einen Platz — setzt die Regler:</div>
+                <div style="display:flex;flex-wrap:wrap;gap:5px;">
+                  <button class="chip-knopf" onclick="laserRezept('hell')">Gravur zu hell</button>
+                  <button class="chip-knopf" onclick="laserRezept('dunkel')">Motiv zu dunkel</button>
+                  <button class="chip-knopf" onclick="laserRezept('sw')">nur schwarz/weiß</button>
+                  <button class="chip-knopf" onclick="laserRezept('zu')">Motiv läuft zu</button>
+                  <button class="chip-knopf" onclick="laserRezept('flau')">dunkle Stellen flau</button>
+                </div>
+              </div>
+
+              <label id="dither-invert-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:8px;">
+                <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-invert" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Invertieren
+                  <span class="umut10" style="font-weight:400;"> · hell auf dunklem Material</span></div>
+              </label>
+
+              <label id="dither-autocontrast-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:6px;">
+                <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-autocontrast" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Auto-Kontrast
+                  <span class="umut10" style="font-weight:400;"> · je Foto</span></div>
+              </label>
+              <label id="dither-clahe-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:6px;">
+                <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-clahe" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Lokaler Auto-Kontrast (CLAHE)
+                  <span class="umut10" style="font-weight:400;"> · je Bildbereich, ersetzt den Auto-Kontrast</span></div>
+              </label>
+              <div id="dither-clahe-box" style="margin-bottom:8px;" hidden>
+                <div class="srow">
+                  <span class="il">Stärke</span>
+                  <span id="dither-clahe-val" class="sval">2,0</span>
+                </div>
+                <input type="range" id="dither-clahe-st" min="1" max="4" step="0.1" value="2" style="width:100%;"
+                       oninput="_reglerZeigen('dither-clahe-val',this.value);updateDitherSettings()"
+                       aria-label="Stärke lokaler Auto-Kontrast"/>
+                <div class="umut10" style="margin-top:2px;">Holt Personen vor hellem Hintergrund heraus. F02 schwarz: 2,0 (Blech 13.10.) · 3,5 war flau.</div>
+              </div>
+              <div id="dither-contrast-box" style="margin-bottom:10px;" hidden>
+                <div class="srow">
+                  <span class="il">Kontrast</span>
+                  <span id="dither-contrast-val" class="sval">0</span>
+                </div>
+                <input type="range" id="dither-contrast" min="-100" max="100" value="0" style="width:100%;" oninput="_reglerZeigen('dither-contrast-val',this.value);updateDitherSettings()" aria-label="Kontrast"/>
+              </div>
+
+              <!-- Kanten ODER Konturen (11.10.2026): die Pipeline nimmt nie beide — zwei Schalter zeigten
+                   „Kanten 65 %" als an, obwohl es neben den Konturen nichts tat. -->
+              <div class="ig" style="margin-bottom:8px;">
+                <span class="il">Kanten</span>
+                <select id="dither-kantenart" onchange="updateDitherSettings()" aria-label="Kantenbetonung">
+                  <option value="aus">Aus</option>
+                  <option value="kanten">Kanten verstärken — rettet Augen und Mund</option>
+                  <option value="konturen">Konturen vertiefen — nur die dunkle Seite</option>
+                </select>
+              </div>
+              <div id="dither-edgeboost-box" style="margin-bottom:8px;" hidden>
+                <div class="srow">
+                  <span class="il">Stärke</span>
+                  <span id="dither-edgeboost-val" class="sval">45 %</span>
+                </div>
+                <input type="range" id="dither-edgeboost" min="5" max="100" value="45" style="width:100%;"
+                       oninput="_reglerZeigen('dither-edgeboost-val',this.value);updateDitherSettings()"
+                       aria-label="Kanten verstärken"/>
+                <div class="umut10" style="margin-top:2px;">Kanten als Linien statt als Rasterpunkte. Dunkelt ab.</div>
+              </div>
+
+              <div id="dither-kontur-box" style="margin-bottom:8px;" hidden>
+                <div class="srow">
+                  <span class="il">Stärke</span>
+                  <span id="dither-kontur-val" class="sval">150 %</span>
+                </div>
+                <input type="range" id="dither-kontur" min="25" max="300" step="5" value="150" style="width:100%;"
+                       oninput="_reglerZeigen('dither-kontur-val',this.value);updateDitherSettings()"
+                       aria-label="Konturen vertiefen"/>
+                <div class="umut10" style="margin-top:2px;">Vertieft nur die dunkle Seite einer Kante. Helle Details (Lichtreflex im Auge, Augenweiß) bleiben hell.</div>
+              </div>
+
+              <label id="dither-grafik-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:6px;">
+                <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-grafik" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Logos erkennen
+                  <span class="umut10" style="font-weight:400;"> · Grafik statt Foto</span></div>
+              </label>
+              <label id="dither-grafikweich-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:6px;">
+                <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-grafikweich" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Grafiken mit Verläufen erkennen
+                  <span class="umut10" style="font-weight:400;"> · Rauch, Leuchten, weiche Schrift — Tonwerte der Vorlage statt Fotoregelung</span></div>
+              </label>
+
+              <label id="dither-density-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:6px;">
+                <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-density" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Dichte-Regelung
+                  <span class="umut10" style="font-weight:400;"> · trifft das Ziel genau</span></div>
+              </label>
+              <div id="dither-density-box" style="margin-bottom:8px;" hidden>
+                <div class="srow">
+                  <span class="il">Ziel-Gravurfläche</span>
+                  <span id="dither-density-ziel-val" class="sval">22 %</span>
+                </div>
+                <input type="range" id="dither-density-ziel" min="8" max="60" step="0.1" value="22" style="width:100%;"
+                       oninput="_reglerZeigen('dither-density-ziel-val',this.value);updateDitherSettings()"
+                       aria-label="Ziel-Gravurfläche"/>
+                <div class="umut10" style="margin-top:2px;">Am fertigen Raster gemessen · F02 schwarz: 32 % bei 275 DPI</div>
+                <div class="srow" style="margin-top:8px;">
+                  <span class="il">Bremse (höchstens abdunkeln bis)</span>
+                  <span id="dither-density-bremse-val" class="sval">aus</span>
+                </div>
+                <input type="range" id="dither-density-bremse" min="0" max="90" step="5" value="0" style="width:100%;"
+                       oninput="_reglerZeigen('dither-density-bremse-val',this.value);updateDitherSettings()"
+                       aria-label="Dichte-Bremse"/>
+                <div class="umut10" style="margin-top:2px;">Verhindert, dass die Regelung Gesichter schwarz drückt. F02 schwarz: Faktor 0,70.</div>
+
+                <label id="dither-motiv-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin:8px 0 6px;">
+                  <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-motiv" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                  <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Motiv-Automatik
+                    <span class="umut10" style="font-weight:400;"> · misst im Motiv statt im ganzen Feld</span></div>
+                </label>
+                <div id="dither-motiv-box" style="margin-bottom:4px;" hidden>
+                  <div class="srow">
+                    <span class="il">Obergrenze Gesamtfläche</span>
+                    <span id="dither-motiv-max-val" class="sval">40 %</span>
+                  </div>
+                  <input type="range" id="dither-motiv-max" min="25" max="60" step="0.1" value="40" style="width:100%;"
+                         oninput="_reglerZeigen('dither-motiv-max-val',this.value);updateDitherSettings()"
+                         aria-label="Obergrenze Gesamtfläche"/>
+                  <div class="umut10" style="margin-top:2px;">Hebt ausgehungerte Motive an, senkt nie ab. Sucht zuerst Haut, sonst Zeichnung in der Bildmitte.</div>
+                </div>
+
+              </div>
+
+              <div style="margin-bottom:12px;">
+                <div class="srow">
+                  <span class="il">Schärfen</span>
+                  <span id="dither-sharpen-val" class="sval">0 %</span>
+                </div>
+                <input type="range" id="dither-sharpen" min="0" max="200" value="0" style="width:100%;" oninput="_reglerZeigen('dither-sharpen-val',this.value);updateDitherSettings()" aria-label="Schärfen"/>
+                <div class="srow" style="margin-top:6px;">
+                  <span class="il">Radius</span>
+                  <span id="dither-schaerfradius-val" class="sval">1 Pkt (fein)</span>
+                </div>
+                <input type="range" id="dither-schaerfradius" min="1" max="4" step="1" value="1" style="width:100%;"
+                       oninput="_reglerZeigen('dither-schaerfradius-val',this.value);updateDitherSettings()"
+                       aria-label="Schärf-Radius"/>
+                <div class="umut10" style="margin-top:2px;">Gegen die Weichheit beim Verkleinern. F02 schwarz: 150 %, Radius 2 (Profi-Wert „Enhance“).</div>
+              </div>
+
+              <!-- Ältere Wege (13.10.2026 aufgeräumt): für F02 schwarz aus, für andere Layouts (z. B. Silber
+                   mit Auto-Gamma) weiter voll wirksam. Klappt von selbst auf, wenn ein Layout einen davon nutzt. -->
+              <details id="dither-weitere" style="margin:4px 0 12px;">
+                <summary class="umut10" style="cursor:pointer;margin-bottom:8px;">Weitere Automatiken (ältere Wege, für F02 schwarz aus)</summary>
+                <label id="dither-autogamma-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin-bottom:6px;">
+                  <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-autogamma" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                  <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Auto-Gamma
+                    <span class="umut10" style="font-weight:400;"> · je Foto</span></div>
+                </label>
+                <div id="dither-autogamma-box" style="margin-bottom:8px;" hidden>
+                  <div class="srow">
+                    <span class="il">Ziel-Gravurdichte</span>
+                    <span id="dither-autogamma-ziel-val" class="sval">45 %</span>
+                  </div>
+                  <input type="range" id="dither-autogamma-ziel" min="25" max="65" step="1" value="45" style="width:100%;"
+                         oninput="_reglerZeigen('dither-autogamma-ziel-val',this.value);updateDitherSettings()"
+                         aria-label="Ziel-Gravurdichte"/>
+                  <div class="umut10" style="margin-top:2px;">Vor Kanten und Ausgleich gemessen.</div>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <div class="srow">
+                    <span class="il">Gamma / Mitteltöne</span>
+                    <span id="dither-gamma-val" class="sval">1,00</span>
+                  </div>
+                  <input type="range" id="dither-gamma" min="0.5" max="2" step="0.05" value="1" style="width:100%;" oninput="_reglerZeigen('dither-gamma-val',this.value);updateDitherSettings()" aria-label="Gamma / Mitteltöne"/>
+                  <div class="umut10" id="dither-gamma-def" style="margin-top:2px;">höher = weniger Gravur</div>
+                </div>
+                <div style="margin-bottom:10px;">
+                  <div class="srow">
+                    <span class="il">Lokaler Kontrast</span>
+                    <span id="dither-localcontrast-val" class="sval">0 %</span>
+                  </div>
+                  <input type="range" id="dither-localcontrast" min="0" max="120" value="0" style="width:100%;"
+                         oninput="_reglerZeigen('dither-localcontrast-val',this.value);updateDitherSettings()"
+                         aria-label="Lokaler Kontrast"/>
+                  <div class="umut10" style="margin-top:2px;">Kontrast je Bildbereich — holt Gesichter aus dem Schatten.</div>
+                </div>
+
+                <div style="margin-bottom:8px;">
+                  <div class="srow">
+                    <span class="il">Schatten aufhellen</span>
+                    <span id="dither-shadows-val" class="sval">0 %</span>
+                  </div>
+                  <input type="range" id="dither-shadows" min="0" max="100" value="0" style="width:100%;"
+                         oninput="_reglerZeigen('dither-shadows-val',this.value);updateDitherSettings()"
+                         aria-label="Schatten aufhellen"/>
+                  <div class="srow" style="margin-top:4px;">
+                    <span class="il">Lichter zurücknehmen</span>
+                    <span id="dither-highlights-val" class="sval">0 %</span>
+                  </div>
+                  <input type="range" id="dither-highlights" min="0" max="100" value="0" style="width:100%;"
+                         oninput="_reglerZeigen('dither-highlights-val',this.value);updateDitherSettings()"
+                         aria-label="Lichter zurücknehmen"/>
+                  <div class="umut10" style="margin-top:2px;">Für ein dunkles Gesicht neben einer hellen Fläche. Mitteltöne bleiben stehen.</div>
+                </div>
+
+                <div style="margin-bottom:8px;">
+                  <div class="srow">
+                    <span class="il">Bereiche einzeln belichten</span>
+                    <span id="dither-region-val" class="sval">0 %</span>
+                  </div>
+                  <input type="range" id="dither-region" min="0" max="100" value="0" style="width:100%;"
+                         oninput="_reglerZeigen('dither-region-val',this.value);updateDitherSettings()"
+                         aria-label="Bereiche einzeln belichten"/>
+                  <label class="hstack" style="gap:6px;margin-top:4px;font-size:var(--fs-klein);">
+                    <input type="checkbox" id="dither-region-immer" onchange="updateDitherSettings()"/>
+                    <span>bei jedem Foto <span class="umut10">· gegen dunkle Gesichter vor hellem Grund</span></span>
+                  </label>
+                  <div id="dither-region-immer-box" hidden>
+                    <div class="srow">
+                      <span class="il">Grundstärke</span>
+                      <span id="dither-region-immer-val" class="sval">35 %</span>
+                    </div>
+                    <input type="range" id="dither-region-immer-st" min="5" max="100" step="5" value="35" style="width:100%;"
+                           oninput="_reglerZeigen('dither-region-immer-val',this.value);updateDitherSettings()"
+                           aria-label="Grundstärke Bereichsausgleich"/>
+                    <div class="umut10" style="margin-top:2px;">Gilt für jedes Foto. Plätze mit Warnung bekommen weiter die Stärke oben, wenn sie damit mehr Zeichnung behalten.</div>
+                  </div>
+                  <div class="umut10" style="margin-top:2px;">Himmel, helle Wand, Schatten: jeder Bereich bekommt seine eigene Helligkeit, die Zeichnung darin bleibt. Greift nur bei Plätzen, die sonst Zeichnung verlieren — alle anderen bleiben unverändert. Wirkt in der Einzelplatz-Vorschau und im Export, nicht in „Ganzes Blatt" — dort fehlt auch die Logo-Behandlung einzelner Plätze. Endkontrolle ist das Blech im Maschinen-Reiter.</div>
+                </div>
+                  <div style="margin-bottom:10px;">
+                    <div class="srow" style="margin-top:10px;">
+                      <span class="il">Gesichter hervorheben</span>
+                      <span id="dither-hautkurve-val" class="sval">aus</span>
+                    </div>
+                    <input type="range" id="dither-hautkurve" min="0" max="100" step="5" value="0" style="width:100%;"
+                           oninput="_reglerZeigen('dither-hautkurve-val',this.value);updateDitherSettings()"
+                           aria-label="Gesichter hervorheben"/>
+                    <div class="umut10" style="margin-top:2px;">Hautkurve: spreizt die Helligkeitsstufen der Haut je Bildbereich, damit Augen, Brauen und Mund Zeichnung bekommen. Wand und Himmel geben dafür Tonwerte ab. F02 schwarz: 80 % (06.10.2026). Ohne erkannte Haut (S/W-Fotos) wirkungslos.</div>
+
+                    <label id="dither-gesicht-lbl" class="hstack schaltkarte" style="gap:8px;padding:6px 9px;margin:10px 0 6px;">
+                      <span class="tgl" style="transform:scale(.8);transform-origin:left center;"><input type="checkbox" class="tgl-cb" id="dither-gesicht" onchange="updateDitherSettings()"/><span class="tgl-track"></span><span class="tgl-knob"></span></span>
+                      <div style="font-size:var(--fs-klein);font-weight:600;color:var(--text);">Gesichts-Automatik
+                        <span class="umut10" style="font-weight:400;"> · jedes Gesicht bekommt seine eigene Gravurmenge</span></div>
+                    </label>
+                    <div id="dither-gesicht-box" hidden>
+                      <div class="srow">
+                        <span class="il">Gravur im Gesicht</span>
+                        <span id="dither-gesicht-ziel-val" class="sval">15 %</span>
+                      </div>
+                      <input type="range" id="dither-gesicht-ziel" min="8" max="40" step="1" value="15" style="width:100%;"
+                             oninput="_reglerZeigen('dither-gesicht-ziel-val',this.value);updateDitherSettings()"
+                             aria-label="Gravur im Gesicht"/>
+                      <div class="srow" style="margin-top:6px;">
+                        <span class="il">Gesicht nachschärfen</span>
+                        <span id="dither-gesicht-scharf-val" class="sval">aus</span>
+                      </div>
+                      <input type="range" id="dither-gesicht-scharf" min="0" max="100" step="5" value="0" style="width:100%;"
+                             oninput="_reglerZeigen('dither-gesicht-scharf-val',this.value);updateDitherSettings()"
+                             aria-label="Gesicht nachschärfen"/>
+                      <div class="umut10" style="margin-top:2px;">Findet Gesichter (YuNet) und stellt die Gravur im Gesichtskern auf diesen Wert: helle Gesichter laufen nicht mehr weiß zu, dunkle werden sichtbar. Profile, verdeckte und sehr kleine Gesichter werden oft nicht gefunden — dort gilt der Rest der Einstellung wie bisher.</div>
+                    </div>
+                  </div>
+              </details>
+
+              <!-- ── 3 · Kalibrierung ── -->
+              <div class="il-block">3 · Kalibrierung</div>
+              <!-- Material-Kalibrierung: eingeklappt, weil einmal pro Material am
+                   Kalibrier-Keil bestimmt und dann als Preset gesichert. Mit Anzeige im
+                   Kopf, sobald etwas eingestellt ist — eine versteckte Einstellung, die
+                   still ins Ergebnis wirkt, darf es nicht geben. -->
+              <div style="border:1px solid var(--line-input);border-radius:var(--r-s);overflow:hidden;margin-bottom:12px;">
+                <div class="hstack" style="gap:8px;padding:9px 12px;background:var(--bg2);cursor:pointer;user-select:none;" onclick="toggleLaserCalib()">
+                  <span id="laser-calib-chev" style="font-size:var(--fs-mikro);color:var(--text-muted);display:inline-block;transform:rotate(-90deg);transition:transform 0.15s;">▾</span>
+                  <span style="flex:1;font-size:var(--fs-klein);font-weight:500;color:var(--text);">Material-Kalibrierung</span>
+                  <span id="laser-calib-badge" style="display:none;font-size:var(--fs-mikro);color:var(--amber);background:var(--amber-dim);border-radius:var(--r-m);padding:1px 7px;white-space:nowrap;"></span>
+                </div>
+                <div id="laser-calib-body" style="display:none;padding:12px;border-top:1px solid var(--border);">
+                  <div class="umut10" style="margin-bottom:10px;line-height:1.5;">Einmal pro Material am <b style="color:var(--text-dim);">Kalibrier-Keil</b> ablesen (unten unter „Prüfen") und als eigenes Preset sichern. Danach nicht mehr anfassen.</div>
+
+                  <!-- Tonwert-Ausgleich (Punktzuwachs) -->
+                  <div style="margin-bottom:10px;">
+                    <div class="srow">
+                      <span class="il">Tonwert-Ausgleich</span>
+                      <span id="dither-dotgain-val" class="sval">0 %</span>
+                    </div>
+                    <input type="range" id="dither-dotgain" min="0" max="50" value="0" style="width:100%;" oninput="_reglerZeigen('dither-dotgain-val',this.value);updateDitherSettings()" aria-label="Tonwert-Ausgleich"/>
+                    <div class="umut10" style="margin-top:2px;line-height:1.5;">gegen zugelaufene Mitteltöne: der Laser brennt jeden Punkt größer als sein Rasterplatz.</div>
+                  </div>
+
+                  <!-- Tonwert-Begrenzung (Lichter- / Tiefenpunkt) -->
+                  <div>
+                    <div class="srow">
+                      <span class="il">Lichter (min. Gravur)</span>
+                      <span id="dither-inkmin-val" class="sval">0 %</span>
+                    </div>
+                    <input type="range" id="dither-inkmin" min="0" max="20" value="0" style="width:100%;" oninput="_reglerZeigen('dither-inkmin-val',this.value);updateDitherSettings()" aria-label="Lichter (min. Gravur)"/>
+                    <div style="display:flex;justify-content:space-between;margin:8px 0 4px;">
+                      <span class="il">Tiefen (max. Gravur)</span>
+                      <span id="dither-inkmax-val" class="sval">100 %</span>
+                    </div>
+                    <input type="range" id="dither-inkmax" min="20" max="100" value="100" style="width:100%;" oninput="_reglerZeigen('dither-inkmax-val',this.value);updateDitherSettings()" aria-label="Tiefen (max. Gravur)"/>
+                    <div class="umut10" style="margin-top:2px;line-height:1.5;">bildet den Bildumfang auf das ab, was die Maschine wirklich kann: unter ~2 % zünden Einzelpunkte oft nicht, über ~95 % ist alles verschmolzen.<br>
+                      <b style="color:var(--text-dim);">Achtung:</b> ein Lichterwert &gt; 0 rastert auch reinweiße Bildpartien fein durch — bei freigestellten Motiven auf weißem Grund deshalb auf 0 lassen.</div>
+                    <div id="dither-dropout-box">
+                      <div style="display:flex;justify-content:space-between;margin:12px 0 4px;">
+                        <span class="il">Sprenkel wegschneiden</span>
+                        <span id="dither-dropout-val" class="sval">aus</span>
+                      </div>
+                      <input type="range" id="dither-dropout" min="0" max="20" value="0" style="width:100%;" oninput="_reglerZeigen('dither-dropout-val',this.value);updateDitherSettings()" aria-label="Sprenkel wegschneiden"/>
+                      <div class="umut10" style="margin-top:2px;line-height:1.5;">gegen einzeln stehende Gravurpunkte in Flächen, die eigentlich unberührt bleiben sollen (am 21.09.2026 auf schwarzem Feuerzeug als „weiße Punkte im schwarzen Bereich" gemeldet). Tinte UNTER dem Wert wird auf null gesetzt statt gerastert.<br>
+                        Das ist das Gegenstück zu „Lichter" oben: dort wird angehoben, hier weggeschnitten. Beides gleichzeitig hebt sich auf, deshalb ist der Regler bei Lichter &gt; 0 ausgeblendet. Gemessen am Standardfoto: 8 % nimmt die Hälfte der Einzelpunkte, die Gravurfläche bleibt gleich (die Dichte-Regelung schiebt die Tinte dorthin, wo sie Zeichnung macht).</div>
+                      <div style="display:flex;justify-content:space-between;margin:12px 0 4px;">
+                        <span class="il">Dunkelgrau anheben</span>
+                        <span id="dither-schatten-val" class="sval">aus</span>
+                      </div>
+                      <input type="range" id="dither-schatten" min="0" max="24" value="0" style="width:100%;" oninput="_reglerZeigen('dither-schatten-val',this.value);updateDitherSettings()" aria-label="Dunkelgrau anheben"/>
+                      <div class="umut10" style="margin-top:2px;line-height:1.5;">Schattenstufe: Was über dem Schnitt liegt, aber dunkel ist, wird auf mindestens diesen Anteil Gravur angehoben — dunkelgrauer Pulli und schwarzes T-Shirt bleiben unterscheidbar, statt beide schwarz zu werden. Nur mit „Sprenkel wegschneiden" wirksam und nur, wenn der Wert darüber liegt.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <!-- ── Prüfen ── -->
+          <div class="il-block">Prüfen</div>
+          <button class="btn btn-muted btn-full" onclick="showLaserPreview()" style="margin-bottom:6px;">Gravur-Vorschau (1:1)</button>
+          <div class="umut10" style="margin-bottom:6px;line-height:1.5;">Zeigt exakt das Bild, das der Laser bekommt. Regler wirken live.<br>
+            <b style="color:var(--text-dim);">Detail</b> = ein Foto (schnell) · <b style="color:var(--text-dim);">Vorher/Nachher</b> · <b style="color:var(--text-dim);">Verfahren</b> im Vergleich.</div>
+          <!-- Testbrände: zugeklappt, weil sie im Alltag nicht gebraucht werden (vier Knöpfe mit Erklärung
+               schütteten sonst den Laser-Tab zu). -->
+          <button type="button" class="klapp" id="laser-tests-knopf" onclick="toggleLaserTests()"
+                  aria-expanded="false" aria-controls="laser-tests" style="margin:6px 0;">
+            <span class="klapp-pfeil">▸</span> Tests brennen
+            <span class="umut10" style="margin-left:auto;">Testgitter · Tiefen · DPI · Keil</span>
+          </button>
+          <div id="laser-tests" class="klapp-inhalt" hidden>
+            <div class="umut10" style="margin-bottom:8px;line-height:1.5;">Jeder Knopf legt eine Datei zum Brennen an. Danach am Material ablesen und die Werte oben eintragen.</div>
+            <button class="btn btn-muted btn-full" onclick="exportTestGrid()" style="margin-bottom:4px;">Testgitter (3×3)</button>
+            <div class="umut10" style="margin-bottom:8px;">Neun Varianten auf einem Blatt — beste Kachel ablesen.</div>
+            <button class="btn btn-muted btn-full" onclick="exportTiefenReihe()" style="margin-bottom:4px;">Tiefen-Reihe (6 Gesichter)</button>
+            <div class="umut10" style="margin-bottom:8px;">Gegen Wangen, die dunkel statt hell werden.</div>
+            <button class="btn btn-muted btn-full" onclick="exportDpiReihe()" style="margin-bottom:4px;">DPI-Reihe (5 Dateien)</button>
+            <div class="umut10" style="margin-bottom:8px;">250 bis 600 DPI. Auf jeder Maschine einzeln brennen.</div>
+            <button class="btn btn-muted btn-full" onclick="exportCalibrationWedge()" style="margin-bottom:4px;">Kalibrier-Keil</button>
+            <div class="umut10" style="margin-bottom:12px;">Elf Felder 0–100 % — zeigt, ab wo alles zuläuft (Tonwert-Ausgleich).</div>
+          </div>
+
+          <!-- ── Übernehmen ── -->
+          <div class="il-block">Übernehmen</div>
+          <!-- Kurz genug für die 264-px-Spalte (.btn steht auf nowrap). -->
+          <button class="btn btn-accent btn-full" onclick="applyLaserCfgToLayout()" style="margin-bottom:6px;">Ins Layout übernehmen</button>
+          <div class="umut10" style="margin-bottom:12px;line-height:1.5;">Erst damit gelten die Werte auch für den <b style="color:var(--text-dim);">Auto-Export</b>.</div>
+
+          <!-- ── Arbeitsfläche (optional) ── -->
+          <div class="il-block">Arbeitsfläche</div>
+          <button class="btn btn-muted btn-full" onclick="applyDitheringToAll()" style="margin-bottom:6px;">Dithering in der Ansicht anzeigen</button>
+          <button class="btn btn-muted btn-full" onclick="resetDithering()" style="margin-bottom:6px;">Original wiederherstellen</button>
+          <div class="umut10" style="margin-bottom:10px;line-height:1.5;">Nur Ansicht im Editor, ohne Wirkung auf den Export.</div>
+        </div>
+      </div><!-- end tab-laser -->
+
+      <!-- TAB: Schriften -->
+      <div id="tab-fonts" class="tab-col">
+        <div class="panel-sec scrolly">
+          <div class="tab-titel"><span class="tab-titel-name">Schriften</span></div>
+          <div class="tab-titel-text">
+            Dateiname muss dem Namen in der Amazon-JSON entsprechen,
+            z.&nbsp;B. <span style="font-family:var(--mono);color:var(--accent);">Monotype.ttf</span>
+          </div>
+
+          <!-- Upload -->
+          <div style="margin-bottom:12px;">
+            <label class="hstack ablage-zone" style="justify-content:center;gap:10px;" id="font-drop-zone"
+              ondragover="event.preventDefault();this.style.borderColor='var(--accent)'"
+              ondragleave="this.style.borderColor=''"
+              ondrop="handleFontDrop(event)">
+              <input type="file" id="font-file-input" accept=".ttf,.otf,.woff,.woff2" multiple style="display:none;" onchange="handleFontFiles(this.files)"/>
+              <span class="ablage-plus">+</span>
+              <span>Hierher ziehen oder klicken<br><span class="umut10">.ttf · .otf · .woff · .woff2</span></span>
+            </label>
+            <!-- Kein zusätzlicher „Datei wählen"-Knopf: der Ablegebereich ist ein
+                 <label> um das versteckte Dateifeld und öffnet denselben Dialog. -->
+          </div>
+
+          <!-- Geladene Schriften Liste -->
+          <div>
+            <div class="ulabel" style="margin-bottom:8px;">Geladene Schriften</div>
+            <div id="fonts-list">
+              <div class="uempty">Noch keine Schriften geladen</div>
+            </div>
+          </div>
+
+          <!-- Kein eigener Vorschau-Block: jede Schrift zeigt ihre Vorschau in der
+               Liste (renderFontsList). -->
+        </div>
+      </div><!-- end tab-fonts -->
+
+      <!-- TAB: Übersicht / Statistik -->
+      <div id="tab-overview" class="tab-col">
+        <div class="tab-kopf">
+          <div class="tab-titel"><span class="tab-titel-name">Übersicht</span><button class="btn btn-muted btn-xs" onclick="loadOverview()">↻ Aktualisieren</button></div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:8px 16px 16px;" id="overview-content">
+          <div style="color:var(--text-muted);font-size:var(--fs-klein);text-align:center;padding:20px;">Lädt…</div>
+        </div>
+      </div>
+      <!-- TAB: Motive -->
+      <div id="tab-motive" class="tab-col">
+        <div class="panel-sec scrolly">
+          <div class="tab-titel"><span class="tab-titel-name">Motive</span></div>
+          <div class="tab-titel-text">
+            Vektorgrafiken für die Gravur — Ornamente, Logos, Symbole. Sie gehen als
+            echte Konturen in die DXF, nicht als Bitmap.
+          </div>
+
+          <div id="motiv-drop" class="ablage-zone" style="flex-direction:column;text-align:center;margin-bottom:12px;"
+               onclick="document.getElementById('motiv-datei').click()">
+            <div class="ablage-plus">+</div>
+            <div class="u11" style="font-weight:600;">Motiv hochladen</div>
+            <div class="umut10" style="margin-top:4px;">AI · EPS · SVG · DXF · PDF — auch mehrere</div>
+            <div class="umut10" style="margin-top:6px;line-height:1.5;" title="Sonst fehlen die Buchstaben bzw. graviert der Laser feine Linien nicht sauber.">Schrift in Konturen umwandeln · Linien ab 0,1 mm</div>
+          </div>
+          <input type="file" id="motiv-datei" multiple accept=".ai,.eps,.ps,.svg,.dxf,.pdf"
+                 style="display:none" onchange="motivHochladen(this.files)"/>
+          <div id="motiv-status" class="umut10" style="display:none;margin-bottom:10px;text-align:center;"></div>
+
+          <div class="hsb" style="gap:8px;margin-bottom:8px;">
+            <input type="text" class="such-feld" id="motiv-suche" placeholder="Motiv suchen …" autocomplete="off" spellcheck="false"
+                   aria-label="Motive durchsuchen" oninput="motivSuchen(this.value)" style="flex:1;min-width:0;"/>
+            <span id="motiv-zahl" class="umut10" style="white-space:nowrap;"></span>
+          </div>
+          <div id="motiv-liste" class="mv-raster"></div>
+        </div>
+      </div>
+
+      <!-- TAB: Einstellungen -->
+      <div id="tab-settings" class="tab-col">
+        <div class="tab-kopf">
+          <div class="tab-titel"><span class="tab-titel-name">Einstellungen</span></div>
+        </div>
+        <div style="flex:1;overflow-y:auto;padding:8px 16px 16px;display:flex;flex-direction:column;gap:12px;">
+
+          <!-- Abmelden (nginx Basic Auth) — für jeden sichtbar -->
+          <div class="card">
+            <button class="btn btn-muted btn-full" onclick="abmelden()">Abmelden</button>
+          </div>
+
+          <!-- Downloads -->
+          <div class="card">
+            <div class="card-titel">Downloads</div>
+            <div class="card-text">Was von Amazon kommt: Kundenfotos und Bestelldaten.</div>
+            <label class="hsb" style="gap:10px;margin-bottom:10px;cursor:pointer;">
+              <span class="u11">Automatisch löschen</span>
+              <span class="tgl">
+                <input type="checkbox" class="tgl-cb" id="dl-auto-delete" onchange="settingsChanged()"/>
+                <span class="tgl-track"></span><span class="tgl-knob"></span>
+              </span>
+            </label>
+            <div id="dl-days-row" style="display:none;">
+              <div class="umut10" style="margin-bottom:5px;">Löschen nach</div>
+              <div class="day-grid" data-group="downloads"></div>
+              <div class="einst-stand" id="dl-stand"></div>
+            </div>
+          </div>
+
+          <!-- Exports -->
+          <div class="card">
+            <div class="card-titel">Exporte</div>
+            <div class="card-text">Was du daraus erzeugst: die fertigen Maschinendateien.</div>
+            <label class="hsb" style="gap:10px;margin-bottom:10px;cursor:pointer;">
+              <span class="u11">Automatisch löschen</span>
+              <span class="tgl">
+                <input type="checkbox" class="tgl-cb" id="exp-auto-delete" onchange="settingsChanged()"/>
+                <span class="tgl-track"></span><span class="tgl-knob"></span>
+              </span>
+            </label>
+            <div id="exp-days-row" style="display:none;">
+              <div class="umut10" style="margin-bottom:5px;">Löschen nach</div>
+              <div class="day-grid" data-group="exports"></div>
+              <div class="einst-stand" id="exp-stand"></div>
+            </div>
+          </div>
+
+          <!-- Emojis — Schalter -->
+          <div class="card">
+            <div class="card-titel" style="margin-bottom:10px;">Emojis</div>
+            <label class="hsb" style="gap:10px;margin-bottom:4px;cursor:pointer;">
+              <span class="u11">Emojis übernehmen</span>
+              <span class="tgl">
+                <input type="checkbox" class="tgl-cb" id="emoji-gravieren" onchange="settingsChanged()"/>
+                <span class="tgl-track"></span><span class="tgl-knob"></span>
+              </span>
+            </label>
+            <div class="umut10" id="emoji-hinweis"></div>
+          </div>
+
+          <!-- Testblatt — Probeblech mit Platznummern, getrennt von der Tagesproduktion -->
+          <div class="card">
+            <div class="card-titel" style="margin-bottom:10px;">Testblatt</div>
+            <div class="ig" style="margin-bottom:8px;">
+              <span class="il">Layout</span>
+              <select id="ts-wahl" aria-label="Layout für das Testblatt"></select>
+            </div>
+            <!-- Was das gewählte Layout enthält, bestimmt die Wahl (renderTestSheetUI): Schrift nur bei
+                 Textfeldern, Testfoto nur bei Bildfeldern. -->
+            <div class="ig" id="ts-schrift-zeile" style="margin-bottom:12px;display:none;">
+              <span class="il">Schrift</span>
+              <div id="ts-vorauswahl" style="display:flex;gap:5px;"></div>
+            </div>
+            <label class="hsb" id="ts-foto-zeile" style="gap:10px;margin-bottom:12px;cursor:pointer;display:none;">
+              <span class="u11">Testfoto in die Bildfelder</span>
+              <span class="tgl">
+                <input type="checkbox" class="tgl-cb" id="ts-foto" checked/>
+                <span class="tgl-track"></span><span class="tgl-knob"></span>
+              </span>
+            </label>
+            <div class="umut10" id="ts-inhalt-leer" style="margin-bottom:12px;display:none;"></div>
+            <button class="btn btn-accent btn-full" id="ts-btn" onclick="runTestSheets()">Testblatt erzeugen</button>
+            <div id="ts-status" style="display:none;font-size:var(--fs-klein);text-align:center;color:var(--text-muted);margin-top:8px;"></div>
+          </div>
+
+          <!-- Kein Speichern-Knopf: Änderungen speichern sich selbst (setSettingsDirty → Toast). -->
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Canvas -->
+    <div style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+      <!-- Seiten-Navigator -->
+      <div id="page-navigator" style="display:none;background:var(--bg2);border-bottom:1px solid var(--border);padding:8px 16px;align-items:center;justify-content:center;gap:12px;">
+        <button id="prev-page-btn" class="btn btn-muted" onclick="goToPage(-1)">◀</button>
+        <span id="page-nav-label" class="u11" style="font-weight:600;font-variant-numeric:tabular-nums;">Seite 1</span>
+        <button id="next-page-btn" class="btn btn-muted" onclick="goToPage(1)">▶</button>
+        <div class="vdiv" style="height:16px"></div>
+        <button class="btn btn-accent" onclick="exportCurrentPage()">Seite exportieren</button>
+      </div>
+      <div class="canvas-area" id="canvas-area">
+        <div class="canvas-area-inner" id="canvas-area-inner">
+          <div id="canvas-wrap" class="canvas-wrap">
+            <canvas id="layout-canvas"></canvas>
+            <div id="ov" style="position:absolute;top:0;left:0;"></div>
+          </div>
+        </div>
+        <div class="zoom-bar">
+          <button class="zb" onclick="zoomOut()" title="Zoom raus">−</button>
+          <span id="zl">100%</span>
+          <button class="zb" onclick="zoomIn()" title="Zoom rein">+</button>
+          <button class="zb" onclick="setZoom(1)" style="font-size:var(--fs-klein);margin-left:4px;" title="Zoom auf 100 % zurücksetzen">⊙</button>
+          <div class="vdiv" style="height:14px"></div>
+          <button class="zb" onclick="fitPage()" style="font-size:var(--fs-klein);" title="Seite einpassen">⊡</button>
+          <div class="vdiv" style="height:14px"></div>
+          <button class="zb" onclick="toggleShortcuts()" style="font-size:var(--fs-klein);" title="Tastenkürzel anzeigen (?)">?</button>
+        </div>
+      </div>
+      <!-- Bühne des Reiters „Maschinen": ersetzt dort die Arbeitsfläche (Klasse .maschinen-an an
+           .workspace, s. switchTab) und zeigt den gewählten Vorlagen-Ordner groß — s. _ezBuehneZeichnen -->
+      <div id="maschinen-buehne" class="mb-buehne"></div>
+
+    </div>
+
+    <!-- Right Panel — Eigenschaften -->
+    <!-- Kein inline overflow-y: die Regel .right-panel in der Stilvorlage genügt. -->
+    <div class="right-panel">
+      <div class="panel-sec">
+        <div id="props">
+          <div class="props-empty">Kein Feld gewählt.<br/>Klicke ein Feld an oder zieh eins aus „Felder" aufs Blatt.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- DXF Export Modal -->
+<div id="dxf-modal" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;">
+  <!-- Ecken, Polster und Mindestbreite kommen aus dem Dialog-Gerüst der Stilvorlage (#dxf-modal > div) -->
+  <div style="background:var(--bg2);border:1px solid var(--border);">
+    <div style="margin:-2px 0 16px;">
+      <div style="font-size:var(--fs-titel);font-weight:600;color:var(--text);">DXF-Export</div>
+      <div class="umut" style="margin-top:2px;">Ezcad2 / RDWorks · gilt nur für diesen Export</div>
+    </div>
+
+    <div class="ulabel" style="font-size:var(--fs-klein);margin-bottom:8px;">Export-Modus</div>
+    <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:20px;">
+      <label class="radio-label" id="dxf-single-lbl">
+        <input type="radio" name="dxf-mode" value="single" id="dxf-single" checked style="width:auto;" onchange="updateDxfMode()"/>
+        <div>
+          <div class="u12">Einzeln — eine DXF pro Bestellung</div>
+          <div class="umut">Download als ZIP — jede Bestellung einzeln</div>
+        </div>
+      </label>
+      <label class="radio-label" id="dxf-batch-lbl">
+        <input type="radio" name="dxf-mode" value="batch" id="dxf-batch" style="width:auto;" onchange="updateDxfMode()"/>
+        <div>
+          <div class="u12">Batch — alle Bestellungen in einer DXF</div>
+          <div class="umut">Alle Felder in einer Datei — für schnellen Import</div>
+        </div>
+      </label>
+    </div>
+
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-muted btn-dialog" style="flex:1;justify-content:center;" onclick="document.getElementById('dxf-modal').style.display='none'">Abbrechen</button>
+      <button class="btn btn-accent btn-dialog" style="flex:2;justify-content:center;" onclick="doExportDXF()">Exportieren</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<!-- role=status + aria-live: der Toast ist die EINZIGE Rückmeldung für „gespeichert",
+     „Fehler", „X von Y gefüllt" — ohne das bleibt er für Hilfstechnik stumm. -->
+<div class="toast" id="toast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+<!-- Tastenkürzel-Übersicht (? oder ⌨ in der Kopfleiste) -->
+<div class="shortcuts-overlay" id="shortcuts-overlay" onclick="if(event.target===this)toggleShortcuts()">
+  <div class="shortcuts-box">
+    <div class="shortcuts-title">
+      Tastenkürzel
+      <button onclick="toggleShortcuts()" class="dlg-zu" aria-label="Schließen">✕</button>
+    </div>
+    <div class="sc-group">
+      <div class="sc-group-title">Felder</div>
+      <div class="sc-row"><span class="sc-desc">Feld löschen</span><span class="sc-key"><span class="kbd">Entf</span></span></div>
+      <div class="sc-row"><span class="sc-desc">Kopieren</span><span class="sc-key"><span class="kbd">⌘</span><span class="kbd">C</span></span></div>
+      <div class="sc-row"><span class="sc-desc">Einfügen</span><span class="sc-key"><span class="kbd">⌘</span><span class="kbd">V</span></span></div>
+      <div class="sc-row"><span class="sc-desc">Auswahl aufheben</span><span class="sc-key"><span class="kbd">Esc</span></span></div>
+    </div>
+    <div class="sc-group">
+      <div class="sc-group-title">Bewegen</div>
+      <div class="sc-row"><span class="sc-desc">1 mm bewegen</span><span class="sc-key"><span class="kbd">←</span><span class="kbd">↑</span><span class="kbd">→</span><span class="kbd">↓</span></span></div>
+      <div class="sc-row"><span class="sc-desc">5 mm bewegen</span><span class="sc-key"><span class="kbd">⇧</span><span class="kbd">Pfeil</span></span></div>
+      <div class="sc-row"><span class="sc-desc">0,1 mm bewegen</span><span class="sc-key"><span class="kbd">⌥</span><span class="kbd">Pfeil</span></span></div>
+    </div>
+    <div class="sc-group">
+      <div class="sc-group-title">Allgemein</div>
+      <div class="sc-row"><span class="sc-desc">Rückgängig</span><span class="sc-key"><span class="kbd">⌘</span><span class="kbd">Z</span></span></div>
+      <div class="sc-row"><span class="sc-desc">Wiederholen</span><span class="sc-key"><span class="kbd">⌘</span><span class="kbd">⇧</span><span class="kbd">Z</span></span></div>
+      <div class="sc-row"><span class="sc-desc">Speichern</span><span class="sc-key"><span class="kbd">⌘</span><span class="kbd">S</span></span></div>
+      <div class="sc-row"><span class="sc-desc">Diese Übersicht</span><span class="sc-key"><span class="kbd">?</span></span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Gravur-Vorschau: zeigt exakt das Bild, das als BMP an Ezcad2 geht -->
+<div id="laser-preview-overlay" style="display:none;position:fixed;inset:0;z-index:10000;align-items:center;justify-content:center;" onclick="if(event.target===this)closeLaserPreview()">
+  <!-- Ecken + Schatten kommen aus dem Dialog-Gerüst der Stilvorlage (#laser-preview-overlay > div) -->
+  <div style="background:var(--bg2);border:1px solid var(--border);width:900px;max-width:95vw;max-height:92vh;display:flex;flex-direction:column;">
+    <div class="hsb" style="padding:16px 20px 14px;border-bottom:1px solid var(--border);">
+      <div>
+        <div class="dlg-titel">Gravur-Vorschau <span id="laser-preview-busy" style="display:none;color:var(--amber);font-weight:400;font-size:var(--fs-klein);">· aktualisiert…</span></div>
+        <div class="umut">Genau dieses Bild geht als BMP an Ezcad2 — Regler wirken sofort</div>
+      </div>
+      <div class="hstack" style="gap:6px;">
+        <button class="btn btn-umriss btn-xs" onclick="exportTestGrid()" title="Blatt mit 3×3 Varianten (Gamma × Schwellenwert bzw. Schärfen) zum Brennen — beste Kachel ablesen, Werte übernehmen">Testgitter</button>
+        <button class="dlg-zu" onclick="closeLaserPreview()" aria-label="Schließen">✕</button>
+      </div>
+    </div>
+    <div id="laser-preview-modes" class="hstack" style="padding:10px 20px;border-bottom:1px solid var(--border);gap:6px;"></div>
+    <div id="laser-preview-body" style="flex:1;overflow:auto;background:#808080;display:flex;align-items:center;justify-content:center;padding:12px;min-height:200px;"></div>
+    <div id="laser-preview-stats" style="padding:12px 20px;border-top:1px solid var(--border);font-size:var(--fs-klein);color:var(--text-muted);line-height:1.7;"></div>
+    <div class="umut10" style="padding:0 20px 16px;line-height:1.5;">Detail/Vergleich/Verfahren zeigen EIN Foto in voller Gravurauflösung — schnell genug zum Reglerziehen. „Ganzes Blatt" zeigt alle Plätze, aber ohne Bereichsausgleich und Logo-Behandlung einzelner Plätze.</div>
+  </div>
+</div>
+
+<!-- ASIN-Check: Auswertung eines Produkts (Inhalt baut _asinRender) -->
+<div id="asin-overlay" style="display:none;" onclick="if(event.target===this)asinSchliessen()">
+  <div class="asin-karte-dlg" role="dialog" aria-modal="true" aria-labelledby="asin-dlg-titel">
+    <div class="asin-kopf">
+      <div style="min-width:0;">
+        <div id="asin-dlg-titel" class="asin-dlg-titel"></div>
+        <div id="asin-dlg-sub" class="umut10" style="margin-top:3px;"></div>
+      </div>
+      <div class="hstack" style="gap:6px;flex-shrink:0;">
+        <button class="btn btn-muted btn-xs" id="asin-dlg-beispiel" onclick="asinBeispielUmschalten()" hidden
+                title="Die Vorschau zeigt Amazons Bild einer echten Bestellung statt des leeren Produkts">🖼 Echte Bestellung</button>
+        <button class="btn btn-muted btn-xs" id="asin-dlg-nachladen" onclick="asinNachladen(_asinAktuell && _asinAktuell.asin)" title="Weitere Bestellungen dieser ASIN bei Amazon abfragen (mit Rückfrage)">↻ Bei Amazon nachladen</button>
+        <button class="asin-schliessen" onclick="asinSchliessen()" title="Schließen">✕</button>
+      </div>
+    </div>
+    <div id="asin-dlg-status" class="asin-status asin-dlg-status" hidden></div>
+    <div id="asin-dlg-body" class="asin-body"></div>
+    <div class="asin-fuss">
+      <span class="umut10" id="asin-dlg-hinweis"></span>
+      <button class="btn btn-umriss" onclick="asinEntwurf()" title="Felder mit Gravur-Nummern und Bildformat auf die Arbeitsfläche legen">▦ Layout-Entwurf anlegen</button>
+    </div>
+  </div>
+</div>
+
+<!-- Layout-Einstellungen: Dialog ⚙ an der Layout-Karte (füllt openLayoutSettings, speichert saveLayoutSettings) -->
+<div id="layout-settings-overlay" style="display:none;position:fixed;inset:0;z-index:9999;align-items:center;justify-content:center;">
+  <div class="ls-karte">
+    <div class="ls-kopf">
+      <div style="min-width:0;">
+        <div id="ls-modal-name" style="font-size:var(--fs-titel);font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
+        <div id="ls-modal-sub" class="umut" style="margin-top:2px;">Layout-Einstellungen</div>
+      </div>
+      <button onclick="closeLayoutSettings()" class="ls-schliessen" title="Schließen">✕</button>
+    </div>
+    <div class="ls-body">
+
+      <!-- Reihenfolge (08.10.2026, für Mitarbeiter): erst ob und wofür das Layout läuft, dann
+           was herauskommt, dann wie die Dateien heißen. Selten Gebrauchtes steckt zugeklappt
+           unter „Erweitert". -->
+      <!-- Name -->
+      <div>
+        <div class="sec-label">Name</div>
+        <input type="text" id="ls-name" placeholder="Layout-Name" style="width:100%;padding:6px 8px;font-size:var(--fs-basis);"/>
+      </div>
+
+      <!-- Automatik: wichtigster Schalter, deshalb ganz oben -->
+      <div class="ls-grp">
+        <label class="ls-auto">
+          <input type="checkbox" id="ls-auto-export">
+          <span>
+            <b>Automatisch exportieren</b>
+            <span class="umut" id="ls-auto-wann">Bei jedem automatischen Bestell-Abruf werden die neuen Bestellungen sofort als Datei gespeichert.</span>
+          </span>
+        </label>
+        <div class="umut ls-asin" id="ls-asin"></div>
+      </div>
+
+      <!-- Was wird exportiert -->
+      <div class="ls-grp">
+        <div class="sec-label">Dateiformat <span class="umut10" style="text-transform:none;letter-spacing:0;font-weight:400;">· mehrere möglich</span></div>
+        <div class="ls-fmt">
+          <label class="ls-chip"><input type="checkbox" id="ls-fmt-dxf" onchange="lsToggleDxfOptions()"><span class="ls-chip-txt"><b>DXF</b><i>Laser · Schrift und Linien</i></span></label>
+          <label class="ls-chip"><input type="checkbox" id="ls-fmt-bmp" onchange="lsToggleBmpOptions()"><span class="ls-chip-txt"><b>BMP</b><i>Laser · Fotos</i></span></label>
+          <label class="ls-chip"><input type="checkbox" id="ls-fmt-pdf"><span class="ls-chip-txt"><b>PDF Print</b><i>Drucken, 450 DPI</i></span></label>
+          <label class="ls-chip"><input type="checkbox" id="ls-fmt-pdf-std"><span class="ls-chip-txt"><b>PDF Standard</b><i>Ansehen, Versand</i></span></label>
+          <label class="ls-chip"><input type="checkbox" id="ls-fmt-png"><span class="ls-chip-txt"><b>PNG</b><i>Bilddatei</i></span></label>
+          <label class="ls-chip ls-chip-gruen"><input type="checkbox" id="ls-fmt-sublimation"><span class="ls-chip-txt"><b>Sublimation</b><i>Druck, 300 DPI</i></span></label>
+        </div>
+        <div id="ls-fmt-warn" class="ls-warn" hidden>Kein Format gewählt — so wird nichts exportiert.</div>
+
+        <!-- DXF-Unterblock: erscheint nur, wenn DXF angehakt ist -->
+        <div id="ls-dxf-options" style="display:none;" class="ls-card">
+          <div class="ls-card-title">DXF</div>
+          <div class="umut" style="margin-bottom:3px;">Gravur</div>
+          <select id="ls-dxf-style">
+            <option value="outline">Umriss – Buchstaben zusammen (Standard)</option>
+            <option value="einzeln">Umriss – Buchstaben einzeln</option>
+          </select>
+          <label class="ls-opt" title="Ezcad rechnet vom Mittelpunkt des Arbeitsfeldes. Ohne diesen Haken laufen die Koordinaten von 0 bis Blattgröße und alles landet beim Import im oberen rechten Viertel; mit „zentrieren“ wiederum rückt Ezcad den Inhalt mittig, was bei nur einer gravierten Reihe falsch sitzt.">
+            <span class="ls-opt-head"><input type="checkbox" id="ls-dxf-center"> Nullpunkt in die Blattmitte <span class="umut10">(empfohlen)</span></span>
+            <span class="umut">In Ezcad <b>ohne</b> „zentrieren“ importieren — dann sitzt alles sofort an der richtigen Stelle.</span>
+          </label>
+        </div>
+
+        <!-- BMP-Unterblock: erscheint nur, wenn BMP angehakt ist -->
+        <div id="ls-bmp-options" style="display:none;" class="ls-card">
+          <div class="ls-card-title">BMP</div>
+          <select id="ls-bmp-modus" style="width:100%;">
+            <option value="blech">Ein BMP fürs ganze Blech (Standard)</option>
+            <option value="platz">Ein BMP je Foto + Platzierungsliste</option>
+          </select>
+          <span class="umut" style="display:block;margin-top:4px;">
+            <b>Ganzes Blech:</b> 1 Datei, in Ezcad 1 Objekt — einfach, aber Ezcad tastet die ganze Fläche ab.<br>
+            <b>Je Foto:</b> jedes Bild einzeln anwählbar, muss in Ezcad platziert werden.
+          </span>
+        </div>
+      </div>
+
+      <!-- Dateien: EINE Auswahl statt der zwei Häkchen „Durchgang"/„Seiten getrennt" -->
+      <div class="ls-grp">
+        <div class="sec-label">Dateien</div>
+        <!-- Die Ezcad-Vorlage wirkt auf BMP UND DXF (gravur.dxf, gravurN.dxf) — deshalb nicht unter BMP.
+             Gespeichert wird weiter in `bmpModus`. -->
+        <div class="umut" style="margin-bottom:3px;">Speichern in</div>
+        <select id="ls-ablage" style="width:100%;">
+          <option value="tag">Tagesordner (Standard)</option>
+          <option value="vorlage">Ezcad-Vorlage (feste Dateinamen)</option>
+          <option value="beides">Tagesordner und Ezcad-Vorlage</option>
+        </select>
+        <div id="ls-vorlage-wrap" hidden>
+          <span class="umut" style="display:block;margin-top:4px;">
+            Für eine .ezd mit „Dynamic file“: jeder Platz bekommt IMMER eine Datei (leere Plätze leer) — in Ezcad nur noch Mark drücken.
+          </span>
+          <label class="umut" style="display:block;margin-top:8px;">Ordnername der Vorlage
+            <input type="text" id="ls-vorlage-ordner" placeholder="leer = Layoutname"
+                   style="width:100%;box-sizing:border-box;margin-top:3px;">
+          </label>
+          <span class="umut" style="display:block;margin-top:4px;">
+            Nur ändern, wenn die .ezd auf einen anderen Ordner zeigt — der Pfad steckt fest in der .ezd.
+          </span>
+        </div>
+        <div id="ls-aufteilung-wrap">
+          <div class="umut" style="margin:10px 0 3px;">Aufteilung</div>
+          <select id="ls-aufteilung" style="width:100%;"></select>
+        </div>
+        <div class="ls-beispiel">
+          <span class="umut" id="ls-beispiel-titel">So heißen die Dateien im Tagesordner:</span>
+          <div id="ls-dateiname-vorschau"></div>
+        </div>
+      </div>
+
+      <!-- Erweitert: zugeklappt, Zusammenfassung zeigt, was davon eingeschaltet ist -->
+      <details class="ls-grp ls-erweitert" id="ls-erweitert">
+        <summary><span class="sec-label" style="display:inline;">Erweitert</span> <span class="umut10" id="ls-erweitert-info">selten gebraucht</span></summary>
+
+        <div class="umut" style="margin:10px 0 3px;">Reihenfolge der Bestellungen auf den Plätzen</div>
+        <select id="ls-order" style="width:100%;">
+          <option value="date-desc">Neueste Bestellung zuerst (Standard)</option>
+          <option value="date-asc">Älteste Bestellung zuerst</option>
+          <option value="ordernr">Nach Bestellnummer</option>
+        </select>
+
+        <label class="ls-opt" title="Fasst die Buchstaben jeder Gravur zu EINEM Objekt zusammen — in Ezcad einzeln wähl- und verschiebbar. Zerlegt eine Ezcad-Version Blöcke beim Import, bleibt die Geometrie unverändert.">
+          <span class="ls-opt-head"><input type="checkbox" id="ls-dxf-textblock"> DXF: jeden Namen als 1 Objekt</span>
+          <span class="umut">In Ezcad ist dann jeder Name als Ganzes anwählbar.</span>
+        </label>
+        <label class="ls-opt" title="Spannt die Geometrie auf die volle Blattgröße auf, damit ein Import-Zentrieren nichts verschiebt. DXF: eigene Ebene „Rahmen“ (in Ezcad auf nicht gravieren stellen). PNG: dünne Linie am Blattrand, wird mitgedruckt.">
+          <span class="ls-opt-head"><input type="checkbox" id="ls-dxf-frame"> Rahmen um das ganze Blatt</span>
+          <span class="umut">Nur nötig ohne „Nullpunkt in die Blattmitte“. DXF: Ebene „Rahmen“ (in Ezcad nicht gravieren) · PNG: sichtbare Linie.</span>
+        </label>
+        <label class="ls-opt" title="Rechnet jedes Kundenfoto in Wellenlinien um und legt es als Vektor in DIESELBE DXF wie die Textgravur. Eine Datei für alles, jedes Foto ein eigener Layer (Foto_1, Foto_2 …) und damit in Ezcad einzeln anwählbar. Die Maschine fährt nur echte Linien — weiße Stellen erzeugen gar keine Geometrie. Optik: Linienraster statt Punktraster, Datei deutlich größer. Kein BMP mehr nötig.">
+          <span class="ls-opt-head"><input type="checkbox" id="ls-foto-vektor"> DXF: Fotos als Linien mit hinein <span class="umut10">(Versuch)</span></span>
+          <span class="umut">Kundenfotos werden in Linien umgerechnet und landen mit in der DXF — dann braucht es kein BMP. Noch nie am Blech getestet.</span>
+        </label>
+
+        <div class="umut" style="margin:12px 0 3px;">Eigener Dateiname</div>
+        <select id="ls-dateiname-art" style="width:100%;">
+          <option value="">Normal (Standard)</option>
+          <option value="Bild{nr}">Bild1, Bild2, … fortlaufend</option>
+          <option value="Platz{nr}">Platz1, Platz2, … fortlaufend</option>
+          <option value="{layout}_Bild{nr}">Layout + Bild1, Bild2, … (Farbe bleibt sichtbar)</option>
+          <option value="{bestellnr}">Bestellnummer</option>
+          <option value="{kurznr}">Bestellnummer kurz (letzte 7 Ziffern)</option>
+          <option value="{layout}_{bestellnr}">Layout + Bestellnummer</option>
+          <option value="eigen">Selbst bestimmen …</option>
+        </select>
+        <div id="ls-dateiname-eigen" hidden style="margin-top:6px;">
+          <input type="text" id="ls-dateiname" placeholder="z. B. Feuerzeug_{nr}" style="width:100%;box-sizing:border-box;">
+          <span class="umut" style="display:block;margin-top:4px;">
+            Bausteine: <b>{nr}</b> fortlaufend · <b>{bestellnr}</b> · <b>{kurznr}</b> letzte 7 Ziffern ·
+            <b>{layout}</b> · <b>{seite}</b> · <b>{platz}</b> · <b>{datum}</b>
+          </span>
+        </div>
+        <span class="umut" style="display:block;margin-top:4px;">
+          <b>_Seite2</b> bzw. <b>_Platz3</b> wird automatisch angehängt, wo nötig.
+          Die Ezcad-Vorlage (<code>platz1.bmp</code> …) ist davon nicht betroffen.
+        </span>
+      </details>
+
+    </div>
+
+    <div class="ls-fuss">
+      <span class="umut10">Änderungen gelten ab dem nächsten Lauf.</span>
+      <div style="display:flex;gap:8px;">
+        <button onclick="closeLayoutSettings()" class="btn btn-muted btn-dialog">Abbrechen</button>
+        <button onclick="saveLayoutSettings()" class="btn btn-accent btn-dialog">Speichern</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bildmathematik der Gravur. MUSS GENAU HIER STEHEN: vor layout-editor.js, ohne
+     `defer`, ohne `type="module"` — layout-editor.js wertet `let ditherSettings =
+     _laserSettings()` beim Laden aus. Beide sind KLASSISCHE Skripte und teilen sich den
+     globalen lexikalischen Bereich; die Pipeline-Namen sind im Editor-Skript sichtbar, aber NICHT
+     als window.x (der übliche Stolperstein beim Testen im Browser). -->
+<script src="laser-pipeline.js"></script>
+<!-- Bedienlogik. Ebenfalls klassisch und ohne `defer`: läuft, wenn das Markup darüber steht. -->
+<script src="layout-editor.js"></script>
+<script src="/amazon-bereich/amazon.js"></script><!-- Bereich „Amazon" (hängt sich selbst ein, s. dort) -->
+</body>
+</html>

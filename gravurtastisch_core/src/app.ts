@@ -138,6 +138,10 @@ const healthHandler = (req, res) => {
 app.get(['/', '/health', '/v1/health'], healthHandler);
 app.head(['/', '/health', '/v1/health'], (req, res) => res.status(200).end());
 
+// Printomation declares its API endpoints under /v2 itself. Mount its app at the
+// root so those routes stay /v2/... instead of being prefixed a second time.
+const v2Routes = require('./routes/v2.routes');
+app.use('/', v2Routes);
 
 // send back a 404 error for any unknown api request
 app.use((req, res, next) => {

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Weiter zu Amazon</title>
+<style>
+  body { margin: 0; min-height: 90vh; display: grid; place-items: center; font-family: system-ui, sans-serif; background: #fff; color: #222; }
+  a { color: #c45500; font-size: 18px; }
+</style>
+</head>
+<body>
+<a id="weiter" href="https://www.amazon.de/">Weiter zu Amazon</a>
+<script>
+// App-Link aus Amazon → Links: öffnet die Produktseite in der Amazon-App statt im In-App-Browser von Instagram,
+// TikTok & Co. (dort ist der Kunde bei Amazon nicht angemeldet). Ohne App oder am Computer: normale Produktseite.
+// Ohne Anmeldung erreichbar (nginx: location = /go → diese Datei) — baut deshalb nur Amazon-Adressen aus Land,
+// ASIN und Attribution-Parametern, nie eine fremde Adresse. Formate wie Linkly (Stand 2026): iOS-Schema
+// com.amazon.mobile.shopping.web://, Android-Intent auf das Paket com.amazon.mShop.android.shopping.
+(function () {
+  var LAENDER = { de: 'amazon.de', fr: 'amazon.fr', it: 'amazon.it', es: 'amazon.es', nl: 'amazon.nl', be: 'amazon.com.be',
+    pl: 'amazon.pl', se: 'amazon.se', ie: 'amazon.ie', uk: 'amazon.co.uk', us: 'amazon.com' };
+  var q = new URLSearchParams(location.search);
+  var domain = LAENDER.hasOwnProperty(q.get('l')) ? LAENDER[q.get('l')] : 'amazon.de';
+  var asin = (q.get('a') || '').toUpperCase();
+  if (!/^[A-Z0-9]{10}$/.test(asin)) asin = null;
+  var tag = new URLSearchParams();
+  q.forEach(function (v, k) { if (v && (k === 'maas' || k.indexOf('aa_') === 0 || (k === 'ref_' && v.indexOf('aa_') === 0))) tag.append(k, v); });
+  var pfad = asin ? '/dp/' + asin + (tag.toString() ? '?' + tag.toString() : '') : '/';
+  var web = 'https://www.' + domain + pfad;
+  document.getElementById('weiter').href = web;
+  var ua = navigator.userAgent;
+  var ios = /iPhone|iPad|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  if (!asin) location.replace(web);
+  else if (/Android/.test(ua)) {
+    location.href = 'intent://' + domain + pfad + '#Intent;scheme=com.amazon.mobile.shopping.web;package=com.amazon.mShop.android.shopping;S.browser_fallback_url='
+      + encodeURIComponent(web) + ';end';
+  } else if (ios) {
+    location.href = 'com.amazon.mobile.shopping.web://' + domain + pfad;
+    // App nicht installiert (oder Aufruf blockiert): die Seite bleibt sichtbar → normale Produktseite
+    setTimeout(function () { if (!document.hidden) location.replace(web); }, 1500);
+  } else location.replace(web);
+})();
+</script>
+</body>
+</html>
