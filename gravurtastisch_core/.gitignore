@@ -143,3 +143,23 @@ vite.config.ts.timestamp-*
 .vite/
 /uploads
 src/uploads
+
+# Printomation runtime data and customer data
+src/printomation/public/20*/
+src/printomation/public/exports/
+src/printomation/testfoto/
+src/printomation/ezd-sicherung/
+src/printomation/asin-profile/
+src/printomation/tmp/
+src/printomation/logs/
+src/printomation/queue/
+src/printomation/daten/session.json
+src/printomation/daten/activity.json
+src/printomation/daten/rekla-urteile.json
+src/printomation/daten/vorlage-stand.json
+src/printomation/daten/fetch-watermark.json
+src/printomation/sicherungen/
+src/printomation/amazon-bereich/abruf/data/
+src/printomation/amazon-bereich/.env
+*.bak*
+__pycache__/

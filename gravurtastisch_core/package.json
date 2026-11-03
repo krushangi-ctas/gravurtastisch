@@ -15,8 +15,8 @@
     "start:core": "pnpm run build && node dist/index.js",
     "start:run": "pnpm run build && node dist/index.js",
     "dev": "tsx watch --clear-screen=false src/index.ts",
-    "build": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}if(fs.existsSync('public')){fs.cpSync('public','dist/public',{recursive:true});}\"",
-    "build:core": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}if(fs.existsSync('public')){fs.cpSync('public','dist/public',{recursive:true});}\""
+    "build": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}if(fs.existsSync('public')){fs.cpSync('public','dist/public',{recursive:true});}if(fs.existsSync('src/printomation')){fs.cpSync('src/printomation','dist/printomation',{recursive:true});}\"",
+    "build:core": "tsc -p tsconfig.json && node -e \"const fs=require('fs');if(fs.existsSync('src/templates')){fs.cpSync('src/templates','dist/templates',{recursive:true});}if(fs.existsSync('public')){fs.cpSync('public','dist/public',{recursive:true});}if(fs.existsSync('src/printomation')){fs.cpSync('src/printomation','dist/printomation',{recursive:true});}\""
   },
   "dependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -53,14 +53,17 @@
     "moment": "^2.24.0",
     "mongoose": "^5.7.7",
     "morgan": "^1.9.1",
+    "multer": "^2.5.0",
     "node-cron": "^4.2.1",
     "node-xlsx": "^0.24.0",
     "nodemailer": "^6.3.1",
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
+    "puppeteer": "^25.16.0",
     "slugify": "^1.6.6",
     "stripe": "^17.7.0",
     "tsx": "^4.19.3",
+    "unzipper": "^0.12.5",
     "validator": "^13.0.0",
     "winston": "^3.8.2",
     "xlsx": "^0.18.5"

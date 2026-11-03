@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Abgemeldet · Printomation</title>
+<link rel="icon" href="data:,">
+<!-- Abmelde-Seite (Einstellungen → Anmeldung → Abmelden). nginx liefert sie OHNE Anmeldung aus
+     (location = /abgemeldet.html) und zeigt sie als Inhalt des 401, solange das Cookie
+     pm_abgemeldet=<benutzer> zum angemeldeten Benutzer passt — s. sites-available/printomation. -->
+<style>
+  :root { --bg: #EEECE7; --bg2: #fff; --text: #1F1E1C; --muted: #8C877F; --line: #E2DED7; --accent: #3B5BDB; }
+  * { box-sizing: border-box; }
+  body { margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 16px;
+    background: var(--bg); color: var(--text); font: 14px/1.55 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif; }
+  .kasten { width: 100%; max-width: 420px; background: var(--bg2); border: 1px solid var(--line); border-radius: 16px; padding: 28px; }
+  .logo { font-weight: 600; font-size: 12px; letter-spacing: .14em; display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  .logo i { width: 9px; height: 9px; background: var(--accent); border-radius: 3px; transform: rotate(45deg); }
+  h1 { font-size: 18px; margin: 0 0 8px; }
+  p { margin: 0 0 14px; color: #5D5953; }
+  .hinweis { font-size: 12px; color: var(--muted); }
+  button { width: 100%; padding: 11px 14px; border-radius: 10px; font: inherit; font-weight: 600; cursor: pointer; margin-top: 8px; }
+  .haupt { background: var(--accent); color: #fff; border: none; }
+  .neben { background: var(--bg2); color: var(--text); border: 1px solid var(--line); font-weight: 500; }
+</style>
+</head>
+<body>
+  <div class="kasten">
+    <div class="logo"><i></i>PRINTOMATION</div>
+    <h1>Abgemeldet</h1>
+    <p id="text">Melde dich neu an — mit einem anderen Benutzer, z. B. <b>entwickler</b>.</p>
+    <button class="haupt" onclick="location.href='/'">Neu anmelden</button>
+    <button class="neben" id="zurueck" onclick="zurueck()" hidden>Abbrechen</button>
+    <p class="hinweis" style="margin-top:16px">Safari trägt oft noch den alten Benutzer ein — einfach überschreiben.
+      Die Sperre für den alten Benutzer endet nach 5 Minuten von selbst.</p>
+  </div>
+<script>
+  const alt = decodeURIComponent((document.cookie.match(/(?:^|;\s*)pm_abgemeldet=([^;]*)/) || [])[1] || '');
+  if (alt) {
+    document.getElementById('text').innerHTML = 'Du warst als <b></b> angemeldet. Melde dich neu an — mit einem anderen Benutzer, z. B. <b>entwickler</b>.';
+    document.querySelector('#text b').textContent = alt;
+    const z = document.getElementById('zurueck');
+    z.textContent = 'Abbrechen — wieder als ' + alt;
+    z.hidden = false;
+  }
+  function zurueck() {
+    document.cookie = 'pm_abgemeldet=; Path=/; Max-Age=0; Secure; SameSite=Lax';
+    location.href = '/';
+  }
+</script>
+</body>
+</html>
