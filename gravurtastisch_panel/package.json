@@ -128,7 +128,6 @@
     "audit": "pnpm audit --prod"
   },
   "engines": {
-    "node": ">=20.19.0",
     "pnpm": ">=12.4.2"
   },
   "browserslist": {
