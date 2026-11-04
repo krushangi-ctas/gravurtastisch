@@ -706,7 +706,7 @@ const getUserById = async (id) => {
   try {
     const user = await User.findById(id).populate('currentPlanId');
     if (user) {
-      await syncUserMonthlyUsage(user).catch(() => {});
+      await syncUserMonthlyUsage(user).catch(() => { });
     }
     return user;
   } catch (error) {
@@ -973,7 +973,7 @@ const uploadProfileImage = async (userId, file) => {
   }
 
   const relativePath = `profiles/${uniqueName}`;
-  const baseUrl = (config.site_url || process.env.BASE_URL || 'http://localhost:7051').replace(/\/+$/, '');
+  const baseUrl = (config.site_url || process.env.BASE_URL || '').replace(/\/+$/, '');
   const avatarUrl = `${baseUrl}/${relativePath}`;
 
   const resData = await User.findByIdAndUpdate(

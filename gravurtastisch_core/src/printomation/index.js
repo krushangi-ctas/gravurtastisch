@@ -93,7 +93,7 @@ passport.use('jwt', jwtStrategy);
 const CORE_BACKEND_URL = config.coreApiUrl;
 
 // Proxy auth endpoints to core backend to avoid CORS issues
-app.post('/v1/auth/send-otp', async (req, res) => {
+app.post(['/v1/auth/send-otp', '/v2/auth/send-otp'], async (req, res) => {
   try {
     const response = await axios.post(`${CORE_BACKEND_URL}/v1/auth/send-otp`, req.body, {
       headers: { 'Content-Type': 'application/json' }
@@ -104,7 +104,7 @@ app.post('/v1/auth/send-otp', async (req, res) => {
   }
 });
 
-app.post('/v1/auth/verify-otp', async (req, res) => {
+app.post(['/v1/auth/verify-otp', '/v2/auth/verify-otp'], async (req, res) => {
   try {
     const response = await axios.post(`${CORE_BACKEND_URL}/v1/auth/verify-otp`, req.body, {
       headers: { 'Content-Type': 'application/json' }
@@ -119,7 +119,7 @@ app.post('/v1/auth/verify-otp', async (req, res) => {
   }
 });
 
-app.post('/v1/auth/logout', async (req, res) => {
+app.post(['/v1/auth/logout', '/v2/auth/logout'], async (req, res) => {
   try {
     const response = await axios.post(`${CORE_BACKEND_URL}/v1/auth/logout`, req.body, {
       headers: { 'Content-Type': 'application/json', cookie: req.headers.cookie }
@@ -128,6 +128,32 @@ app.post('/v1/auth/logout', async (req, res) => {
   } catch (error) {
     res.status(error.response?.status || 500).json(error.response?.data || { error: 'Failed to logout' });
   }
+});
+
+// Universal API Auth Guard: Ensure all data/actions strictly require valid JWT authentication
+app.use((req, res, next) => {
+  const p = req.path;
+  // Whitelist public endpoints & static assets
+  if (
+    p === '/' ||
+    p === '/login.html' ||
+    p === '/login' ||
+    p === '/sign-in' ||
+    p === '/abgemeldet.html' ||
+    p === '/config.js' ||
+    p === '/health' ||
+    p === '/v2/health' ||
+    p === '/v2/wer-bin-ich' ||
+    p.startsWith('/v1/auth/') ||
+    p.startsWith('/v2/auth/') ||
+    p.startsWith('/auth/') ||
+    p.startsWith('/vendor/') ||
+    /\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i.test(p)
+  ) {
+    return next();
+  }
+  // All other API routes require valid JWT auth!
+  auth()(req, res, next);
 });
 
 // ── Progress State ────────────────────────────────────────────────────────────
@@ -435,7 +461,7 @@ app.get('/v2/fonts/:name', auth(), (req, res) => {
 // [EN] The fixed standard image of F02 test plates with Amazon crop. Stored outside
 // [EN] public/ intentionally (see testfoto/LIESMICH.txt) — only these two files are served.
 const TESTFOTO_DATEIEN = new Set(['standardbild.jpg', 'standardbild-placement.json']);
-app.get('/v2/testfoto/:name', (req, res) => {
+app.get('/v2/testfoto/:name', auth(), (req, res) => {
   const name = path.basename(req.params.name);
   if (!TESTFOTO_DATEIEN.has(name)) return res.status(404).send('Not found');
   res.sendFile(path.join(__dirname, 'testfoto', name));
@@ -864,7 +890,7 @@ const etagOfRaw = (text) =>
 const EMPTY_STORE = '[]';
 
 function mountJsonStore(route, file, { backup = false, label }) {
-  app.get('/v2' + route, auth(), (req, res) => {
+  app.get(['/v2' + route, route], auth(), (req, res) => {
     try {
       const raw = readRaw(file) ?? EMPTY_STORE;
       JSON.parse(raw); // nur Gültigkeits-Prüfung: korrupt → 500 statt [] (s.o.)
@@ -879,7 +905,7 @@ function mountJsonStore(route, file, { backup = false, label }) {
       res.status(500).json({ error: `${label} unlesbar: ` + e.message });
     }
   });
-  app.post('/v2' + route, auth(), (req, res) => {
+  app.post(['/v2' + route, route], auth(), (req, res) => {
     try {
       const data = req.body;
       if (!Array.isArray(data)) return res.status(400).json({ error: 'Invalid' });
@@ -1935,7 +1961,7 @@ try {
   const amazonBereichPath = fs.existsSync(path.join(__dirname, 'amazon-bereich/server'))
     ? path.join(__dirname, 'amazon-bereich/server')
     : '/var/www/printomation/amazon-bereich/server';
-  require(amazonBereichPath)(app, { express,
+  require(amazonBereichPath)(app, { express, auth: auth(),
     asinTitel: () => new Map(asinCheck.liste().map(p => [p.asin, p.titel])) });
 } catch (e) { logger.warn('Amazon-Bereich nicht geladen:', e.message); }
 

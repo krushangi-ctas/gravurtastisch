@@ -65,9 +65,9 @@ async function _apiJson(pfad, methode = 'GET', body) {
 const MM = 3.7795275591;
 // Basis-URL aller fetch()-Aufrufe — ausschließlich aus Environment (SITE_URL) via window.CONFIG.SITE_URL.
 // Entfernt eventuelle /v2, /v1 oder nachgestellte Schrägstriche, um doppelte Pfade wie /v2/v2/ strikt zu verhindern.
-const _rawBase = (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.SITE_URL) 
-  ? window.CONFIG.SITE_URL 
-  : 'http://localhost:7051';
+const _rawBase = (typeof window !== 'undefined' && window.CONFIG && window.CONFIG.SITE_URL)
+  ? window.CONFIG.SITE_URL
+  : '';
 const BASE_URL = _rawBase.replace(/\/+$/, '').replace(/\/v[12]\/?$/, '');
 
 // ── Aufruf-Parameter der Seite ────────────────────────────────────────────────

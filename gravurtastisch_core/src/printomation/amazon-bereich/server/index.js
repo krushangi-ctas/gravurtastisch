@@ -7,7 +7,8 @@
 // Zugriff nur für die Basic-Auth-Benutzer „entwickler" und „freelancer" (Rollen s. verkaeufe.js, `anmeldung`).
 const path = require('path');
 
-module.exports = function einbinden(app, { express, asinTitel = () => new Map() }) {
+module.exports = function einbinden(app, { express, asinTitel = () => new Map(), auth }) {
   app.use('/amazon-bereich', express.static(path.join(__dirname, '..', 'public'), { maxAge: 0 }));
-  app.use('/v2/amazon/verkaeufe', require('./verkaeufe')({ express, asinTitel }));
+  const guard = auth || ((req, res, next) => next());
+  app.use(['/v2/amazon/verkaeufe', '/amazon/verkaeufe'], guard, require('./verkaeufe')({ express, asinTitel }));
 };

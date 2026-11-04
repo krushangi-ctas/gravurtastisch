@@ -30,7 +30,9 @@
        Oberfläche (Stil „Kalk & Graphit", 17.10.2026; vorher dunkel). -->
   <meta name="color-scheme" content="light" />
   <title>Printomation</title>
-  <link rel="icon" href="data:,"/><!-- leeres Favicon: verhindert /favicon.ico 404 in der Konsole -->
+  <link rel="icon" type="image/svg+xml" href="g.svg" />
+  <link rel="shortcut icon" href="g.svg" />
+  <link rel="apple-touch-icon" href="g.svg" />
   <!-- Schriften lokal (vendor/fonts), nicht von Google: kein Abruf bei jedem Öffnen und Export.
        Oberfläche: Geist + Geist Mono (SIL OFL 1.1). -->
   <link rel="stylesheet" href="vendor/fonts/fonts.css" />
@@ -38,6 +40,67 @@
   <link rel="stylesheet" href="/amazon-bereich/amazon.css"/><!-- Bereich „Amazon": eigener Ordner /var/www/printomation/amazon-bereich -->
   <!-- Runtime-Konfiguration aus Environment & Config -->
   <script src="config.js"></script>
+  <!-- Strict Early Auth Guard & Global Fetch Interceptor -->
+  <script>
+    (function () {
+      try {
+        var q = new URLSearchParams(window.location.search);
+        var isAutoExport = q.get('autoexport') === '1';
+        var token = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+        if (!token && !isAutoExport) {
+          // Immediately redirect before any DOM is rendered
+          window.location.replace('/login.html');
+          return;
+        }
+
+        // Global Fetch Interceptor: automatically attach Authorization header and redirect on 401
+        var _realFetch = window.fetch;
+        window.fetch = async function (resource, options) {
+          options = options || {};
+          options.headers = options.headers || {};
+
+          var currentToken = localStorage.getItem('jwt_access_token') || localStorage.getItem('token');
+          if (currentToken) {
+            if (options.headers instanceof Headers) {
+              if (!options.headers.has('Authorization') && !options.headers.has('authorization')) {
+                options.headers.set('Authorization', 'Bearer ' + currentToken);
+              }
+            } else if (Array.isArray(options.headers)) {
+              if (!options.headers.some(function (h) { return h[0].toLowerCase() === 'authorization'; })) {
+                options.headers.push(['Authorization', 'Bearer ' + currentToken]);
+              }
+            } else {
+              if (!options.headers['Authorization'] && !options.headers['authorization']) {
+                options.headers['Authorization'] = 'Bearer ' + currentToken;
+              }
+            }
+          }
+
+          if (options.credentials === undefined) {
+            options.credentials = 'include';
+          }
+
+          var response = await _realFetch.apply(this, arguments);
+
+          // If unauthorized (401), force logout and redirect to login.html
+          if (response.status === 401 && !isAutoExport) {
+            var url = typeof resource === 'string' ? resource : (resource && resource.url ? resource.url : '');
+            var isAuthEndpoint = url.includes('/auth/send-otp') || url.includes('/auth/verify-otp') || url.includes('/login');
+            if (!isAuthEndpoint) {
+              localStorage.removeItem('jwt_access_token');
+              localStorage.removeItem('token');
+              localStorage.removeItem('user');
+              window.location.replace('/login.html');
+            }
+          }
+
+          return response;
+        };
+      } catch (err) {
+        console.error('Auth Guard Error:', err);
+      }
+    })();
+  </script>
   <!-- Lokal gebündelt (public/vendor/) — Export funktioniert damit auch ohne Internet.
        SourceMap-Kommentare wurden beim Bündeln entfernt (keine .map-404-Warnungen). -->
   <script src="vendor/opentype.min.js"></script>
