@@ -18,7 +18,7 @@
       --navy-dark: #00227a;
       --text-main: #0f172a;
       --text-muted: #64748b;
-      --border-subtle: #e2e8f0;
+      --border-subtle: #cbd5e1;
       --bg-page: #f8fafc;
       --card-bg: #ffffff;
       --success: #059669;
@@ -31,6 +31,11 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+      width: 100%;
     }
 
     body {
@@ -48,41 +53,47 @@
       display: flex;
       min-height: 100vh;
       width: 100%;
+      flex-direction: row;
     }
 
-    /* ── Left Form Side ────────────────────────────────────────────────────────── */
+    /* ── Left Form Column (Exact 50% split, spacious & balanced) ─────────────── */
     .form-side {
-      flex: 1;
+      flex: 0 0 50%;
+      width: 50%;
+      max-width: 50%;
+      min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 2rem 1.5rem;
-      background-color: rgba(248, 250, 252, 0.7);
+      padding: 3rem 2.5rem;
+      background-color: #f8fafc;
     }
 
     .auth-card {
       width: 100%;
-      max-width: 440px;
+      max-width: 470px;
       background: var(--card-bg);
       border-radius: 1.25rem;
       border: 1px solid rgba(226, 232, 240, 0.95);
       box-shadow: 0 20px 50px -12px rgba(0, 0, 0, 0.08), 0 4px 16px -2px rgba(0, 0, 0, 0.04);
-      padding: 2.25rem 2rem;
+      padding: 2.75rem 2.5rem;
       position: relative;
+      display: flex;
+      flex-direction: column;
     }
 
     .brand-logo {
-      height: 44px;
+      height: 48px;
       width: auto;
       object-fit: contain;
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.6rem;
       display: block;
     }
 
     .title {
       font-family: var(--font-heading);
-      font-size: 1.85rem;
+      font-size: 2rem;
       font-weight: 800;
       color: var(--text-main);
       letter-spacing: -0.025em;
@@ -90,19 +101,74 @@
     }
 
     .subtitle {
-      font-size: 0.925rem;
+      font-size: 0.95rem;
       color: var(--text-muted);
-      margin-top: 0.5rem;
+      margin-top: 0.6rem;
       margin-bottom: 1.75rem;
-      line-height: 1.5;
+      line-height: 1.6;
     }
 
-    .email-display-wrap {
+    /* Security note inside card */
+    .auth-security-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.75rem;
+      padding-top: 1.35rem;
+      border-top: 1px solid #f1f5f9;
+      font-size: 0.8rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .shield-mini {
+      width: 16px;
+      height: 16px;
+      color: #10b981;
+      flex-shrink: 0;
+    }
+
+    /* ── OTP Specific Header & Elements ─────────────────────────────────────── */
+    .otp-badge-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .otp-shield-icon {
+      width: 58px;
+      height: 58px;
+      border-radius: 1.1rem;
+      background-color: #eff6ff;
+      color: var(--primary);
+      box-shadow: 0 0 0 8px rgba(239, 246, 255, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 0.6rem;
+    }
+
+    .otp-shield-icon svg {
+      width: 30px;
+      height: 30px;
+    }
+
+    .email-chip {
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      color: var(--navy-dark);
+      background-color: #f1f5f9;
+      border: 1px solid #e2e8f0;
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
       font-weight: 600;
+      color: var(--navy-dark);
+      margin-top: 0.35rem;
+      margin-bottom: 1.5rem;
       word-break: break-all;
     }
 
@@ -110,24 +176,51 @@
       background: none;
       border: none;
       color: var(--primary);
-      font-size: 0.825rem;
+      font-size: 0.8rem;
       font-weight: 600;
       cursor: pointer;
-      text-decoration: underline;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
       padding: 0;
+      transition: color 0.15s ease;
     }
 
     .change-btn:hover {
       color: var(--primary-hover);
+      text-decoration: underline;
+    }
+
+    .back-to-email-btn {
+      background: none;
+      border: none;
+      color: #64748b;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      margin-top: 1.15rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 0.5rem;
+      transition: all 0.15s ease;
+      align-self: center;
+    }
+
+    .back-to-email-btn:hover {
+      color: var(--navy-dark);
+      background-color: #f1f5f9;
     }
 
     /* Alerts */
     .alert {
-      padding: 0.75rem 1rem;
+      padding: 0.85rem 1.1rem;
       border-radius: 0.75rem;
-      font-size: 0.875rem;
-      line-height: 1.4;
-      margin-bottom: 1.25rem;
+      font-size: 0.9rem;
+      line-height: 1.45;
+      margin-bottom: 1.35rem;
       display: none;
       align-items: center;
       gap: 0.5rem;
@@ -149,16 +242,16 @@
 
     /* Forms */
     .form-group {
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.35rem;
       text-align: left;
     }
 
     label {
       display: block;
-      font-size: 0.85rem;
+      font-size: 0.875rem;
       font-weight: 600;
       color: var(--text-main);
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.45rem;
     }
 
     .input-wrap {
@@ -170,20 +263,20 @@
     .input-icon {
       position: absolute;
       left: 1rem;
-      width: 18px;
-      height: 18px;
+      width: 19px;
+      height: 19px;
       color: var(--text-muted);
       pointer-events: none;
     }
 
     .text-input {
       width: 100%;
-      height: 48px;
+      height: 52px;
       border-radius: 0.75rem;
       border: 1.5px solid var(--border-subtle);
       background-color: #ffffff;
-      padding: 0.75rem 1rem 0.75rem 2.75rem;
-      font-size: 0.95rem;
+      padding: 0.75rem 1rem 0.75rem 2.85rem;
+      font-size: 0.975rem;
       font-family: inherit;
       color: var(--text-main);
       transition: all 0.2s ease;
@@ -197,15 +290,15 @@
 
     /* OTP Inputs */
     .otp-grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
+      display: flex;
+      justify-content: center;
+      gap: 0.6rem;
+      margin-bottom: 1.6rem;
     }
 
     .otp-digit {
-      width: 100%;
-      height: 54px;
+      width: 50px;
+      height: 56px;
       text-align: center;
       font-size: 1.5rem;
       font-weight: 700;
@@ -221,21 +314,23 @@
     .otp-digit:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 4px var(--primary-glow);
+      background-color: #ffffff;
     }
 
     .otp-digit.filled {
-      border-color: var(--navy-dark);
-      background-color: #f8fafc;
+      border-color: var(--primary);
+      background-color: #eff6ff;
+      color: var(--navy-dark);
     }
 
     /* Buttons */
     .btn-primary {
       width: 100%;
-      height: 48px;
+      height: 52px;
       border-radius: 0.75rem;
       background-color: var(--primary);
       color: #ffffff;
-      font-size: 0.95rem;
+      font-size: 1rem;
       font-weight: 600;
       border: none;
       cursor: pointer;
@@ -244,12 +339,12 @@
       justify-content: center;
       gap: 0.5rem;
       transition: all 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0, 50, 171, 0.2);
+      box-shadow: 0 4px 14px rgba(0, 50, 171, 0.22);
     }
 
     .btn-primary:hover:not(:disabled) {
       background-color: var(--primary-hover);
-      box-shadow: 0 6px 16px rgba(0, 50, 171, 0.28);
+      box-shadow: 0 6px 18px rgba(0, 50, 171, 0.3);
     }
 
     .btn-primary:active:not(:disabled) {
@@ -258,14 +353,14 @@
     }
 
     .btn-primary:disabled {
-      opacity: 0.6;
+      opacity: 0.65;
       cursor: not-allowed;
       box-shadow: none;
     }
 
     /* Resend Countdown */
     .resend-box {
-      margin-top: 1.25rem;
+      margin-top: 1.35rem;
       text-align: center;
       font-size: 0.875rem;
       color: var(--text-muted);
@@ -291,8 +386,8 @@
 
     /* Spinner */
     .spinner {
-      width: 18px;
-      height: 18px;
+      width: 19px;
+      height: 19px;
       border: 2.5px solid rgba(255, 255, 255, 0.3);
       border-radius: 50%;
       border-top-color: #ffffff;
@@ -309,13 +404,16 @@
       display: none;
     }
 
-    /* ── Right Hero Side ───────────────────────────────────────────────────────── */
+    /* ── Right Hero Side (Spacious, Generous & Beautifully Scaled) ────────────── */
     .hero-side {
       display: none;
-      flex: 1.15;
+      flex: 0 0 50%;
+      width: 50%;
+      max-width: 50%;
+      min-height: 100vh;
       background: linear-gradient(180deg, #c6dbf2 0%, #d5e4f7 50%, #bfd6f0 100%);
       color: var(--navy-dark);
-      padding: 3rem 4rem;
+      padding: 3.5rem 4rem;
       position: relative;
       overflow: hidden;
       user-select: none;
@@ -325,7 +423,23 @@
       .hero-side {
         display: flex;
         flex-direction: column;
+        align-items: center;
         justify-content: center;
+      }
+    }
+
+    @media (max-width: 959px) {
+      .login-container {
+        flex-direction: column;
+      }
+      .form-side {
+        flex: 1 1 100%;
+        width: 100%;
+        max-width: 100%;
+        padding: 2.5rem 1.5rem;
+      }
+      .hero-side {
+        display: none !important;
       }
     }
 
@@ -333,10 +447,10 @@
       position: absolute;
       top: -100px;
       right: -100px;
-      width: 440px;
-      height: 440px;
+      width: 480px;
+      height: 480px;
       border-radius: 50%;
-      background: rgba(0, 50, 171, 0.12);
+      background: rgba(0, 50, 171, 0.14);
       filter: blur(100px);
       pointer-events: none;
     }
@@ -345,10 +459,10 @@
       position: absolute;
       bottom: -80px;
       left: -80px;
-      width: 400px;
-      height: 400px;
+      width: 440px;
+      height: 440px;
       border-radius: 50%;
-      background: rgba(79, 110, 247, 0.16);
+      background: rgba(79, 110, 247, 0.18);
       filter: blur(100px);
       pointer-events: none;
     }
@@ -357,8 +471,8 @@
       position: absolute;
       top: 0;
       right: 0;
-      width: 320px;
-      height: 260px;
+      width: 360px;
+      height: 300px;
       opacity: 0.12;
       color: var(--primary);
       pointer-events: none;
@@ -367,27 +481,31 @@
     .hero-content {
       position: relative;
       z-index: 10;
-      max-width: 580px;
-      margin: auto 0;
+      max-width: 660px;
+      width: 100%;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
     }
 
     .badge-studio {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.55rem;
       border: 1px solid var(--primary-border);
-      background: rgba(255, 255, 255, 0.85);
+      background: rgba(255, 255, 255, 0.88);
       border-radius: 9999px;
-      padding: 0.35rem 0.9rem;
+      padding: 0.45rem 1.05rem;
       margin-bottom: 1.25rem;
       backdrop-filter: blur(8px);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+      align-self: flex-start;
     }
 
     .pulse-dot-wrap {
       position: relative;
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -404,8 +522,8 @@
     }
 
     .pulse-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background-color: #10b981;
     }
@@ -418,21 +536,21 @@
     }
 
     .badge-text {
-      font-size: 0.725rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      font-weight: 800;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
       color: var(--primary);
     }
 
     .hero-headline {
       font-family: var(--font-heading);
-      font-size: 2.35rem;
+      font-size: 2.55rem;
       font-weight: 900;
       line-height: 1.16;
       letter-spacing: -0.025em;
       color: var(--navy-dark);
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
     }
 
     .gradient-highlight {
@@ -442,44 +560,44 @@
     }
 
     .hero-desc {
-      font-size: 0.975rem;
-      line-height: 1.6;
+      font-size: 1.025rem;
+      line-height: 1.62;
       color: #334155;
       font-weight: 500;
-      margin-bottom: 1.75rem;
+      margin-bottom: 1.85rem;
     }
 
     .feature-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 0.85rem;
-      margin-bottom: 1.5rem;
+      gap: 1rem;
+      margin-bottom: 1.6rem;
     }
 
     .feature-card {
       display: flex;
       align-items: flex-start;
-      gap: 0.75rem;
-      padding: 0.9rem 1rem;
-      background: rgba(255, 255, 255, 0.82);
-      border: 1px solid rgba(0, 50, 171, 0.14);
+      gap: 0.95rem;
+      padding: 1.05rem 1.15rem;
+      background: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(0, 50, 171, 0.16);
       border-radius: 1rem;
       backdrop-filter: blur(8px);
-      box-shadow: 0 4px 16px rgba(0, 50, 171, 0.05);
+      box-shadow: 0 6px 20px rgba(0, 50, 171, 0.06);
       transition: all 0.25s ease;
     }
 
     .feature-card:hover {
       background: #ffffff;
-      border-color: rgba(0, 50, 171, 0.35);
+      border-color: rgba(0, 50, 171, 0.38);
       transform: translateY(-2px);
-      box-shadow: 0 10px 24px rgba(0, 50, 171, 0.1);
+      box-shadow: 0 12px 28px rgba(0, 50, 171, 0.12);
     }
 
     .feature-icon-box {
-      width: 38px;
-      height: 38px;
-      border-radius: 0.65rem;
+      width: 44px;
+      height: 44px;
+      border-radius: 0.75rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -487,23 +605,23 @@
     }
 
     .feature-icon-box svg {
-      width: 20px;
-      height: 20px;
+      width: 22px;
+      height: 22px;
     }
 
     .feature-title {
-      font-size: 0.875rem;
+      font-size: 0.925rem;
       font-weight: 800;
       color: var(--navy-dark);
-      line-height: 1.25;
+      line-height: 1.3;
     }
 
     .feature-desc {
-      font-size: 0.75rem;
+      font-size: 0.775rem;
       color: #475569;
       font-weight: 500;
-      margin-top: 0.2rem;
-      line-height: 1.35;
+      margin-top: 0.25rem;
+      line-height: 1.4;
     }
 
     .trust-bar {
@@ -511,10 +629,10 @@
       align-items: center;
       justify-content: space-between;
       border: 1px solid var(--primary-border);
-      background: rgba(255, 255, 255, 0.8);
-      border-radius: 0.75rem;
-      padding: 0.65rem 1rem;
-      font-size: 0.78rem;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 0.875rem;
+      padding: 0.75rem 1.15rem;
+      font-size: 0.825rem;
       font-weight: 700;
       color: #334155;
       backdrop-filter: blur(8px);
@@ -523,12 +641,12 @@
     .trust-left {
       display: flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.55rem;
     }
 
     .trust-dot {
-      width: 8px;
-      height: 8px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background-color: #10b981;
     }
@@ -536,13 +654,13 @@
     .trust-right {
       color: var(--primary);
       display: flex;
-      gap: 0.25rem;
+      gap: 0.35rem;
     }
   </style>
 </head>
 <body>
   <div class="login-container">
-    <!-- Left Side: Form -->
+    <!-- Left Side: Form Column -->
     <div class="form-side">
       <div class="auth-card">
         <img src="gravurtastich.png" alt="Gravurtastisch" class="brand-logo" onerror="this.src='/gravurtastich.png'"/>
@@ -555,11 +673,11 @@
         <!-- Step 1: Email Input Form -->
         <div id="step-email-box">
           <h1 class="title">Anmelden</h1>
-          <p class="subtitle">Gib deine E-Mail-Adresse ein, um einen sicheren Bestätigungscode für den Layout-Editor zu erhalten.</p>
+          <p class="subtitle">Melde dich mit deiner E-Mail-Adresse an, um sicheren Zugang zum Gravurtastisch Layout-Editor &amp; Produktions-Desk zu erhalten.</p>
 
           <form id="email-form" onsubmit="handleSendOtp(event)">
             <div class="form-group">
-              <label for="email-input">E-Mail-Adresse</label>
+              <label for="email-input">E-Mail-Adresse <span style="color: #ef4444;">*</span></label>
               <div class="input-wrap">
                 <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2"></rect>
@@ -579,23 +697,50 @@
 
             <button type="submit" id="send-otp-btn" class="btn-primary">
               <span id="send-btn-text">Bestätigungscode anfordern</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7"/>
+              </svg>
               <span id="send-btn-spinner" class="spinner" style="display: none;"></span>
             </button>
           </form>
+
+          <div class="auth-security-badge">
+            <svg class="shield-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>Sicherer OTP-Zugang · Direkter Zugriff auf Layout-Editor</span>
+          </div>
         </div>
 
         <!-- Step 2: OTP Entry Form -->
         <div id="step-otp-box" class="step-otp">
-          <h1 class="title">Code bestätigen</h1>
-          <p class="subtitle">
-            Gib den 6-stelligen Bestätigungscode ein, der gesendet wurde an:<br>
-            <span class="email-display-wrap">
+          <div class="otp-badge-header">
+            <div class="otp-shield-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                <path d="m9 12 2 2 4-4"/>
+              </svg>
+            </div>
+            <h1 class="title" style="margin-top: 0.5rem; text-align: center;">Code bestätigen</h1>
+            <p class="subtitle" style="text-align: center; margin-bottom: 0.75rem;">
+              Wir haben einen 6-stelligen Bestätigungscode an deine E-Mail gesendet:
+            </p>
+            <div class="email-chip">
               <span id="display-email"></span>
-              <button type="button" class="change-btn" onclick="goToEmailStep()">Ändern</button>
-            </span>
-          </p>
+              <button type="button" class="change-btn" onclick="goToEmailStep()" title="E-Mail-Adresse bearbeiten">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+                </svg>
+                <span>Ändern</span>
+              </button>
+            </div>
+          </div>
 
           <form id="otp-form" onsubmit="handleVerifyOtp(event)">
+            <label style="text-align: center; margin-bottom: 0.65rem; color: #334155; font-size: 0.875rem;">
+              6-stelligen Code eingeben
+            </label>
             <div class="otp-grid">
               <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="0" autofocus />
               <input type="text" maxlength="1" inputmode="numeric" pattern="[0-9]*" class="otp-digit" data-idx="1" />
@@ -607,6 +752,9 @@
 
             <button type="submit" id="verify-otp-btn" class="btn-primary" disabled>
               <span id="verify-btn-text">Bestätigen &amp; zum Editor</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M5 12h14m-7-7 7 7-7 7"/>
+              </svg>
               <span id="verify-btn-spinner" class="spinner" style="display: none;"></span>
             </button>
 
@@ -614,7 +762,24 @@
               <span id="countdown-text">Code erneut senden in <strong id="countdown-sec">30</strong>s</span>
               <a href="#" id="resend-link" class="resend-link disabled" onclick="handleResendOtp(event)" style="display: none;">Code erneut senden</a>
             </div>
+
+            <div style="display: flex; justify-content: center;">
+              <button type="button" class="back-to-email-btn" onclick="goToEmailStep()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="m15 18-6-6 6-6"/>
+                </svg>
+                <span>Zurück zur E-Mail-Eingabe</span>
+              </button>
+            </div>
           </form>
+
+          <div class="auth-security-badge">
+            <svg class="shield-mini" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+              <path d="m9 12 2 2 4-4"/>
+            </svg>
+            <span>Ende-zu-Ende geschützte Sitzung · 2FA-OTP geschützt</span>
+          </div>
         </div>
       </div>
     </div>
@@ -623,13 +788,13 @@
     <div class="hero-side">
       <div class="hero-glow-1"></div>
       <div class="hero-glow-2"></div>
-      <svg class="dot-pattern" viewBox="0 0 320 260" fill="none">
+      <svg class="dot-pattern" viewBox="0 0 360 300" fill="none">
         <defs>
           <pattern id="dot-grid" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
             <circle cx="3" cy="3" r="1.5" fill="currentColor"></circle>
           </pattern>
         </defs>
-        <rect width="320" height="260" fill="url(#dot-grid)"></rect>
+        <rect width="360" height="300" fill="url(#dot-grid)"></rect>
       </svg>
 
       <div class="hero-content">
