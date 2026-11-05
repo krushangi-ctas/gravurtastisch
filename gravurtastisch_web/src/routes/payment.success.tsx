@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, Loader2, AlertCircle } from "lucide-react";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -14,6 +15,7 @@ export const Route = createFileRoute("/payment/success")({
 });
 
 function PaymentSuccessPage() {
+  const { t } = useTranslation();
   const { session_id: sessionId } = Route.useSearch();
   const [state, setState] = useState<"loading" | "paid" | "pending" | "error">(
     "loading"
@@ -97,9 +99,9 @@ function PaymentSuccessPage() {
             {state === "loading" && (
               <>
                 <Loader2 className="mx-auto h-12 w-12 text-brand animate-spin" />
-                <h1 className="mt-6 text-2xl font-extrabold">Confirming payment…</h1>
+                <h1 className="mt-6 text-2xl font-extrabold">{t('payment.confirmingTitle', 'Confirming payment…')}</h1>
                 <p className="mt-2 text-slate-body text-sm">
-                  Checking Stripe and our webhook acknowledgement.
+                  {t('payment.confirmingDesc', 'Checking Stripe and our webhook acknowledgement.')}
                 </p>
               </>
             )}
@@ -107,9 +109,9 @@ function PaymentSuccessPage() {
             {state === "paid" && (
               <>
                 <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
-                <h1 className="mt-6 text-2xl font-extrabold">Payment received</h1>
+                <h1 className="mt-6 text-2xl font-extrabold">{t('payment.paidTitle', 'Payment received')}</h1>
                 <p className="mt-2 text-slate-body text-sm leading-relaxed">
-                  Thanks{planName ? ` - your ${planName} plan` : ""} is confirmed
+                  {t('payment.paidThanks', 'Thanks')}{planName ? ` - ${t('payment.paidPlanConfirmed', 'your plan is confirmed')} (${planName})` : ""}
                   {amount != null
                     ? ` ($${amount}${billingCycle === 3
                       ? "/yr"
@@ -117,8 +119,7 @@ function PaymentSuccessPage() {
                         ? "/qtr"
                         : "/mo"
                     })`
-                    : ""}. A confirmation email with your payment details and seller panel access
-                  has been sent to {email ? <strong className="text-navy-deep">{email}</strong> : "your registered email"}.
+                    : ""}. {t('payment.paidEmailNotice', 'A confirmation email with your payment details and panel access has been sent to')} {email ? <strong className="text-navy-deep">{email}</strong> : t('payment.registeredEmail', 'your registered email')}.
                 </p>
               </>
             )}
@@ -126,10 +127,10 @@ function PaymentSuccessPage() {
             {state === "pending" && (
               <>
                 <Loader2 className="mx-auto h-12 w-12 text-brand animate-spin" />
-                <h1 className="mt-6 text-2xl font-extrabold">Almost there</h1>
+                <h1 className="mt-6 text-2xl font-extrabold">{t('payment.pendingTitle', 'Almost there')}</h1>
                 <p className="mt-2 text-slate-body text-sm leading-relaxed">
                   {message ||
-                    "Stripe is finalizing. Our webhook will mark the payment paid in the background."}
+                    t('payment.pendingDesc', 'Stripe is finalizing. Our webhook will mark the payment paid in the background.')}
                 </p>
               </>
             )}
@@ -137,7 +138,7 @@ function PaymentSuccessPage() {
             {state === "error" && (
               <>
                 <AlertCircle className="mx-auto h-12 w-12 text-amber-500" />
-                <h1 className="mt-6 text-2xl font-extrabold">Status check issue</h1>
+                <h1 className="mt-6 text-2xl font-extrabold">{t('payment.errorTitle', 'Status check issue')}</h1>
                 <p className="mt-2 text-slate-body text-sm leading-relaxed">{message}</p>
               </>
             )}
@@ -163,7 +164,7 @@ function PaymentSuccessPage() {
                         href={resolvedSignInUrl}
                         className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white transition shadow-md"
                       >
-                        <span>Go to Seller Panel</span>
+                        <span>{t('payment.goToPanel', 'Go to Seller Panel')}</span>
                         <span>→</span>
                       </a>
                     );
@@ -172,7 +173,7 @@ function PaymentSuccessPage() {
                     to="/"
                     className="inline-flex items-center rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-surface-alt transition"
                   >
-                    Back to Home
+                    {t('payment.backHome', 'Back to Home')}
                   </Link>
                 </>
               ) : (
@@ -182,14 +183,14 @@ function PaymentSuccessPage() {
                     hash="pricing"
                     className="inline-flex rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white transition"
                   >
-                    Back to pricing
+                    {t('pricing.sectionLabel', 'Pricing')}
                   </Link>
                   <Link
                     to="/"
                     hash="contact"
                     className="inline-flex rounded-full border border-border px-6 py-3 text-sm font-semibold text-navy-deep hover:bg-surface-alt transition"
                   >
-                    Contact support
+                    {t('contact.sectionLabel', 'Contact')}
                   </Link>
                 </>
               )}

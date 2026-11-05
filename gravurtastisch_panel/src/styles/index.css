@@ -165,28 +165,39 @@ Tables styles
  * Modern Website-Style Carded Containers, Floating Surfaces & Shadows
  * Exactly matches gravurtastisch_web homepage design language
  */
-#fuse-main,
+#fuse-main {
+	padding: 0 !important;
+	box-sizing: border-box !important;
+}
+
 .FusePageCarded-root {
-	padding: 8px !important;
+	padding: 12px !important;
 	box-sizing: border-box !important;
 	background-color: #ffffff !important;
 }
 
 @media (min-width: 640px) {
-	#fuse-main,
+	#fuse-main {
+		padding: 0 !important;
+	}
 	.FusePageCarded-root {
-		padding: 8px 10px !important;
+		padding: 14px !important;
 	}
 }
 
 @media (min-width: 1024px) {
-	#fuse-main,
+	#fuse-main {
+		padding: 0 !important;
+	}
 	.FusePageCarded-root {
-		padding: 10px 12px !important;
+		padding: 16px !important;
 	}
 }
 
-.dark #fuse-main,
+.dark #fuse-main {
+	background-color: var(--mui-palette-background-default) !important;
+}
+
 .dark .FusePageCarded-root {
 	background-color: var(--mui-palette-background-default) !important;
 }
@@ -346,7 +357,7 @@ input[type=number] {
 /* Form & Dialog Uppercase Field Labels */
 .field-label,
 .form-label,
-label.MuiFormLabel-root {
+label.MuiFormLabel-root:not(.MuiTablePagination-selectLabel) {
 	display: block !important;
 	font-size: 11px !important;
 	font-weight: 700 !important;
@@ -358,7 +369,7 @@ label.MuiFormLabel-root {
 
 .dark .field-label,
 .dark .form-label,
-.dark label.MuiFormLabel-root {
+.dark label.MuiFormLabel-root:not(.MuiTablePagination-selectLabel) {
 	color: #94a3b8 !important;
 }
 

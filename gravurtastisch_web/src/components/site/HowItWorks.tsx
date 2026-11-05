@@ -76,7 +76,7 @@ export function HowItWorks() {
               <div className="mt-5 p-3.5 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs">
                 <div className="flex items-center gap-2 mb-2 text-xs font-bold text-[#0032ab] dark:text-brand-bright">
                   <UploadCloud className="w-4 h-4" />
-                  <span>Artwork Ingestion</span>
+                  <span>{t("howItWorks.artifactIngestion", "Artwork Ingestion")}</span>
                 </div>
                 <div className="flex flex-wrap gap-1 text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400">
                   <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.SVG</span>
@@ -86,7 +86,7 @@ export function HowItWorks() {
                   <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.DXF</span>
                 </div>
                 <span className="mt-2 block text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ✓ Automatic SKU Classification
+                  ✓ {t("howItWorks.skuClassification", "Automatic SKU Classification")}
                 </span>
               </div>
             </div>
@@ -96,7 +96,7 @@ export function HowItWorks() {
           <Reveal delay={100}>
             <div className="h-full rounded-3xl bg-white dark:bg-navy/90 border-2 border-[#0032ab] p-6 flex flex-col justify-between shadow-xl shadow-[#0032ab]/12 relative overflow-hidden">
               <div className="absolute top-0 right-0 px-3 py-1 bg-[#0032ab] text-white text-[10px] font-mono font-bold uppercase rounded-bl-xl shadow-xs">
-                Safety Gate
+                {t("howItWorks.safetyGate", "Safety Gate")}
               </div>
 
               <div>
@@ -165,7 +165,7 @@ export function HowItWorks() {
                     03
                   </span>
                   <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
-                    Studio Production
+                    {t("howItWorks.studioProduction", "Studio Production")}
                   </span>
                 </div>
 
@@ -184,14 +184,14 @@ export function HowItWorks() {
               <div className="mt-5 p-3.5 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs space-y-1.5">
                 <div className="flex items-center gap-2 text-xs font-bold text-amber-600">
                   <Flame className="w-4 h-4" />
-                  <span>Laser Cell Calibration</span>
+                  <span>{t("howItWorks.laserCalibration", "Laser Cell Calibration")}</span>
                 </div>
                 <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-600 dark:text-slate-300">
                   <div className="px-2 py-1 rounded bg-slate-100 dark:bg-white/06">Beam: 0.05mm</div>
                   <div className="px-2 py-1 rounded bg-slate-100 dark:bg-white/06">Laser: 120W Peak</div>
                 </div>
                 <span className="block text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ✓ Optical Quality Inspection
+                  ✓ {t("howItWorks.opticalInspection", "Optical Quality Inspection")}
                 </span>
               </div>
             </div>
@@ -207,7 +207,7 @@ export function HowItWorks() {
                     04
                   </span>
                   <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
-                    Doorstep Delivery
+                    {t("howItWorks.doorstepDelivery", "Doorstep Delivery")}
                   </span>
                 </div>
 
@@ -226,13 +226,13 @@ export function HowItWorks() {
               <div className="mt-5 p-3.5 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs space-y-1.5">
                 <div className="flex items-center gap-2 text-xs font-bold text-purple-600">
                   <PackageCheck className="w-4 h-4" />
-                  <span>Direct Carrier Dispatch</span>
+                  <span>{t("howItWorks.carrierDispatch", "Direct Carrier Dispatch")}</span>
                 </div>
                 <div className="px-2 py-1 rounded bg-slate-100 dark:bg-white/06 font-mono text-[10px] text-slate-600 dark:text-slate-300 truncate">
                   DHL / DPD: #GT-24018-EU
                 </div>
                 <span className="block text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ✓ Individual Eco Cushion Wrap
+                  ✓ {t("howItWorks.ecoWrap", "Individual Eco Cushion Wrap")}
                 </span>
               </div>
             </div>

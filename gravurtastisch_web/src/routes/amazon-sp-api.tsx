@@ -27,10 +27,8 @@ import {
   Sparkles,
   ExternalLink,
   Headphones,
-  Check,
   Code2,
   Terminal,
-  Copy,
   ChevronRight,
   RefreshCw,
   Globe2,
@@ -43,17 +41,15 @@ export const Route = createFileRoute("/amazon-sp-api")({
   pendingComponent: ServicePageSkeleton,
   head: () => ({
     meta: [
-      { title: "Studio production API Integration & Security | Gravurtastisch" },
+      { title: `${i18n.t("amazonSpApi.heroTitle")} ${i18n.t("amazonSpApi.heroTitleHighlight")} | Gravurtastisch` },
       {
         name: "description",
-        content:
-          "Gravurtastisch's official Amazon Selling Partner API (studio API) integration. Certified, scoped access, OAuth 2.0 security, and zero scraping policy.",
+        content: i18n.t("amazonSpApi.heroDesc"),
       },
-      { property: "og:title", content: "Studio production API Architecture | Gravurtastisch" },
+      { property: "og:title", content: `${i18n.t("amazonSpApi.heroTitle")} | Gravurtastisch` },
       {
         property: "og:description",
-        content:
-          "Official Studio production API integration with scoped, revocable access, encrypted token vaults, and 100% Amazon TOS compliance.",
+        content: i18n.t("amazonSpApi.heroDesc"),
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/amazon-sp-api" },
@@ -66,8 +62,6 @@ export const Route = createFileRoute("/amazon-sp-api")({
 function AmazonSpApiPage() {
   const { t } = useTranslation();
   const [activeArchLayer, setActiveArchLayer] = useState(0);
-  const [activeEndpointIndex, setActiveEndpointIndex] = useState(0);
-  const [copiedEndpoint, setCopiedEndpoint] = useState<string | null>(null);
 
   const isSkeletonPreview = typeof window !== "undefined" && window.location.search.includes("skeleton=true");
 
@@ -162,62 +156,35 @@ function AmazonSpApiPage() {
   const apiEndpoints = [
     {
       id: "ep-1",
-      endpoint: "solicitations/v1/orders/{orderId}/solicitations/productReviewAndSellerFeedback",
       name: t('amazonSpApi.endpoint1Name', 'Order webhooks'),
       purpose: t('amazonSpApi.endpoint1Purpose', 'Ingest new custom orders and line items as soon as your storefront confirms checkout.'),
-      method: "POST",
+      badge: "Webhook",
       status: "Compliant",
-      payload: `{
-  "event": "ORDER_INGESTED",
-  "orderId": "#GT-2026-9941",
-  "channel": "SP_API_OFFICIAL",
-  "proofGate": "LOCKED_AWAITING_APPROVAL",
-  "vectorDpi": 300,
-  "sku": "CUP-WRAP-750"
-}`,
+      tag: "Live Pipeline",
     },
     {
       id: "ep-2",
-      endpoint: "orders/v0/orders & orders/v0/orders/{orderId}/orderItems",
       name: t('amazonSpApi.endpoint2Name', 'Catalog sync'),
       purpose: t('amazonSpApi.endpoint2Purpose', 'Maps SKUs to product lines - cups, engrave surfaces, textiles - for correct routing.'),
-      method: "GET",
+      badge: "Sync",
       status: "Real-time",
-      payload: `{
-  "skuMapping": {
-    "CUP-WRAP-750": "ROTARY_LASER_360",
-    "BOARD-OAK-02": "DEEP_VECTOR_ETCH",
-    "APP-HOOD-12": "TAJIMA_EMBROIDERY_18K"
-  },
-  "status": "CALIBRATED_100%"
-}`,
+      tag: "Catalog Link",
     },
     {
       id: "ep-3",
-      endpoint: "notifications/v1/subscriptions",
       name: t('amazonSpApi.endpoint3Name', 'Shipment events'),
       purpose: t('amazonSpApi.endpoint3Purpose', 'Push tracking numbers and carrier events back to your channel when parcels leave the studio.'),
-      method: "EVENT",
+      badge: "Dispatch",
       status: "Automated",
-      payload: `{
-  "eventType": "PARCEL_DISPATCHED",
-  "tracking": "DHL_EXPRESS_DE_9941824",
-  "transitTime": "< 24h",
-  "opticalQc": "PASSED_100%"
-}`,
+      tag: "Live Tracking",
     },
     {
       id: "ep-4",
-      endpoint: "sellers/v1/marketplaceParticipations",
       name: t('amazonSpApi.endpoint4Name', 'Multi-store routing'),
       purpose: t('amazonSpApi.endpoint4Purpose', 'Separate queues per brand or region while sharing one proof and production engine.'),
-      method: "GET",
+      badge: "Multi-Store",
       status: "Multi-Region",
-      payload: `{
-  "regions": ["DE", "AT", "CH", "UK", "FR", "IT", "ES"],
-  "currencyRouting": ["EUR", "GBP", "CHF"],
-  "studioEngine": "GRAVURTASTISCH_UNIFIED"
-}`,
+      tag: "Global Engine",
     },
   ];
 
@@ -272,12 +239,6 @@ function AmazonSpApiPage() {
       a: t('amazonSpApi.faq4A', 'Yes. Disconnect the integration from your commerce admin or contact us to rotate tokens and pause sync.'),
     },
   ];
-
-  const handleCopyEndpoint = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedEndpoint(text);
-    setTimeout(() => setCopiedEndpoint(null), 2000);
-  };
 
   return (
     <div className="min-h-screen bg-background text-navy-deep antialiased selection:bg-[#0032ab]/15 selection:text-[#0032ab]">
@@ -548,10 +509,9 @@ function AmazonSpApiPage() {
               </div>
             </Reveal>
 
-            {/* 4 Crisp Endpoints in Balanced 2x2 Grid with Developer Console Bento Styling */}
+            {/* 4 Crisp Endpoints in Balanced 2x2 Grid with Bento Styling */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {apiEndpoints.map((ep, i) => {
-                const isCopied = copiedEndpoint === ep.endpoint;
                 return (
                   <Reveal key={ep.id} delay={i * 60} className="h-full">
                     <div className="group relative h-full rounded-3xl bg-white dark:bg-[#0b132b] border border-slate-200/90 dark:border-white/10 p-5 sm:p-6 shadow-sm hover:shadow-xl hover:shadow-[#0032ab]/08 hover:border-[#0032ab]/40 hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between overflow-hidden">
@@ -559,53 +519,35 @@ function AmazonSpApiPage() {
                       <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0032ab] via-[#4f6ef7] to-[#155dfc] opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                       <div className="w-full min-w-0">
-                        {/* Header with high-contrast method badge */}
+                        {/* Header with high-contrast badge */}
                         <div className="flex items-center justify-between gap-2.5 mb-3.5 min-w-0">
                           <h3 className="font-bold text-navy-deep dark:text-white text-base group-hover:text-[#0032ab] transition-colors truncate min-w-0 flex-1">
                             {ep.name}
                           </h3>
                           <span
                             className={`shrink-0 px-2.5 sm:px-3 py-1 rounded-full text-[10.5px] font-mono font-extrabold uppercase tracking-wider shadow-2xs flex items-center gap-1.5 ${
-                              ep.method === "POST"
+                              ep.badge === "Webhook"
                                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300"
-                                : ep.method === "GET"
+                                : ep.badge === "Sync"
                                 ? "bg-blue-50 text-[#0032ab] dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300"
-                                : "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300"
+                                : ep.badge === "Dispatch"
+                                ? "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300"
+                                : "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-300"
                             }`}
                           >
                             <span
                               className={`h-1.5 w-1.5 rounded-full animate-pulse ${
-                                ep.method === "POST"
+                                ep.badge === "Webhook"
                                   ? "bg-emerald-500"
-                                  : ep.method === "GET"
+                                  : ep.badge === "Sync"
                                   ? "bg-[#0032ab]"
-                                  : "bg-purple-500"
+                                  : ep.badge === "Dispatch"
+                                  ? "bg-purple-500"
+                                  : "bg-indigo-500"
                               }`}
                             />
-                            {ep.method}
+                            {ep.badge}
                           </span>
-                        </div>
-
-                        {/* URL Pill with Copy Icon and interactive feedback */}
-                        <div className="group/code flex items-center justify-between gap-2 p-2.5 sm:p-3 rounded-xl bg-slate-50 dark:bg-white/06 border border-slate-200/90 dark:border-white/10 group-hover:border-[#0032ab]/30 font-mono text-[11px] mb-3.5 shadow-2xs transition-colors w-full min-w-0 max-w-full">
-                          <span className="truncate min-w-0 flex-1 text-navy-deep dark:text-white font-mono font-medium">
-                            {ep.endpoint}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopyEndpoint(ep.endpoint)}
-                            className="p-1.5 rounded-lg bg-white dark:bg-navy/80 hover:bg-slate-100 dark:hover:bg-white/15 border border-slate-200/90 dark:border-white/15 text-slate-600 dark:text-slate-300 hover:text-[#0032ab] shrink-0 cursor-pointer transition-all hover:scale-105 active:scale-95 flex items-center gap-1 shadow-2xs"
-                            title="Copy endpoint"
-                          >
-                            {isCopied ? (
-                              <>
-                                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                                <span className="text-[10px] text-emerald-600 font-bold hidden sm:inline">Copied!</span>
-                              </>
-                            ) : (
-                              <Copy className="w-3.5 h-3.5 text-slate-500 hover:text-[#0032ab] shrink-0" />
-                            )}
-                          </button>
                         </div>
 
                         {/* Description */}
@@ -626,8 +568,8 @@ function AmazonSpApiPage() {
                             {ep.status}
                           </strong>
                         </span>
-                        <span className="font-mono text-[10.5px] px-2 py-0.5 rounded bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-400 font-semibold border border-slate-200/80 dark:border-white/08 shrink-0">
-                          REST 1.0 JSON
+                        <span className="font-mono text-[10.5px] px-2.5 py-1 rounded-md bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300 font-medium border border-slate-200/80 dark:border-white/08 shrink-0">
+                          {ep.tag}
                         </span>
                       </div>
                     </div>
@@ -1284,9 +1226,9 @@ function AmazonSpApiHeroSvg() {
           </div>
 
           <div className="p-2.5 rounded-xl bg-white dark:bg-navy/80 border border-slate-200 dark:border-white/10 text-[11px] font-mono space-y-1">
-            <div className="text-slate-500">SCOPES GRANTED:</div>
-            <div className="text-[#0032ab] dark:text-[#4f6ef7] font-bold">✓ orders:v0/read</div>
-            <div className="text-[#0032ab] dark:text-[#4f6ef7] font-bold">✓ solicitations:v1</div>
+            <div className="text-slate-500">SYNCHRONIZED DATA:</div>
+            <div className="text-[#0032ab] dark:text-[#4f6ef7] font-bold">✓ Orders & Items Sync</div>
+            <div className="text-[#0032ab] dark:text-[#4f6ef7] font-bold">✓ Shipping & Tracking Push</div>
           </div>
 
           <div className="p-2 rounded-xl bg-white dark:bg-navy/80 border border-slate-200 dark:border-white/10 text-[10.5px]">

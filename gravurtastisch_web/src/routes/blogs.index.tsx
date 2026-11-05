@@ -151,18 +151,18 @@ function BlogsPage() {
             <Reveal className="max-w-3xl mx-auto text-center">
               <div className="section-badge mb-4">
                 <Newspaper className="h-3.5 w-3.5 text-brand shrink-0" />
-                <span>Gravurtastisch Journal & Studio Notes</span>
+                <span>{t('blogs.journalBadge', 'Gravurtastisch Journal & Studio Notes')}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-display leading-[1.15] text-navy-deep">
-                <span>Actionable Insights for</span> <br className="hidden sm:inline" />
+                <span>{t('blogs.heroTitlePrefix', 'Actionable Insights for')}</span> <br className="hidden sm:inline" />
                 <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
-                  Premium Personalization Studio
+                  {t('blogs.heroTitleHighlight', 'Premium Personalization Studio')}
                 </span>
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed font-medium">
-                Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Gravurtastisch studio team.
+                {t('blogs.heroDesc', 'Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Gravurtastisch studio team.')}
               </p>
 
               {/* Search Bar */}
@@ -171,7 +171,7 @@ function BlogsPage() {
                   <Search className="absolute left-4 h-5 w-5 text-slate-400 z-10 pointer-events-none" />
                   <Input
                     type="text"
-                    placeholder="Search engraving, proofing, scheduling, gifts..."
+                    placeholder={t('blogs.searchPlaceholder', 'Search engraving, proofing, scheduling, gifts...')}
                     value={searchQuery}
                     onChange={(e) => {
                       setSearchQuery(e.target.value);
@@ -184,7 +184,7 @@ function BlogsPage() {
                       onClick={() => setSearchQuery("")}
                       className="absolute right-4 text-xs font-semibold text-slate-500 hover:text-navy-deep z-10"
                     >
-                      Clear
+                      {t('blogs.clear', 'Clear')}
                     </button>
                   )}
                 </div>
@@ -250,18 +250,18 @@ function BlogsPage() {
                 <div className="h-16 w-16 bg-slate-100 dark:bg-navy-soft rounded-full flex items-center justify-center mx-auto mb-4 text-slate-400">
                   <Newspaper className="h-8 w-8" />
                 </div>
-                <h3 className="text-lg font-bold text-navy-deep dark:text-white">No articles found</h3>
+                <h3 className="text-lg font-bold text-navy-deep dark:text-white">{t("blogs.noArticles", "No articles found")}</h3>
                 <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   {searchQuery
-                    ? `No matching articles found for "${searchQuery}". Try a different keyword.`
-                    : "No blogs available in this category yet."}
+                    ? t("blogs.noArticlesForQuery", { query: searchQuery, defaultValue: `No matching articles found for "${searchQuery}". Try a different keyword.` })
+                    : t("blogs.noArticlesCategory", "No blogs available in this category yet.")}
                 </p>
                 {searchQuery && (
                   <button
                     onClick={() => setSearchQuery("")}
                     className="mt-4 px-4 py-2 rounded-lg bg-brand !text-white text-xs font-bold hover:bg-brand-bright transition-colors"
                   >
-                    View All Articles
+                    {t("blogs.viewAllArticles", "View All Articles")}
                   </button>
                 )}
               </div>
@@ -322,7 +322,7 @@ function BlogsPage() {
                               params={{ blogId: blogSlugOrId }}
                               className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-dark transition-colors group-hover:gap-2.5 uppercase tracking-wider"
                             >
-                              <span>Read More</span>
+                              <span>{t("blogs.readMore", "Read More")}</span>
                               <ArrowRight className="h-3.5 w-3.5" />
                             </Link>
                           </div>
@@ -395,7 +395,7 @@ function BlogsPage() {
                     href="#register"
                     className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl btn-glass-primary !text-white font-bold text-sm shadow-lg shadow-brand/30 transition-all hover:scale-105"
                   >
-                    <span>Start a custom order</span>
+                    <span>{t("blogs.startCustomOrder", "Start a custom order")}</span>
                     <ArrowRight className="h-4 w-4" />
                   </a>
                   <a

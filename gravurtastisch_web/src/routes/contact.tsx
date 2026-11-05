@@ -74,7 +74,7 @@ function ContactPage() {
   const contactPhone = config?.contact?.phone || "+91 79489 93409";
   const contactHours =
     config?.contact?.working_hours ||
-    (currentLang === "en" ? "10:30 AM–8:30 PM IST" : "10:30 – 20:30 Uhr");
+    (currentLang === "en" ? "10:30 AM-8:30 PM IST" : "10:30 - 20:30 Uhr");
   const contactAddress =
     config?.contact?.address || t("footer.officeAddress");
   const studioLocation =
@@ -99,24 +99,24 @@ function ContactPage() {
 
   const contactFaqs = [
     {
-      q: "How fast do you respond to custom order inquiries?",
-      a: `Our studio desk typically responds within 2 business hours during working days (${contactHours}), and always guarantees a reply within one business day.`,
+      q: t('contact.faq1Q', "How fast do you respond to custom order inquiries?"),
+      a: t('contact.faq1A', `Our studio desk typically responds within 2 business hours during working days (${contactHours}), and always guarantees a reply within one business day.`),
     },
     {
-      q: "Can I request changes to my digital proof before engraving begins?",
-      a: "Yes! Production only commences after your explicit digital proof approval. We provide unlimited mockup iterations to ensure font kerning, graphic contrast, and cylinder placement are 100% satisfactory.",
+      q: t('contact.faq2Q', "Can I request changes to my digital proof before engraving begins?"),
+      a: t('contact.faq2A', "Yes! Production only commences after your explicit digital proof approval. We provide unlimited mockup iterations to ensure font kerning, graphic contrast, and cylinder placement are 100% satisfactory."),
     },
     {
-      q: "Do you handle rush corporate orders and physical sample proofs?",
-      a: "Yes. For volume corporate gifting (50+ units), we can rush-produce and courier a physical sample piece within 48 hours for executive review before initiating the full production run.",
+      q: t('contact.faq3Q', "Do you handle rush corporate orders and physical sample proofs?"),
+      a: t('contact.faq3A', "Yes. For volume corporate gifting (50+ units), we can rush-produce and courier a physical sample piece within 48 hours for executive review before initiating the full production run."),
     },
     {
-      q: "What file formats should I send with my message?",
-      a: "Vector files (SVG, AI, EPS, or vector PDF) produce the sharpest 1200 DPI laser results. High-resolution raster images (PNG, JPEG at 300+ DPI with solid contrast) are also fully supported.",
+      q: t('contact.faq4Q', "What file formats should I send with my message?"),
+      a: t('contact.faq4A', "Vector files (SVG, AI, EPS, or vector PDF) produce the sharpest 1200 DPI laser results. High-resolution raster images (PNG, JPEG at 300+ DPI with solid contrast) are also fully supported."),
     },
     {
-      q: "Where is your manufacturing facility located?",
-      a: `Our primary laser engraving and personalization studio is located in ${studioLocation}, with localized logistics lanes serving direct Amazon EU & UK fulfillment routes.`,
+      q: t('contact.faq5Q', "Where is your manufacturing facility located?"),
+      a: t('contact.faq5A', `Our primary laser engraving and personalization studio is located in ${studioLocation}, with localized logistics lanes serving direct EU & UK fulfillment routes.`),
     },
   ];
 
@@ -138,24 +138,24 @@ function ContactPage() {
               <Reveal className="lg:col-span-7 text-left">
                 <div className="section-badge mb-4">
                   <Headphones className="h-3.5 w-3.5 text-brand shrink-0" />
-                  <span>Dedicated Studio Support</span>
+                  <span>{t('contact.supportBadge', 'Dedicated Studio Support')}</span>
                 </div>
 
                 <h1 className="text-3xl sm:text-4xl lg:text-[3rem] font-extrabold tracking-tight leading-[1.12] text-navy-deep">
-                  <span>Talk to our studio</span>{" "}
+                  <span>{t('contact.heroTitle', 'Talk to our studio')}</span>{" "}
                   <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
-                    expert team
+                    {t('contact.heroTitleHighlight', 'expert team')}
                   </span>
                 </h1>
 
                 <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-xl font-medium">
-                  Have questions about digital proofs, laser-engraved lines, custom products, or Amazon SP-API integrations? Send a message below or reach us directly.
+                  {t('contact.heroDesc', 'Have questions about digital proofs, laser-engraved lines, custom products, or shop integrations? Send a message below or reach us directly.')}
                 </p>
 
                 {/* Live Availability Tag */}
                 <div className="mt-5 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/70 backdrop-blur-md border border-white/90 text-slate-700 text-xs font-semibold shadow-2xs">
                   <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span>Studio desk is online &middot; Average reply &lt; 2 hours</span>
+                  <span>{t('contact.liveAvailability', 'Studio desk is online · Average reply < 2 hours')}</span>
                 </div>
               </Reveal>
 
@@ -171,8 +171,8 @@ function ContactPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold text-brand uppercase">Email Support</span>
-                      <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">24h SLA</span>
+                      <span className="text-[10px] font-mono font-bold text-brand uppercase">{t('contact.emailSupport', 'Email Support')}</span>
+                      <span className="text-[9.5px] font-bold text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full">{t('contact.emailSla', '24h SLA')}</span>
                     </div>
                     <p className="text-sm font-bold text-navy-deep group-hover:text-brand transition-colors truncate">
                       {contactEmail}
@@ -190,8 +190,8 @@ function ContactPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono font-bold text-sky-700 uppercase">Phone Desk</span>
-                      <span className="text-[9.5px] text-slate-600 font-medium">Mon–Fri</span>
+                      <span className="text-[10px] font-mono font-bold text-sky-700 uppercase">{t('contact.phoneDesk', 'Phone Desk')}</span>
+                      <span className="text-[9.5px] text-slate-600 font-medium">{t('contact.phoneHours', 'Mon-Fri')}</span>
                     </div>
                     <p className="text-sm font-bold text-navy-deep group-hover:text-brand transition-colors">
                       {contactPhone} {contactHours && <span className="text-xs font-normal text-slate-600">({contactHours})</span>}
@@ -205,7 +205,7 @@ function ContactPage() {
                     <MapPin className="h-5 w-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">Studio Address</span>
+                    <span className="text-[10px] font-mono font-bold text-purple-700 uppercase">{t('contact.studioAddressTitle', 'Studio Address')}</span>
                     <p className="text-xs sm:text-sm font-bold text-navy-deep leading-relaxed">
                       {contactAddress}
                     </p>
@@ -228,13 +228,13 @@ function ContactPage() {
           <Container className="max-w-6xl">
             <Reveal className="text-center max-w-3xl mx-auto mb-12">
               <span className="section-badge mb-3">
-                Global Delivery Network
+                {t('contact.networkBadge', 'Global Delivery Network')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-navy-deep dark:text-white leading-[1.18]">
-                Where we craft and deliver worldwide
+                {t('contact.networkTitle', 'Where we craft and deliver worldwide')}
               </h2>
               <p className="mt-3.5 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed">
-                Whether you order personalized drinkware for European gifting campaigns or corporate batch orders, our coordinated international lanes ensure rapid and reliable courier transit.
+                {t('contact.networkDesc', 'Whether you order personalized drinkware for European gifting campaigns or corporate batch orders, our coordinated international lanes ensure rapid and reliable courier transit.')}
               </p>
             </Reveal>
 
@@ -252,15 +252,15 @@ function ContactPage() {
                       </span>
                     </div>
                     <h3 className="text-base font-bold text-navy-deep dark:text-white">
-                      Germany &amp; Central EU
+                      {t('contact.hubGermanyTitle', 'Germany & Central EU')}
                     </h3>
                     <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Direct delivery across Berlin, Frankfurt, Munich, Vienna, and Zurich with compliant EU VAT invoicing.
+                      {t('contact.hubGermanyDesc', 'Direct delivery across Berlin, Frankfurt, Munich, Vienna, and Zurich with compliant EU VAT invoicing.')}
                     </p>
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500">
-                    <span>Transit Window</span>
-                    <strong className="text-navy-deep dark:text-slate-200">2–4 Business Days</strong>
+                    <span>{t('contact.transitWindow', 'Transit Window')}</span>
+                    <strong className="text-navy-deep dark:text-slate-200">{t('contact.transitWindow2to4', '2-4 Business Days')}</strong>
                   </div>
                 </div>
               </Reveal>
@@ -278,15 +278,15 @@ function ContactPage() {
                       </span>
                     </div>
                     <h3 className="text-base font-bold text-navy-deep dark:text-white">
-                      United Kingdom
+                      {t('contact.hubUkTitle', 'United Kingdom')}
                     </h3>
                     <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Fast tracked courier service across London, Manchester, and Birmingham for personalized tumblers and gifts.
+                      {t('contact.hubUkDesc', 'Fast tracked courier service across London, Manchester, and Birmingham for personalized tumblers and gifts.')}
                     </p>
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500">
-                    <span>Transit Window</span>
-                    <strong className="text-navy-deep dark:text-slate-200">3–5 Business Days</strong>
+                    <span>{t('contact.transitWindow', 'Transit Window')}</span>
+                    <strong className="text-navy-deep dark:text-slate-200">{t('contact.transitWindow3to5', '3-5 Business Days')}</strong>
                   </div>
                 </div>
               </Reveal>
@@ -304,15 +304,15 @@ function ContactPage() {
                       </span>
                     </div>
                     <h3 className="text-base font-bold text-navy-deep dark:text-white">
-                      France &amp; Western EU
+                      {t('contact.hubFranceTitle', 'France & Western EU')}
                     </h3>
                     <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Custom photo mugs, textiles, and laser-etched keepsakes delivered safely across Paris, Lyon, and Brussels.
+                      {t('contact.hubFranceDesc', 'Custom photo mugs, textiles, and laser-etched keepsakes delivered safely across Paris, Lyon, and Brussels.')}
                     </p>
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 flex items-center justify-between text-xs text-slate-500">
-                    <span>Transit Window</span>
-                    <strong className="text-navy-deep dark:text-slate-200">3–5 Business Days</strong>
+                    <span>{t('contact.transitWindow', 'Transit Window')}</span>
+                    <strong className="text-navy-deep dark:text-slate-200">{t('contact.transitWindow3to5', '3-5 Business Days')}</strong>
                   </div>
                 </div>
               </Reveal>
@@ -326,19 +326,19 @@ function ContactPage() {
                         <Sparkles className="w-5 h-5" />
                       </div>
                       <span className="text-[11px] font-bold text-emerald-700 bg-emerald-100 px-2.5 py-1 rounded-full">
-                        Central Studio
+                        {t('contact.centralStudio', 'Central Studio')}
                       </span>
                     </div>
                     <h3 className="text-base font-bold text-navy-deep dark:text-white">
-                      Studio Headquarters
+                      {t('contact.hubHqTitle', 'Studio Headquarters')}
                     </h3>
                     <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
-                      High-precision 1200 DPI fiber laser engraving, color sublimation lab, vector pre-flight, and QA inspection.
+                      {t('contact.hubHqDesc', 'High-precision 1200 DPI fiber laser engraving, color sublimation lab, vector pre-flight, and QA inspection.')}
                     </p>
                   </div>
                   <div className="mt-5 pt-4 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs text-slate-500">
-                    <span>Location</span>
-                    <strong className="text-brand font-semibold">Ahmedabad, India</strong>
+                    <span>{t('contact.locationLabel', 'Location')}</span>
+                    <strong className="text-brand font-semibold">{t('contact.hubHqCity', 'Ahmedabad, India')}</strong>
                   </div>
                 </div>
               </Reveal>
@@ -359,20 +359,20 @@ function ContactPage() {
                       <Clock className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-navy-deep dark:text-white">
-                      Fast Support Turnaround
+                      {t('contact.commitFastTitle', 'Fast Support Turnaround')}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                      We value your timeline. Order inquiries, quote requests, and artwork questions receive written answers within 2 hours during active studio hours.
+                      {t('contact.commitFastDesc', 'We value your timeline. Order inquiries, quote requests, and artwork questions receive written answers within 2 hours during active studio hours.')}
                     </p>
                   </div>
                   <ul className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 space-y-2 text-xs text-slate-600 dark:text-slate-400">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span>Dedicated human desk — no automated bot loops</span>
+                      <span>{t('contact.commitFastBullet1', 'Dedicated human desk - no automated bot loops')}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-                      <span>Direct WhatsApp &amp; phone line access</span>
+                      <span>{t('contact.commitFastBullet2', 'Direct WhatsApp & phone line access')}</span>
                     </li>
                   </ul>
                 </div>
@@ -385,20 +385,20 @@ function ContactPage() {
                       <ShieldCheck className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-navy-deep dark:text-white">
-                      Proof-Gated Manufacturing
+                      {t('contact.commitProofTitle', 'Proof-Gated Manufacturing')}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Zero surprises when parcels land. We send visual mockups showing exact millimeter placement, contrast, and scaling before our laser machines turn on.
+                      {t('contact.commitProofDesc', 'Zero surprises when parcels land. We send visual mockups showing exact millimeter placement, contrast, and scaling before our laser machines turn on.')}
                     </p>
                   </div>
                   <ul className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 space-y-2 text-xs text-slate-600 dark:text-slate-400">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-brand shrink-0" />
-                      <span>Unlimited proof revisions before craft lock</span>
+                      <span>{t('contact.commitProofBullet1', 'Unlimited proof revisions before craft lock')}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-brand shrink-0" />
-                      <span>Vector optical correction for cylindrical items</span>
+                      <span>{t('contact.commitProofBullet2', 'Vector optical correction for cylindrical items')}</span>
                     </li>
                   </ul>
                 </div>
@@ -411,20 +411,20 @@ function ContactPage() {
                       <Truck className="w-5 h-5" />
                     </div>
                     <h3 className="text-lg font-bold text-navy-deep dark:text-white">
-                      Sample Prototypes Available
+                      {t('contact.commitSampleTitle', 'Sample Prototypes Available')}
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                      Planning a 100+ unit corporate event or recurring Amazon catalog run? Request an initial sample piece to feel the laser texture and verify color fidelity in person.
+                      {t('contact.commitSampleDesc', 'Planning a 100+ unit corporate event or recurring catalog run? Request an initial sample piece to feel the laser texture and verify color fidelity in person.')}
                     </p>
                   </div>
                   <ul className="mt-5 pt-4 border-t border-slate-100 dark:border-white/10 space-y-2 text-xs text-slate-600 dark:text-slate-400">
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                      <span>Sample fee credited toward volume reorders</span>
+                      <span>{t('contact.commitSampleBullet1', 'Sample fee credited toward volume reorders')}</span>
                     </li>
                     <li className="flex items-center gap-2">
                       <CheckCircle2 className="w-4 h-4 text-indigo-600 shrink-0" />
-                      <span>Full packaging and branding unboxing check</span>
+                      <span>{t('contact.commitSampleBullet2', 'Full packaging and branding unboxing check')}</span>
                     </li>
                   </ul>
                 </div>
@@ -440,13 +440,13 @@ function ContactPage() {
           <Container className="max-w-4xl">
             <Reveal className="text-center max-w-2xl mx-auto mb-10">
               <span className="section-badge mb-3">
-                Help &amp; Support Questions
+                {t('contact.faqBadge', 'Help & Support Questions')}
               </span>
               <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-navy-deep dark:text-white leading-[1.18]">
-                Frequently asked contact questions
+                {t('contact.faqTitle', 'Frequently asked contact questions')}
               </h2>
               <p className="mt-3 text-slate-600 dark:text-slate-300 text-sm sm:text-base">
-                Find quick answers about proof turnaround, corporate inquiries, sample requests, and shipping.
+                {t('contact.faqDesc', 'Find quick answers about proof turnaround, corporate inquiries, sample requests, and shipping.')}
               </p>
             </Reveal>
 

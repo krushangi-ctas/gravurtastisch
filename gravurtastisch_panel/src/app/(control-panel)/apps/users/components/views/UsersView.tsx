@@ -1962,12 +1962,47 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								display: 'flex',
 								alignItems: 'center',
 								justifyContent: { xs: 'center', sm: 'flex-end' },
+								paddingRight: { xs: '12px !important', sm: '24px !important' },
+								pr: { xs: '12px !important', sm: '24px !important' },
+								boxSizing: 'border-box',
+								'& > div, & > .MuiBox-root': {
+									display: 'flex !important',
+									alignItems: 'center !important',
+									height: '100% !important',
+									minHeight: '46px !important',
+									padding: '0 !important',
+									py: '0 !important',
+									my: '0 !important',
+									justifyContent: { xs: 'center !important', sm: 'space-between !important' }
+								},
+								'& .MuiBox-root': {
+									alignItems: 'center !important',
+									top: 'auto !important'
+								},
 								'& .MuiTablePagination-root': {
 									overflow: 'visible',
 									width: 'auto',
 									minHeight: '46px !important',
 									height: '46px !important',
-									display: 'flex',
+									display: 'inline-flex',
+									alignItems: 'center',
+									backgroundColor: 'transparent !important',
+									border: 'none !important',
+									borderTop: 'none !important',
+									boxShadow: 'none !important',
+									marginRight: { xs: '0px !important', sm: '12px !important' },
+									padding: '0 !important',
+									py: '0 !important',
+									my: '0 !important'
+								},
+								'& .MuiInputLabel-root': {
+									fontSize: { xs: '11px', sm: '13px' },
+									fontWeight: 600,
+									color: 'text.primary',
+									margin: '0 !important',
+									marginBottom: '0 !important',
+									lineHeight: '1 !important',
+									display: 'inline-flex',
 									alignItems: 'center'
 								},
 								'& .MuiTablePagination-toolbar': {
@@ -1978,24 +2013,33 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									minHeight: '46px !important',
 									height: '46px !important',
 									paddingLeft: { xs: 1, sm: 2 },
-									paddingRight: { xs: 1, sm: 2 },
+									paddingRight: { xs: '12px !important', sm: '18px !important' },
 									py: '0 !important',
-									my: 'auto'
+									my: '0 !important'
 								},
 								'& .MuiTablePagination-selectLabel': {
 									fontSize: { xs: '11px', sm: '13px' },
+									fontWeight: 600,
+									color: 'text.primary',
 									margin: '0 !important',
-									lineHeight: '1.2 !important',
+									marginBottom: '0 !important',
+									lineHeight: '1 !important',
 									display: 'inline-flex',
 									alignItems: 'center'
 								},
 								'& .MuiTablePagination-displayedRows': {
 									fontSize: { xs: '11px', sm: '13px' },
-									margin: '0 !important'
+									margin: '0 !important',
+									marginBottom: '0 !important',
+									lineHeight: '1 !important',
+									display: 'inline-flex',
+									alignItems: 'center'
 								},
 								'& .MuiTablePagination-input': {
 									marginRight: { xs: 0.5, sm: 1 },
 									marginLeft: 0.5,
+									marginTop: '0 !important',
+									marginBottom: '0 !important',
 									display: 'inline-flex',
 									alignItems: 'center',
 									'& .MuiSelect-select': {
@@ -2003,11 +2047,15 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										paddingBottom: '3px !important',
 										fontSize: { xs: '11px', sm: '13px' },
 										display: 'inline-flex',
-										alignItems: 'center'
+										alignItems: 'center',
+										lineHeight: '1.2 !important'
 									}
 								},
 								'& .MuiTablePagination-actions': {
 									marginLeft: { xs: 0.5, sm: 1 },
+									marginRight: { xs: '8px !important', sm: '12px !important' },
+									marginTop: '0 !important',
+									marginBottom: '0 !important',
 									display: 'inline-flex',
 									alignItems: 'center',
 									'& .MuiIconButton-root': {
@@ -2015,9 +2063,16 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									}
 								},
 								'& .MuiPagination-root': {
-									display: 'flex',
+									display: 'inline-flex',
 									justifyContent: 'center',
-									alignItems: 'center'
+									alignItems: 'center',
+									margin: '0 !important'
+								},
+								'& .MuiPagination-ul': {
+									display: 'inline-flex',
+									alignItems: 'center',
+									margin: '0 !important',
+									padding: '0 !important'
 								},
 								'& .MuiPaginationItem-root': {
 									minWidth: { xs: 26, sm: 30 },

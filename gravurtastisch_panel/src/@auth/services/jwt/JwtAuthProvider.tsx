@@ -180,6 +180,7 @@ function JwtAuthProvider(props: FuseAuthProviderComponentProps) {
 		try {
 			await logout();
 		} catch (_) {
+			// ignore logout network errors on sign out
 		} finally {
 			clearAuthStorage();
 			removeGlobalHeaders(['Authorization']);

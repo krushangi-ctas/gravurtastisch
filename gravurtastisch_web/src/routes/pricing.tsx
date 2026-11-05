@@ -29,7 +29,7 @@ export const Route = createFileRoute("/pricing")({
         content:
           i18n.exists("pricing.pageDesc")
             ? i18n.t("pricing.pageDesc")
-            : "Transparent pricing for Amazon sellers. Scale your customer reviews and solicitations effortlessly.",
+            : "Transparent pricing for custom engraving and personalized products. Scale your studio fulfillment effortlessly.",
       },
       {
         property: "og:title",
@@ -38,7 +38,7 @@ export const Route = createFileRoute("/pricing")({
       {
         property: "og:description",
         content:
-          "Transparent pricing for Amazon sellers. Scale your customer reviews and solicitations effortlessly.",
+          "Transparent pricing for custom engraving and personalized products. Scale your studio fulfillment effortlessly.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/pricing" },
@@ -55,27 +55,27 @@ function PricingPage() {
   const pricingPills = [
     {
       icon: ShieldCheck,
-      tag: "Security",
-      title: "100% SP-API Compliant",
-      desc: "Buyer-seller messaging rules",
+      tag: t("pricing.pill1Tag", "Sicherheit"),
+      title: t("pricing.pill1Title", "100% Freigabe-Garantie"),
+      desc: t("pricing.pill1Desc", "Keine Fertigung ohne Prüfung"),
     },
     {
       icon: Zap,
-      tag: "Instant",
-      title: "Zero Setup Fees",
-      desc: "Active in under 2 minutes",
+      tag: t("pricing.pill2Tag", "Transparent"),
+      title: t("pricing.pill2Title", "Keine Einrichtungsgebühren"),
+      desc: t("pricing.pill2Desc", "Inklusive Korrekturabzüge"),
     },
     {
       icon: RefreshCw,
-      tag: "Flexible",
-      title: "Cancel Anytime",
-      desc: "No long-term contracts",
+      tag: t("pricing.pill3Tag", "Flexibel"),
+      title: t("pricing.pill3Title", "Jederzeit kündbar"),
+      desc: t("pricing.pill3Desc", "Keine Mindestvertragslaufzeit"),
     },
     {
       icon: Globe,
-      tag: "Coverage",
-      title: "11 Marketplaces",
-      desc: "EU & UK store support",
+      tag: t("pricing.pill4Tag", "Reichweite"),
+      title: t("pricing.pill4Title", "EU & Weltweit"),
+      desc: t("pricing.pill4Desc", "Versicherter Paketversand"),
     },
   ];
 
@@ -95,18 +95,18 @@ function PricingPage() {
             <Reveal className="max-w-4xl mx-auto flex flex-col items-center">
               <div className="section-badge mb-4">
                 <Sparkles className="h-3.5 w-3.5 text-brand shrink-0" />
-                <span>Transparent &amp; Scalable Plans</span>
+                <span>{t("pricing.sectionLabel", "Preise")} · {t("pricing.heading2", "Keine versteckten Gebühren")}</span>
               </div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold tracking-tight leading-[1.1] text-navy-deep text-center">
-                <span>Predictable plans for every</span>{" "}
+                <span>{t("pricing.heading1", "Klare Tarife für Ihr")}</span>{" "}
                 <span className="bg-gradient-to-r from-[#0032ab] via-[#2563eb] to-[#7c3aed] text-transparent bg-clip-text">
-                  seller &amp; brand
+                  {t("pricing.headingHighlight", "Produktionsvolumen")}
                 </span>
               </h1>
 
               <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
-                Boost organic Amazon reviews with official automated solicitations. No hidden fees, no setup charges, cancel anytime.
+                {t("pricing.description", "Preise in USD, monatliche Abrechnung für Studio-Zugang und enthaltene Produktionsguthaben. Jederzeit kündbar. Alle Pläne beinhalten Korrekturabzüge und Sendungsverfolgung.")}
               </p>
 
               <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
@@ -114,14 +114,14 @@ function PricingPage() {
                   href="#pricing"
                   className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-7 py-3 text-sm font-bold !text-white shadow-lg shadow-brand/30 hover:-translate-y-0.5 transition-all"
                 >
-                  <span>Explore All Plans</span>
+                  <span>{t("hero.ctaPricing", "Preise ansehen")}</span>
                   <ArrowRight className="h-4 w-4" />
                 </a>
                 <a
                   href="/register"
                   className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-7 py-3 text-sm font-semibold text-navy-deep hover:bg-slate-50 transition-all shadow-xs"
                 >
-                  <span>Register Free First</span>
+                  <span>{t("nav.registerAsSeller", "Individuelle Bestellung")}</span>
                 </a>
               </div>
             </Reveal>

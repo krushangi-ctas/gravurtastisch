@@ -34,17 +34,15 @@ export const Route = createFileRoute("/review-analytics")({
   pendingComponent: ServicePageSkeleton,
   head: () => ({
     meta: [
-      { title: "Amazon Review Analytics & Conversion Intelligence | Gravurtastisch" },
+      { title: `${i18n.t("reviewAnalytics.heroTitle")} ${i18n.t("reviewAnalytics.heroTitleHighlight")} | Gravurtastisch` },
       {
         name: "description",
-        content:
-          "Track review velocity, monitor SKU-level rating deltas, analyze solicitation delivery rates, and accelerate your Amazon Buy Box conversion.",
+        content: i18n.t("reviewAnalytics.heroDesc"),
       },
-      { property: "og:title", content: "Amazon Review Analytics & Insights | Gravurtastisch" },
+      { property: "og:title", content: `${i18n.t("reviewAnalytics.heroTitle")} | Gravurtastisch` },
       {
         property: "og:description",
-        content:
-          "Actionable analytics for Amazon sellers. Measure rating trends, track SKU performance, and optimize review velocity.",
+        content: i18n.t("reviewAnalytics.heroDesc"),
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/review-analytics" },

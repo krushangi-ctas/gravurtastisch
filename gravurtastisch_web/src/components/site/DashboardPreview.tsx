@@ -144,15 +144,15 @@ export function DashboardPreview() {
             <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-4 py-2 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs text-xs text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                Live Studio Engine
+                {t("dashboardPreview.liveStudioEngine", "Live Studio Engine")}
               </span>
               <span className="text-slate-300 dark:text-slate-700">|</span>
               <span className="font-mono text-slate-700 dark:text-slate-200">
-                Avg. Proof Speed: <strong className="text-navy-deep dark:text-white">18 mins</strong>
+                {t("dashboardPreview.avgProofSpeed", "Avg. Proof Speed:")} <strong className="text-navy-deep dark:text-white">18 mins</strong>
               </span>
               <span className="text-slate-300 dark:text-slate-700">|</span>
               <span className="font-mono text-slate-700 dark:text-slate-200">
-                QC Match Rate: <strong className="text-emerald-600">99.8%</strong>
+                {t("dashboardPreview.qcMatchRate", "QC Match Rate:")} <strong className="text-emerald-600">99.8%</strong>
               </span>
             </div>
           </div>
@@ -242,7 +242,7 @@ export function DashboardPreview() {
 
               <div className="flex items-center gap-2 text-xs text-slate-500 font-mono">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>SP-API Live Sync Active</span>
+                <span>{t("dashboardPreview.syncActive", "SP-API Live Sync Active")}</span>
               </div>
             </div>
 
@@ -324,7 +324,7 @@ export function DashboardPreview() {
                             {isApproved ? (
                               <>
                                 <Check className="h-3.5 w-3.5" />
-                                <span>Approved</span>
+                                <span>{t("dashboardPreview.approved", "Approved")}</span>
                               </>
                             ) : (
                               <>
@@ -345,9 +345,9 @@ export function DashboardPreview() {
             <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/06 flex flex-col sm:flex-row sm:items-center justify-between text-xs text-slate-500 gap-2">
               <span className="flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-                Click <strong>"Proof"</strong> above to test interactive approval workflow simulation!
+                {t("dashboardPreview.interactiveTip", "Click \"Proof\" above to test interactive approval workflow simulation!")}
               </span>
-              <span className="font-mono text-[11px]">4 sample jobs shown of 142 daily batches</span>
+              <span className="font-mono text-[11px]">{t("dashboardPreview.sampleJobsCount", "4 sample jobs shown of 142 daily batches")}</span>
             </div>
           </div>
         </Reveal>
@@ -380,7 +380,7 @@ export function DashboardPreview() {
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-white/06 flex items-center justify-between text-[11px] text-[#0032ab] dark:text-brand-bright font-bold">
-                    <span>Studio Feature</span>
+                    <span>{t("dashboardPreview.studioFeature", "Studio Feature")}</span>
                     <span className="text-slate-400 group-hover:translate-x-1 transition-transform">→</span>
                   </div>
                 </div>

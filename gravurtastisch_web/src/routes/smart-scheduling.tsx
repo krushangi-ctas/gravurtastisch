@@ -33,22 +33,21 @@ import {
 } from "lucide-react";
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
 import { FlagDE, FlagFR, FlagGB, FlagIcon } from "@/components/ui/FlagIcon";
+import i18n from "@/i18n/config";
 
 export const Route = createFileRoute("/smart-scheduling")({
   pendingComponent: ServicePageSkeleton,
   head: () => ({
     meta: [
-      { title: "Smart Scheduling for Amazon Custom orders | Gravurtastisch" },
+      { title: `${i18n.t("smartScheduling.heroTitle")} ${i18n.t("smartScheduling.heroTitleHighlight")} | Gravurtastisch` },
       {
         name: "description",
-        content:
-          "Intelligent production job timing compliant with Amazon's 5-30 day window. Optimize open rates with buyer timezone scheduling and product category delay algorithms.",
+        content: i18n.t("smartScheduling.heroDesc"),
       },
-      { property: "og:title", content: "Smart Scheduling & Amazon Compliance | Gravurtastisch" },
+      { property: "og:title", content: `${i18n.t("smartScheduling.heroTitle")} | Gravurtastisch` },
       {
         property: "og:description",
-        content:
-          "Send production jobs at the optimal moment inside Amazon's 5-30 day post-delivery window for maximum conversion lift.",
+        content: i18n.t("smartScheduling.heroDesc"),
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/smart-scheduling" },
@@ -320,10 +319,10 @@ function SmartSchedulingPage() {
                     {/* Embedded Widget: 3-Stage Range Gauge */}
                     <div className="mt-3.5 rounded-xl bg-white/90 border border-slate-200/80 p-2.5 sm:p-3 space-y-2 shadow-2xs">
                       <div className="flex items-center justify-between text-[10.5px] font-mono text-slate-500">
-                        <span className="font-semibold text-slate-600">SLA PROOF GATE</span>
+                        <span className="font-semibold text-slate-600">{t('smartScheduling.slaProofGate', 'SLA PROOF GATE')}</span>
                         <span className="text-[#0032ab] font-bold flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3 text-[#155dfc]" />
-                          AUTO-ENFORCED
+                          {t('smartScheduling.autoEnforced', 'AUTO-ENFORCED')}
                         </span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex p-0.5 gap-1">
@@ -332,19 +331,19 @@ function SmartSchedulingPage() {
                         <div className="h-full w-1/4 bg-slate-300 rounded-full" title="Day 31+ Cutoff" />
                       </div>
                       <div className="flex items-center justify-between text-[10px] pt-0.5">
-                        <span className="text-slate-500 font-medium">Stage 1: Proof Sent</span>
+                        <span className="text-slate-500 font-medium">{t('smartScheduling.stage1ProofSent', 'Stage 1: Proof Sent')}</span>
                         <span className="text-[#0032ab] font-bold flex items-center gap-1">
                           <Sparkles className="h-2.5 w-2.5 text-[#155dfc]" />
-                          Stage 2: Approved
+                          {t('smartScheduling.stage2Approved', 'Stage 2: Approved')}
                         </span>
-                        <span className="text-slate-400 font-medium">Stage 3: Laser Queued</span>
+                        <span className="text-slate-400 font-medium">{t('smartScheduling.stage3LaserQueued', 'Stage 3: Laser Queued')}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">Material Waste Prevention</span>
-                    <span className="font-bold text-[#0032ab]">Zero Bad Custom runs</span>
+                    <span className="font-medium">{t('smartScheduling.materialWastePrevention', 'Material Waste Prevention')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroBadRuns', 'Zero Bad Custom runs')}</span>
                   </div>
                 </div>
               </Reveal>
@@ -395,8 +394,8 @@ function SmartSchedulingPage() {
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">Timezone Intelligence</span>
-                    <span className="font-bold text-[#0032ab]">Zero Midnight Spam</span>
+                    <span className="font-medium">{t('smartScheduling.timezoneIntelligence', 'Timezone Intelligence')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroMidnightSpam', 'Zero Midnight Spam')}</span>
                   </div>
                 </div>
               </Reveal>
@@ -451,8 +450,8 @@ function SmartSchedulingPage() {
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">SKU Throttle Rules</span>
-                    <span className="font-bold text-[#0032ab]">Dynamic Batch Allocation</span>
+                    <span className="font-medium">{t('smartScheduling.skuThrottleRules', 'SKU Throttle Rules')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.dynamicBatchAllocation', 'Dynamic Batch Allocation')}</span>
                   </div>
                 </div>
               </Reveal>
@@ -481,7 +480,7 @@ function SmartSchedulingPage() {
                     <div className="mt-3.5 rounded-xl bg-white/90 border border-slate-200/80 p-2.5 sm:p-3 flex items-center justify-between shadow-2xs">
                       <div>
                         <p className="text-2xl font-extrabold text-navy-deep font-mono tracking-tight leading-none">+38%</p>
-                        <p className="text-[11px] font-medium text-slate-500 mt-1">On-Time Delivery Certainty</p>
+                        <p className="text-[11px] font-medium text-slate-500 mt-1">{t('smartScheduling.onTimeCertainty', 'On-Time Delivery Certainty')}</p>
                       </div>
                       <div className="text-right">
                         <div className="flex items-center justify-end gap-0.5">
@@ -497,8 +496,8 @@ function SmartSchedulingPage() {
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">Capacity Guardrail</span>
-                    <span className="font-bold text-[#0032ab]">Zero Overbooking</span>
+                    <span className="font-medium">{t('smartScheduling.capacityGuardrail', 'Capacity Guardrail')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroOverbooking', 'Zero Overbooking')}</span>
                   </div>
                 </div>
               </Reveal>
