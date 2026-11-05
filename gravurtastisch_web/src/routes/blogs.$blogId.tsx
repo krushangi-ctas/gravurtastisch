@@ -175,17 +175,16 @@ function BlogDetailPage() {
           <div className="h-16 w-16 rounded-2xl bg-rose-500/10 text-rose-500 flex items-center justify-center mb-6">
             <BookOpen className="h-8 w-8" />
           </div>
-          <h1 className="text-3xl font-extrabold font-display mb-3">Article Not Found</h1>
+          <h1 className="text-3xl font-extrabold font-display mb-3">{t("blogs.articleNotFound", "Article Not Found")}</h1>
           <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-            The article you are looking for might have been updated or moved. Check out our latest
-            Gravurtastisch studio guides in our journal.
+            {t("blogs.articleNotFoundDesc", "The article you are looking for might have been updated or moved. Check out our latest Gravurtastisch studio guides in our journal.")}
           </p>
           <Link
             to="/blogs"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-xl btn-glass-primary !text-white font-bold transition-all shadow-lg shadow-brand/25"
           >
             <ArrowLeft className="h-4 w-4" />
-            Return to All Blogs
+            {t("blogs.returnToBlogs", "Return to All Blogs")}
           </Link>
         </Container>
         <Footer />
@@ -234,7 +233,7 @@ function BlogDetailPage() {
               {/* Category / Badge */}
               <div className="section-badge mb-5">
                 <PenTool className="h-3.5 w-3.5 text-brand shrink-0" />
-                <span>Studio craft & personalization</span>
+                <span>{t("blogs.journalBadge", "Studio craft & personalization")}</span>
               </div>
 
               {/* Title */}
@@ -257,10 +256,10 @@ function BlogDetailPage() {
                   </div>
                   <div>
                     <div className="font-bold text-navy-deep flex items-center gap-1.5">
-                      Gravurtastisch Editorial Team
+                      {t("blogs.editorialTeam", "Gravurtastisch Editorial Team")}
                       <ShieldCheck className="h-4 w-4 text-brand" />
                     </div>
-                    <div className="text-xs text-slate-600">Custom engraving & order fulfillment</div>
+                    <div className="text-xs text-slate-600">{t("blogs.editorialTeamSub", "Custom engraving & order fulfillment")}</div>
                   </div>
                 </div>
 
@@ -271,7 +270,7 @@ function BlogDetailPage() {
                   </div>
                   <div className="flex items-center gap-2 text-slate-700">
                     <Clock className="h-4 w-4 text-amber-600" />
-                    <span>{readingTime} min read</span>
+                    <span>{readingTime} {t("blogs.readMin", "min read")}</span>
                   </div>
                 </div>
               </div>
@@ -466,7 +465,7 @@ function BlogDetailPage() {
                         href="/#register"
                         className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl btn-glass-primary !text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-brand/20"
                       >
-                        <span>Start Free</span>
+                        <span>{t("blogs.startFree", "Start Free")}</span>
                         <ArrowRight className="h-3.5 w-3.5" />
                       </a>
                     </div>
@@ -483,7 +482,7 @@ function BlogDetailPage() {
                   <div className="h-10 w-10 rounded-xl bg-white border border-[#0032ab]/15 flex items-center justify-center mb-4 text-brand shadow-xs">
                     <ShieldCheck className="h-5 w-5" />
                   </div>
-                  <h3 className="text-lg font-bold font-display text-navy-deep">Craft-quality workflow</h3>
+                  <h3 className="text-lg font-bold font-display text-navy-deep">{t("blogs.craftQuality", "Craft-quality workflow")}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-700 font-medium">
                     Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage,
                     and scheduled bench time - no guesswork on the shop floor.

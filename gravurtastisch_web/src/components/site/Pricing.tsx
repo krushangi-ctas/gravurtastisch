@@ -113,8 +113,8 @@ export function Pricing() {
 
     if (index === 0) {
       return [
-        starterPerks[0] || "Auto-scheduler",
-        starterPerks[1] || "Basic tracking",
+        starterPerks[0] || "Free digital proofs",
+        starterPerks[1] || "Standard turnaround",
         starterPerks[2] || "Email support",
         marketplaceText,
       ];
@@ -122,16 +122,16 @@ export function Pricing() {
 
     if (isHighlight) {
       return [
-        growthPerks[0] || "Priority scheduling",
-        growthPerks[1] || "Full analytics",
+        growthPerks[0] || "Priority proof queue",
+        growthPerks[1] || "Saved brand templates",
         marketplaceText,
         growthPerks[3] || "Chat support",
       ];
     }
 
     return [
-      starterPerks[0] || "Auto-scheduler",
-      growthPerks[1] || "Full analytics",
+      starterPerks[0] || "Free digital proofs",
+      growthPerks[1] || "Saved brand templates",
       growthPerks[3] || "Chat support",
       marketplaceText,
     ];
@@ -183,7 +183,7 @@ export function Pricing() {
       if (!res.data?.url) {
         throw new Error("Stripe did not return a checkout URL.");
       }
-      // Hosted Stripe Checkout — payment events still arrive via webhook if tab closes
+      // Hosted Stripe Checkout - payment events still arrive via webhook if tab closes
       window.location.href = res.data.url;
     } catch (err) {
       setCheckoutError(
@@ -394,7 +394,7 @@ export function Pricing() {
         </Reveal>
       </Container>
 
-      {/* Stripe checkout email gate — then redirect to Stripe hosted Checkout */}
+      {/* Stripe checkout email gate - then redirect to Stripe hosted Checkout */}
       {selectedPlan && (
         <div
           className="fixed inset-0 z-[80] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm"
@@ -413,7 +413,7 @@ export function Pricing() {
                   Stripe Checkout
                 </p>
                 <h3 id="checkout-title" className="mt-1 text-xl font-extrabold text-navy-deep">
-                  {selectedPlan.name} — €{selectedPlan.price}{getCycleSuffix(selectedPlan.billingCycle)}
+                  {selectedPlan.name} - €{selectedPlan.price}{getCycleSuffix(selectedPlan.billingCycle)}
                 </h3>
                 <span className="inline-block mt-1 text-xs font-semibold px-2.5 py-0.5 rounded-full bg-brand/10 text-brand border border-brand/20">
                   {getCycleBillingText(selectedPlan.billingCycle)}
@@ -451,14 +451,14 @@ export function Pricing() {
               </div>
               <div>
                 <label htmlFor="checkout-name" className="block text-xs font-semibold text-navy-deep mb-1.5">
-                  Name <span className="font-normal text-slate-body">(optional)</span>
+                  {t("pricing.nameLabel", "Name")} <span className="font-normal text-slate-body">({t("pricing.optional", "optional")})</span>
                 </label>
                 <input
                   id="checkout-name"
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Studio / contact name"
+                  placeholder={t("pricing.namePlaceholder", "Studio / contact name")}
                   className="w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
               </div>
@@ -477,11 +477,11 @@ export function Pricing() {
                 {checkoutLoading ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin text-white" />
-                    <span className="!text-white">Opening Stripe…</span>
+                    <span className="!text-white">{t("pricing.openingStripe", "Opening Stripe…")}</span>
                   </>
                 ) : (
                   <>
-                    <span className="!text-white">Continue to Stripe</span>
+                    <span className="!text-white">{t("pricing.continueToStripe", "Continue to Stripe")}</span>
                     <ArrowRight className="h-4 w-4 text-white" />
                   </>
                 )}

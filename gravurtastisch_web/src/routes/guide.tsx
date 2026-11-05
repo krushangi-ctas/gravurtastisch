@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import i18n from "@/i18n/config";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/site/Container";
@@ -36,10 +37,10 @@ export const Route = createFileRoute("/guide")({
   pendingComponent: GuidePageSkeleton,
   head: () => ({
     meta: [
-      { title: "Gravurtastisch Guide" },
-      { name: "description", content: "Step-by-step guide for setting up Amazon review automation." },
-      { property: "og:title", content: "Gravurtastisch Guide" },
-      { property: "og:description", content: "Learn how to configure order listing, credentials, and automated Amazon production jobs." },
+      { title: i18n.exists("guide.heroBadge") ? `${i18n.t("guide.heroBadge")} | Gravurtastisch` : "Gravurtastisch Studio Guide" },
+      { name: "description", content: i18n.t("guide.heroDesc") },
+      { property: "og:title", content: "Gravurtastisch Studio Guide" },
+      { property: "og:description", content: i18n.t("guide.heroDesc") },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -274,18 +275,18 @@ function Guide() {
                       <div className="mt-4 grid grid-cols-1 gap-2 pt-3 border-t border-[#0032ab]/10">
                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50/80 border border-[#0032ab]/10 shadow-2xs">
                           <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
-                          <span className="text-xs font-bold text-navy-deep">Zero CSV Chaos</span>
-                          <span className="text-[11px] text-slate-500 ml-auto">Direct API sync</span>
+                          <span className="text-xs font-bold text-navy-deep">{t('guide.pillarZeroCsvTitle', 'Zero CSV Chaos')}</span>
+                          <span className="text-[11px] text-slate-500 ml-auto">{t('guide.pillarZeroCsvSub', 'Direct API sync')}</span>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50/80 border border-[#0032ab]/10 shadow-2xs">
                           <CheckCircle2 className="h-4 w-4 text-brand shrink-0" />
-                          <span className="text-xs font-bold text-navy-deep">24h Proof SLA</span>
-                          <span className="text-[11px] text-slate-500 ml-auto">Automated nudges</span>
+                          <span className="text-xs font-bold text-navy-deep">{t('guide.pillarProofSlaTitle', '24h Proof SLA')}</span>
+                          <span className="text-[11px] text-slate-500 ml-auto">{t('guide.pillarProofSlaSub', 'Automated nudges')}</span>
                         </div>
                         <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-50/80 border border-[#0032ab]/10 shadow-2xs">
                           <CheckCircle2 className="h-4 w-4 text-indigo-600 shrink-0" />
-                          <span className="text-xs font-bold text-navy-deep">100% Traceability</span>
-                          <span className="text-[11px] text-slate-500 ml-auto">Proof to dispatch</span>
+                          <span className="text-xs font-bold text-navy-deep">{t('guide.pillarTraceabilityTitle', '100% Traceability')}</span>
+                          <span className="text-[11px] text-slate-500 ml-auto">{t('guide.pillarTraceabilitySub', 'Proof to dispatch')}</span>
                         </div>
                       </div>
                     </div>
@@ -296,7 +297,7 @@ function Guide() {
                         <div className="flex items-center gap-2">
                           <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
                           <h4 className="text-[11px] font-mono font-black uppercase tracking-wider text-navy-deep">
-                            Automated Daemon Engines
+                            {t('guide.daemonEnginesTitle', 'Automated Daemon Engines')}
                           </h4>
                         </div>
                         <span className="text-[9.5px] font-mono font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
@@ -315,7 +316,7 @@ function Guide() {
                               <strong className="text-xs sm:text-sm font-extrabold text-navy-deep block leading-tight">
                                 {t('guide.orderFetchCronTitle') || "Order import sync"}
                               </strong>
-                              <span className="text-[10px] font-bold text-[#0032ab]">Active Storefront Inflow</span>
+                              <span className="text-[10px] font-bold text-[#0032ab]">{t('guide.inflowBadge', 'Active Storefront Inflow')}</span>
                             </div>
                           </div>
                           <span className="text-[9.5px] font-mono font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200 shrink-0">
@@ -338,7 +339,7 @@ function Guide() {
                               <strong className="text-xs sm:text-sm font-extrabold text-navy-deep block leading-tight">
                                 {t('guide.feedbackRequestCronTitle') || "Proof reminder sync"}
                               </strong>
-                              <span className="text-[10px] font-bold text-[#0284c7]">Anti-Stall Production Gate</span>
+                              <span className="text-[10px] font-bold text-[#0284c7]">{t('guide.antiStallBadge', 'Anti-Stall Production Gate')}</span>
                             </div>
                           </div>
                           <span className="text-[9.5px] font-mono font-extrabold text-[#0032ab] bg-[#0032ab]/10 px-2 py-0.5 rounded-md border border-[#0032ab]/20 shrink-0">
@@ -703,6 +704,7 @@ function Guide() {
   ==========================================================================
 */}
 function OrderListingStreamSvg() {
+  const { t } = useTranslation();
   return (
     <svg
       viewBox="0 0 540 370"
@@ -801,13 +803,13 @@ function OrderListingStreamSvg() {
           {/* Flag & Channel */}
           <g transform="translate(265, 23)">
             <FlagDE x={0} y={0} width={15} height={10} />
-            <text x="22" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">DE Store</text>
+            <text x="22" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">{t('guide.storeDE', 'DE Store')}</text>
           </g>
           {/* Action Capsule */}
           <g transform="translate(345, 18)">
             <rect x="0" y="0" width="105" height="30" rx="15" fill="#0032ab" stroke="#155dfc" strokeWidth="1" />
             <text x="52" y="19" textAnchor="middle" fill="#ffffff" fontFamily="system-ui" fontSize="9" fontWeight="900">
-              Approve proof ➔
+              {t('guide.approveProofBtn', 'Approve proof ➔')}
             </text>
           </g>
         </g>
@@ -828,12 +830,12 @@ function OrderListingStreamSvg() {
           </g>
           <g transform="translate(265, 23)">
             <FlagFR x={0} y={0} width={15} height={10} />
-            <text x="22" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">FR Store</text>
+            <text x="22" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">{t('guide.storeFR', 'FR Store')}</text>
           </g>
           <g transform="translate(355, 20)">
             <rect x="0" y="0" width="95" height="26" rx="13" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="0.8" />
             <text x="47" y="17" textAnchor="middle" fill="#065f46" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
-              ✓ Dispatched
+              {t('guide.dispatchedStatus', '✓ Dispatched')}
             </text>
           </g>
         </g>
@@ -854,12 +856,12 @@ function OrderListingStreamSvg() {
           </g>
           <g transform="translate(265, 23)">
             <FlagGB x={0} y={0} width={15} height={10} />
-            <text x="22" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">UK Store</text>
+            <text x="22" y="9" fill="#0b132b" fontFamily="system-ui" fontSize="8.5" fontWeight="800">{t('guide.storeUK', 'UK Store')}</text>
           </g>
           <g transform="translate(355, 20)">
             <rect x="0" y="0" width="95" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.8" />
             <text x="47" y="17" textAnchor="middle" fill="#0032ab" fontFamily="system-ui" fontSize="8.5" fontWeight="800">
-              ⚡ In Craft Slot
+              {t('guide.inCraftSlot', '⚡ In Craft Slot')}
             </text>
           </g>
         </g>

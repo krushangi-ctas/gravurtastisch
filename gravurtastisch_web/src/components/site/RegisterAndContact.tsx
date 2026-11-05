@@ -411,7 +411,7 @@ function RegisterSection() {
                           <span className="font-semibold text-foreground truncate">
                             {currentPlan.name}{" "}
                             <span className="text-brand font-bold">
-                              — €{currentPlan.price}
+                              - €{currentPlan.price}
                               {currentPlan.billingCycle === 3
                                 ? "/yr"
                                 : currentPlan.billingCycle === 2
@@ -769,7 +769,7 @@ function ContactSection() {
   const workingHours =
     config?.contact?.working_hours ||
     (currentLang === "en"
-      ? "Mon–Fri, 10:30 AM – 8:30 PM IST"
+      ? "Mon-Fri, 10:30 AM - 8:30 PM IST"
       : t("contact.salesHours"));
 
   const contactAddress =

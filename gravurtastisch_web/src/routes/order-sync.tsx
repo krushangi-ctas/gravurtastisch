@@ -28,6 +28,7 @@ import {
   Headphones
 } from "lucide-react";
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
+import i18n from "@/i18n/config";
 import {
   FlagIcon,
   FlagGB,
@@ -41,17 +42,15 @@ export const Route = createFileRoute("/order-sync")({
   pendingComponent: ServicePageSkeleton,
   head: () => ({
     meta: [
-      { title: "Real-Time Amazon Order Sync Engine | Gravurtastisch" },
+      { title: `${i18n.t("orderSync.heroTitle")} ${i18n.t("orderSync.heroTitleHighlight")} | Gravurtastisch` },
       {
         name: "description",
-        content:
-          "Automated real-time Amazon order synchronization for Retail & wholesale sellers. Filter cancellations, manage multi-marketplace orders, and prepare solicitations seamlessly.",
+        content: i18n.t("orderSync.heroDesc"),
       },
-      { property: "og:title", content: "Amazon Order Sync Engine | Gravurtastisch" },
+      { property: "og:title", content: `${i18n.t("orderSync.heroTitle")} | Gravurtastisch` },
       {
         property: "og:description",
-        content:
-          "Instant two-way order ingestion from Amazon order desk across 12+ marketplaces with automated return & refund guardrails.",
+        content: i18n.t("orderSync.heroDesc"),
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "/order-sync" },
@@ -611,9 +610,9 @@ function OrderSyncPage() {
                   <div className="flex items-center justify-between border-b border-slate-200/80 pb-4 mb-4 text-xs">
                     <div className="flex items-center gap-2">
                       <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                      <span className="font-extrabold text-navy-deep tracking-wide">LIVE ORDER SYNC FEED</span>
+                      <span className="font-extrabold text-navy-deep tracking-wide">{t('orderSync.liveFeedTitle', 'LIVE ORDER SYNC FEED')}</span>
                     </div>
-                    <span className="font-mono text-[#0032ab] bg-[#0032ab]/10 border border-[#0032ab]/20 px-2.5 py-1 rounded-md font-bold">AUTO-REFRESH: 5m</span>
+                    <span className="font-mono text-[#0032ab] bg-[#0032ab]/10 border border-[#0032ab]/20 px-2.5 py-1 rounded-md font-bold">{t('orderSync.autoRefresh', 'AUTO-REFRESH: 5m')}</span>
                   </div>
 
                   <div className="overflow-x-auto min-w-0 w-full custom-table-scrollbar">
@@ -770,6 +769,7 @@ function OrderSyncPage() {
 }
 
 function OrderSyncHeroSvg() {
+  const { t } = useTranslation();
   return (
     <svg
       viewBox="0 0 600 430"
@@ -1159,13 +1159,13 @@ function OrderSyncHeroSvg() {
           </text>
         </g>
 
-        {/* API Endpoint Details */}
+        {/* Production Dispatch Details */}
         <g transform="translate(12, 116)">
           <text x="0" y="0" fill="#0f172a" fontFamily="system-ui" fontSize="9.5" fontWeight="800">
-            Official Amazon In-Box
+            Automated Studio Dispatch
           </text>
           <text x="0" y="14" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="700">
-            POST /solicitations/v1/orders
+            Real-Time Production Queue
           </text>
         </g>
 
@@ -1190,10 +1190,10 @@ function OrderSyncHeroSvg() {
         <g transform="translate(12, 216)">
           <rect x="0" y="0" width="146" height="52" rx="8" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
           <text x="8" y="16" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
-            Delivery: <tspan fill="#0f172a" fontWeight="800">Studio production API Official</tspan>
+            Delivery: <tspan fill="#0f172a" fontWeight="800">{t('orderSync.studioApiOfficial', 'Studio production API Official')}</tspan>
           </text>
           <text x="8" y="30" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
-            Buyer Opt-Outs: <tspan fill="#059669" fontWeight="800">Auto-Filtered</tspan>
+            Buyer Opt-Outs: <tspan fill="#059669" fontWeight="800">{t('orderSync.autoFiltered', 'Auto-Filtered')}</tspan>
           </text>
           <text x="8" y="44" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="600">
             Security: <tspan fill="#0032ab" fontWeight="800">100% Policy Compliant</tspan>
@@ -1520,10 +1520,10 @@ function OrderSyncFaqSvg() {
         {/* Center Vertical Divider */}
         <line x1="228" y1="14" x2="228" y2="116" stroke="#0032ab" strokeWidth="0.8" strokeOpacity="0.12" />
 
-        {/* SECTION B: Right Half - Amazon 5-30 Day TOS Window Stepper */}
+        {/* SECTION B: Right Half - Amazon 5-30 Day Window Stepper */}
         <g transform="translate(244, 16)">
           <text x="0" y="10" fill="#0b132b" fontFamily="system-ui" fontSize="11" fontWeight="800">
-            Solicitation Pipeline (solicitations/v1)
+            Automated Studio Pipeline
           </text>
           <rect x="180" y="-2" width="60" height="16" rx="4" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.6" />
           <text x="210" y="9.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7" fontWeight="800">

@@ -26,6 +26,9 @@ const passport = require('passport');
 const { jwtStrategy } = require('../config/passport');
 const auth = require('../middlewares/auth');
 
+// HTTP client for proxying auth requests to core backend
+const axios = require('axios');
+
 // Kein CORS: Editor, Puppeteer-Export und Amazon-Bereich laufen alle auf derselben Herkunft.
 // Bis 23.10.2026 stand hier cors({ origin: true, credentials: true }) — damit hätte JEDE fremde
 // Webseite im Browser eines angemeldeten Mitarbeiters /orders, /session usw. mitlesen können
@@ -48,7 +51,7 @@ const auth = require('../middlewares/auth');
 // [EN] it passes through; Puppeteer export and Editor are same-origin, nginx forwards the Host.
 const _AENDERND = new Set(['POST', 'PUT', 'PATCH', 'DELETE']);
 app.use((req, res, next) => {
-  if (!_AENDERND.has(req.method) && !req.path.startsWith('/start-cron/')) return next();
+  if (!_AENDERND.has(req.method) && !req.path.startsWith('/start-cron/') && !req.path.startsWith('/v2/start-cron/')) return next();
   const site = req.get('Sec-Fetch-Site'), origin = req.get('Origin');
   let fremd = site === 'cross-site' || site === 'same-site';
   if (!site && origin) {
@@ -69,11 +72,89 @@ app.use((req, res, next) => {
   if (/\.log$/i.test(req.path)) return res.status(404).send('Not found');
   next();
 });
+// Dynamic config endpoint for frontend - sends config derived from .env (SITE_URL)
+app.get('/config.js', (req, res) => {
+  res.type('application/javascript');
+  res.send(`window.CONFIG = Object.freeze(${JSON.stringify({
+    SITE_URL: config.coreApiUrl,
+  })});`);
+});
+
+app.get(['/login', '/sign-in', '/login.html'], (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'login.html'));
+});
 app.use(express.static(`${__dirname}/public/`));
 
 // JWT authentication (from Core)
 app.use(passport.initialize());
 passport.use('jwt', jwtStrategy);
+
+// Core backend URL for auth proxy (from config.js / .env)
+const CORE_BACKEND_URL = config.coreApiUrl;
+
+// Proxy auth endpoints to core backend to avoid CORS issues
+app.post(['/v1/auth/send-otp', '/v2/auth/send-otp'], async (req, res) => {
+  try {
+    const response = await axios.post(`${CORE_BACKEND_URL}/v1/auth/send-otp`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Failed to send OTP' });
+  }
+});
+
+app.post(['/v1/auth/verify-otp', '/v2/auth/verify-otp'], async (req, res) => {
+  try {
+    const response = await axios.post(`${CORE_BACKEND_URL}/v1/auth/verify-otp`, req.body, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    // Forward cookies from core backend response
+    if (response.headers['set-cookie']) {
+      res.setHeader('Set-Cookie', response.headers['set-cookie']);
+    }
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Failed to verify OTP' });
+  }
+});
+
+app.post(['/v1/auth/logout', '/v2/auth/logout'], async (req, res) => {
+  try {
+    const response = await axios.post(`${CORE_BACKEND_URL}/v1/auth/logout`, req.body, {
+      headers: { 'Content-Type': 'application/json', cookie: req.headers.cookie }
+    });
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    res.status(error.response?.status || 500).json(error.response?.data || { error: 'Failed to logout' });
+  }
+});
+
+// Universal API Auth Guard: Ensure all data/actions strictly require valid JWT authentication
+app.use((req, res, next) => {
+  const p = req.path;
+  // Whitelist public endpoints & static assets
+  if (
+    p === '/' ||
+    p === '/login.html' ||
+    p === '/login' ||
+    p === '/sign-in' ||
+    p === '/abgemeldet.html' ||
+    p === '/config.js' ||
+    p === '/health' ||
+    p === '/v2/health' ||
+    p === '/v2/wer-bin-ich' ||
+    p.startsWith('/v1/auth/') ||
+    p.startsWith('/v2/auth/') ||
+    p.startsWith('/auth/') ||
+    p.startsWith('/vendor/') ||
+    /\.(css|js|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot)$/i.test(p)
+  ) {
+    return next();
+  }
+  // All other API routes require valid JWT auth!
+  auth()(req, res, next);
+});
 
 // ── Progress State ────────────────────────────────────────────────────────────
 // [EN] ── Progress State ────────────────────────────────────────────────────────
@@ -254,9 +335,26 @@ app.get('/v2/health', (req, res) => {
 // Authorization-Kopf durch; ohne Kopf kommt der Aufruf direkt auf dem Server (3002 nur lokal).
 // [EN] Who is logged in? (Settings -> Login). nginx checks Basic Auth and passes the
 // [EN] Authorization header through; without header the call arrives directly on the server (3002 local only).
-app.get('/v2/wer-bin-ich', auth(), (req, res) => {
-  const m = String(req.headers.authorization || '').match(/^Basic\s+(.+)$/i);
-  const benutzer = m ? Buffer.from(m[1], 'base64').toString('utf8').split(':')[0] : null;
+// Optional JWT authentication - validates token if present but doesn't require it
+const optionalJwtAuth = (req, res, next) => {
+  const authHeader = String(req.headers.authorization || '');
+  const m = authHeader.match(/^Bearer\s+(.+)$/i);
+  if (m) {
+    // Token present - validate it
+    passport.authenticate('jwt', { session: false }, (err, user, info) => {
+      if (err) return next(err);
+      if (user) req.user = user;
+      next();
+    })(req, res, next);
+  } else {
+    // No token - continue without authentication
+    next();
+  }
+};
+
+app.get('/v2/wer-bin-ich', optionalJwtAuth, (req, res) => {
+  // If JWT token is valid, req.user will be populated
+  const benutzer = req.user?.email || req.user?.name || null;
   res.set('Cache-Control', 'no-store').json({ benutzer });
 });
 
@@ -363,7 +461,7 @@ app.get('/v2/fonts/:name', auth(), (req, res) => {
 // [EN] The fixed standard image of F02 test plates with Amazon crop. Stored outside
 // [EN] public/ intentionally (see testfoto/LIESMICH.txt) — only these two files are served.
 const TESTFOTO_DATEIEN = new Set(['standardbild.jpg', 'standardbild-placement.json']);
-app.get('/v2/testfoto/:name', (req, res) => {
+app.get('/v2/testfoto/:name', auth(), (req, res) => {
   const name = path.basename(req.params.name);
   if (!TESTFOTO_DATEIEN.has(name)) return res.status(404).send('Not found');
   res.sendFile(path.join(__dirname, 'testfoto', name));
@@ -792,7 +890,7 @@ const etagOfRaw = (text) =>
 const EMPTY_STORE = '[]';
 
 function mountJsonStore(route, file, { backup = false, label }) {
-  app.get('/v2' + route, auth(), (req, res) => {
+  app.get(['/v2' + route, route], auth(), (req, res) => {
     try {
       const raw = readRaw(file) ?? EMPTY_STORE;
       JSON.parse(raw); // nur Gültigkeits-Prüfung: korrupt → 500 statt [] (s.o.)
@@ -807,7 +905,7 @@ function mountJsonStore(route, file, { backup = false, label }) {
       res.status(500).json({ error: `${label} unlesbar: ` + e.message });
     }
   });
-  app.post('/v2' + route, auth(), (req, res) => {
+  app.post(['/v2' + route, route], auth(), (req, res) => {
     try {
       const data = req.body;
       if (!Array.isArray(data)) return res.status(400).json({ error: 'Invalid' });
@@ -1455,7 +1553,7 @@ app.get('/v2/rekla/bilder', auth(), (req, res) => {
   // [EN] quelle=vorschau: preview cache (cards in step ③); otherwise actual folder.
   const vorschau = req.query.quelle === 'vorschau';
   const dir = vorschau ? path.join(REKLA_VORSCHAU, orderId) : path.join(__dirname, 'public', 'exports', rel);
-  const urlVon = r => vorschau ? `/rekla/vorschaudatei/${orderId}/${r.split('/').map(encodeURIComponent).join('/')}`
+  const urlVon = r => vorschau ? `/v2/rekla/vorschaudatei/${orderId}/${r.split('/').map(encodeURIComponent).join('/')}`
                                : encodeURI(`/exports/${rel}/${r}`);
   let status = 0;
   try { status = fs.statSync(path.join(dir, 'status.txt')).mtimeMs; } catch (_) {}
@@ -1488,7 +1586,7 @@ app.get('/v2/rekla/bilder', auth(), (req, res) => {
     const plaetze = liste(d).filter(f => f.isFile() && /^platz\d+\.bmp$/i.test(f.name)).map(f => {
       const st = fs.statSync(path.join(d, f.name));
       return { nr: Number(f.name.match(/\d+/)[0]), groesse: st.size, zeit: st.mtimeMs,
-               url: `/rekla/variante/${orderId}/${encodeURIComponent(v.name)}/${f.name}` };
+               url: `/v2/rekla/variante/${orderId}/${encodeURIComponent(v.name)}/${f.name}` };
     }).filter(p => p.groesse > 1024).sort((a, b) => a.nr - b.nr);
     if (plaetze.length) ordner.push({ ordner: `Varianten/${v.name}`, plaetze, dateien: [], vorlage: false });
   }
@@ -1745,7 +1843,7 @@ app.get('/v2/rekla/manuell/:orderId', auth(), (req, res) => {
 // express.static nicht findet (public/<Tag>/000-… gibt es nie).
 // [EN] Order JSON and photos under same URL as real order. Only handles what
 // [EN] express.static does not find (public/<Date>/000-... never exists).
-app.get(/^\/v2\/\d{4}-\d{2}-\d{2}\/(000-\d{7}-\d{7})\/(item-\d+)\/([\w-][\w.-]*)$/, auth(), (req, res) => {
+app.get(/^\/(?:v2\/)?\d{4}-\d{2}-\d{2}\/(000-\d{7}-\d{7})\/(item-\d+)\/([\w-][\w.-]*)$/, auth(), (req, res) => {
   const [orderId, item, datei] = [req.params[0], req.params[1], req.params[2]];
   const f = path.join(REKLA_MANUELL, orderId, item, datei);
   if (datei === 'meta.json' || !fs.existsSync(f) || !fs.statSync(f).isFile()) return res.status(404).end();
@@ -1863,7 +1961,7 @@ try {
   const amazonBereichPath = fs.existsSync(path.join(__dirname, 'amazon-bereich/server'))
     ? path.join(__dirname, 'amazon-bereich/server')
     : '/var/www/printomation/amazon-bereich/server';
-  require(amazonBereichPath)(app, { express,
+  require(amazonBereichPath)(app, { express, auth: auth(),
     asinTitel: () => new Map(asinCheck.liste().map(p => [p.asin, p.titel])) });
 } catch (e) { logger.warn('Amazon-Bereich nicht geladen:', e.message); }
 

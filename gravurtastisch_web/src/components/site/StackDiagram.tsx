@@ -25,9 +25,11 @@ export function StackDiagram() {
 
   const layers = [
     {
-      id: "00",
+      id: "01",
       labelKey: "layer1Label",
       subKey: "layer1Sub",
+      purposeKey: "layer1Purpose",
+      detailKey: "layer1Detail",
       tag: ".touch",
       icon: Activity,
       purpose: "Customer Touchpoint",
@@ -36,9 +38,11 @@ export function StackDiagram() {
       protocol: "REST · Webhooks · SMTP",
     },
     {
-      id: "01",
+      id: "02",
       labelKey: "layer2Label",
       subKey: "layer2Sub",
+      purposeKey: "layer2Purpose",
+      detailKey: "layer2Detail",
       tag: ".api",
       icon: Terminal,
       purpose: "Production API",
@@ -47,9 +51,11 @@ export function StackDiagram() {
       protocol: "gRPC · Event Queue",
     },
     {
-      id: "02",
+      id: "03",
       labelKey: "layer3Label",
       subKey: "layer3Sub",
+      purposeKey: "layer3Purpose",
+      detailKey: "layer3Detail",
       tag: ".queue",
       icon: Cpu,
       purpose: "Quality Queue",
@@ -58,9 +64,11 @@ export function StackDiagram() {
       protocol: "Zero-Drift Orchestrator",
     },
     {
-      id: "03",
+      id: "04",
       labelKey: "layer4Label",
       subKey: "layer4Sub",
+      purposeKey: "layer4Purpose",
+      detailKey: "layer4Detail",
       tag: ".sync",
       icon: RefreshCw,
       purpose: "Sync Engine",
@@ -69,9 +77,11 @@ export function StackDiagram() {
       protocol: "Official SP-API · Webhooks",
     },
     {
-      id: "04",
+      id: "05",
       labelKey: "layer5Label",
       subKey: "layer5Sub",
+      purposeKey: "layer5Purpose",
+      detailKey: "layer5Detail",
       tag: ".vault",
       icon: Database,
       purpose: "Asset Vault",
@@ -214,7 +224,7 @@ export function StackDiagram() {
                 </h3>
 
                 <p className="mt-3 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-xl">
-                  {current.detail}
+                  {t(`stackDiagram.${current.detailKey}`, current.detail)}
                 </p>
               </div>
 
@@ -225,7 +235,7 @@ export function StackDiagram() {
                     Architecture Role
                   </span>
                   <span className="text-xs sm:text-sm font-bold text-navy-deep dark:text-white mt-1 block">
-                    {current.purpose}
+                    {t(`stackDiagram.${current.purposeKey}`, current.purpose)}
                   </span>
                 </div>
 

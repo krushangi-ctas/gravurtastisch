@@ -4,7 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Abgemeldet · Printomation</title>
-<link rel="icon" href="data:,">
+<link rel="icon" type="image/svg+xml" href="g.svg" />
+<link rel="shortcut icon" href="g.svg" />
+<link rel="apple-touch-icon" href="g.svg" />
 <!-- Abmelde-Seite (Einstellungen → Anmeldung → Abmelden). nginx liefert sie OHNE Anmeldung aus
      (location = /abgemeldet.html) und zeigt sie als Inhalt des 401, solange das Cookie
      pm_abgemeldet=<benutzer> zum angemeldeten Benutzer passt — s. sites-available/printomation. -->
@@ -29,7 +31,7 @@
     <div class="logo"><i></i>PRINTOMATION</div>
     <h1>Abgemeldet</h1>
     <p id="text">Melde dich neu an — mit einem anderen Benutzer, z. B. <b>entwickler</b>.</p>
-    <button class="haupt" onclick="location.href='/'">Neu anmelden</button>
+    <button class="haupt" onclick="location.href='login.html'">Neu anmelden</button>
     <button class="neben" id="zurueck" onclick="zurueck()" hidden>Abbrechen</button>
     <p class="hinweis" style="margin-top:16px">Safari trägt oft noch den alten Benutzer ein — einfach überschreiben.
       Die Sperre für den alten Benutzer endet nach 5 Minuten von selbst.</p>

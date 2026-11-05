@@ -72,19 +72,19 @@ export function Nav() {
       href: "/amazon-sp-api",
       label: t("footer.colPlatformLink1") || "Studio Integrations",
       icon: ShieldCheck,
-      description: "Secure shop connections & artwork intake",
+      description: t("nav.service1Desc", "Secure shop connections & artwork intake"),
     },
     {
       href: "/order-sync",
       label: t("footer.colPlatformLink2") || "Order Desk",
       icon: RefreshCw,
-      description: "Live custom-order tracking from proof to ship",
+      description: t("nav.service2Desc", "Live custom-order tracking from proof to ship"),
     },
     {
       href: "/smart-scheduling",
       label: t("footer.colPlatformLink3") || "Production Timing",
       icon: CalendarClock,
-      description: "Craft slots timed around proofs & capacity",
+      description: t("nav.service3Desc", "Craft slots timed around proofs & capacity"),
     },
   ];
 

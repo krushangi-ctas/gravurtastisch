@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { XCircle } from "lucide-react";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -22,6 +23,7 @@ export const Route = createFileRoute("/payment/cancel")({
 });
 
 function PaymentCancelPage() {
+  const { t } = useTranslation();
   const { session_id, plan, email } = Route.useSearch();
 
   useEffect(() => {
@@ -46,11 +48,10 @@ function PaymentCancelPage() {
               <XCircle className="h-10 w-10 text-rose-500" />
             </div>
             <h1 className="mt-5 text-2xl font-extrabold text-navy-deep">
-              Checkout canceled
+              {t('payment.cancelTitle', 'Checkout canceled')}
             </h1>
             <p className="mt-2 text-slate-body text-sm leading-relaxed">
-              No charge was made. Your registration has been saved as inactive.
-              You can complete your subscription anytime whenever you are ready.
+              {t('payment.cancelDesc', 'No charge was made. Your registration has been saved as inactive. You can complete your subscription anytime whenever you are ready.')}
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
               <Link
@@ -58,14 +59,14 @@ function PaymentCancelPage() {
                 hash="pricing"
                 className="inline-flex rounded-full btn-glass-primary px-6 py-3 text-sm font-bold !text-white transition"
               >
-                Choose a plan
+                {t('payment.choosePlan', 'Choose a plan')}
               </Link>
               <Link
                 to="/"
                 hash="contact"
                 className="inline-flex rounded-full border border-border px-6 py-3 text-sm font-semibold text-foreground hover:bg-surface-alt transition"
               >
-                Talk to us
+                {t('payment.talkToUs', 'Talk to us')}
               </Link>
             </div>
           </div>

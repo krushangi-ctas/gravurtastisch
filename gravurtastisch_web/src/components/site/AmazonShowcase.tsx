@@ -137,7 +137,7 @@ export function AmazonShowcase() {
                         {t("amazonShowcase.bullet3Title", "100% Policy Safe")}
                       </h4>
                       <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
-                        {t("amazonShowcase.bullet3Desc", "Strict 5–30 day rule with zero risk")}
+                        {t("amazonShowcase.bullet3Desc", "Strict 5-30 day rule with zero risk")}
                       </p>
                     </div>
                   </div>
@@ -338,19 +338,19 @@ export function AmazonShowcase() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
                 <div className="text-xl sm:text-2xl font-extrabold text-[#0032ab] font-mono">3.8x</div>
-                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Faster proof turnaround</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.fasterTurnaround", "Faster proof turnaround")}</div>
               </div>
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
                 <div className="text-xl sm:text-2xl font-extrabold text-emerald-600 font-mono">100%</div>
-                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Free digital proofs</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.freeDigitalProofs", "Free digital proofs")}</div>
               </div>
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
                 <div className="text-xl sm:text-2xl font-extrabold text-[#0032ab] font-mono">0%</div>
-                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Brand / bleed mismatch</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.bleedMismatch", "Brand / bleed mismatch")}</div>
               </div>
               <div className="p-3.5 sm:p-4 rounded-2xl bg-white/80 dark:bg-navy/60 border border-slate-200/90 dark:border-white/10 shadow-2xs text-center backdrop-blur-sm">
                 <div className="text-xl sm:text-2xl font-extrabold text-purple-600 font-mono">1 Hub</div>
-                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">Instead of 5 separate vendors</div>
+                <div className="text-xs font-medium text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.insteadOfVendors", "Instead of 5 separate vendors")}</div>
               </div>
             </div>
           </Reveal>
@@ -398,16 +398,16 @@ export function AmazonShowcase() {
                   <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
                     <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-[#0032ab]" />
-                      Artwork & SKU Intake
+                      {t("amazonShowcase.row1Title", "Artwork & SKU Intake")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">Asset collection & routing</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.row1Sub", "Asset collection & routing")}</span>
                   </div>
                   <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint1", "Emailing artwork to different suppliers for each product type")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
-                        Lost attachments & manual sorting
+                        {t("amazonShowcase.row1ManualBadge", "Lost attachments & manual sorting")}
                       </span>
                     </div>
                   </div>
@@ -416,7 +416,7 @@ export function AmazonShowcase() {
                     <div>
                       <p className="font-medium">{t("amazonShowcase.autoPoint1", "Central uploads with automatic SKU and product-line routing")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
-                        Instant SKU parsing · Zero email loss
+                        {t("amazonShowcase.row1AutoBadge", "Instant SKU parsing · Zero email loss")}
                       </span>
                     </div>
                   </div>
@@ -427,16 +427,16 @@ export function AmazonShowcase() {
                   <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
                     <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-emerald-500" />
-                      Digital Proofs & Revisions
+                      {t("amazonShowcase.row2Title", "Digital Proofs & Revisions")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">Pre-production verification</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.preProdVerification", "Pre-production verification")}</span>
                   </div>
                   <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint2", "Approving proofs on inconsistent templates and missing bleed zones")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
-                        Wasted blanks & wrong positions
+                        {t("amazonShowcase.row2ManualBadge", "Wasted blanks & wrong positions")}
                       </span>
                     </div>
                   </div>
@@ -445,7 +445,7 @@ export function AmazonShowcase() {
                     <div>
                       <p className="font-medium">{t("amazonShowcase.autoPoint2", "Free digital proofs with revision rounds before production unlocks")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
-                        Proof-gated · 100% Guaranteed safe
+                        {t("amazonShowcase.row2AutoBadge", "Proof-gated · 100% Guaranteed safe")}
                       </span>
                     </div>
                   </div>
@@ -456,16 +456,16 @@ export function AmazonShowcase() {
                   <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
                     <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-amber-500" />
-                      Live Stage Tracking
+                      {t("amazonShowcase.row3Title", "Live Stage Tracking")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">Real-time status visibility</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.realtimeVisibility", "Real-time status visibility")}</span>
                   </div>
                   <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint3", "No single view of what's in production or already shipped")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
-                        Constant "where is my order" queries
+                        {t("amazonShowcase.row3ManualBadge", "Constant \"where is my order\" queries")}
                       </span>
                     </div>
                   </div>
@@ -474,7 +474,7 @@ export function AmazonShowcase() {
                     <div>
                       <p className="font-medium">{t("amazonShowcase.autoPoint3", "Status you can trust: proof → crafting → quality → shipped")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
-                        Clear timeline milestones · Live tracking
+                        {t("amazonShowcase.row3AutoBadge", "Clear timeline milestones · Live tracking")}
                       </span>
                     </div>
                   </div>
@@ -485,16 +485,16 @@ export function AmazonShowcase() {
                   <div className="md:col-span-3 p-4 sm:p-5 flex flex-col justify-center">
                     <span className="text-xs font-bold text-navy-deep dark:text-white flex items-center gap-1.5">
                       <span className="h-2 w-2 rounded-full bg-purple-500" />
-                      Brand Fidelity & Repeat Runs
+                      {t("amazonShowcase.row4Title", "Brand Fidelity & Repeat Runs")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">Consistent specs across runs</span>
+                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.consistentSpecs", "Consistent specs across runs")}</span>
                   </div>
                   <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint4", "Reorders that drift from your original brand colors or font choices")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-rose-600 bg-rose-100/60 px-2 py-0.5 rounded-md">
-                        Inconsistent customer perception
+                        {t("amazonShowcase.row4ManualBadge", "Inconsistent customer perception")}
                       </span>
                     </div>
                   </div>
@@ -503,7 +503,7 @@ export function AmazonShowcase() {
                     <div>
                       <p className="font-medium">{t("amazonShowcase.autoPoint4", "Saved brand presets for faster reorders and corporate runs")}</p>
                       <span className="inline-block mt-1 text-[10px] font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-100/70 dark:bg-emerald-950/40 px-2 py-0.5 rounded-md font-semibold">
-                        Vector-locked presets · Exact match guarantee
+                        {t("amazonShowcase.row4AutoBadge", "Saved presets · Calibrated repeat runs")}
                       </span>
                     </div>
                   </div>

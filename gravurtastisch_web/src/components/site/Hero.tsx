@@ -73,8 +73,8 @@ export function Hero() {
           {/* Frosted Glass Pill Badge: Your Design Our Craft 💜 */}
           <div className="absolute bottom-[6%] right-[8%] bg-white/75 backdrop-blur-xl border border-white/90 rounded-2xl px-3.5 py-2 shadow-[0_10px_25px_rgba(99,102,241,0.2)] flex items-center gap-2">
             <div className="text-left">
-              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">Your Design</p>
-              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">Our Craft</p>
+              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">{t("hero.floatingYourDesign", "Your Design")}</p>
+              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">{t("hero.floatingOurCraft", "Our Craft")}</p>
             </div>
             <span className="text-xs">💜</span>
           </div>
@@ -87,7 +87,7 @@ export function Hero() {
           {/* Top Pill Badge */}
           <div className="section-badge mb-6">
             <Sparkles className="h-3.5 w-3.5 text-brand shrink-0" />
-            <span>Custom Art • Digital Proofs • Fast Delivery</span>
+            <span>{t("hero.badge", "Personalisierte Gravur & Sonderanfertigung")}</span>
           </div>
 
           {/* Main Headline */}
@@ -101,7 +101,7 @@ export function Hero() {
           {/* Description */}
           <p className="mt-6 max-w-2xl text-sm sm:text-base lg:text-lg text-slate-600 leading-[1.65] font-normal text-center mx-auto">
             {t("hero.description") ||
-              "From photo mugs and kitchen accessories to apparel and keepsakes – Gravurtastisch turns your artwork into finished pieces with digital proofs, studio-grade engraving, and dependable delivery."}
+              "From photo mugs and kitchen accessories to apparel and keepsakes - Gravurtastisch turns your artwork into finished pieces with digital proofs, studio-grade engraving, and dependable delivery."}
           </p>
 
           {/* CTA Buttons */}
@@ -143,15 +143,15 @@ export function Hero() {
                   {t("hero.statSendWindow") || "Proof turnaround"}
                 </p>
                 <p className="text-xs text-slate-500 mt-1 font-medium">
-                  Digital proof ready before production
+                  {t("hero.proofSub", "Digital proof ready before production")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-600 font-semibold">
-                <span className="flex items-center gap-1">⚡ Express Proofing</span>
+                <span className="flex items-center gap-1">⚡ {t("hero.expressProofing", "Express Proofing")}</span>
                 <span className="flex items-center gap-1">
-                  <Shield className="h-3.5 w-3.5 fill-sky-600 text-sky-600" /> Guaranteed
+                  <Shield className="h-3.5 w-3.5 fill-sky-600 text-sky-600" /> {t("hero.guaranteed", "Guaranteed")}
                 </span>
               </div>
             </div>
@@ -164,7 +164,7 @@ export function Hero() {
                   <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200/70 px-2.5 py-0.5 rounded-full">
-                  ✦ 4.9 RATING
+                  ✦ 4.9 {t("hero.ratingBadge", "RATING")}
                 </span>
               </div>
 
@@ -177,13 +177,13 @@ export function Hero() {
                   {t("hero.statReviewLift") || "Happy clients"}
                 </p>
                 <p className="text-xs text-slate-500 mt-1 font-medium">
-                  Verified custom orders completed
+                  {t("hero.happyClientsSub", "Verified custom orders completed")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-800 font-semibold">
-                <span>Five-Star Quality</span>
+                <span>{t("hero.fiveStarQuality", "Five-Star Quality")}</span>
                 <span className="text-amber-500 tracking-wider font-bold">★★★★★</span>
               </div>
             </div>
@@ -196,7 +196,7 @@ export function Hero() {
                   <Truck className="h-5 w-5" />
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 rounded-full">
-                  ✦ EU WIDE
+                  ✦ {t("hero.euWideBadge", "EU WIDE")}
                 </span>
               </div>
 
@@ -209,15 +209,15 @@ export function Hero() {
                   {t("hero.statUptime") || "On-time ship rate"}
                 </p>
                 <p className="text-xs text-slate-500 mt-1 font-medium">
-                  Tracked courier dispatch across EU
+                  {t("hero.uptimeSub", "Tracked courier dispatch across EU")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
-                <span className="flex items-center gap-1">📦 Direct Studio Shipping</span>
+                <span className="flex items-center gap-1">📦 {t("hero.directStudioShipping", "Direct Studio Shipping")}</span>
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> Insured
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> {t("hero.insured", "Insured")}
                 </span>
               </div>
             </div>

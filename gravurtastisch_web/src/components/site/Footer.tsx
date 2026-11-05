@@ -192,7 +192,7 @@ export function Footer() {
                   <Mail className="h-4 w-4" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">Email Us</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">{t('footer.emailUs', 'Email Us')}</span>
                   <span className="text-xs sm:text-sm font-bold text-navy-deep group-hover:text-brand transition-colors truncate block">
                     {contactEmail}
                   </span>
@@ -207,7 +207,7 @@ export function Footer() {
                   <Phone className="h-4 w-4" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">Direct Line</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">{t('footer.directLine', 'Direct Line')}</span>
                   <span className="text-xs sm:text-sm font-bold text-navy-deep group-hover:text-brand transition-colors truncate block">
                     {contactPhone}
                   </span>
@@ -219,7 +219,7 @@ export function Footer() {
                   <MapPin className="h-4 w-4" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">Studio Address</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">{t('footer.studioAddress', 'Studio Address')}</span>
                   <span className="text-xs text-slate-700 leading-relaxed block font-medium">
                     {contactAddress}
                   </span>
@@ -360,7 +360,7 @@ export function Footer() {
               onClick={scrollToTop}
               className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-blue-50/90 border border-slate-300/90 hover:border-brand/50 text-xs font-bold text-slate-800 hover:text-brand transition-all shadow-xs hover:shadow-[0_4px_12px_rgba(0,50,171,0.1)] hover:-translate-y-0.5 cursor-pointer"
             >
-              <span>Back to top</span>
+              <span>{t('footer.backToTop', 'Back to top')}</span>
               <ArrowUp className="h-3.5 w-3.5 text-brand group-hover:-translate-y-0.5 transition-transform" />
             </button>
           </div>

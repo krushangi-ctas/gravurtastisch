@@ -265,7 +265,7 @@ export interface CheckoutSessionResponse {
   };
 }
 
-/** POST /v1/payments/checkout — create Stripe Checkout Session */
+/** POST /v1/payments/checkout - create Stripe Checkout Session */
 export async function createCheckoutSession(data: {
   planId: string;
   email: string;
@@ -295,7 +295,7 @@ export interface PaymentSessionStatus {
   };
 }
 
-/** GET /v1/payments/session/:sessionId — payment status after Stripe return */
+/** GET /v1/payments/session/:sessionId - payment status after Stripe return */
 export async function getPaymentSession(
   sessionId: string
 ): Promise<PaymentSessionStatus> {
@@ -304,7 +304,7 @@ export async function getPaymentSession(
   );
 }
 
-/** POST /v1/payments/cancel — mark checkout session canceled and persist inactive seller */
+/** POST /v1/payments/cancel - mark checkout session canceled and persist inactive seller */
 export async function cancelPaymentSession(data: {
   sessionId?: string;
   planId?: string;
