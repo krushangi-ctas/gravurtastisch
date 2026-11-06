@@ -16,5 +16,11 @@ export default defineConfig({
     server: {
       allowedHosts: ["reviewsnapp.com"],
     },
+    build: {
+      minify: "esbuild",
+      cssMinify: true,
+      reportCompressedSize: false,
+      chunkSizeWarningLimit: 1000,
+    },
   },
 });

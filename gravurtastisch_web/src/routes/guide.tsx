@@ -32,20 +32,21 @@ import {
 
 import { GuidePageSkeleton } from "@/components/skeletons/GuidePageSkeleton";
 import { FlagDE, FlagFR, FlagGB } from "@/components/ui/FlagIcon";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/guide")({
   pendingComponent: GuidePageSkeleton,
-  head: () => ({
-    meta: [
-      { title: i18n.exists("guide.heroBadge") ? `${i18n.t("guide.heroBadge")} | Gravurtastisch` : "Gravurtastisch Studio Guide" },
-      { name: "description", content: i18n.t("guide.heroDesc") },
-      { property: "og:title", content: "Gravurtastisch Studio Guide" },
-      { property: "og:description", content: i18n.t("guide.heroDesc") },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "/guide" }],
-  }),
+  head: () =>
+    seo({
+      title: i18n.exists("guide.heroBadge")
+        ? `${i18n.t("guide.heroBadge")} - Gravurtastisch Studio Guide`
+        : "Step-by-Step Custom Order Guide - Gravurtastisch",
+      description: i18n.exists("guide.heroDesc")
+        ? i18n.t("guide.heroDesc")
+        : "Follow this guide to submit artwork, approve proofs, track production, and manage custom reorders step by step.",
+      url: "/guide",
+      keywords: ["custom order guide", "lasergravur anleitung", "studio workflow", "proofing guide"],
+    }),
   component: Guide,
 });
 

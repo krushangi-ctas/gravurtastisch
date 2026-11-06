@@ -6,6 +6,7 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/site/Container";
 import { cancelPaymentSession } from "@/lib/api";
+import { seo } from "@/utils/seo";
 
 type PaymentCancelSearch = {
   session_id?: string;
@@ -19,6 +20,13 @@ export const Route = createFileRoute("/payment/cancel")({
     plan: typeof search.plan === "string" ? search.plan : undefined,
     email: typeof search.email === "string" ? search.email : undefined,
   }),
+  head: () =>
+    seo({
+      title: "Payment Cancelled - Gravurtastisch",
+      description: "Payment was cancelled or interrupted. Return to plans or contact support.",
+      url: "/payment/cancel",
+      noindex: true,
+    }),
   component: PaymentCancelPage,
 });
 

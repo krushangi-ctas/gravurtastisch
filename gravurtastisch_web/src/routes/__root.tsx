@@ -18,6 +18,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "../components/ui/toast";
 import { ScrollToTopButton } from "../components/site/ScrollToTopButton";
 import { API_V1 } from "../lib/api";
+import { DEFAULT_SITE_URL, DEFAULT_OG_IMAGE } from "@/utils/seo";
 
 function NotFoundComponent() {
   const { t } = useTranslation();
@@ -86,14 +87,43 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Gravurtastisch" },
-      { name: "description", content: "Automated Amazon review requests for FBA sellers" },
+      { title: "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts" },
+      {
+        name: "description",
+        content:
+          "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery.",
+      },
       { name: "author", content: "Gravurtastisch" },
-      { property: "og:title", content: "Gravurtastisch" },
-      { property: "og:description", content: "Automated Amazon review requests for FBA sellers" },
+      { name: "robots", content: "index, follow" },
+      {
+        name: "googlebot",
+        content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
+      },
+      { property: "og:site_name", content: "Gravurtastisch" },
       { property: "og:type", content: "website" },
+      { property: "og:title", content: "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts" },
+      {
+        property: "og:description",
+        content:
+          "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery.",
+      },
+      { property: "og:url", content: DEFAULT_SITE_URL },
+      { property: "og:image", content: DEFAULT_OG_IMAGE },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Gravurtastisch Studio" },
+      { property: "og:locale", content: "de_DE" },
+      { property: "og:locale:alternate", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:site", content: "@gravurtastisch" },
+      { name: "twitter:creator", content: "@gravurtastisch" },
+      { name: "twitter:title", content: "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts" },
+      {
+        name: "twitter:description",
+        content:
+          "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery.",
+      },
+      { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
@@ -103,8 +133,48 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap",
+        rel: "preload",
+        as: "style",
+        href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        children: `(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap';document.head.appendChild(l);})();`,
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "Organization",
+          "name": "Gravurtastisch",
+          "url": DEFAULT_SITE_URL,
+          "logo": `${DEFAULT_SITE_URL}/g.svg`,
+          "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
+          "email": "info@gravurtastisch.com",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "A-865/866, Money Plant High Street, Jagatpur Road, Sarkhej-Gandhinagar Hwy, Gota",
+            "addressLocality": "Ahmedabad",
+            "addressRegion": "Gujarat",
+            "postalCode": "382470",
+            "addressCountry": "IN"
+          },
+          "sameAs": [
+            "https://www.linkedin.com/company/gravurtastisch",
+            "https://www.facebook.com/gravurtastisch",
+            "https://www.instagram.com/gravurtastisch"
+          ]
+        }),
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebSite",
+          "name": "Gravurtastisch",
+          "url": DEFAULT_SITE_URL
+        }),
       },
     ],
   }),
@@ -134,8 +204,10 @@ function RootComponent() {
   const location = useLocation();
   const lenisRef = useRef<Lenis | null>(null);
 
-  // Global Lenis smooth scrolling for all pages
+  // Global Lenis smooth scrolling for desktop only (mobile native hardware-accelerated momentum scrolling has 0 overhead)
   useEffect(() => {
+    if (typeof window === "undefined" || window.innerWidth < 768) return;
+
     const lenis = new Lenis({
       autoRaf: true,
       allowNestedScroll: true,
@@ -172,13 +244,23 @@ function RootComponent() {
     }
   }, [location.pathname, location.hash]);
 
-  // Keep-alive: Pings backend /health every 5 minutes to prevent sleep
+  // Keep-alive: Pings backend /health safely to prevent sleep without blocking initial load or Lighthouse
   useEffect(() => {
+    if (typeof window === "undefined") return;
+
     const healthUrl = `${API_V1.replace(/\/v1$/, "")}/health`;
     const ping = () => {
-      fetch(healthUrl, { method: "GET", cache: "no-store" }).catch(() => {});
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4000);
+        fetch(healthUrl, { method: "GET", cache: "no-store", signal: controller.signal })
+          .catch(() => {})
+          .finally(() => clearTimeout(timeoutId));
+      } catch {}
     };
-    const t = setTimeout(ping, 3000);
+
+    // Delay first ping by 15s to keep initial load and Core Web Vitals unblocked
+    const t = setTimeout(ping, 15000);
     const id = setInterval(ping, 5 * 60 * 1000);
     return () => {
       clearTimeout(t);

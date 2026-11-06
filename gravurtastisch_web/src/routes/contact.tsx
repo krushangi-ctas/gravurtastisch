@@ -30,38 +30,20 @@ import {
 } from "@/components/ui/accordion";
 import { FlagDE, FlagGB, FlagFR, FlagIcon } from "@/components/ui/FlagIcon";
 import i18n from "@/i18n/config";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/contact")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          i18n.exists("contact.pageTitle")
-            ? i18n.t("contact.pageTitle")
-            : "Contact Us - Gravurtastisch Studio",
-      },
-      {
-        name: "description",
-        content:
-          i18n.exists("contact.pageDesc")
-            ? i18n.t("contact.pageDesc")
-            : "Get in touch with Gravurtastisch. Send us a message about custom products, proofs, orders, or support. We reply within one business day.",
-      },
-      {
-        property: "og:title",
-        content: "Contact Gravurtastisch Studio",
-      },
-      {
-        property: "og:description",
-        content:
-          "Have questions about custom projects, bulk orders, or Amazon integration? Talk to our studio team.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/contact" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "/contact" }],
-  }),
+  head: () =>
+    seo({
+      title: i18n.exists("contact.pageTitle")
+        ? i18n.t("contact.pageTitle")
+        : "Contact Us - Gravurtastisch Studio",
+      description: i18n.exists("contact.pageDesc")
+        ? i18n.t("contact.pageDesc")
+        : "Get in touch with Gravurtastisch. Send us a message about custom products, proofs, orders, or support. We reply within one business day.",
+      url: "/contact",
+      keywords: ["contact gravurtastisch", "gravur anfrage", "kundenservice gravur", "studio support"],
+    }),
   component: ContactPage,
 });
 

@@ -29,26 +29,19 @@ import {
 } from "lucide-react";
 import i18n from "@/i18n/config";
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/review-analytics")({
   pendingComponent: ServicePageSkeleton,
-  head: () => ({
-    meta: [
-      { title: `${i18n.t("reviewAnalytics.heroTitle")} ${i18n.t("reviewAnalytics.heroTitleHighlight")} | Gravurtastisch` },
-      {
-        name: "description",
-        content: i18n.t("reviewAnalytics.heroDesc"),
-      },
-      { property: "og:title", content: `${i18n.t("reviewAnalytics.heroTitle")} | Gravurtastisch` },
-      {
-        property: "og:description",
-        content: i18n.t("reviewAnalytics.heroDesc"),
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/review-analytics" },
-    ],
-    links: [{ rel: "canonical", href: "/review-analytics" }],
-  }),
+  head: () =>
+    seo({
+      title: "Review Performance Analytics - Gravurtastisch Studio",
+      description: i18n.exists("reviewAnalytics.heroDesc")
+        ? i18n.t("reviewAnalytics.heroDesc")
+        : "Live Amazon review velocity, customer satisfaction ratings, SKU deltas, and fulfillment analytics in one dashboard.",
+      url: "/review-analytics",
+      keywords: ["review analytics", "amazon bewertungen analyse", "sku performance", "seller metrics"],
+    }),
   component: ReviewAnalyticsPage,
 });
 

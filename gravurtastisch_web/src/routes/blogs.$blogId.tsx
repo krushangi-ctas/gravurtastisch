@@ -28,18 +28,63 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { BlogDetailSkeleton } from "@/components/skeletons/BlogDetailSkeleton";
+import { seo, createArticleSchema, DEFAULT_OG_IMAGE } from "@/utils/seo";
 
 export const Route = createFileRoute("/blogs/$blogId")({
   pendingComponent: BlogDetailSkeleton,
-  head: () => ({
-    meta: [
-      { title: "Gravurtastisch Journal - Studio Insights" },
-      {
-        name: "description",
-        content: "Deep dives on custom engraving workflows, proofing, production scheduling, and gift fulfillment.",
-      },
-    ],
-  }),
+  loader: async ({ params }) => {
+    try {
+      const res = await getBlogById(params.blogId);
+      return { blog: res?.data ?? null };
+    } catch {
+      return { blog: null };
+    }
+  },
+  head: ({ loaderData, params }) => {
+    const blog = loaderData?.blog;
+    const title = blog?.blog_title
+      ? `${blog.blog_title} - Gravurtastisch Journal`
+      : "Gravurtastisch Journal - Studio Insights";
+    const description =
+      blog?.short_description ||
+      "Deep dives on custom engraving workflows, proofing, production scheduling, and gift fulfillment.";
+    const image = blog?.full_image_urls?.[0] || DEFAULT_OG_IMAGE;
+    const slug = blog?.slug || params.blogId;
+    const url = `/blogs/${slug}`;
+
+    const { meta, links } = seo({
+      title,
+      description,
+      image,
+      url,
+      type: "article",
+      publishedTime: blog?.createdAt,
+      modifiedTime: blog?.updatedAt || blog?.createdAt,
+      author: "Gravurtastisch Studio",
+    });
+
+    return {
+      meta,
+      links,
+      scripts: blog
+        ? [
+            {
+              type: "application/ld+json",
+              children: JSON.stringify(
+                createArticleSchema({
+                  title: blog.blog_title,
+                  description,
+                  url,
+                  image,
+                  datePublished: blog.createdAt,
+                  dateModified: blog.updatedAt,
+                })
+              ),
+            },
+          ]
+        : [],
+    };
+  },
   component: BlogDetailPage,
 });
 

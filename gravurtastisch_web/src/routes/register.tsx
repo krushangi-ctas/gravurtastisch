@@ -32,38 +32,47 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import i18n from "@/i18n/config";
+import { seo, createFaqSchema } from "@/utils/seo";
 
 export const Route = createFileRoute("/register")({
-  head: () => ({
-    meta: [
+  head: () => {
+    const { meta, links } = seo({
+      title: i18n.exists("register.pageTitle")
+        ? i18n.t("register.pageTitle")
+        : "Custom Order & Registration - Gravurtastisch",
+      description: i18n.exists("register.pageDesc")
+        ? i18n.t("register.pageDesc")
+        : "Submit your custom order or register your seller account for automated studio fulfillment, digital proofs, and laser engraving.",
+      url: "/register",
+      keywords: ["custom order registration", "lasergravur auftrag", "amazon seller intake", "gravurtastisch registration"],
+    });
+
+    const faqs = [
       {
-        title:
-          i18n.exists("register.pageTitle")
-            ? i18n.t("register.pageTitle")
-            : "Registration - Gravurtastisch",
+        q: "Is there any setup fee or long-term commitment required to register?",
+        a: "No. Account registration and initial intake consultations are 100% free of charge with zero setup fees.",
       },
       {
-        name: "description",
-        content:
-          i18n.exists("register.pageDesc")
-            ? i18n.t("register.pageDesc")
-            : "Submit your custom order or register your seller account for automated studio fulfillment, digital proofs, and laser engraving.",
+        q: "How does Gravurtastisch connect to my Amazon Seller Central account safely?",
+        a: "We connect via Amazon's official Selling Partner API (SP-API) using OAuth 2.0 authorization.",
       },
       {
-        property: "og:title",
-        content: "Gravurtastisch - Custom Order & Seller Registration",
+        q: "What vector formats should I submit for custom laser engraving?",
+        a: "We recommend vector formats such as SVG, AI (Adobe Illustrator), EPS, and vector PDF.",
       },
-      {
-        property: "og:description",
-        content:
-          "Start your personalized project or register as an Amazon seller for automated studio fulfillment and laser engraving.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/register" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "/register" }],
-  }),
+    ];
+
+    return {
+      meta,
+      links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(createFaqSchema(faqs)),
+        },
+      ],
+    };
+  },
   component: RegisterPage,
 });
 

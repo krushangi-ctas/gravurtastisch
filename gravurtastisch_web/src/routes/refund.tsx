@@ -3,17 +3,21 @@ import { useTranslation } from "react-i18next";
 import { LegalLayout } from "@/components/site/LegalLayout";
 import { LegalPageSkeleton } from "@/components/skeletons/LegalPageSkeleton";
 import i18n from "@/i18n/config";
+import { seo } from "@/utils/seo";
 
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
 
 export const Route = createFileRoute("/refund")({
   pendingComponent: LegalPageSkeleton,
-  head: () => ({
-    meta: [
-      { title: i18n.t('meta.refundTitle') },
-      { name: "description", content: i18n.t('meta.refundDesc') },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: i18n.t("meta.refundTitle", "Refund Policy - Gravurtastisch"),
+      description: i18n.t(
+        "meta.refundDesc",
+        "Refund and cancellation policy for Gravurtastisch plans and custom orders."
+      ),
+      url: "/refund",
+    }),
   component: RefundPage,
 });
 

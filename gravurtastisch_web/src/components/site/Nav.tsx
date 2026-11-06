@@ -178,7 +178,9 @@ export function Nav() {
           <img
             src={logoURl}
             className="h-10 md:h-11 lg:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-            alt={t("nav.logoAlt")}
+            alt={t("nav.logoAlt") || "Gravurtastisch Logo"}
+            width="180"
+            height="48"
           />
         </Link>
 

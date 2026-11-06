@@ -3,17 +3,21 @@ import { useTranslation } from "react-i18next";
 import { LegalLayout } from "@/components/site/LegalLayout";
 import { LegalPageSkeleton } from "@/components/skeletons/LegalPageSkeleton";
 import i18n from "@/i18n/config";
+import { seo } from "@/utils/seo";
 
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
 
 export const Route = createFileRoute("/privacy")({
   pendingComponent: LegalPageSkeleton,
-  head: () => ({
-    meta: [
-      { title: i18n.t('meta.privacyTitle') },
-      { name: "description", content: i18n.t('meta.privacyDesc') },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: i18n.t("meta.privacyTitle", "Privacy Policy - Gravurtastisch"),
+      description: i18n.t(
+        "meta.privacyDesc",
+        "How Gravurtastisch collects, uses, and protects your personal information and artwork files."
+      ),
+      url: "/privacy",
+    }),
   component: PrivacyPage,
 });
 
