@@ -1,0 +1,19 @@
+# Gravurtastisch
+
+> Premium Custom Laser Engraving, Photo Cups & Personalized Gifts Studio
+
+Gravurtastisch is a specialized studio offering precision laser engraving, photo cups, custom apparel, and personalized keepsakes with free digital proofs, German-craft quality, and reliable delivery.
+
+## Key Services
+- Custom laser engraving on wood, metal, slate, and glass
+- High-definition ceramic photo mugs and drinkware
+- Personalized corporate gifts and Amazon FBA fulfillment
+- Vector preflight check and custom order customization
+
+## Main Links
+- [Home](https://gravurtastisch-web.vercel.app/): Studio overview and custom gift catalog.
+- [Pricing](https://gravurtastisch-web.vercel.app/pricing): Transparent tiered pricing for single and bulk orders.
+- [Guide](https://gravurtastisch-web.vercel.app/guide): Artwork setup, DPI recommendations, and engraving guidelines.
+- [Blogs](https://gravurtastisch-web.vercel.app/blogs): Gift ideas, technical engraving tutorials, and design tips.
+- [Contact](https://gravurtastisch-web.vercel.app/contact): Get in touch with our design and support team.
+- [Register](https://gravurtastisch-web.vercel.app/register): Customer registration for order tracking.
