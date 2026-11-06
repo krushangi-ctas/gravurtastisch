@@ -4,17 +4,12 @@ import i18n from "@/i18n/config";
 import { seo, createOrganizationSchema, createWebSiteSchema } from "@/utils/seo";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
+import { ValueProp } from "@/components/site/ValueProp";
+import { HowItWorks } from "@/components/site/HowItWorks";
+import { AmazonShowcase } from "@/components/site/AmazonShowcase";
+import { Footer } from "@/components/site/Footer";
 import { HomeSkeleton } from "@/components/skeletons/HomeSkeleton";
 
-const ValueProp = lazy(() =>
-  import("@/components/site/ValueProp").then((m) => ({ default: m.ValueProp }))
-);
-const HowItWorks = lazy(() =>
-  import("@/components/site/HowItWorks").then((m) => ({ default: m.HowItWorks }))
-);
-const AmazonShowcase = lazy(() =>
-  import("@/components/site/AmazonShowcase").then((m) => ({ default: m.AmazonShowcase }))
-);
 const VectorPreflightShowcase = lazy(() =>
   import("@/components/site/VectorPreflightShowcase").then((m) => ({ default: m.VectorPreflightShowcase }))
 );
@@ -23,9 +18,6 @@ const DashboardPreview = lazy(() =>
 );
 const StackDiagram = lazy(() =>
   import("@/components/site/StackDiagram").then((m) => ({ default: m.StackDiagram }))
-);
-const Footer = lazy(() =>
-  import("@/components/site/Footer").then((m) => ({ default: m.Footer }))
 );
 
 export const Route = createFileRoute("/")({
@@ -79,18 +71,18 @@ function Index() {
       <Nav />
       <main>
         <Hero />
+        <ValueProp />
         <Suspense fallback={null}>
-          <ValueProp />
           <VectorPreflightShowcase />
-          <HowItWorks />
-          <AmazonShowcase />
+        </Suspense>
+        <HowItWorks />
+        <AmazonShowcase />
+        <Suspense fallback={null}>
           <DashboardPreview />
           <StackDiagram />
         </Suspense>
       </main>
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <Footer />
     </div>
   );
 }
