@@ -6,11 +6,19 @@ import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/site/Container";
 import { getPaymentSession } from "@/lib/api";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/payment/success")({
   validateSearch: (search: Record<string, unknown>) => ({
     session_id: typeof search.session_id === "string" ? search.session_id : "",
   }),
+  head: () =>
+    seo({
+      title: "Payment Successful - Gravurtastisch",
+      description: "Payment confirmed. Your quota is active and orders are syncing.",
+      url: "/payment/success",
+      noindex: true,
+    }),
   component: PaymentSuccessPage,
 });
 

@@ -3,17 +3,21 @@ import { useTranslation } from "react-i18next";
 import { LegalLayout } from "@/components/site/LegalLayout";
 import { LegalPageSkeleton } from "@/components/skeletons/LegalPageSkeleton";
 import i18n from "@/i18n/config";
+import { seo } from "@/utils/seo";
 
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
 
 export const Route = createFileRoute("/terms")({
   pendingComponent: LegalPageSkeleton,
-  head: () => ({
-    meta: [
-      { title: i18n.t('meta.termsTitle') },
-      { name: "description", content: i18n.t('meta.termsDesc') },
-    ],
-  }),
+  head: () =>
+    seo({
+      title: i18n.t("meta.termsTitle", "Terms and Conditions - Gravurtastisch"),
+      description: i18n.t(
+        "meta.termsDesc",
+        "Terms and conditions for using the Gravurtastisch website and custom order services."
+      ),
+      url: "/terms",
+    }),
   component: TermsPage,
 });
 

@@ -37,26 +37,19 @@ import {
   FlagIT,
   FlagES,
 } from "@/components/ui/FlagIcon";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/order-sync")({
   pendingComponent: ServicePageSkeleton,
-  head: () => ({
-    meta: [
-      { title: `${i18n.t("orderSync.heroTitle")} ${i18n.t("orderSync.heroTitleHighlight")} | Gravurtastisch` },
-      {
-        name: "description",
-        content: i18n.t("orderSync.heroDesc"),
-      },
-      { property: "og:title", content: `${i18n.t("orderSync.heroTitle")} | Gravurtastisch` },
-      {
-        property: "og:description",
-        content: i18n.t("orderSync.heroDesc"),
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/order-sync" },
-    ],
-    links: [{ rel: "canonical", href: "/order-sync" }],
-  }),
+  head: () =>
+    seo({
+      title: "Real-time Order Synchronization - Gravurtastisch Studio",
+      description: i18n.exists("orderSync.heroDesc")
+        ? i18n.t("orderSync.heroDesc")
+        : "Bi-directional order status synchronization from initial proof approval to final parcel delivery across European marketplaces.",
+      url: "/order-sync",
+      keywords: ["order synchronization", "bestell synchronisation", "gravur status", "carrier tracking dhl"],
+    }),
   component: OrderSyncPage,
 });
 

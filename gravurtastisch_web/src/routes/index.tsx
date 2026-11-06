@@ -1,32 +1,68 @@
+import { lazy, Suspense } from "react";
 import { createFileRoute, useLocation } from "@tanstack/react-router";
 import i18n from "@/i18n/config";
+import { seo, createOrganizationSchema, createWebSiteSchema } from "@/utils/seo";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
-import { ValueProp } from "@/components/site/ValueProp";
-import { VectorPreflightShowcase } from "@/components/site/VectorPreflightShowcase";
-import { AmazonShowcase } from "@/components/site/AmazonShowcase";
-import { HowItWorks } from "@/components/site/HowItWorks";
-import { DashboardPreview } from "@/components/site/DashboardPreview";
-import { StackDiagram } from "@/components/site/StackDiagram";
-import { Footer } from "@/components/site/Footer";
 import { HomeSkeleton } from "@/components/skeletons/HomeSkeleton";
+
+const ValueProp = lazy(() =>
+  import("@/components/site/ValueProp").then((m) => ({ default: m.ValueProp }))
+);
+const HowItWorks = lazy(() =>
+  import("@/components/site/HowItWorks").then((m) => ({ default: m.HowItWorks }))
+);
+const AmazonShowcase = lazy(() =>
+  import("@/components/site/AmazonShowcase").then((m) => ({ default: m.AmazonShowcase }))
+);
+const VectorPreflightShowcase = lazy(() =>
+  import("@/components/site/VectorPreflightShowcase").then((m) => ({ default: m.VectorPreflightShowcase }))
+);
+const DashboardPreview = lazy(() =>
+  import("@/components/site/DashboardPreview").then((m) => ({ default: m.DashboardPreview }))
+);
+const StackDiagram = lazy(() =>
+  import("@/components/site/StackDiagram").then((m) => ({ default: m.StackDiagram }))
+);
+const Footer = lazy(() =>
+  import("@/components/site/Footer").then((m) => ({ default: m.Footer }))
+);
 
 export const Route = createFileRoute("/")({
   pendingComponent: HomeSkeleton,
-  head: () => ({
-    meta: [
-      { title: i18n.t('meta.indexTitle') },
-      { name: "description", content: i18n.t('meta.indexDesc') },
-      { property: "og:title", content: i18n.t('meta.ogTitle') },
-      { property: "og:description", content: i18n.t('meta.ogDesc') },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/" },
-      { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: i18n.t('meta.twitterTitle') },
-      { name: "twitter:description", content: i18n.t('meta.twitterDesc') },
-    ],
-    links: [{ rel: "canonical", href: "/" }],
-  }),
+  head: () => {
+    const { meta, links } = seo({
+      title: i18n.t("meta.indexTitle", "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts"),
+      description: i18n.t(
+        "meta.indexDesc",
+        "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery."
+      ),
+      url: "/",
+      keywords: [
+        "lasergravur",
+        "fototassen",
+        "personalisierte geschenke",
+        "custom engraving",
+        "amazon fba fulfillment",
+        "geschenkideen mit gravur",
+      ],
+    });
+
+    return {
+      meta,
+      links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(createOrganizationSchema()),
+        },
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(createWebSiteSchema()),
+        },
+      ],
+    };
+  },
   component: Index,
 });
 
@@ -43,14 +79,18 @@ function Index() {
       <Nav />
       <main>
         <Hero />
-        <ValueProp />
-        <VectorPreflightShowcase />
-        <HowItWorks />
-        <AmazonShowcase />
-        <DashboardPreview />
-        <StackDiagram />
+        <Suspense fallback={null}>
+          <ValueProp />
+          <VectorPreflightShowcase />
+          <HowItWorks />
+          <AmazonShowcase />
+          <DashboardPreview />
+          <StackDiagram />
+        </Suspense>
       </main>
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }

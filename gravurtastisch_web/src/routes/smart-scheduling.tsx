@@ -34,26 +34,19 @@ import {
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
 import { FlagDE, FlagFR, FlagGB, FlagIcon } from "@/components/ui/FlagIcon";
 import i18n from "@/i18n/config";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/smart-scheduling")({
   pendingComponent: ServicePageSkeleton,
-  head: () => ({
-    meta: [
-      { title: `${i18n.t("smartScheduling.heroTitle")} ${i18n.t("smartScheduling.heroTitleHighlight")} | Gravurtastisch` },
-      {
-        name: "description",
-        content: i18n.t("smartScheduling.heroDesc"),
-      },
-      { property: "og:title", content: `${i18n.t("smartScheduling.heroTitle")} | Gravurtastisch` },
-      {
-        property: "og:description",
-        content: i18n.t("smartScheduling.heroDesc"),
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/smart-scheduling" },
-    ],
-    links: [{ rel: "canonical", href: "/smart-scheduling" }],
-  }),
+  head: () =>
+    seo({
+      title: "Smart Production & Scheduling - Gravurtastisch Studio",
+      description: i18n.exists("smartScheduling.heroDesc")
+        ? i18n.t("smartScheduling.heroDesc")
+        : "Intelligent batch scheduling, laser bed queue balancing, proof locks, and automated transit notifications.",
+      url: "/smart-scheduling",
+      keywords: ["smart scheduling", "fertigungsplanung", "laser bed scheduling", "production pipeline"],
+    }),
   component: SmartSchedulingPage,
 });
 

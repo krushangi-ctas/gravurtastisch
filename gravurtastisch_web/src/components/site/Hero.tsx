@@ -50,14 +50,18 @@ export function Hero() {
           <div className="absolute -left-10 bottom-6 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-[#818cf8]/25 via-[#6366f1]/15 to-[#3b82f6]/20 blur-xl pointer-events-none -z-10" />
           <div className="absolute -left-6 bottom-10 w-[380px] h-[380px] rounded-full border border-indigo-300/35 pointer-events-none -z-10" />
           <img
-            src="/home1.png?v=2"
+            src="/home1.webp"
             alt="Personalized Photo Mug & Laser Engraved Keepsakes"
             className="w-full h-auto object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,40,150,0.1)]"
+            loading="lazy"
+            decoding="async"
+            width="480"
+            height="480"
           />
         </div>
       </div>
 
-      {/* Right Floating Bottle, Photo Frame & Keychain Composition (home2.png) */}
+      {/* Right Floating Bottle, Photo Frame & Keychain Composition (home2.webp) */}
       <div className="hidden lg:block absolute right-0 lg:right-2 xl:right-6 2xl:right-10 top-1/2 -translate-y-[48%] w-[25%] xl:w-[27%] max-w-[400px] xl:max-w-[460px] pointer-events-none select-none z-10">
         <div className="relative">
           {/* Subtle 3D Disc & Orbital Ring behind Composition */}
@@ -65,9 +69,13 @@ export function Hero() {
           <div className="absolute -right-4 top-1/2 -translate-y-1/2 w-[390px] h-[390px] rounded-full border border-indigo-300/35 pointer-events-none -z-10 animate-[spin_60s_linear_infinite]" />
 
           <img
-            src="/home2.png?v=2"
+            src="/home2.webp"
             alt="Custom Engraved Bottle, Keychain & Photo Frame"
             className="w-full h-auto object-contain drop-shadow-[0_25px_45px_rgba(20,40,140,0.15)] float-y"
+            loading="lazy"
+            decoding="async"
+            width="400"
+            height="400"
           />
 
           {/* Frosted Glass Pill Badge: Your Design Our Craft 💜 */}

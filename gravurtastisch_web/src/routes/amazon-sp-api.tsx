@@ -36,26 +36,42 @@ import {
 } from "lucide-react";
 import i18n from "@/i18n/config";
 import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton";
+import { seo, createFaqSchema } from "@/utils/seo";
 
 export const Route = createFileRoute("/amazon-sp-api")({
   pendingComponent: ServicePageSkeleton,
-  head: () => ({
-    meta: [
-      { title: `${i18n.t("amazonSpApi.heroTitle")} ${i18n.t("amazonSpApi.heroTitleHighlight")} | Gravurtastisch` },
+  head: () => {
+    const { meta, links } = seo({
+      title: "Amazon SP-API Integration - Gravurtastisch Studio",
+      description: i18n.exists("amazonSpApi.heroDesc")
+        ? i18n.t("amazonSpApi.heroDesc")
+        : "Connect your Amazon storefront via official Selling Partner API (SP-API) for automated review requests and custom order fulfillment.",
+      url: "/amazon-sp-api",
+      keywords: ["amazon sp-api", "selling partner api", "fba automation", "amazon review solicitation"],
+    });
+
+    const faqs = [
       {
-        name: "description",
-        content: i18n.t("amazonSpApi.heroDesc"),
+        q: "How does Gravurtastisch connect to my shop?",
+        a: "Where your platform supports OAuth or API tokens, you authorize Gravurtastisch with scoped permissions. We never see your shop password.",
       },
-      { property: "og:title", content: `${i18n.t("amazonSpApi.heroTitle")} | Gravurtastisch` },
       {
-        property: "og:description",
-        content: i18n.t("amazonSpApi.heroDesc"),
+        q: "Can Gravurtastisch misproduce my order?",
+        a: "No. Every order requires explicit digital mockup approval before physical engraving commences.",
       },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/amazon-sp-api" },
-    ],
-    links: [{ rel: "canonical", href: "/amazon-sp-api" }],
-  }),
+    ];
+
+    return {
+      meta,
+      links,
+      scripts: [
+        {
+          type: "application/ld+json",
+          children: JSON.stringify(createFaqSchema(faqs)),
+        },
+      ],
+    };
+  },
   component: AmazonSpApiPage,
 });
 
@@ -425,11 +441,10 @@ function AmazonSpApiPage() {
                         <div
                           key={layer.num}
                           onClick={() => setActiveArchLayer(idx)}
-                          className={`group relative p-3.5 sm:p-4 rounded-2xl cursor-pointer transition-all duration-300 border ${
-                            isSelected
+                          className={`group relative p-3.5 sm:p-4 rounded-2xl cursor-pointer transition-all duration-300 border ${isSelected
                               ? "bg-gradient-to-r from-blue-50/80 via-white to-blue-50/40 dark:bg-white/08 border-[#0032ab] dark:border-[#4f6ef7] shadow-md shadow-[#0032ab]/08 ring-2 ring-[#0032ab]/15"
                               : "bg-white dark:bg-transparent border-slate-200/80 dark:border-white/06 hover:border-[#0032ab]/40 hover:bg-slate-50/70 hover:-translate-y-0.5 hover:shadow-2xs"
-                          }`}
+                            }`}
                         >
                           {/* Active Left Indicator Bar */}
                           {isSelected && (
@@ -525,26 +540,24 @@ function AmazonSpApiPage() {
                             {ep.name}
                           </h3>
                           <span
-                            className={`shrink-0 px-2.5 sm:px-3 py-1 rounded-full text-[10.5px] font-mono font-extrabold uppercase tracking-wider shadow-2xs flex items-center gap-1.5 ${
-                              ep.badge === "Webhook"
+                            className={`shrink-0 px-2.5 sm:px-3 py-1 rounded-full text-[10.5px] font-mono font-extrabold uppercase tracking-wider shadow-2xs flex items-center gap-1.5 ${ep.badge === "Webhook"
                                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border border-emerald-300"
                                 : ep.badge === "Sync"
-                                ? "bg-blue-50 text-[#0032ab] dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300"
-                                : ep.badge === "Dispatch"
-                                ? "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300"
-                                : "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-300"
-                            }`}
+                                  ? "bg-blue-50 text-[#0032ab] dark:bg-blue-950/60 dark:text-blue-300 border border-blue-300"
+                                  : ep.badge === "Dispatch"
+                                    ? "bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 border border-purple-300"
+                                    : "bg-indigo-50 text-indigo-700 dark:bg-indigo-950/60 dark:text-indigo-300 border border-indigo-300"
+                              }`}
                           >
                             <span
-                              className={`h-1.5 w-1.5 rounded-full animate-pulse ${
-                                ep.badge === "Webhook"
+                              className={`h-1.5 w-1.5 rounded-full animate-pulse ${ep.badge === "Webhook"
                                   ? "bg-emerald-500"
                                   : ep.badge === "Sync"
-                                  ? "bg-[#0032ab]"
-                                  : ep.badge === "Dispatch"
-                                  ? "bg-purple-500"
-                                  : "bg-indigo-500"
-                              }`}
+                                    ? "bg-[#0032ab]"
+                                    : ep.badge === "Dispatch"
+                                      ? "bg-purple-500"
+                                      : "bg-indigo-500"
+                                }`}
                             />
                             {ep.badge}
                           </span>
@@ -662,9 +675,8 @@ function AmazonSpApiPage() {
                       {comparisonRows.map((row, idx) => (
                         <tr
                           key={row.feature}
-                          className={`hover:bg-blue-50/30 dark:hover:bg-white/03 transition-colors ${
-                            idx % 2 === 0 ? "bg-white dark:bg-transparent" : "bg-slate-50/50 dark:bg-white/02"
-                          }`}
+                          className={`hover:bg-blue-50/30 dark:hover:bg-white/03 transition-colors ${idx % 2 === 0 ? "bg-white dark:bg-transparent" : "bg-slate-50/50 dark:bg-white/02"
+                            }`}
                         >
                           <td className="p-4 sm:p-5 font-bold text-navy-deep dark:text-white text-xs sm:text-sm">
                             {row.feature}
@@ -1007,7 +1019,7 @@ function SpApiFaqSvg() {
       {/* PILLAR 1: Top-Left (x: 20, y: 172) -> Zero Password Storage */}
       <g transform="translate(20, 172)" filter="url(#bento-card-shadow)">
         <rect width="242" height="86" rx="14" fill="#FFFFFF" stroke="#0032ab" strokeWidth="1" strokeOpacity="0.16" />
-        
+
         {/* Vector Key Icon Tile */}
         <g transform="translate(12, 12)">
           <rect width="36" height="36" rx="10" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />

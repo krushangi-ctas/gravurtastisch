@@ -28,26 +28,7 @@ export function Reveal<T extends React.ElementType = "div">({
       return;
     }
 
-    // Helper: Check if element is already within the visible viewport on mount
-    const checkInView = () => {
-      if (!el) return false;
-      const rect = el.getBoundingClientRect();
-      const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 800;
-      // Show immediately only if already inside the current screen view
-      const inView = rect.top < viewportHeight - 20 && rect.bottom > 0;
-      if (inView) {
-        setShown(true);
-        return true;
-      }
-      return false;
-    };
-
-    // 1. Check if already visible on mount
-    requestAnimationFrame(() => {
-      if (checkInView()) return;
-    });
-
-    // 2. IntersectionObserver for smooth scroll-driven entrance
+    // High-performance IntersectionObserver for entrance animations without forced reflow
     let observer: IntersectionObserver | null = null;
     if (typeof IntersectionObserver !== "undefined") {
       observer = new IntersectionObserver(
@@ -66,7 +47,7 @@ export function Reveal<T extends React.ElementType = "div">({
         {
           root: null,
           rootMargin: "0px 0px -40px 0px", // triggers cleanly when scrolled 40px into view
-          threshold: 0.08,
+          threshold: 0.05,
         }
       );
       observer.observe(el);
@@ -74,25 +55,13 @@ export function Reveal<T extends React.ElementType = "div">({
       setShown(true);
     }
 
-    // 3. Fallback scroll/resize listener
-    const onScrollOrResize = () => {
-      if (checkInView()) {
-        window.removeEventListener("scroll", onScrollOrResize);
-        window.removeEventListener("resize", onScrollOrResize);
-      }
-    };
-    window.addEventListener("scroll", onScrollOrResize, { passive: true });
-    window.addEventListener("resize", onScrollOrResize, { passive: true });
-
-    // 4. Safety timer: ensure content is never permanently hidden
+    // Safety timer: ensure content is always visible even in extreme throttling
     const safetyTimer = setTimeout(() => {
       setShown(true);
-    }, 2500);
+    }, 1500);
 
     return () => {
       if (observer) observer.disconnect();
-      window.removeEventListener("scroll", onScrollOrResize);
-      window.removeEventListener("resize", onScrollOrResize);
       clearTimeout(safetyTimer);
     };
   }, []);

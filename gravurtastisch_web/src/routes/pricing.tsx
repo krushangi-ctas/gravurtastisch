@@ -14,38 +14,20 @@ import {
   ArrowRight,
 } from "lucide-react";
 import i18n from "@/i18n/config";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/pricing")({
-  head: () => ({
-    meta: [
-      {
-        title:
-          i18n.exists("pricing.pageTitle")
-            ? i18n.t("pricing.pageTitle")
-            : "Pricing Plans - Gravurtastisch",
-      },
-      {
-        name: "description",
-        content:
-          i18n.exists("pricing.pageDesc")
-            ? i18n.t("pricing.pageDesc")
-            : "Transparent pricing for custom engraving and personalized products. Scale your studio fulfillment effortlessly.",
-      },
-      {
-        property: "og:title",
-        content: "Gravurtastisch - Pricing & Subscription Plans",
-      },
-      {
-        property: "og:description",
-        content:
-          "Transparent pricing for custom engraving and personalized products. Scale your studio fulfillment effortlessly.",
-      },
-      { property: "og:type", content: "website" },
-      { property: "og:url", content: "/pricing" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "/pricing" }],
-  }),
+  head: () =>
+    seo({
+      title: i18n.exists("pricing.pageTitle")
+        ? i18n.t("pricing.pageTitle")
+        : "Pricing Plans - Gravurtastisch",
+      description: i18n.exists("pricing.pageDesc")
+        ? i18n.t("pricing.pageDesc")
+        : "Transparent pricing for custom engraving and personalized products. Scale your studio fulfillment effortlessly.",
+      url: "/pricing",
+      keywords: ["pricing plans", "lasergravur preise", "custom merchandise rates", "gravurtastisch tarife"],
+    }),
   component: PricingPage,
 });
 

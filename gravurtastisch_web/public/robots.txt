@@ -1,0 +1,11 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Disallow private and checkout session pages
+Disallow: /payment/cancel
+Disallow: /payment/success
+
+# Host & Sitemap
+Host: https://gravurtastisch-web.vercel.app
+Sitemap: https://gravurtastisch-web.vercel.app/sitemap.xml

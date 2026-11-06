@@ -26,28 +26,18 @@ import {
 import { format } from "date-fns";
 import { BlogsIndexSkeleton } from "@/components/skeletons/BlogsIndexSkeleton";
 import { Skeleton } from "@/components/ui/skeleton";
+import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/blogs/")({
   pendingComponent: BlogsIndexSkeleton,
-  head: () => ({
-    meta: [
-      { title: "Gravurtastisch Journal - Custom Engraving, Proofing & Studio Craft" },
-      {
-        name: "description",
-        content:
-          "Stories on photo mugs, laser engraving, proof workflows, production scheduling, and building a premium personalization studio.",
-      },
-      { property: "og:title", content: "Gravurtastisch Journal & Studio Notes" },
-      {
-        property: "og:description",
-        content:
-          "Master custom intake, digital proofs, bench scheduling, and memorable gift fulfillment.",
-      },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary_large_image" },
-    ],
-    links: [{ rel: "canonical", href: "/blogs" }],
-  }),
+  head: () =>
+    seo({
+      title: "Gravurtastisch Journal - Custom Engraving, Proofing & Studio Craft",
+      description:
+        "Stories on photo mugs, laser engraving, proof workflows, production scheduling, and building a premium personalization studio.",
+      url: "/blogs",
+      keywords: ["laser engraving blog", "lasergravur ratgeber", "fototassen tipps", "merchandise studio"],
+    }),
   component: BlogsPage,
 });
 

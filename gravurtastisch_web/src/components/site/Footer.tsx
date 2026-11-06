@@ -167,7 +167,10 @@ export function Footer() {
                 <img
                   src="/gravurtastich.png"
                   className="h-10 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
-                  alt={t('footer.logoAlt')}
+                  alt={t('footer.logoAlt') || "Gravurtastisch Studio Logo"}
+                  loading="lazy"
+                  width="180"
+                  height="44"
                 />
               </a>
 
@@ -301,6 +304,9 @@ export function Footer() {
                     src="/amazon-logo.svg"
                     alt="Amazon Selling Partner"
                     className="h-5 w-auto object-contain"
+                    loading="lazy"
+                    width="20"
+                    height="20"
                   />
                 </div>
                 <div className="min-w-0 flex-1">
