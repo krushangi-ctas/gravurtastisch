@@ -114,14 +114,14 @@ export function createOrganizationSchema() {
     "url": DEFAULT_SITE_URL,
     "logo": `${DEFAULT_SITE_URL}/g.svg`,
     "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
-    "email": "info@gravurtastisch.com",
+    "email": "info@gravurtastisch.de",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "A-865/866, Money Plant High Street, Jagatpur Road, Sarkhej-Gandhinagar Hwy, Gota",
-      "addressLocality": "Ahmedabad",
-      "addressRegion": "Gujarat",
-      "postalCode": "382470",
-      "addressCountry": "IN"
+      "streetAddress": "Gertrudstr. 2",
+      "addressLocality": "Castrop-Rauxel",
+      "addressRegion": "NRW",
+      "postalCode": "44575",
+      "addressCountry": "DE"
     },
     "sameAs": [
       "https://www.linkedin.com/company/gravurtastisch",

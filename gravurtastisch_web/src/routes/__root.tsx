@@ -133,15 +133,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
-        rel: "preload",
-        as: "style",
+        rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap",
       },
     ],
     scripts: [
-      {
-        children: `(function(){var l=document.createElement('link');l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Inter:wght@400;500;600;700&display=swap';document.head.appendChild(l);})();`,
-      },
       {
         type: "application/ld+json",
         children: JSON.stringify({
@@ -151,14 +147,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "url": DEFAULT_SITE_URL,
           "logo": `${DEFAULT_SITE_URL}/g.svg`,
           "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
-          "email": "info@gravurtastisch.com",
+          "email": "info@gravurtastisch.de",
           "address": {
             "@type": "PostalAddress",
-            "streetAddress": "A-865/866, Money Plant High Street, Jagatpur Road, Sarkhej-Gandhinagar Hwy, Gota",
-            "addressLocality": "Ahmedabad",
-            "addressRegion": "Gujarat",
-            "postalCode": "382470",
-            "addressCountry": "IN"
+            "streetAddress": "Gertrudstr. 2",
+            "addressLocality": "Castrop-Rauxel",
+            "addressRegion": "NRW",
+            "postalCode": "44575",
+            "addressCountry": "DE"
           },
           "sameAs": [
             "https://www.linkedin.com/company/gravurtastisch",

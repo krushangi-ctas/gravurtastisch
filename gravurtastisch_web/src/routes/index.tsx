@@ -1,24 +1,16 @@
-import { lazy, Suspense } from "react";
 import { createFileRoute, useLocation } from "@tanstack/react-router";
 import i18n from "@/i18n/config";
 import { seo, createOrganizationSchema, createWebSiteSchema } from "@/utils/seo";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
 import { ValueProp } from "@/components/site/ValueProp";
+import { VectorPreflightShowcase } from "@/components/site/VectorPreflightShowcase";
 import { HowItWorks } from "@/components/site/HowItWorks";
 import { AmazonShowcase } from "@/components/site/AmazonShowcase";
+import { DashboardPreview } from "@/components/site/DashboardPreview";
+import { StackDiagram } from "@/components/site/StackDiagram";
 import { Footer } from "@/components/site/Footer";
 import { HomeSkeleton } from "@/components/skeletons/HomeSkeleton";
-
-const VectorPreflightShowcase = lazy(() =>
-  import("@/components/site/VectorPreflightShowcase").then((m) => ({ default: m.VectorPreflightShowcase }))
-);
-const DashboardPreview = lazy(() =>
-  import("@/components/site/DashboardPreview").then((m) => ({ default: m.DashboardPreview }))
-);
-const StackDiagram = lazy(() =>
-  import("@/components/site/StackDiagram").then((m) => ({ default: m.StackDiagram }))
-);
 
 export const Route = createFileRoute("/")({
   pendingComponent: HomeSkeleton,
@@ -72,15 +64,11 @@ function Index() {
       <main>
         <Hero />
         <ValueProp />
-        <Suspense fallback={null}>
-          <VectorPreflightShowcase />
-        </Suspense>
+        <VectorPreflightShowcase />
         <HowItWorks />
         <AmazonShowcase />
-        <Suspense fallback={null}>
-          <DashboardPreview />
-          <StackDiagram />
-        </Suspense>
+        <DashboardPreview />
+        <StackDiagram />
       </main>
       <Footer />
     </div>

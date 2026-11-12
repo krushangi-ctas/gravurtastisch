@@ -119,10 +119,10 @@ export function AmazonShowcase() {
                       <Sparkles className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
+                      <h3 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet1Title", "Official SP-API")}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
+                      </h3>
+                      <p className="text-[11px] text-slate-600 dark:text-white/70 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet1Desc", "Artwork intake with clear SKU briefs")}
                       </p>
                     </div>
@@ -133,10 +133,10 @@ export function AmazonShowcase() {
                       <ShieldCheck className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
+                      <h3 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet3Title", "100% Policy Safe")}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
+                      </h3>
+                      <p className="text-[11px] text-slate-600 dark:text-white/70 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet3Desc", "Strict 5-30 day rule with zero risk")}
                       </p>
                     </div>
@@ -147,10 +147,10 @@ export function AmazonShowcase() {
                       <CheckCircle2 className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
+                      <h3 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet2Title", "Delivery Sync")}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
+                      </h3>
+                      <p className="text-[11px] text-slate-600 dark:text-white/70 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet2Desc", "Auto-dispatches for FBA & FBM orders")}
                       </p>
                     </div>
@@ -161,10 +161,10 @@ export function AmazonShowcase() {
                       <Globe2 className="w-3.5 h-3.5" />
                     </div>
                     <div className="min-w-0">
-                      <h4 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
+                      <h3 className="text-xs font-bold text-navy-deep dark:text-white truncate sm:whitespace-normal">
                         {t("amazonShowcase.bullet4Title", "Multi-Store Hub")}
-                      </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-white/60 leading-tight mt-0.5 break-words">
+                      </h3>
+                      <p className="text-[11px] text-slate-600 dark:text-white/70 leading-tight mt-0.5 break-words">
                         {t("amazonShowcase.bullet4Desc", "Unified US, UK, EU & global stores")}
                       </p>
                     </div>
@@ -400,9 +400,9 @@ export function AmazonShowcase() {
                       <span className="h-2 w-2 rounded-full bg-[#0032ab]" />
                       {t("amazonShowcase.row1Title", "Artwork & SKU Intake")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.row1Sub", "Asset collection & routing")}</span>
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.row1Sub", "Asset collection & routing")}</span>
                   </div>
-                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint1", "Emailing artwork to different suppliers for each product type")}</p>
@@ -429,9 +429,9 @@ export function AmazonShowcase() {
                       <span className="h-2 w-2 rounded-full bg-emerald-500" />
                       {t("amazonShowcase.row2Title", "Digital Proofs & Revisions")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.preProdVerification", "Pre-production verification")}</span>
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.preProdVerification", "Pre-production verification")}</span>
                   </div>
-                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint2", "Approving proofs on inconsistent templates and missing bleed zones")}</p>
@@ -458,9 +458,9 @@ export function AmazonShowcase() {
                       <span className="h-2 w-2 rounded-full bg-amber-500" />
                       {t("amazonShowcase.row3Title", "Live Stage Tracking")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.realtimeVisibility", "Real-time status visibility")}</span>
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.realtimeVisibility", "Real-time status visibility")}</span>
                   </div>
-                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint3", "No single view of what's in production or already shipped")}</p>
@@ -487,9 +487,9 @@ export function AmazonShowcase() {
                       <span className="h-2 w-2 rounded-full bg-purple-500" />
                       {t("amazonShowcase.row4Title", "Brand Fidelity & Repeat Runs")}
                     </span>
-                    <span className="text-[11px] text-slate-500 mt-0.5">{t("amazonShowcase.consistentSpecs", "Consistent specs across runs")}</span>
+                    <span className="text-[11px] text-slate-600 dark:text-slate-300 mt-0.5">{t("amazonShowcase.consistentSpecs", "Consistent specs across runs")}</span>
                   </div>
-                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 bg-rose-50/15 dark:bg-rose-950/05">
+                  <div className="md:col-span-4 p-4 sm:p-5 md:border-l border-slate-100 dark:border-white/05 flex items-start gap-2.5 text-xs sm:text-sm text-slate-700 dark:text-slate-300 bg-rose-50/15 dark:bg-rose-950/05">
                     <XCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
                     <div>
                       <p>{t("amazonShowcase.manualPoint4", "Reorders that drift from your original brand colors or font choices")}</p>

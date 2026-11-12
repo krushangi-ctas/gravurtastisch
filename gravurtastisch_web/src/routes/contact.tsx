@@ -52,11 +52,11 @@ function ContactPage() {
   const { config } = useWebsiteConfiguration();
   const currentLang = (i18n.language || "en").split("-")[0];
 
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.com";
-  const contactPhone = config?.contact?.phone || "+91 79489 93409";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const contactPhone = config?.contact?.phone || "017661055576";
   const contactHours =
     config?.contact?.working_hours ||
-    (currentLang === "en" ? "10:30 AM-8:30 PM IST" : "10:30 - 20:30 Uhr");
+    (currentLang === "en" ? "10:00 AM-7:00 PM CET" : "10:00 - 19:00 Uhr");
   const contactAddress =
     config?.contact?.address || t("footer.officeAddress");
   const studioLocation =

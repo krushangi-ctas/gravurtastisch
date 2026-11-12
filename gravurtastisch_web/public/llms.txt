@@ -17,3 +17,4 @@ Gravurtastisch is a specialized studio offering precision laser engraving, photo
 - [Blogs](https://gravurtastisch-web.vercel.app/blogs): Gift ideas, technical engraving tutorials, and design tips.
 - [Contact](https://gravurtastisch-web.vercel.app/contact): Get in touch with our design and support team.
 - [Register](https://gravurtastisch-web.vercel.app/register): Customer registration for order tracking.
+- [Impressum](https://gravurtastisch-web.vercel.app/impressum): Statutory provider disclosure and legal imprint pursuant to § 5 DDG.

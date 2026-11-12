@@ -138,10 +138,10 @@ export function Hero() {
             <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-sky-400 hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)] hover:-translate-y-1 transition-all duration-300">
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between mb-5">
-                <div className="h-10 w-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-500 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                <div className="h-10 w-10 rounded-full bg-sky-100 flex items-center justify-center text-sky-600 shadow-2xs group-hover:scale-105 transition-transform duration-300">
                   <Clock className="h-5 w-5" />
                 </div>
-                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sky-600 bg-sky-50 border border-sky-200/70 px-2.5 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-sky-800 bg-sky-100/80 border border-sky-300/70 px-2.5 py-0.5 rounded-full">
                   Fast SLA
                 </span>
               </div>
@@ -154,16 +154,16 @@ export function Hero() {
                 <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
                   {t("hero.statSendWindow") || "Proof turnaround"}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 font-medium">
+                <p className="text-xs text-slate-600 mt-1 font-medium">
                   {t("hero.proofSub", "Digital proof ready before production")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
-              <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-600 font-semibold">
+              <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-800 font-semibold">
                 <span className="flex items-center gap-1">⚡ {t("hero.expressProofing", "Express Proofing")}</span>
                 <span className="flex items-center gap-1">
-                  <Shield className="h-3.5 w-3.5 fill-sky-600 text-sky-600" /> {t("hero.guaranteed", "Guaranteed")}
+                  <Shield className="h-3.5 w-3.5 fill-sky-700 text-sky-700" /> {t("hero.guaranteed", "Guaranteed")}
                 </span>
               </div>
             </div>
@@ -172,10 +172,10 @@ export function Hero() {
             <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-amber-400 hover:shadow-[0_18px_40px_rgba(245,158,11,0.18)] hover:-translate-y-1 transition-all duration-300">
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between mb-5">
-                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-500 shadow-2xs group-hover:scale-105 transition-transform duration-300">
-                  <Star className="h-5 w-5 fill-amber-500 text-amber-500" />
+                <div className="h-10 w-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                  <Star className="h-5 w-5 fill-amber-600 text-amber-600" />
                 </div>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-700 bg-amber-50 border border-amber-200/70 px-2.5 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100/80 border border-amber-300/70 px-2.5 py-0.5 rounded-full">
                   ✦ 4.9 {t("hero.ratingBadge", "RATING")}
                 </span>
               </div>
@@ -188,7 +188,7 @@ export function Hero() {
                 <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
                   {t("hero.statReviewLift") || "Happy clients"}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 font-medium">
+                <p className="text-xs text-slate-600 mt-1 font-medium">
                   {t("hero.happyClientsSub", "Verified custom orders completed")}
                 </p>
               </div>
@@ -196,7 +196,7 @@ export function Hero() {
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-800 font-semibold">
                 <span>{t("hero.fiveStarQuality", "Five-Star Quality")}</span>
-                <span className="text-amber-500 tracking-wider font-bold">★★★★★</span>
+                <span className="text-amber-600 tracking-wider font-bold">★★★★★</span>
               </div>
             </div>
 
@@ -204,10 +204,10 @@ export function Hero() {
             <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-emerald-400 hover:shadow-[0_18px_40px_rgba(16,185,129,0.18)] hover:-translate-y-1 transition-all duration-300">
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between mb-5">
-                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                <div className="h-10 w-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-2xs group-hover:scale-105 transition-transform duration-300">
                   <Truck className="h-5 w-5" />
                 </div>
-                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-200/70 px-2.5 py-0.5 rounded-full">
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/80 border border-emerald-300/70 px-2.5 py-0.5 rounded-full">
                   ✦ {t("hero.euWideBadge", "EU WIDE")}
                 </span>
               </div>
@@ -220,7 +220,7 @@ export function Hero() {
                 <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
                   {t("hero.statUptime") || "On-time ship rate"}
                 </p>
-                <p className="text-xs text-slate-500 mt-1 font-medium">
+                <p className="text-xs text-slate-600 mt-1 font-medium">
                   {t("hero.uptimeSub", "Tracked courier dispatch across EU")}
                 </p>
               </div>
@@ -229,21 +229,21 @@ export function Hero() {
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
                 <span className="flex items-center gap-1">📦 {t("hero.directStudioShipping", "Direct Studio Shipping")}</span>
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" /> {t("hero.insured", "Insured")}
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" /> {t("hero.insured", "Insured")}
                 </span>
               </div>
             </div>
           </div>
 
           {/* Precision Bar */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-600">
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-700">
             <div className="flex items-center gap-1.5 font-semibold text-slate-800">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
               <span>{t("hero.spApiVerified") || "German craft precision"}</span>
             </div>
             <span className="text-slate-300 mx-1 font-light">|</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-slate-500">{t("hero.stores") || "Channels:"}</span>
+              <span className="text-slate-600">{t("hero.stores") || "Channels:"}</span>
               <FlagDE className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
               <FlagFR className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
               <FlagGB className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />

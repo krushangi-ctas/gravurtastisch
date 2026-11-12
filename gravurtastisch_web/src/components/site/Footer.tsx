@@ -45,8 +45,8 @@ export function Footer() {
     ? config.company.about
     : t('footer.companyDesc');
 
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.com";
-  const contactPhone = config?.contact?.phone || "+91 79489 93409";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const contactPhone = config?.contact?.phone || "017661055576";
   const contactAddress = config?.contact?.address || t('footer.officeAddress');
   const companyWebsite = config?.company?.website || "https://gravurtastisch.com";
   const companyName = config?.company?.name || "Gravurtastisch";
@@ -85,6 +85,7 @@ export function Footer() {
     [t('footer.colLegalLink1'), "/privacy"],
     [t('footer.colLegalLink2'), "/terms"],
     [t('footer.colLegalLink3'), "/refund"],
+    [t('legal.tabImpressum', 'Impressum'), "/impressum"],
     [companyName, companyWebsite],
   ];
 
@@ -146,9 +147,9 @@ export function Footer() {
                   <Icon className="h-4.5 w-4.5" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <h4 className="text-xs sm:text-sm font-extrabold text-navy-deep group-hover:text-brand transition-colors font-display tracking-tight">
+                  <p className="text-xs sm:text-sm font-extrabold text-navy-deep group-hover:text-brand transition-colors font-display tracking-tight">
                     {t(`footer.${titleKey}`)}
-                  </h4>
+                  </p>
                   <p className="mt-0.5 text-[11px] sm:text-xs text-slate-600 leading-relaxed font-normal">
                     {t(`footer.${copyKey}`)}
                   </p>
@@ -163,7 +164,7 @@ export function Footer() {
           {/* Brand & Interactive Contact Bento (Left Column) */}
           <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
             <div>
-              <a href="#home" className="inline-flex items-center gap-2.5 group">
+              <a href="#home" aria-label="Gravurtastisch Home" className="inline-flex items-center gap-2.5 group">
                 <img
                   src="/gravurtastich.png"
                   className="h-10 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-102"

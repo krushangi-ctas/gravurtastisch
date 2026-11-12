@@ -11,6 +11,7 @@ import {
   Mail,
   CheckCircle2,
   Sparkles,
+  Building2,
 } from "lucide-react";
 import { Container } from "@/components/site/Container";
 import { Footer } from "@/components/site/Footer";
@@ -29,7 +30,7 @@ export function LegalLayout({
   const { t } = useTranslation();
   const location = useLocation();
   const { config } = useWebsiteConfiguration();
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
 
   const legalTabs = [
     {
@@ -49,6 +50,12 @@ export function LegalLayout({
       label: t("legal.tabRefund", "Refund Policy"),
       icon: RotateCcw,
       isActive: location.pathname.startsWith("/refund"),
+    },
+    {
+      to: "/impressum",
+      label: t("legal.tabImpressum", "Impressum"),
+      icon: Building2,
+      isActive: location.pathname.startsWith("/impressum"),
     },
   ];
 
@@ -113,7 +120,7 @@ export function LegalLayout({
           </div>
 
           {/* Document Switcher Tab Dock */}
-          <div className="mb-8 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+          <div className="mb-8 p-1.5 rounded-2xl bg-slate-100/80 dark:bg-slate-900/60 backdrop-blur-md border border-slate-200/80 dark:border-slate-800 grid grid-cols-2 md:grid-cols-4 gap-1.5">
             {legalTabs.map((tab) => {
               const Icon = tab.icon;
               return (
