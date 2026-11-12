@@ -366,6 +366,7 @@ export function Nav() {
                 : "border-white/20 text-white hover:bg-white/10"
             }`}
             aria-label="Toggle navigation menu"
+            aria-expanded={mobileMenuOpen}
           >
             {mobileMenuOpen ? (
               <X className="w-5 h-5" />
@@ -387,6 +388,7 @@ export function Nav() {
                     <button
                       type="button"
                       onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
+                      aria-expanded={mobileServicesOpen}
                       className={`flex items-center justify-between w-full py-2 text-sm font-medium transition-colors ${
                         isServiceActive
                           ? "text-brand font-bold"

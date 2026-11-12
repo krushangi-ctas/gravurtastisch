@@ -312,7 +312,7 @@ function GanttChart() {
           >
             <p
               className={`text-xs font-semibold sm:text-right ${
-                row.muted ? "text-slate-400" : "text-foreground"
+                row.muted ? "text-slate-600 dark:text-slate-400" : "text-foreground"
               }`}
             >
               {t(`howItWorks.${row.laneKey}`)}

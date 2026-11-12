@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AmazonSpApiRouteImport } from './routes/amazon-sp-api'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as GuideRouteImport } from './routes/guide'
+import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as OrderSyncRouteImport } from './routes/order-sync'
 import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -44,6 +45,11 @@ const ContactRoute = ContactRouteImport.update({
 const GuideRoute = GuideRouteImport.update({
   id: '/guide',
   path: '/guide',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OrderSyncRoute = OrderSyncRouteImport.update({
@@ -112,6 +118,7 @@ export interface FileRoutesByFullPath {
   '/amazon-sp-api': typeof AmazonSpApiRoute
   '/contact': typeof ContactRoute
   '/guide': typeof GuideRoute
+  '/impressum': typeof ImpressumRoute
   '/order-sync': typeof OrderSyncRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/amazon-sp-api': typeof AmazonSpApiRoute
   '/contact': typeof ContactRoute
   '/guide': typeof GuideRoute
+  '/impressum': typeof ImpressumRoute
   '/order-sync': typeof OrderSyncRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -149,6 +157,7 @@ export interface FileRoutesById {
   '/amazon-sp-api': typeof AmazonSpApiRoute
   '/contact': typeof ContactRoute
   '/guide': typeof GuideRoute
+  '/impressum': typeof ImpressumRoute
   '/order-sync': typeof OrderSyncRoute
   '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
@@ -169,6 +178,7 @@ export interface FileRouteTypes {
     | '/amazon-sp-api'
     | '/contact'
     | '/guide'
+    | '/impressum'
     | '/order-sync'
     | '/pricing'
     | '/privacy'
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/amazon-sp-api'
     | '/contact'
     | '/guide'
+    | '/impressum'
     | '/order-sync'
     | '/pricing'
     | '/privacy'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/amazon-sp-api'
     | '/contact'
     | '/guide'
+    | '/impressum'
     | '/order-sync'
     | '/pricing'
     | '/privacy'
@@ -224,6 +236,7 @@ export interface RootRouteChildren {
   AmazonSpApiRoute: typeof AmazonSpApiRoute
   ContactRoute: typeof ContactRoute
   GuideRoute: typeof GuideRoute
+  ImpressumRoute: typeof ImpressumRoute
   OrderSyncRoute: typeof OrderSyncRoute
   PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       path: '/guide'
       fullPath: '/guide'
       preLoaderRoute: typeof GuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/order-sync': {
@@ -360,6 +380,7 @@ const rootRouteChildren: RootRouteChildren = {
   AmazonSpApiRoute: AmazonSpApiRoute,
   ContactRoute: ContactRoute,
   GuideRoute: GuideRoute,
+  ImpressumRoute: ImpressumRoute,
   OrderSyncRoute: OrderSyncRoute,
   PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,

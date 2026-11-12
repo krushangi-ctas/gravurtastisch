@@ -1,32 +1,16 @@
-import { lazy, Suspense } from "react";
 import { createFileRoute, useLocation } from "@tanstack/react-router";
 import i18n from "@/i18n/config";
 import { seo, createOrganizationSchema, createWebSiteSchema } from "@/utils/seo";
 import { Nav } from "@/components/site/Nav";
 import { Hero } from "@/components/site/Hero";
+import { ValueProp } from "@/components/site/ValueProp";
+import { VectorPreflightShowcase } from "@/components/site/VectorPreflightShowcase";
+import { HowItWorks } from "@/components/site/HowItWorks";
+import { AmazonShowcase } from "@/components/site/AmazonShowcase";
+import { DashboardPreview } from "@/components/site/DashboardPreview";
+import { StackDiagram } from "@/components/site/StackDiagram";
+import { Footer } from "@/components/site/Footer";
 import { HomeSkeleton } from "@/components/skeletons/HomeSkeleton";
-
-const ValueProp = lazy(() =>
-  import("@/components/site/ValueProp").then((m) => ({ default: m.ValueProp }))
-);
-const HowItWorks = lazy(() =>
-  import("@/components/site/HowItWorks").then((m) => ({ default: m.HowItWorks }))
-);
-const AmazonShowcase = lazy(() =>
-  import("@/components/site/AmazonShowcase").then((m) => ({ default: m.AmazonShowcase }))
-);
-const VectorPreflightShowcase = lazy(() =>
-  import("@/components/site/VectorPreflightShowcase").then((m) => ({ default: m.VectorPreflightShowcase }))
-);
-const DashboardPreview = lazy(() =>
-  import("@/components/site/DashboardPreview").then((m) => ({ default: m.DashboardPreview }))
-);
-const StackDiagram = lazy(() =>
-  import("@/components/site/StackDiagram").then((m) => ({ default: m.StackDiagram }))
-);
-const Footer = lazy(() =>
-  import("@/components/site/Footer").then((m) => ({ default: m.Footer }))
-);
 
 export const Route = createFileRoute("/")({
   pendingComponent: HomeSkeleton,
@@ -79,18 +63,14 @@ function Index() {
       <Nav />
       <main>
         <Hero />
-        <Suspense fallback={null}>
-          <ValueProp />
-          <VectorPreflightShowcase />
-          <HowItWorks />
-          <AmazonShowcase />
-          <DashboardPreview />
-          <StackDiagram />
-        </Suspense>
+        <ValueProp />
+        <VectorPreflightShowcase />
+        <HowItWorks />
+        <AmazonShowcase />
+        <DashboardPreview />
+        <StackDiagram />
       </main>
-      <Suspense fallback={null}>
-        <Footer />
-      </Suspense>
+      <Footer />
     </div>
   );
 }

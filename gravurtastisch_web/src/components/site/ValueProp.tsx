@@ -183,7 +183,7 @@ export function ValueProp() {
                 {/* 4-Item Studio Engineering Spec Grid */}
                 <div className="grid grid-cols-2 gap-3 pt-2">
                   <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
-                    <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                    <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                       Material Spec
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-navy-deep dark:text-white mt-1 block">
@@ -192,7 +192,7 @@ export function ValueProp() {
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
-                    <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                    <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                       Craft Technology
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-[#0032ab] dark:text-brand-bright mt-1 block font-mono">
@@ -201,7 +201,7 @@ export function ValueProp() {
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
-                    <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                    <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                       Quality Standard
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1 block">
@@ -210,7 +210,7 @@ export function ValueProp() {
                   </div>
 
                   <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
-                    <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                    <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                       Proof SLA
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-purple-600 dark:text-purple-400 mt-1 block font-mono">
@@ -325,7 +325,7 @@ export function ValueProp() {
                       : "hover:text-[#0032ab]"
                   }`}
                 >
-                  <span className="font-mono text-[10px] text-slate-400">{cp.id}.</span>
+                  <span className="font-mono text-[10px] text-slate-600 dark:text-slate-300 font-semibold">{cp.id}.</span>
                   <span>{t(`valueProp.${cp.titleKey}`)}</span>
                 </button>
               ))}

@@ -171,24 +171,24 @@ export function StackDiagram() {
                         >
                           {l.id}
                         </span>
-                        <span className="font-mono text-[11px] font-bold text-slate-500 dark:text-slate-400">
+                        <span className="font-mono text-[11px] font-bold text-slate-600 dark:text-slate-300">
                           {l.tag}
                         </span>
                       </div>
 
-                      <h4 className={`font-bold text-xs sm:text-sm leading-tight transition-colors ${
+                      <h3 className={`font-bold text-xs sm:text-sm leading-tight transition-colors ${
                         isSelected ? "text-[#0032ab] dark:text-brand-bright" : "text-navy-deep dark:text-white"
                       }`}>
                         {t(`stackDiagram.${l.labelKey}`)}
-                      </h4>
+                      </h3>
 
-                      <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400 line-clamp-1">
+                      <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-300 line-clamp-1">
                         {t(`stackDiagram.${l.subKey}`)}
                       </p>
                     </div>
 
                     <div className="mt-3 pt-2.5 border-t border-slate-100 dark:border-white/06 flex items-center justify-between text-[10px] font-mono">
-                      <span className={isSelected ? "text-[#0032ab] font-bold" : "text-slate-400"}>
+                      <span className={isSelected ? "text-[#0032ab] font-bold" : "text-slate-600 dark:text-slate-300"}>
                         {isSelected ? "Active Stage" : "Inspect →"}
                       </span>
                       {isSelected && (
@@ -231,7 +231,7 @@ export function StackDiagram() {
               {/* Right Column: Telemetry Specs Matrix */}
               <div className="lg:col-span-5 grid grid-cols-2 gap-3">
                 <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                  <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                     Architecture Role
                   </span>
                   <span className="text-xs sm:text-sm font-bold text-navy-deep dark:text-white mt-1 block">
@@ -240,7 +240,7 @@ export function StackDiagram() {
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                  <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                     Telemetry / SLA
                   </span>
                   <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1 block font-mono">
@@ -249,7 +249,7 @@ export function StackDiagram() {
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs col-span-2">
-                  <span className="text-[10px] font-mono uppercase text-slate-400 block font-bold">
+                  <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
                     Integration Protocols
                   </span>
                   <span className="text-xs font-mono font-bold text-[#0032ab] dark:text-brand-bright mt-1 block">
