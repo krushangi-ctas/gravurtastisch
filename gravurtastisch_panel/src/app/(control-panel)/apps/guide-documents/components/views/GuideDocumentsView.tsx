@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useMemo, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useState, useMemo, useEffect, useRef } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -94,9 +94,14 @@ export default function GuideDocumentsView() {
 	const [searchQuery, setSearchQuery] = useState('');
 
 	// Active selected parent & child
+	const [searchParams, setSearchParams] = useSearchParams();
 	const [selectedParentId, setSelectedParentId] = useState<string | null>(null);
 	const [selectedChildId, setSelectedChildId] = useState<string | null>(null);
 	const [expandedParentIds, setExpandedParentIds] = useState<Set<string>>(new Set());
+
+	// Scroll and Active step tracking for "ON THIS PAGE" panel
+	const mainScrollRef = useRef<HTMLDivElement | null>(null);
+	const [activeStepId, setActiveStepId] = useState<string | null>(null);
 
 	// Dialog states
 	const [moduleDialogOpen, setModuleDialogOpen] = useState(false);
@@ -203,9 +208,40 @@ export default function GuideDocumentsView() {
 		);
 	}, [selectedParent, selectedChildId]);
 
-	// Auto-select first parent when tree loads if nothing selected
+	// Auto-select parent and child when tree loads (supports URL query params e.g. ?parent=...&child=...)
 	useEffect(() => {
 		if (filteredTree.length > 0) {
+			const urlChildId = searchParams.get('child');
+			const urlParentId = searchParams.get('parent');
+
+			// If URL specifically asked for a child, locate its parent
+			if (urlChildId) {
+				const parentWithChild = filteredTree.find((p) =>
+					(p.children || []).some((c) => (c._id || c.id) === urlChildId)
+				);
+				if (parentWithChild) {
+					const pid = parentWithChild._id || parentWithChild.id || '';
+					setSelectedParentId(pid);
+					setSelectedChildId(urlChildId);
+					setExpandedParentIds((prev) => new Set([...prev, pid]));
+					return;
+				}
+			}
+
+			// If URL asked for a parent
+			if (urlParentId) {
+				const matchingParent = filteredTree.find((p) => (p._id || p.id) === urlParentId);
+				if (matchingParent) {
+					const pid = matchingParent._id || matchingParent.id || '';
+					setSelectedParentId(pid);
+					setExpandedParentIds((prev) => new Set([...prev, pid]));
+					if (matchingParent.children && matchingParent.children.length > 0) {
+						setSelectedChildId(matchingParent.children[0]._id || matchingParent.children[0].id || null);
+					}
+					return;
+				}
+			}
+
 			const hasValidParent =
 				selectedParentId &&
 				filteredTree.some((p) => (p._id || p.id) === selectedParentId);
@@ -217,7 +253,11 @@ export default function GuideDocumentsView() {
 				setExpandedParentIds((prev) => new Set([...prev, firstPid]));
 
 				if (firstParent.children && firstParent.children.length > 0) {
-					setSelectedChildId(firstParent.children[0]._id || firstParent.children[0].id || null);
+					const firstCid = firstParent.children[0]._id || firstParent.children[0].id || null;
+					setSelectedChildId(firstCid);
+					if (firstCid) {
+						setSearchParams({ parent: firstPid, child: firstCid }, { replace: true });
+					}
 				} else {
 					setSelectedChildId(null);
 				}
@@ -261,6 +301,43 @@ export default function GuideDocumentsView() {
 		publishedChildQuery.data
 	]);
 
+	// Update default active step when steps load
+	useEffect(() => {
+		if (selectedData.steps.length > 0) {
+			const first = selectedData.steps[0];
+			setActiveStepId(first._id || 'step-1');
+		} else {
+			setActiveStepId(null);
+		}
+	}, [selectedData.steps]);
+
+	const scrollToStep = (elementId: string, stepKey?: string) => {
+		const el = document.getElementById(elementId);
+		if (el) {
+			el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+			if (stepKey) setActiveStepId(stepKey);
+		}
+	};
+
+	const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
+		if (!selectedData.steps.length) return;
+		const container = e.currentTarget;
+		const scrollPos = container.scrollTop + 140;
+
+		for (let i = selectedData.steps.length - 1; i >= 0; i--) {
+			const step = selectedData.steps[i];
+			const stepNum = step.stepOrder || i + 1;
+			const el = document.getElementById(`step-${stepNum}`);
+			if (el) {
+				const offsetTop = el.offsetTop;
+				if (scrollPos >= offsetTop) {
+					setActiveStepId(step._id || `step-${stepNum}`);
+					break;
+				}
+			}
+		}
+	};
+
 	const isLoadingDetails =
 		Boolean(selectedChildId) &&
 		(isManageMode && isAdmin
@@ -289,10 +366,15 @@ export default function GuideDocumentsView() {
 				selectedChildId &&
 				parent.children.some((c) => (c._id || c.id) === selectedChildId);
 			if (!hasMatchingChild) {
-				setSelectedChildId(parent.children[0]._id || parent.children[0].id || null);
+				const firstChildId = parent.children[0]._id || parent.children[0].id || null;
+				setSelectedChildId(firstChildId);
+				if (firstChildId) {
+					setSearchParams({ parent: pid, child: firstChildId }, { replace: true });
+				}
 			}
 		} else {
 			setSelectedChildId(null);
+			setSearchParams({ parent: pid }, { replace: true });
 		}
 	};
 
@@ -302,6 +384,7 @@ export default function GuideDocumentsView() {
 		setSelectedParentId(pid);
 		setSelectedChildId(cid);
 		setExpandedParentIds((prev) => new Set([...prev, pid]));
+		setSearchParams({ parent: pid, child: cid }, { replace: true });
 	};
 
 	// Actions: Module publish/unpublish toggle (opens confirmation dialog)
@@ -902,7 +985,11 @@ export default function GuideDocumentsView() {
 							</aside>
 
 							{/* Right Main Area: Guide Details or Category View */}
-							<main className="flex-1 flex flex-col min-w-[280px] sm:min-w-0 overflow-y-auto bg-slate-50/40 dark:bg-slate-950 h-full">
+							<main
+								ref={mainScrollRef}
+								onScroll={handleScroll}
+								className="flex-1 flex flex-col min-w-[280px] sm:min-w-0 overflow-y-auto bg-slate-50/40 dark:bg-slate-950 h-full"
+							>
 								{isLoadingDetails ? (
 									<div className="flex-1 flex flex-col items-center justify-center p-12 text-slate-400 gap-3">
 										<CircularProgress size={32} className="text-primary-500" />
@@ -910,295 +997,314 @@ export default function GuideDocumentsView() {
 									</div>
 								) : selectedChild ? (
 									/* Child Guide View with Step-by-Step Walkthrough */
-									<div className="p-3 sm:p-4 space-y-3 w-full">
-										{/* Banner */}
-										<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 shadow-xs relative overflow-hidden">
-											<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-												<div className="space-y-1">
-													<div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">
-														<span
-															onClick={() => setSelectedChildId(null)}
-															className="cursor-pointer hover:underline flex items-center gap-1"
-														>
-															<FuseSvgIcon size={14}>lucide:folder</FuseSvgIcon>
-															<span>
-																{selectedParent?.title ||
-																	selectedParent?.moduleName ||
-																	'Documentation'}
+									<div className="flex-1 flex flex-col xl:flex-row gap-4 p-3 sm:p-4 w-full items-start">
+										{/* Main Steps Content */}
+										<div className="flex-1 min-w-0 space-y-3 w-full">
+											{/* Banner */}
+											<div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 sm:p-4 shadow-xs relative overflow-hidden">
+												<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+													<div className="space-y-1">
+														<div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">
+															<span
+																onClick={() => setSelectedChildId(null)}
+																className="cursor-pointer hover:underline flex items-center gap-1"
+															>
+																<FuseSvgIcon size={14}>lucide:folder</FuseSvgIcon>
+																<span>
+																	{selectedParent?.title ||
+																		selectedParent?.moduleName ||
+																		'Documentation'}
+																</span>
 															</span>
-														</span>
-														<span>/</span>
-														<span>Guide Document</span>
+															<span>/</span>
+															<span>Guide Document</span>
+														</div>
+														<h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
+															{selectedData.module?.title ||
+																selectedData.module?.moduleName ||
+																selectedChild.title}
+														</h2>
+														{(selectedData.module?.description ||
+															selectedChild.description) && (
+															<p className="text-sm text-slate-600 dark:text-slate-400 pt-1 leading-relaxed">
+																{selectedData.module?.description ||
+																	selectedChild.description}
+															</p>
+														)}
 													</div>
-													<h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
-														{selectedData.module?.title ||
-															selectedData.module?.moduleName ||
-															selectedChild.title}
-													</h2>
-													{(selectedData.module?.description ||
-														selectedChild.description) && (
-														<p className="text-sm text-slate-600 dark:text-slate-400 pt-1 leading-relaxed">
-															{selectedData.module?.description ||
-																selectedChild.description}
-														</p>
-													)}
-												</div>
 
-												{/* Top Actions in Banner */}
-												<div className="flex items-center gap-2 shrink-0">
-													{isManageMode && userCanCreate && (
-														<Button
-															variant="contained"
-															size="small"
-															onClick={() => {
-																navigate(`/guide-document/${selectedChildId}/steps/new`, {
-																	state: {
-																		childModule: selectedChild,
-																		parentModule: selectedParent
-																	}
-																});
-															}}
-															startIcon={<FuseSvgIcon size={16}>lucide:plus</FuseSvgIcon>}
-															className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs"
+													{/* Top Actions in Banner */}
+													<div className="flex items-center gap-2 shrink-0">
+														{isManageMode && userCanCreate && (
+															<Button
+																variant="contained"
+																size="small"
+																onClick={() => {
+																	navigate(`/guide-document/${selectedChildId}/steps/new`, {
+																		state: {
+																			childModule: selectedChild,
+																			parentModule: selectedParent
+																		}
+																	});
+																}}
+																startIcon={<FuseSvgIcon size={16}>lucide:plus</FuseSvgIcon>}
+																className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs"
+															>
+																Add Step
+															</Button>
+														)}
+														<Tooltip
+															title={
+																isManageMode && userCanUpdate
+																	? (selectedData.module?.isPublished ?? selectedChild.isPublished)
+																		? 'Click to unpublish'
+																		: 'Click to publish'
+																	: ''
+															}
 														>
-															Add Step
-														</Button>
-													)}
-													<Tooltip
-														title={
-															isManageMode && userCanUpdate
-																? (selectedData.module?.isPublished ?? selectedChild.isPublished)
-																	? 'Click to unpublish'
-																	: 'Click to publish'
-																: ''
-														}
-													>
+															<Chip
+																size="small"
+																onClick={(e) => {
+																	if (isManageMode && userCanUpdate) {
+																		handleTogglePublish(
+																			selectedData.module || selectedChild,
+																			e
+																		);
+																	}
+																}}
+																label={
+																	(selectedData.module?.isPublished ?? selectedChild.isPublished)
+																		? 'Live'
+																		: 'Draft'
+																}
+																className={`text-xs font-semibold ${
+																	isManageMode && userCanUpdate
+																		? 'cursor-pointer hover:opacity-85'
+																		: ''
+																} ${
+																	(selectedData.module?.isPublished ?? selectedChild.isPublished)
+																		? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+																		: 'bg-amber-50 text-amber-700 border border-amber-200'
+																}`}
+															/>
+														</Tooltip>
 														<Chip
 															size="small"
-															onClick={(e) => {
-																if (isManageMode && userCanUpdate) {
-																	handleTogglePublish(
-																		selectedData.module || selectedChild,
-																		e
-																	);
-																}
-															}}
-															label={
-																(selectedData.module?.isPublished ?? selectedChild.isPublished)
-																	? 'Live'
-																	: 'Draft'
-															}
-															className={`text-xs font-semibold ${
-																isManageMode && userCanUpdate
-																	? 'cursor-pointer hover:opacity-85'
-																	: ''
-															} ${
-																(selectedData.module?.isPublished ?? selectedChild.isPublished)
-																	? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-																	: 'bg-amber-50 text-amber-700 border border-amber-200'
-															}`}
+															label={`${selectedData.steps.length} Steps`}
+															className="bg-primary-50 text-primary-700 dark:bg-primary-950/60 dark:text-primary-300 font-semibold text-xs"
 														/>
-													</Tooltip>
-													<Chip
-														size="small"
-														label={`${selectedData.steps.length} Steps`}
-														className="bg-primary-50 text-primary-700 dark:bg-primary-950/60 dark:text-primary-300 font-semibold text-xs"
-													/>
+													</div>
 												</div>
 											</div>
 
-											{/* Quick step index badges */}
-											{selectedData.steps.length > 0 && (
-												<div className="mt-3.5 pt-3 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center gap-1.5">
-													<span className="text-xs font-medium text-slate-500 mr-1">
-														Jump to:
-													</span>
-													{selectedData.steps.map((step, idx) => (
-														<a
-															key={step._id || idx}
-															href={`#step-${idx + 1}`}
-															className="text-xs px-2.5 py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-primary-100 hover:text-primary-700 text-slate-700 dark:text-slate-300 font-medium transition-colors"
-														>
-															Step {step.stepOrder || idx + 1}
-														</a>
-													))}
-												</div>
-											)}
-										</div>
-
-										{/* Steps Walkthrough Cards */}
-										<div className="space-y-3">
-											{selectedData.steps.length === 0 ? (
-												<div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl p-6 sm:p-8 text-center space-y-2.5">
-													<div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
-														<FuseSvgIcon size={24}>lucide:list-plus</FuseSvgIcon>
+											{/* Steps Walkthrough Cards */}
+											<div className="space-y-3">
+												{selectedData.steps.length === 0 ? (
+													<div className="bg-white dark:bg-slate-900 border border-dashed border-slate-300 dark:border-slate-800 rounded-xl p-6 sm:p-8 text-center space-y-2.5">
+														<div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
+															<FuseSvgIcon size={24}>lucide:list-plus</FuseSvgIcon>
+														</div>
+														<h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
+															No steps added yet
+														</h3>
+														<p className="text-xs text-slate-500 max-w-sm mx-auto">
+															{isManageMode && userCanCreate
+																? 'Start building this guide by adding the first step with instructions and screenshot.'
+																: 'This guide document does not have any steps yet.'}
+														</p>
+														{isManageMode && userCanCreate && (
+															<Button
+																variant="contained"
+																size="small"
+																onClick={() => {
+																	navigate(`/guide-document/${selectedChildId}/steps/new`, {
+																		state: {
+																			childModule: selectedChild,
+																			parentModule: selectedParent
+																		}
+																	});
+																}}
+																className="bg-primary-500 text-white text-xs"
+															>
+																Add First Step
+															</Button>
+														)}
 													</div>
-													<h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-														No steps added yet
-													</h3>
-													<p className="text-xs text-slate-500 max-w-sm mx-auto">
-														{isManageMode && userCanCreate
-															? 'Start building this guide by adding the first step with instructions and screenshot.'
-															: 'This guide document does not have any steps yet.'}
-													</p>
-													{isManageMode && userCanCreate && (
-														<Button
-															variant="contained"
-															size="small"
-															onClick={() => {
-																navigate(`/guide-document/${selectedChildId}/steps/new`, {
-																	state: {
-																		childModule: selectedChild,
-																		parentModule: selectedParent
-																	}
-																});
-															}}
-															className="bg-primary-500 text-white text-xs"
-														>
-															Add First Step
-														</Button>
-													)}
-												</div>
-											) : (
-												selectedData.steps.map((step, index) => {
-													const stepNum = step.stepOrder || index + 1;
-													const hasScreenshot = Boolean(step.screenshotUrl);
+												) : (
+													selectedData.steps.map((step, index) => {
+														const stepNum = step.stepOrder || index + 1;
+														const hasScreenshot = Boolean(step.screenshotUrl);
 
-													return (
-														<div
-															key={step._id || index}
-															id={`step-${stepNum}`}
-															className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs transition-shadow hover:shadow-md"
-														>
-															{/* Card Header */}
-															<div className="p-3 sm:px-4 sm:py-3 flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
-																<div className="flex items-center gap-3">
-																	<div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300 font-bold text-sm shrink-0 shadow-2xs">
-																		{stepNum}
+														return (
+															<div
+																key={step._id || index}
+																id={`step-${stepNum}`}
+																className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden shadow-xs transition-shadow hover:shadow-md"
+															>
+																{/* Card Header */}
+																<div className="p-3 sm:px-4 sm:py-3 flex items-start justify-between gap-3 border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-900/50">
+																	<div className="flex items-center gap-3">
+																		<div className="flex items-center justify-center w-8 h-8 rounded-xl bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300 font-bold text-sm shrink-0 shadow-2xs">
+																			{stepNum}
+																		</div>
+																		<h3 className="text-base font-bold text-slate-900 dark:text-white">
+																			{step.title || `Step ${stepNum}`}
+																		</h3>
 																	</div>
-																	<h3 className="text-base font-bold text-slate-900 dark:text-white">
-																		{step.title || `Step ${stepNum}`}
-																	</h3>
-																</div>
 
-																{/* Manage Mode Step Actions */}
-																{isManageMode && (userCanUpdate || userCanDelete) && (
-																	<div className="flex items-center gap-1 shrink-0">
-																		{userCanUpdate && (
-																			<>
-																				<Tooltip title="Move Up">
-																					<span>
+																	{/* Manage Mode Step Actions */}
+																	{isManageMode && (userCanUpdate || userCanDelete) && (
+																		<div className="flex items-center gap-1 shrink-0">
+																			{userCanUpdate && (
+																				<>
+																					<Tooltip title="Move Up">
+																						<span>
+																							<IconButton
+																								size="small"
+																								disabled={index === 0}
+																								onClick={() => handleMoveStep(index, 'up')}
+																								className="text-slate-500 hover:text-primary-600 disabled:opacity-30"
+																							>
+																								<FuseSvgIcon size={16}>
+																									lucide:arrow-up
+																								</FuseSvgIcon>
+																							</IconButton>
+																						</span>
+																					</Tooltip>
+																					<Tooltip title="Move Down">
+																						<span>
+																							<IconButton
+																								size="small"
+																								disabled={
+																									index === selectedData.steps.length - 1
+																								}
+																								onClick={() => handleMoveStep(index, 'down')}
+																								className="text-slate-500 hover:text-primary-600 disabled:opacity-30"
+																							>
+																								<FuseSvgIcon size={16}>
+																									lucide:arrow-down
+																								</FuseSvgIcon>
+																							</IconButton>
+																						</span>
+																					</Tooltip>
+																					<Tooltip title="Edit Step">
 																						<IconButton
 																							size="small"
-																							disabled={index === 0}
-																							onClick={() => handleMoveStep(index, 'up')}
-																							className="text-slate-500 hover:text-primary-600 disabled:opacity-30"
+																							onClick={() => {
+																								navigate(
+																									`/guide-document/${selectedChildId}/steps/${step._id || step.id}/edit`,
+																									{
+																										state: {
+																											step,
+																											childModule: selectedChild,
+																											parentModule: selectedParent
+																										}
+																									}
+																								);
+																							}}
+																							className="text-slate-500 hover:text-slate-800"
 																						>
 																							<FuseSvgIcon size={16}>
-																								lucide:arrow-up
+																								lucide:pencil
 																							</FuseSvgIcon>
 																						</IconButton>
-																					</span>
-																				</Tooltip>
-																				<Tooltip title="Move Down">
-																					<span>
-																						<IconButton
-																							size="small"
-																							disabled={
-																								index === selectedData.steps.length - 1
-																							}
-																							onClick={() => handleMoveStep(index, 'down')}
-																							className="text-slate-500 hover:text-primary-600 disabled:opacity-30"
-																						>
-																							<FuseSvgIcon size={16}>
-																								lucide:arrow-down
-																							</FuseSvgIcon>
-																						</IconButton>
-																					</span>
-																				</Tooltip>
-																				<Tooltip title="Edit Step">
+																					</Tooltip>
+																				</>
+																			)}
+																			{userCanDelete && (
+																				<Tooltip title="Delete Step">
 																					<IconButton
 																						size="small"
-																						onClick={() => {
-																							navigate(
-																								`/guide-document/${selectedChildId}/steps/${step._id || step.id}/edit`,
-																								{
-																									state: {
-																										step,
-																										childModule: selectedChild,
-																										parentModule: selectedParent
-																									}
-																								}
-																							);
-																						}}
-																						className="text-slate-500 hover:text-slate-800"
+																						onClick={() => handleDeleteStep(step)}
+																						className="text-rose-500 hover:bg-rose-50"
 																					>
 																						<FuseSvgIcon size={16}>
-																							lucide:pencil
+																							lucide:trash-2
 																						</FuseSvgIcon>
 																					</IconButton>
 																				</Tooltip>
-																			</>
-																		)}
-																		{userCanDelete && (
-																			<Tooltip title="Delete Step">
-																				<IconButton
-																					size="small"
-																					onClick={() => handleDeleteStep(step)}
-																					className="text-rose-500 hover:bg-rose-50"
-																				>
-																					<FuseSvgIcon size={16}>
-																						lucide:trash-2
-																					</FuseSvgIcon>
-																				</IconButton>
-																			</Tooltip>
-																		)}
-																	</div>
-																)}
-															</div>
+																			)}
+																		</div>
+																	)}
+																</div>
 
-															{/* Card Body */}
-															<div className="p-3.5 sm:p-4 space-y-3">
-																{/* Uploaded Screenshot Box (Full width & Centered) */}
-																{hasScreenshot && (
-																	<div className="w-full">
-																		<div
-																			onClick={() =>
-																				setLightboxImage({
-																					url: step.screenshotUrl!,
-																					title: step.title || `Step ${stepNum}`
-																				})
-																			}
-																			className="group relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950 cursor-zoom-in transition-all hover:border-primary-400 shadow-xs flex items-center justify-center p-2 sm:p-3"
-																		>
-																			<img
-																				src={getImageUrl(step.screenshotUrl)}
-																				alt={step.title || `Screenshot step ${stepNum}`}
-																				className="w-full max-h-[620px] object-contain mx-auto transition-transform duration-200 group-hover:scale-[1.01] rounded-lg"
-																			/>
-																			<div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs rounded-xl">
-																				<FuseSvgIcon size={18}>
-																					lucide:maximize-2
-																				</FuseSvgIcon>
-																				<span>Click to view full screen</span>
+																{/* Card Body */}
+																<div className="p-3.5 sm:p-4 space-y-3">
+																	{/* Uploaded Screenshot Box (Full width & Centered) */}
+																	{hasScreenshot && (
+																		<div className="w-full">
+																			<div
+																				onClick={() =>
+																					setLightboxImage({
+																						url: step.screenshotUrl!,
+																						title: step.title || `Step ${stepNum}`
+																					})
+																				}
+																				className="group relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950 cursor-zoom-in transition-all hover:border-primary-400 shadow-xs flex items-center justify-center p-2 sm:p-3"
+																			>
+																				<img
+																					src={getImageUrl(step.screenshotUrl)}
+																					alt={step.title || `Screenshot step ${stepNum}`}
+																					className="w-full max-h-[620px] object-contain mx-auto transition-transform duration-200 group-hover:scale-[1.01] rounded-lg"
+																				/>
+																				<div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs rounded-xl">
+																					<FuseSvgIcon size={18}>
+																						lucide:maximize-2
+																					</FuseSvgIcon>
+																					<span>Click to view full screen</span>
+																				</div>
 																			</div>
 																		</div>
-																	</div>
-																)}
+																	)}
 
-																{/* Step Description & Inline Pasted Content */}
-																{step.description && (
-																	<div
-																		className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 dark:prose-invert leading-relaxed"
-																		dangerouslySetInnerHTML={{ __html: step.description }}
-																	/>
-																)}
+																	{/* Step Description & Inline Pasted Content */}
+																	{step.description && (
+																		<div
+																			className="prose prose-sm max-w-none text-slate-700 dark:text-slate-300 dark:prose-invert leading-relaxed"
+																			dangerouslySetInnerHTML={{ __html: step.description }}
+																		/>
+																	)}
+																</div>
 															</div>
-														</div>
-													);
-												})
-											)}
+														);
+													})
+												)}
+											</div>
 										</div>
+
+										{/* "ON THIS PAGE" Navigation Panel (matching reference image) */}
+										{selectedData.steps.length > 0 && (
+											<aside className="hidden xl:block w-60 shrink-0 sticky top-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 shadow-xs">
+												<div className="text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2.5 px-2">
+													ON THIS PAGE
+												</div>
+												<div className="space-y-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
+													{selectedData.steps.map((step, idx) => {
+														const stepNum = step.stepOrder || idx + 1;
+														const stepKey = step._id || `step-${stepNum}`;
+														const isActive =
+															activeStepId === stepKey ||
+															activeStepId === `step-${stepNum}`;
+
+														return (
+															<button
+																key={stepKey}
+																type="button"
+																onClick={() => scrollToStep(`step-${stepNum}`, stepKey)}
+																className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all block truncate ${
+																	isActive
+																		? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold shadow-2xs'
+																		: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
+																}`}
+																title={step.title || `Step ${stepNum}`}
+															>
+																{step.title || `Step ${stepNum}`}
+															</button>
+														);
+													})}
+												</div>
+											</aside>
+										)}
 									</div>
 								) : selectedParent ? (
 									/* Parent Category Overview */
