@@ -92,6 +92,14 @@ const navigationConfig: FuseNavItemType[] = [
 				authSection: 'system-logs'
 			},
 			{
+				id: 'guide-document',
+				title: 'Guide Documents',
+				type: 'item',
+				icon: 'lucide:book-open',
+				url: '/guide-document',
+				authSection: 'guide-document'
+			},
+			{
 				id: 'technical-document',
 				title: 'Technical Document',
 				type: 'item',

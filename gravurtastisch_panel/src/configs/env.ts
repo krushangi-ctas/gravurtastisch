@@ -22,6 +22,7 @@ export const websiteConfigurationUrl = `${baseBackendApiUrl}/website-configurati
 export const plansUrl = `${baseBackendApiUrl}/plans`;
 export const sectionsUrl = `${baseBackendApiUrl}/sections`;
 export const systemLogUrl = `${baseBackendApiUrl}/system-log`;
+export const guideDocumentsUrl = `${baseBackendApiUrl}/guide-documents`;
 
 const sanitizeEnvUrl = (url?: string): string => {
 	if (!url) return '';

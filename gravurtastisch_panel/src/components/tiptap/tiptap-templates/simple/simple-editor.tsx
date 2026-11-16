@@ -73,12 +73,13 @@ import { handleImageUpload, MAX_FILE_SIZE } from "@/utils/tiptap-utils";
 // --- Styles ---
 import "@/components/tiptap/tiptap-templates/simple/simple-editor.scss";
 
-interface SimpleEditorProps {
+export interface SimpleEditorProps {
   className?: string;
   value?: string;
   onChange?: (value: string) => void;
   error?: string;
   required?: boolean;
+  onUploadImage?: (file: File) => Promise<string>;
 }
 
 const MainToolbarContent = ({
@@ -183,6 +184,7 @@ export function SimpleEditor({
   onChange,
   error,
   className,
+  onUploadImage,
 }: SimpleEditorProps) {
   const isMobile = useMobile();
   const windowSize = useWindowSize();
@@ -217,6 +219,58 @@ export function SimpleEditor({
     };
   }, []);
 
+  const handleImageInsertion = React.useCallback(
+    (view: any, file: File) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result as string;
+        const { schema } = view.state;
+        if (!schema.nodes.image) return;
+
+        const imageNode = schema.nodes.image.create({
+          src: base64,
+          alt: file.name || "Pasted image",
+        });
+        const paragraphNode = schema.nodes.paragraph
+          ? schema.nodes.paragraph.create()
+          : null;
+
+        let tr = view.state.tr.replaceSelectionWith(imageNode);
+        if (paragraphNode) {
+          tr = tr.insert(tr.selection.to, paragraphNode);
+        }
+        view.dispatch(tr);
+
+        // Upload in background and update image src to server URL
+        if (onUploadImage) {
+          onUploadImage(file)
+            .then((uploadedUrl) => {
+              if (!uploadedUrl) return;
+              view.state.doc.descendants((node: any, pos: number) => {
+                if (node.type.name === "image" && node.attrs.src === base64) {
+                  const replaceTr = view.state.tr.setNodeMarkup(
+                    pos,
+                    undefined,
+                    {
+                      ...node.attrs,
+                      src: uploadedUrl,
+                    }
+                  );
+                  view.dispatch(replaceTr);
+                  return false;
+                }
+              });
+            })
+            .catch((err) => {
+              console.error("Failed to upload pasted image:", err);
+            });
+        }
+      };
+      reader.readAsDataURL(file);
+    },
+    [onUploadImage]
+  );
+
   const editor = useEditor({
     immediatelyRender: false,
     content: value || "",
@@ -231,6 +285,38 @@ export function SimpleEditor({
         autocapitalize: "off",
         "aria-label": "Main content area, start typing to enter text.",
       },
+      handlePaste: (view, event) => {
+        const items = event.clipboardData?.items;
+        if (!items) return false;
+
+        for (const item of items) {
+          if (item.type.indexOf("image") !== -1) {
+            const file = item.getAsFile();
+            if (file) {
+              event.preventDefault();
+              handleImageInsertion(view, file);
+              return true;
+            }
+          }
+        }
+        return false;
+      },
+      handleDrop: (view, event, _slice, moved) => {
+        if (
+          !moved &&
+          event.dataTransfer &&
+          event.dataTransfer.files &&
+          event.dataTransfer.files[0]
+        ) {
+          const file = event.dataTransfer.files[0];
+          if (file.type.startsWith("image/")) {
+            event.preventDefault();
+            handleImageInsertion(view, file);
+            return true;
+          }
+        }
+        return false;
+      },
     },
     extensions: [
       StarterKit as any,
@@ -239,7 +325,10 @@ export function SimpleEditor({
       TaskList,
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
-      Image,
+      Image.configure({
+        inline: false,
+        allowBase64: true,
+      }),
       Typography,
       Superscript,
       Subscript,
