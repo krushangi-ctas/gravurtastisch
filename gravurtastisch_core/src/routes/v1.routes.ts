@@ -20,6 +20,7 @@ const planRoute = require('./v1/plan.route');
 const paymentRoute = require('./v1/payment.route');
 const roleRoute = require('./v1/role.route');
 const sectionRoute = require('./v1/section.route');
+const guideDocumentRoute = require('./v1/guide-document.route');
 
 const router = express.Router();
 
@@ -103,6 +104,10 @@ const defaultRoutes = [
   {
     path: '/docs',
     route: docsRoute,
+  },
+  {
+    path: '/guide-documents',
+    route: guideDocumentRoute,
   },
 ];
 

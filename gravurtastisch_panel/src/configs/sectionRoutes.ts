@@ -12,6 +12,7 @@ export const ADMIN_SECTION_KEYS = [
 	'plans',
 	'settings',
 	'system-logs',
+	'guide-document',
 	'technical-document'
 ] as const;
 
@@ -23,6 +24,7 @@ export const SELLER_SECTION_KEYS = [
 	'orders',
 	'amazon-credentials',
 	'settings',
+	'guide-document',
 	'system-logs'
 ] as const;
 
@@ -39,6 +41,7 @@ export const SECTION_ROUTES: Record<string, string> = {
 	plans: '/plans',
 	settings: '/settings/account',
 	'system-logs': '/system-logs',
+	'guide-document': '/guide-document',
 	'technical-document': '/technical-document',
 	orders: '/orders',
 	'amazon-credentials': '/amazon-credentials'
@@ -52,6 +55,7 @@ export const ADMIN_NAV_IDS = [
 	'plans',
 	'settings',
 	'system-logs',
+	'guide-document',
 	'technical-document'
 ] as const;
 
@@ -59,6 +63,7 @@ export const SELLER_NAV_IDS = [
 	'team-management',
 	'orders',
 	'amazon-credentials',
+	'guide-document',
 	'system-logs',
 	'settings'
 ] as const;

@@ -99,7 +99,7 @@ function SettingsAppView(props: SettingsAppProps) {
         content: (
           <SettingsAppSidebarContent onSetSidebarOpen={setLeftSidebarOpen} />
         ),
-        width: 320,
+        width: 240,
       }}
       scroll="content"
     />

@@ -117,6 +117,17 @@ function usePermissions() {
 				return true;
 			}
 
+			// Guide document fallback (if not explicitly defined in role permissions)
+			if (clean === 'guide-document' || clean === 'guide-documents') {
+				if (isSuperAdmin) {
+					return true;
+				}
+				if (action === 'view') {
+					return true;
+				}
+				return false;
+			}
+
 			return false;
 		},
 		[user, isSuperAdmin, isSellerAdmin, scope, permissions]
