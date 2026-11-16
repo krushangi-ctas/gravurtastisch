@@ -193,20 +193,6 @@ router.route('/modules')
     guideDocumentController.createModule
   );
 
-router.route('/modules/:loginId')
-  .get(
-    auth(),
-    requirePermission('guide-document', 'view'),
-    validate(guideDocumentValidation.getModules),
-    guideDocumentController.listModules
-  )
-  .post(
-    auth(),
-    requirePermission('guide-document', 'create'),
-    validate(guideDocumentValidation.createModule),
-    guideDocumentController.createModule
-  );
-
 router.route('/modules/:moduleId')
   .get(
     auth(),

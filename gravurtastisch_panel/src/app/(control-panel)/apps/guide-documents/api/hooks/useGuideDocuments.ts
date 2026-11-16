@@ -101,10 +101,11 @@ export const useCreateStep = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: createStep,
-		onSuccess: (_, variables) => {
-			queryClient.invalidateQueries({ queryKey: [...moduleDetailQueryKey, variables.moduleId] });
-			queryClient.invalidateQueries({ queryKey: [...publishedChildQueryKey, variables.moduleId] });
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: moduleDetailQueryKey });
+			queryClient.invalidateQueries({ queryKey: publishedChildQueryKey });
 			queryClient.invalidateQueries({ queryKey: modulesTreeQueryKey });
+			queryClient.invalidateQueries({ queryKey: publishedTreeQueryKey });
 		}
 	});
 };
@@ -116,6 +117,8 @@ export const useUpdateStep = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: moduleDetailQueryKey });
 			queryClient.invalidateQueries({ queryKey: publishedChildQueryKey });
+			queryClient.invalidateQueries({ queryKey: modulesTreeQueryKey });
+			queryClient.invalidateQueries({ queryKey: publishedTreeQueryKey });
 		}
 	});
 };
@@ -127,6 +130,8 @@ export const useDeleteStep = () => {
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: moduleDetailQueryKey });
 			queryClient.invalidateQueries({ queryKey: publishedChildQueryKey });
+			queryClient.invalidateQueries({ queryKey: modulesTreeQueryKey });
+			queryClient.invalidateQueries({ queryKey: publishedTreeQueryKey });
 		}
 	});
 };
@@ -135,9 +140,11 @@ export const useReorderSteps = () => {
 	const queryClient = useQueryClient();
 	return useMutation({
 		mutationFn: reorderSteps,
-		onSuccess: (_, variables) => {
-			queryClient.invalidateQueries({ queryKey: [...moduleDetailQueryKey, variables.moduleId] });
-			queryClient.invalidateQueries({ queryKey: [...publishedChildQueryKey, variables.moduleId] });
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: moduleDetailQueryKey });
+			queryClient.invalidateQueries({ queryKey: publishedChildQueryKey });
+			queryClient.invalidateQueries({ queryKey: modulesTreeQueryKey });
+			queryClient.invalidateQueries({ queryKey: publishedTreeQueryKey });
 		}
 	});
 };
