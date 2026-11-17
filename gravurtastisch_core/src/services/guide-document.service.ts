@@ -15,6 +15,20 @@ const getBaseUrl = () => {
   return config.site_url || process.env.BASE_URL || '';
 };
 
+const sanitizeScreenshotUrl = (url) => {
+  if (!url || typeof url !== 'string') return '';
+  const trimmed = url.trim();
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+    try {
+      const parsed = new URL(trimmed);
+      return parsed.pathname;
+    } catch {
+      return trimmed.replace(/^https?:\/\/[^\/]+/, '');
+    }
+  }
+  return trimmed;
+};
+
 const ensureDir = (dirPath) => {
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true });
@@ -666,7 +680,7 @@ const createStep = async (moduleId, body, userId, user) => {
       guideModuleId: moduleDoc._id,
       title: body.title || '',
       description: body.description || '',
-      screenshotUrl: body.screenshotUrl || '',
+      screenshotUrl: sanitizeScreenshotUrl(body.screenshotUrl),
       stepOrder: body.stepOrder || 1,
       created_by: userId ? new mongoose.Types.ObjectId(userId) : null,
       status: 1,
@@ -733,6 +747,9 @@ const updateStep = async (stepId, body, userId, user) => {
       ...body,
       updated_by: userId ? new mongoose.Types.ObjectId(userId) : null,
     };
+    if (typeof body.screenshotUrl !== 'undefined') {
+      updateBody.screenshotUrl = sanitizeScreenshotUrl(body.screenshotUrl);
+    }
 
     const updated = await GuideStepModel.findByIdAndUpdate(
       stepId,
@@ -994,10 +1011,7 @@ const saveUploadedScreenshot = async (file, userId) => {
     }
 
     const relativePath = `${GUIDE_UPLOAD_SUBDIR}/${uniqueName}`;
-    const baseUrl = getBaseUrl().replace(/\/+$/, '');
-    const screenshotUrl = baseUrl
-      ? `${baseUrl}/uploads/${relativePath}`
-      : `/uploads/${relativePath}`;
+    const screenshotUrl = `/uploads/${relativePath}`;
 
     await systemLog(
       'CREATE',

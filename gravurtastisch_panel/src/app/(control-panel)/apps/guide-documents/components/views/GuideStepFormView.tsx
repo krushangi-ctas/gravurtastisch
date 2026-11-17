@@ -388,7 +388,7 @@ export default function GuideStepFormView() {
 										<div
 											onClick={() =>
 												setLightboxImage({
-													url: screenshotUrl,
+													url: getImageUrl(screenshotUrl),
 													title: title || 'Screenshot Preview'
 												})
 											}
