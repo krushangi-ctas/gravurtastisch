@@ -1,0 +1,1190 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   PRINTOMATION — Stilvorlage des Layout-Editors
+   ═══════════════════════════════════════════════════════════════════════════
+   Eine Datei, eine Kaskade, eine Reihenfolge (früher zwei <style>-Blöcke mit stillen Doppelungen).
+
+   ── STIL „KALK & GRAPHIT" (seit 17.10.2026) ──────────────────────────────
+   Hell und ruhig: warmes Kalkweiß als Untergrund, weiße Flächen mit Haarlinien, Graphit für
+   Schrift, EIN Akzent (Kobalt) für „gewählt / an / Hauptaktion". Grün, Amber und Rot bleiben
+   Bedeutungsfarben (Bild bzw. Erfolg · Statisch bzw. Laser bzw. Warnung · Fehler) und tauchen
+   sonst nicht auf. Schrift: Geist für die Oberfläche, Geist Mono nur für Nummern, Pfade, Codes.
+   Der vorige dunkle Stil liegt in sicherungen/2026-10-17-vor-redesign.tar.gz.
+
+   ── WIE DIESE DATEI EINGEBUNDEN IST ──────────────────────────────────────
+   Per <link rel="stylesheet" href="layout-editor.css"> im <head> von public/layout-editor.html.
+   Es gibt KEINE weiteren Stile in der HTML — wer dort ein <style> ergänzt, baut die alte Doppelung
+   wieder ein. Inline-Styles im Markup gibt es dagegen reichlich; die schlagen jede Regel hier, das
+   ist beim Suchen eines „geht nicht" der erste Verdacht.
+
+   ── AUFBAU ───────────────────────────────────────────────────────────────
+   Marken (:root) → Grundgerüst → Bausteine → Bereiche → Dialoge.
+   Farben, Ecken, Schatten und Schriftgrößen NUR über die Marken (--bg*, --r-*, --fs-*,
+   --shadow-*) setzen, keine rohen Werte; die Ausnahmen sind an Ort und Stelle begründet.
+
+   ── WORAUF DIE REIHENFOLGE ANKOMMT ───────────────────────────────────────
+   Ein paar Regeln gewinnen nur, weil sie WEITER UNTEN stehen (gleiche Spezifität, späteres
+   Vorkommen). Wer Blöcke umsortiert, kippt sie stillschweigend:
+   • .an / .an.an-gruen  müssen hinter .schaltkarte stehen
+   • .popover (Position)  hinter dem Dialog-Gerüst mit Ecken und Schatten
+   • der Abschnitt „Layout-Einstellungen" ganz unten hinter dem Grundgerüst
+   Namen wie dlForceChange, _folderSection, _paintEmptyMode, selectDays sind JavaScript und
+   stehen in public/layout-editor.js.
+
+   ── NACH EINER ÄNDERUNG ──────────────────────────────────────────────────
+   Kurz gegenprüfen: doppelte Selektoren, rohe Werte statt Marken, Klassen ohne Regel.
+   Das Rezept dafür steht in den Projektnotizen („Layout-Editor testen").
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  color-scheme: light;
+  /* Flächen: --bg Untergrund (Arbeitsfläche, Bildmulden, Balkenspur) · --bg2 Fläche (Panels,
+     Karten, Dialoge, Menüs) · --bg3 Füllung (Hover, Kartenkopf, gedämpfte Kästen) · --rail Werkzeugspalte */
+  --bg: #EEECE7; --bg2: #FFFFFF; --bg3: #F6F5F2; --rail: #F8F7F4;
+  --border: #EAE7E2; --border-hi: #D8D4CD; --line-input: #E2DED7;
+  --text: #1F1E1C; --text-dim: #5D5953; --text-muted: #8C877F;
+  --accent: #3B5BDB; --accent-glow: rgba(59,91,219,.08); --accent-ring: rgba(59,91,219,.16); --accent-rand: rgba(59,91,219,.38);
+  --green: #2E8B57; --green-dim: rgba(46,139,87,.10); --green-rand: rgba(46,139,87,.38);
+  --amber: #B7740A; --amber-dim: rgba(183,116,10,.10); --amber-rand: rgba(183,116,10,.40);
+  --red: #D23F45; --red-dim: rgba(210,63,69,.08); --red-rand: rgba(210,63,69,.32);
+  /* Kopfleiste: weiß wie die Panels, getrennt nur durch eine Haarlinie */
+  --head: #FFFFFF; --head-text: #1F1E1C; --head-line: #EAE7E2; --head-hover: #F3F1ED;
+  /* Kombi-Feld: eigene Akzentfarbe (Violett), damit es neben Text (Kobalt) unterscheidbar bleibt */
+  --combo: #7C62D6; --combo-strong: #5D45B8; --combo-dim: rgba(124,98,214,.10); --combo-rand: rgba(124,98,214,.40);
+  --schalter-aus: #D9D5CE;
+  /* Maschinen-Bühne: dunkler Grund, damit die gerasterten (fast weißen) Bilder sichtbar sind */
+  --buehne: #22211E; --buehne-blech: #35342F; --buehne-linie: #4D4B46; --buehne-text: #A9A49B;
+  --buehne-akzent: #7F96F0; --buehne-gruen: #62CC93;
+  --overlay: rgba(31,30,28,.38);
+  --shadow-s: 0 1px 2px rgba(31,30,28,.06);
+  --shadow-m: 0 6px 18px rgba(31,30,28,.08), 0 1px 3px rgba(31,30,28,.05);
+  --shadow-l: 0 24px 64px rgba(31,30,28,.16), 0 4px 14px rgba(31,30,28,.06);
+  --sans: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: 'Geist Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+
+  /* ── Formsprache: EINE Skala für Ecken und Schriftgrößen ─────────────
+     Wer etwas Neues baut, nimmt diese Marken; die Optik ändert man dann an EINER Stelle. */
+  --r-xs: 5px;       /* Marken, Balken, Farbfelder, Chips */
+  --r-s: 8px;        /* Knöpfe, Eingabefelder, Menü- und Optionszeilen */
+  --r-m: 10px;       /* Karten, Panels, Popover, Ordner */
+  --r-l: 16px;       /* Dialoge und Overlays */
+  --r-pille: 999px;  /* Schiebeschalter — Radius folgt der Höhe, nicht der Skala */
+  --fs-mikro: 11px;  /* Hilfstexte, Beschriftungen, Marken */
+  --fs-klein: 12px;  /* Standard für Bedienelemente */
+  --fs-basis: 13px;  /* Fließtext, betonte Werte */
+  --fs-gross: 14px;  /* hervorgehobene Werte, Werkzeug-Glyphen */
+  --fs-titel: 15px;  /* Dialog- und Abschnittstitel */
+  --fs-symbol: 16px; /* Schließen- und Zoom-Knöpfe */
+     /* Unter --fs-mikro gibt es bewusst keine Marke: die winzigen Beschriftungen (8,5–10,5 px —
+        Werkzeugspalte, Inseltitel, Export-Gruppen, Kennzahl-Beschriftung, Dropdown-Kacheln)
+        stehen roh an ihrer Stelle. */
+
+  /* ── Buchstabenabstand der Mikro-Beschriftungen ─────────────────────────
+     --ls-label  alle Abschnitts- und Feldbeschriftungen (gesperrte Großbuchstaben)
+     --ls-weit   nur wo der Abstand TRÄGT: Wortmarke, Gruppen der Werkzeugspalte, Inseltitel */
+  --ls-label: .06em;
+  --ls-weit:  .16em;
+
+  /* Mindesthöhe einer Knopf-Kachel in einem Raster — sonst bestimmt die LÄNGE DER
+     BESCHRIFTUNG die Zeilenhöhe und die Reihen springen. */
+  --h-kachel: 34px;
+}
+/* Utility-Klassen (aus wiederholten Inline-Styles ausgelagert) */
+.umut{font-size:var(--fs-klein);color:var(--text-muted);}
+.umut10{font-size:var(--fs-mikro);color:var(--text-muted);}
+.u12{font-size:var(--fs-basis);color:var(--text);}
+.uempty{color:var(--text-muted);font-size:var(--fs-klein);text-align:center;padding:16px 12px;}
+.export-item{display:flex;align-items:center;gap:9px;width:100%;text-align:left;background:none;border:none;color:var(--text);font-family:inherit;font-size:var(--fs-klein);padding:8px 10px;cursor:pointer;border-radius:var(--r-s);}
+.export-item:hover{background:var(--bg3);}
+.export-item svg{width:15px;height:15px;flex-shrink:0;opacity:.85;}
+/* Pill-Toggle (Einstellungen) */
+.tgl{position:relative;display:inline-block;width:36px;height:20px;flex-shrink:0;}
+/* DIE eine Stelle für die unsichtbare Checkbox über der Pille. Der Selektor trägt bewusst
+   `input[type="checkbox"]` mit: die allgemeine Regel weiter unten (input[type="checkbox"] {
+   appearance:auto; width:16px; … }) ist spezifischer als ein reiner Klassenselektor und würde sonst
+   gewinnen — die Checkbox wäre nur 16x16 statt so breit wie der Schalter. */
+input[type="checkbox"].tgl-cb{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;z-index:2;appearance:none;-webkit-appearance:none;}
+.tgl-track{position:absolute;inset:0;border-radius:var(--r-pille);background:var(--schalter-aus);transition:background .2s;}
+.tgl-knob{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(31,30,28,.22);transition:left .2s;}
+.tgl-cb:checked ~ .tgl-track{background:var(--accent);}
+.tgl-cb:checked ~ .tgl-knob{left:18px;}
+.tgl-cb:focus-visible ~ .tgl-track{box-shadow:0 0 0 3px var(--accent-ring);}
+/* ── Dialoge: ein Gerüst für alle ────────────────────────────────────────
+   Gleiche Ecken, gleicher Schatten, gleicher Rahmen — damit sich jedes Fenster gleich anfühlt.
+   OHNE !important: die Werte stehen nur hier; .popover und die Inline-Styles der Dialog-Kästen
+   wiederholen sie nicht (sonst gewänne mal das eine, mal das andere). */
+#dxf-modal > div, #laser-preview-overlay > div, .popover {
+  border-radius: var(--r-l);
+  box-shadow: var(--shadow-l);
+}
+#dxf-modal > div { padding: 24px 26px; min-width: 380px; }
+/* Abdunkelung hinter JEDEM Dialog: eine Farbe, ein Weichzeichner. Die Kästen setzen ihre
+   Position inline (display wird vom Skript geschaltet) — hier nur das Aussehen. */
+#dxf-modal, #layout-settings-overlay, #laser-preview-overlay, #asin-overlay, #app-modal, #create-folder-modal, #dd-motiv-wahl, .shortcuts-overlay {
+  background: var(--overlay) !important;
+  backdrop-filter: blur(2px);
+}
+
+/* Werkzeugspalte: Gruppenbeschriftung + deutlicher aktiver Zustand
+   (.icon-nav .nav-btn selbst steht EINMAL weiter unten im Abschnitt „Icon nav") */
+.nav-gruppe{font-size:8.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);
+            opacity:.75;margin:14px 0 4px;user-select:none;}
+.nav-gruppe:first-child{margin-top:4px;}
+.icon-nav .nav-btn.active{background:var(--bg2);color:var(--accent);box-shadow:var(--shadow-s),0 0 0 1px var(--border);}
+.icon-nav .nav-btn.active .nav-btn-lbl{color:var(--text);font-weight:600;}
+/* Der aktive Reiter zeigt zur Arbeitsfläche hin — die Spalte bekommt dadurch
+   eine Richtung, statt nur einen eingefärbten Knopf zu haben. */
+.icon-nav .nav-btn.active::after{content:"";position:absolute;right:-8px;top:50%;
+            transform:translateY(-50%);width:3px;height:20px;border-radius:3px 0 0 3px;
+            background:var(--accent);}
+
+/* Einstellungen: Klartext-Zeile unter den Tages-Knöpfen */
+.einst-stand{margin-top:10px;padding:8px 10px;border-radius:var(--r-s);background:var(--bg3);
+             font-size:var(--fs-mikro);color:var(--text-dim);line-height:1.5;}
+
+/* Klappbereich (Laser-Feinjustage) */
+.klapp{display:flex;align-items:center;gap:8px;width:100%;background:var(--bg2);
+       border:1px solid var(--line-input);border-radius:var(--r-s);padding:9px 12px;margin-bottom:8px;
+       font-family:inherit;font-size:var(--fs-klein);font-weight:600;color:var(--text);cursor:pointer;text-align:left;white-space:nowrap;}
+.klapp > .umut10{min-width:0;overflow:hidden;text-overflow:ellipsis;font-weight:400;}
+.klapp:hover{border-color:var(--border-hi);background:var(--bg3);}
+.klapp-pfeil{font-size:var(--fs-mikro);color:var(--text-muted);}
+.klapp-inhalt{margin-bottom:10px;border-left:2px solid var(--border);padding-left:12px;}
+#tab-laser.laser-aus .klapp,
+#tab-laser.laser-aus .klapp-inhalt{opacity:.4;transition:opacity .15s;}
+
+/* Kontextanzeige in der Kopfleiste */
+.kopf-kontext{display:flex;align-items:baseline;gap:10px;padding-left:16px;
+              border-left:1px solid var(--head-line);min-width:0;}
+.kopf-kontext[hidden]{display:none;}
+.kopf-kontext-name{font-size:var(--fs-basis);font-weight:600;color:var(--head-text);
+                   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:30vw;}
+.kopf-kontext-meta{font-size:var(--fs-mikro);color:var(--text-muted);white-space:nowrap;font-family:var(--mono);}
+
+/* ── Kopfleiste: Werkzeuge als eigene Insel ──────────────────────────────
+   Globales (Speichern, Aktionen, Export) rechts, Werkzeuge fürs gewählte Feld in einer abgesetzten
+   Insel davor. Die Insel bleibt IMMER an derselben Stelle — wer Array oder Kreis sucht, findet sie
+   dort, auch wenn gerade nichts gewählt ist. Ohne Auswahl ist sie nur gedämpft. */
+.kopf-insel{display:flex;align-items:center;gap:6px;padding:3px 8px 3px 12px;
+            border:1px solid var(--border);border-radius:var(--r-m);background:var(--bg3);
+            opacity:.5;transition:opacity .15s;}
+.kopf-insel.sichtbar{opacity:1;}
+.kopf-insel-titel{font-size:9.5px;font-weight:600;letter-spacing:var(--ls-weit);text-transform:uppercase;color:var(--text-muted);}
+.kopf-insel > input{width:52px;padding:5px 6px;text-align:center;}
+
+/* ── Fundament: Abstände, Karten, Knöpfe ──────────────────────────────────
+   Bewusst wenige Bausteine statt 472 Inline-Styles. Wer etwas Neues baut,
+   nimmt diese Klassen — dann bleibt der Rhythmus über alle Bereiche gleich. */
+.marke{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border-hi);
+       border-radius:var(--r-xs);padding:0 6px;line-height:17px;font-size:var(--fs-mikro);color:var(--text-dim);background:var(--bg2);}
+
+/* ── Panel-Titel: EIN Kopf für jeden Reiter ───────────────────────────────
+   Name des Reiters groß, rechts höchstens ein Knopf, darunter höchstens eine Zeile Hinweis.
+   Vorher hatte jeder Reiter seine eigene Überschrift (fünf Bauarten, mit und ohne Emoji). */
+.tab-titel{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;min-height:26px;}
+.tab-titel-name{font-size:var(--fs-titel);font-weight:600;color:var(--text);letter-spacing:-.01em;}
+.tab-titel-text{font-size:var(--fs-klein);color:var(--text-muted);line-height:1.55;margin:-8px 0 14px;}
+.tab-kopf{padding:16px 16px 0;flex-shrink:0;}
+.tab-kopf .tab-titel{margin-bottom:6px;}
+
+/* ── Eigenschaften-Panel: verwandte Werte in einer Karte ───────────────── */
+.pgrp{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r-m);padding:12px;}
+.pgrp-titel .umut10{text-transform:none;letter-spacing:0;font-weight:400;opacity:.8;}
+/* DIE eine .il-block-Regel — keine zweite anlegen (die zog früher still den Abstand). */
+.il-block{display:block;font-size:var(--fs-mikro);font-weight:600;letter-spacing:var(--ls-label);text-transform:uppercase;
+          color:var(--text-muted);margin:18px 0 8px;padding-top:16px;border-top:1px solid var(--border);}
+.pgrp .il-block{margin-top:0;padding-top:0;border-top:none;}
+.pgrp-titel{font-size:var(--fs-mikro);font-weight:600;letter-spacing:var(--ls-label);text-transform:uppercase;
+            color:var(--text-muted);margin-bottom:10px;display:flex;align-items:baseline;gap:6px;}
+.pgrp .row2{row-gap:8px;}
+
+/* ── Layout-Liste (Tab „Füllen") ───────────────────────────────────────── */
+.lay-karte{position:relative;display:flex;align-items:center;gap:10px;padding:8px 10px;
+           border:1px solid var(--border);border-radius:var(--r-m);background:var(--bg2);
+           transition:border-color .12s,background .12s,box-shadow .12s;}
+.lay-karte:hover{border-color:var(--border-hi);box-shadow:var(--shadow-s);}
+.lay-karte.aktiv{border-color:var(--accent);background:var(--accent-glow);}
+.lay-karte.aktiv::before{content:"";position:absolute;left:-1px;top:10px;bottom:10px;width:3px;
+                         border-radius:0 3px 3px 0;background:var(--accent);}
+/* Vorschau klein halten — im Panel zählt jeder Pixel für den Namen */
+.lay-bild{flex-shrink:0;display:flex;}
+.lay-bild svg{width:26px;height:auto;max-height:34px;}
+.lay-koerper{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;cursor:pointer;}
+.lay-name{font-size:var(--fs-basis);font-weight:500;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.lay-meta{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+/* Auto-Export als Punkt: grün = läuft nachts mit. */
+.lay-punkt{width:8px;height:8px;border-radius:50%;flex-shrink:0;cursor:pointer;
+           border:1.5px solid var(--border-hi);background:none;transition:.12s;}
+.lay-punkt.an{border-color:var(--green);background:var(--green);box-shadow:0 0 0 3px var(--green-dim);}
+.lay-punkt:hover{transform:scale(1.25);}
+/* Werkzeuge liegen ÜBER dem rechten Rand der Zeile (absolut) — unsichtbar nehmen sie dem Namen keinen Platz weg. */
+.lay-werkzeug{display:flex;align-items:center;gap:3px;opacity:0;pointer-events:none;transition:opacity .12s;
+              position:absolute;right:8px;top:50%;transform:translateY(-50%);padding-left:14px;
+              background:linear-gradient(90deg,transparent,var(--bg2) 12px);}
+.lay-karte:hover .lay-werkzeug{opacity:1;pointer-events:auto;}
+/* Ordner */
+.ord{margin-bottom:8px;border:1px solid var(--border);border-radius:var(--r-m);overflow:hidden;background:var(--bg2);}
+.ord-kopf{position:relative;display:flex;align-items:center;gap:9px;padding:10px 12px;background:var(--bg2);cursor:pointer;user-select:none;transition:background .12s;}
+.ord-kopf:hover{background:var(--bg3);}
+/* Die drei Ordner-Werkzeuge (▲ ▼ ⋯) erscheinen beim Überfahren — wie bei der Layout-Karte. */
+.ord-kopf:hover .lay-werkzeug{opacity:1;pointer-events:auto;background:linear-gradient(90deg,transparent,var(--bg3) 12px);}
+.ord-pfeil{font-size:var(--fs-mikro);color:var(--text-muted);transition:transform .15s;}
+.ord-name{flex:1;min-width:0;font-size:var(--fs-klein);font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.ord-inhalt{display:flex;flex-direction:column;gap:6px;padding:8px;border-top:1px solid var(--border);background:var(--bg3);}
+.ord-leer{font-size:var(--fs-mikro);color:var(--text-muted);text-align:center;padding:10px;}
+
+/* Einheitlicher Switch (klassengesteuert) — gleiche Optik wie .tgl, für Card-Row-Toggles */
+.aswitch{position:relative;display:inline-block;width:36px;height:20px;border-radius:var(--r-pille);background:var(--schalter-aus);transition:background .2s;flex-shrink:0;cursor:pointer;}
+.aswitch::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(31,30,28,.22);transition:left .2s;}
+.aswitch.on{background:var(--accent);}
+.aswitch.green.on{background:var(--green);}
+.aswitch.on::after{left:18px;}
+html, body { height: 100%; overflow: hidden; }
+body { background: var(--bg); color: var(--text); font-family: var(--sans); font-size: var(--fs-basis);
+       -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+button, input, select, textarea { font-family: inherit; }
+::selection { background: rgba(59,91,219,.18); }
+.app { display: grid; grid-template-rows: 56px 1fr; height: 100vh; }
+
+/* Header — weiß wie die Panels; die Haarlinie trennt, kein Farbblock. */
+header { background: var(--head); color: var(--head-text); border-bottom: 1px solid var(--head-line); padding: 0 18px; display: flex; align-items: center; justify-content: space-between; gap: 14px; position: relative; z-index: 5; }
+header .logo { color: var(--head-text); }
+header .btn-muted { background: var(--bg2); color: var(--text); border-color: var(--line-input); }
+header .btn-muted:hover:not(:disabled) { background: var(--bg3); filter: none; }
+/* Speichern-Knopf bei ungespeicherten Änderungen (markLayoutDirty) */
+#btn-save.ungespeichert { border-color: var(--amber); }
+#btn-save.ungespeichert::after { content: '●'; color: var(--amber); }
+header .btn svg { width: 15px; height: 15px; flex-shrink: 0; }
+/* Nur-Symbol-Knöpfe (Rückgängig, Wiederholen, Tastenkürzel): quadratisch statt breit */
+header .btn-ikon { width: 32px; height: 32px; padding: 0; justify-content: center; }
+.logo { font-family: var(--sans); font-weight: 600; font-size: var(--fs-klein); letter-spacing: var(--ls-weit); display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+.logo-dot { width: 9px; height: 9px; background: var(--accent); border-radius: 3px; transform: rotate(45deg); }
+.header-actions { display: flex; gap: 6px; align-items: center; }
+
+/* Workspace */
+.workspace { display: grid; grid-template-columns: 68px 264px 1fr 0px; height: calc(100vh - 56px); overflow: hidden;
+             transition: grid-template-columns .22s cubic-bezier(.4,0,.2,1); }
+/* Auswahl vorhanden → Inspektor fährt aus (Klasse setzt renderProps) */
+.workspace.hat-auswahl { grid-template-columns: 68px 264px 1fr 292px; }
+@media (prefers-reduced-motion: reduce) { .workspace { transition: none; } }
+
+/* Icon nav */
+.icon-nav { background: var(--rail); border-right: 1px solid var(--border); display: flex; flex-direction: column; align-items: center; padding: 8px 0 12px; gap: 2px; overflow: visible; }
+.icon-nav .nav-btn { position: relative; color: var(--text-muted); } /* relative: Anker für .active::after */
+.icon-nav .nav-btn:hover { background: var(--head-hover); color: var(--text); }
+.nav-btn { width: 52px; height: 46px; border-radius: var(--r-m); border: none; background: none; color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; transition: background .15s, color .15s, box-shadow .15s; gap: 4px; }
+.nav-btn-lbl { font-size: 9.5px; font-weight: 500; letter-spacing: 0; line-height: 1; color: var(--text-dim); white-space: nowrap; }
+.nav-btn:hover .nav-btn-lbl { color: var(--text); }
+.nav-btn:hover { background: var(--bg3); color: var(--text-dim); }
+.nav-btn.active { background: var(--accent-glow); color: var(--accent); }
+
+/* Left panel */
+.left-panel { background: var(--bg2); border-right: 1px solid var(--border); overflow-y: auto; display: flex; flex-direction: column; }
+.panel-sec { padding: 16px; border-bottom: 1px solid var(--border); }
+.sec-title { font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+
+/* Inputs */
+input, select, textarea { width: 100%; background: var(--bg2); border: 1px solid var(--line-input); color: var(--text); font-family: inherit; font-size: var(--fs-klein); padding: 7px 10px; border-radius: var(--r-s); outline: none; transition: border-color .15s, box-shadow .15s, background-color .15s; appearance: none; }
+input:hover, select:hover, textarea:hover { border-color: var(--border-hi); }
+input:focus, select:focus, textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-ring); }
+input::placeholder, textarea::placeholder { color: var(--text-muted); opacity: .75; }
+input:disabled, select:disabled { opacity: .5; cursor: default; }
+/* Auswahlfelder: eigener, ruhiger Pfeil (appearance:none nimmt den nativen weg). Wer inline
+   `background:` setzt, löscht ihn mit — gewollt bei den randlosen Feldern im Zeitplan. */
+select { padding-right: 28px; cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 4.5l3 3 3-3' fill='none' stroke='%238C877F' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 9px center; background-size: 12px 12px; }
+/* ── Rückausnahme für Bedienelemente, die ihren Zustand SELBST anzeigen ──────
+   Die Regel darüber setzt `appearance: none` für alle Eingabefelder — richtig für Text-, Zahlen- und
+   Datumsfelder, fatal für Checkbox, Radio und Regler: die zeigen ihren Zustand über genau diese native
+   Darstellung (sonst sieht angehakt aus wie nicht angehakt, und Reglern fehlt die Schiene).
+   accent-color färbt Haken, Punkt und gefüllte Schiene in der Akzentfarbe. */
+input[type="checkbox"], input[type="radio"] {
+  width: 16px; height: 16px; min-width: 16px; padding: 0; box-shadow: none;
+  appearance: auto; -webkit-appearance: auto;
+  accent-color: var(--accent); cursor: pointer; flex-shrink: 0;
+}
+input[type="range"] {
+  padding: 0; background: none; border: none; box-shadow: none;
+  appearance: auto; -webkit-appearance: auto;
+  accent-color: var(--accent); cursor: pointer;
+}
+/* Ausgenommen von der Ausnahme: der Schiebeschalter. Seine Checkbox liegt absichtlich unsichtbar
+   über der Pille (dargestellt von .tgl-track/.tgl-knob) und darf NICHT nativ auftauchen. Die Ausnahme
+   steht bei ihrer Klasse ganz oben (input[type="checkbox"].tgl-cb), hier bewusst keine Kopie. */
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ig { display: flex; flex-direction: column; gap: 5px; }
+.il { font-size: var(--fs-mikro); font-weight: 500; color: var(--text-dim); }
+
+/* Buttons — EIN Grundknopf (weiß, Haarlinie), Varianten färben nur Grund, Rahmen und Schrift. */
+.btn { border: 1px solid transparent; background: var(--bg2); color: var(--text); font-family: inherit; font-size: var(--fs-klein); font-weight: 500; line-height: 1.25; padding: 7px 12px; border-radius: var(--r-s); cursor: pointer; transition: background-color .15s, border-color .15s, color .15s, box-shadow .15s, filter .15s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.btn:hover:not(:disabled) { filter: brightness(.96); }
+.btn:active:not(:disabled) { filter: brightness(.92); }
+.btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--accent-ring); }
+.btn:disabled { opacity: 0.45; cursor: default; }
+.btn-accent { background: var(--accent); color: #fff; box-shadow: var(--shadow-s); }
+.btn-muted { background: var(--bg2); border-color: var(--line-input); color: var(--text); }
+.btn-muted:hover:not(:disabled) { background: var(--bg3); filter: none; }
+.btn-red { background: var(--red-dim); color: var(--red); border-color: var(--red-rand); }
+.btn-full { width: 100%; justify-content: center; }
+/* ── Knopf-Größen: DREI Stufen, mehr braucht es nicht ─────────────────────
+   Wer einen Knopf baut, nimmt .btn (Standard) und bei Bedarf .btn-xs oder .btn-lg — keine
+   Inline-Maße (sonst sehen gleichrangige Knöpfe je nach Bereich verschieden groß aus).
+   .btn-dialog ist keine vierte Stufe, sondern nur der Fuß der Dialoge (Abbrechen / OK). */
+.btn-xs { padding: 4px 9px; font-size: var(--fs-mikro); flex-shrink: 0; }
+.btn-lg { padding: 11px 14px; font-size: var(--fs-basis); font-weight: 600; border-radius: var(--r-m); }
+.btn-dialog { padding: 9px 18px; font-size: var(--fs-basis); font-weight: 600; }
+/* ── Umriss-Knöpfe: zarter Akzentgrund, Akzentschrift ─────────────────────
+   Die Bauform für „noch ein X anlegen" („+ Tag", „+ Ordner"). Den Vollton (.btn-accent) bekommt je
+   Bereich nur die EINE Hauptaktion („Bestellungen laden", „Füllen + Export", „Ins Layout übernehmen");
+   Nebenaktionen daneben sind .btn-muted (seit 20.10.2026, vorher grün/amber gemischt). */
+.btn-umriss { background: var(--accent-glow); border-color: var(--accent-rand); color: var(--accent); }
+.btn-red-voll { background: var(--red); color: #fff; }
+/* Kleine Auswahl-Knöpfe nebeneinander (ASIN-Filter, Testblatt-Inhalt, Vorschau-Modi) — gebaut von
+   _segBtn. Gewählt = Akzentgrund wie jeder gewählte Kasten. */
+.wahl-knopf { flex: 1; min-width: 0; padding: 7px 8px; border-radius: var(--r-s); border: 1px solid var(--line-input); background: var(--bg2);
+              color: var(--text); cursor: pointer; font-family: inherit; font-size: var(--fs-mikro); font-weight: 500; line-height: 1.2;
+              transition: background-color .12s, border-color .12s, color .12s; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.wahl-knopf:hover { border-color: var(--border-hi); background: var(--bg3); }
+.wahl-knopf.an { border-color: var(--accent); background: var(--accent-glow); color: var(--accent); font-weight: 600; }
+/* Rezept-Knöpfe im Dithering: kleine Chips */
+.chip-knopf { padding: 5px 10px; border-radius: var(--r-pille); border: 1px solid var(--line-input); background: var(--bg2); color: var(--text);
+              font-family: inherit; font-size: var(--fs-mikro); font-weight: 500; cursor: pointer; transition: border-color .12s, color .12s, background-color .12s; }
+.chip-knopf:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+/* Page presets */
+.presets { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-bottom: 12px; }
+/* min-height + zentriert: eine ein- und eine zweizeilige Beschriftung ergeben
+   dieselbe Kachel, die Reihen bleiben auf einer Linie (s. --h-kachel). */
+.preset { background: var(--bg2); border: 1px solid var(--line-input); color: var(--text); padding: 4px 6px; border-radius: var(--r-s); cursor: pointer; font-size: var(--fs-klein); font-weight: 500; text-align: center; transition: border-color .15s, color .15s, background-color .15s;
+          min-height: 32px; display: flex; align-items: center; justify-content: center; line-height: 1.25; }
+.preset:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-glow); }
+
+/* ── Reiter Felder ───────────────────────────────────────────────────────
+   Bausteine als Zeilen: Symbol in Typfarbe, Name, rechts die Nummern (welche Zeile / welches Foto
+   der Bestellung). Die Farbe kommt je Zeile über --c / --c-dim / --c-rand aus _TYPFARBE im Skript —
+   dieselbe Zuordnung wie auf dem Blatt (.cel). Belegte Nummern tragen den Farbgrund.
+   Seit 20.10.2026 hat jeder Baustein einen eigenen Rahmen (Nutzerwunsch: „leichter auseinanderhalten") —
+   vorher standen die Nummern von „Text" so dicht unter „Bild", dass man sie dem falschen zuordnete. */
+.bs-liste { display: flex; flex-direction: column; gap: 6px; }
+.bs-zeile { display: grid; grid-template-columns: 28px 1fr auto; column-gap: 10px; row-gap: 7px; align-items: center; padding: 9px 10px;
+  border: 1px solid var(--border); border-radius: var(--r-m); background: var(--bg2); user-select: none; }
+.bs-ic { grid-row: 1; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: var(--r-s); background: var(--c-dim); color: var(--c); }
+.bs-ic svg { width: 15px; height: 15px; }
+.bs-name { grid-row: 1; font-size: var(--fs-basis); font-weight: 500; color: var(--text); }
+.bs-chips { grid-row: 2; grid-column: 2; display: flex; flex-wrap: wrap; gap: 4px; }
+.bs-stufe { grid-row: 2; grid-column: 3; display: flex; gap: 4px; align-self: start; }
+.bs-chip { width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line-input); border-radius: var(--r-xs); background: var(--bg2); color: var(--text-dim); font-family: var(--mono); font-size: var(--fs-mikro); cursor: grab; transition: border-color .12s, color .12s; }
+.bs-chip:hover { border-color: var(--c); color: var(--c); }
+.bs-chip.belegt { background: var(--c-dim); border-color: var(--c-rand); color: var(--c); }
+.bs-chip.neu { border-style: dashed; background: none; color: var(--text-muted); cursor: pointer; padding: 0; font-size: var(--fs-symbol); line-height: 1; }
+.bs-chip.neu:hover { border-color: var(--text-dim); color: var(--text); }
+.bs-chip.neu:disabled { opacity: .35; cursor: default; border-color: var(--border); color: var(--text-muted); }
+.bs-schalter { grid-row: 1; grid-column: 3; justify-self: end; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--line-input); border-radius: var(--r-xs); background: none; color: var(--text-muted); cursor: pointer; padding: 0; }
+.bs-schalter.an { border-color: var(--c-rand); color: var(--c); background: var(--c-dim); }
+.bs-schalter svg { width: 14px; height: 14px; }
+.bs-trenner { height: 1px; background: var(--border); margin: 6px 2px; }
+/* Bausteine ohne Nummer: einzeilig, die ganze Zeile wird gezogen; rechts der Griff. */
+.bs-einzel { cursor: grab; transition: background .12s, border-color .12s; }
+.bs-einzel:hover { background: var(--bg3); border-color: var(--border-hi); }
+.bs-zieh { grid-row: 1; grid-column: 3; cursor: grab; }
+.bs-zieh svg { width: 14px; height: 14px; fill: currentColor; stroke: none; }
+/* Eigenschaften: Kombi-Karte — Zeilen als Kacheln wählen, Reihenfolge darunter. */
+.kb-liste { margin-top: 10px; display: flex; flex-direction: column; gap: 4px; }
+.kb-zeile { display: flex; align-items: center; gap: 6px; font-size: var(--fs-klein); }
+.kb-nr { width: 16px; font-family: var(--mono); color: var(--text-muted); }
+.kb-name { flex: 1; color: var(--text); }
+.kb-pfeil { width: 24px; height: 24px; padding: 0; border: 1px solid var(--line-input); border-radius: var(--r-xs); background: var(--bg2); color: var(--text-dim); cursor: pointer; font-size: var(--fs-klein); }
+.kb-pfeil:hover:not(:disabled) { border-color: var(--c); color: var(--c); }
+.kb-pfeil:disabled { opacity: .3; cursor: default; }
+/* ── Eigenschaften (rechte Leiste) ─────────────────────────────────────────
+   Kopf (Symbol in Typfarbe + Name) → Karten (.pgrp). Innerhalb einer Karte stehen
+   Beschriftung über Eingabe (.pp-feld), zwei nebeneinander über .row2. Schalter
+   sind .seg — EIN kompakter Segment-Stil statt vieler Einzelknöpfe. */
+.pp { display: flex; flex-direction: column; gap: 12px; padding: 2px 0; }
+.pp-kopf { display: flex; align-items: center; gap: 10px; }
+.pp-kopf .bs-ic { width: 32px; height: 32px; flex-shrink: 0; }
+.pp-kopf .bs-ic svg { width: 16px; height: 16px; }
+.pp-name { flex: 1; min-width: 0; background: transparent; border-color: transparent; font-size: var(--fs-gross); font-weight: 600; padding: 5px 6px; }
+.pp-name:hover { border-color: var(--border); }
+.pp-name:focus { border-color: var(--accent); background: var(--bg2); }
+.pp-titel { font-size: var(--fs-gross); font-weight: 600; color: var(--text); }
+.pp-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: -6px; padding-left: 49px; }
+.pp-marke { font-family: var(--mono); font-size: var(--fs-mikro); line-height: 1.7; color: var(--text-dim); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-pille); padding: 0 8px; }
+.pp-auftrag { color: var(--green); background: var(--green-dim); border-color: var(--green-rand); cursor: pointer; }
+.pp-auftrag:hover { border-color: var(--green); }
+.pp-leer { color: var(--text-muted); border-style: dashed; background: none; }
+.pp-feld { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.pgrp > .pp-feld + .pp-feld, .pgrp > .pp-feld + .row2, .pgrp > .row2 + .pp-feld, .pgrp > .row2 + .row2,
+.pgrp > .kb-liste + .pp-feld, .pgrp > .pp-feld + .kb-liste { margin-top: 10px; }
+.pp-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.pp-chips .bs-chip { cursor: pointer; }
+.pp-wert { font-family: var(--mono); color: var(--text-dim); }
+.pp-wert b { color: var(--text); }
+.pp-mono { font-family: var(--mono); }
+.pp-warn { font-size: var(--fs-mikro); color: var(--amber); line-height: 1.5; margin-top: 8px; }
+.pp-kreis { display: flex; justify-content: space-between; gap: 6px; margin-top: 10px; padding: 7px 9px; font-size: var(--fs-mikro); color: var(--text-dim); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-s); }
+.pp-kreis b { font-family: var(--mono); color: var(--text); }
+.pp-kreis.zuviel { border-color: var(--red); }
+.pp-kreis.zuviel b { color: var(--red); }
+.pp-kreis + .pp-warn { color: var(--red); }
+.pp-text { min-height: 56px; resize: vertical; font-size: var(--fs-basis); line-height: 1.45; margin-bottom: 10px; border-color: var(--amber-rand); }
+.pp-bild { display: block; width: 100%; max-height: 96px; object-fit: contain; border-radius: var(--r-s); border: 1px solid var(--border); background: var(--bg); margin-bottom: 8px; }
+.pp-bild-leer { height: 56px; display: flex; align-items: center; justify-content: center; border-style: dashed; font-size: var(--fs-klein); color: var(--text-muted); }
+.pp-motiv { display: flex; gap: 10px; align-items: center; width: 100%; padding: 7px; background: var(--bg2); border: 1px solid var(--line-input); border-radius: var(--r-s); color: var(--text); font-family: inherit; text-align: left; cursor: pointer; }
+.pp-motiv:hover { border-color: var(--accent); }
+.pp-motiv-inhalt { margin-top: 10px; }
+.pp-bild-abstand { margin-top: 10px; }
+.pp-motiv-bild { width: 60px; height: 48px; flex: 0 0 auto; background: #fff; border: 1px solid var(--border); border-radius: var(--r-s); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.pp-motiv-bild img { max-width: 54px; max-height: 42px; }
+.pp-motiv-name { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.pp-motiv + .btn, .pp-warn + .btn { margin-top: 8px; }
+.pp .pgrp > .btn-full { margin-top: 10px; }
+.pp .btn svg { width: 13px; height: 13px; }
+.pp .btn-red { justify-content: center; }
+/* Einklappbare Karte (Dropdown, Raster): Titel ist der Schalter, rechts Kurzinfo + Pfeil. */
+.pp-klapp-kopf { width: 100%; background: none; border: none; padding: 0; margin-bottom: 0; cursor: pointer; font-family: inherit; text-align: left; }
+.pp-klapp-kopf:hover { color: var(--text); }
+.pp-klapp.offen .pp-klapp-kopf { margin-bottom: 10px; }
+.pp-klapp-info { margin-left: auto; font-weight: 400; letter-spacing: 0; text-transform: none; font-family: var(--mono); color: var(--text-muted); }
+.pp-klapp-kopf svg { width: 11px; height: 11px; flex-shrink: 0; align-self: center; transition: transform .15s; }
+.pp-klapp.offen .pp-klapp-kopf svg { transform: rotate(90deg); }
+/* Segment-Schalter: graue Schiene, das gewählte Segment liegt weiß erhaben darauf */
+.seg { display: flex; gap: 2px; padding: 2px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-s); }
+.seg-b { flex: 1; min-width: 0; height: 26px; border: none; background: none; color: var(--text-dim); font-family: inherit; font-size: var(--fs-mikro); font-weight: 500; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; white-space: nowrap; overflow: hidden; transition: background-color .12s, color .12s, box-shadow .12s; }
+.seg-b:hover { color: var(--text); }
+.seg-b.an { background: var(--bg2); color: var(--accent); font-weight: 600; box-shadow: 0 1px 2px rgba(31,30,28,.10), 0 0 0 1px var(--border); }
+.seg-b svg { width: 14px; height: 14px; }
+/* Bestellnummer: Ergebnis wie ein Eingabefeld, nur lesbar. */
+.nr-muster { font-family: var(--mono); font-size: var(--fs-klein); color: var(--amber); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-s); padding: 7px 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bs-zahl { font-family: var(--mono); letter-spacing: 0; color: var(--text-dim); background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-pille); padding: 0 8px; line-height: 18px; }
+/* Liste „Auf dem Blatt": jede Zeile im eigenen Rahmen (20.10.2026), die gewählte in Typfarbe. */
+.fl-zeile { display: flex; align-items: center; gap: 8px; padding: 8px 10px; margin: 0 0 6px; border: 1px solid var(--border); border-radius: var(--r-m); background: var(--bg2); cursor: pointer; font-size: var(--fs-klein); color: var(--text-dim); }
+.fl-zeile:hover { background: var(--bg3); border-color: var(--border-hi); color: var(--text); }
+.fl-zeile.sel { background: var(--c-dim); border-color: var(--c-rand); color: var(--text); }
+.fl-zeile svg { width: 13px; height: 13px; flex-shrink: 0; color: var(--c); }
+.fl-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fl-mass { font-family: var(--mono); font-size: var(--fs-mikro); color: var(--text-muted); }
+/* Gruppen-Pfeil: feste Spalte auch bei Einzelfeldern, damit alle Symbole fluchten. */
+.fl-auf { width: 12px; height: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--text-muted); margin-right: -2px; }
+.fl-auf svg { width: 11px; height: 11px; color: inherit; transition: transform .15s; }
+.fl-auf.offen svg { transform: rotate(90deg); }
+.fl-auf:hover { color: var(--text); }
+.fl-anzahl { font-family: var(--mono); font-size: var(--fs-mikro); color: var(--c); background: var(--c-dim); border-radius: var(--r-pille); padding: 0 7px; }
+/* Kopie in der aufgeklappten Gruppe: eingerückt unter den Namen, Nummer + Position x / y. */
+.fl-kind { margin-left: 22px; padding-top: 5px; padding-bottom: 5px; font-family: var(--mono); }
+
+/* Saved layouts */
+.saved-list { display: flex; flex-direction: column; gap: 6px; }
+.saved-list > .ord { margin-bottom: 0; }
+
+/* Canvas — warmes Grau mit feinem Punktraster; das Blatt liegt als Werkstück darauf. */
+.canvas-area { background: #E9E7E2; background-image: radial-gradient(circle, rgba(31,30,28,.11) 1px, transparent 1.2px); background-size: 22px 22px; overflow: auto; position: relative; cursor: default; }
+.canvas-area-inner { display: flex; align-items: center; justify-content: center; padding: 40px; box-sizing: border-box; }
+.canvas-wrap { position: relative; flex-shrink: 0; box-shadow: 0 1px 3px rgba(31,30,28,.08), 0 18px 50px rgba(31,30,28,.14); }
+#layout-canvas { background: white; display: block; }
+
+/* Elements — Rahmenfarben = Feldtyp: Text Kobalt, Bild Grün, Statisch Amber (wie _TYPFARBE) */
+.cel { position: absolute; border: 1.5px dashed rgba(59,91,219,0.55); background: rgba(59,91,219,0.05); cursor: move; user-select: none; overflow: hidden; }
+.cel:not(.img-t):hover::after { content: "✎"; position:absolute; bottom:2px; right:4px; font-size:var(--fs-mikro); color:rgba(59,91,219,0.55); pointer-events:none; }
+.cel.img-t { border-color: rgba(46,139,87,0.55); background: rgba(46,139,87,0.05); }
+.cel.sel { border-style: solid; border-width: 2px; }
+.cel.sel:not(.img-t) { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.cel.sel.img-t { border-color: var(--green); box-shadow: 0 0 0 1px var(--green); }
+.cel-lbl { position: absolute; top: 2px; left: 3px; font-size: var(--fs-mikro); color: rgba(59,91,219,0.8); pointer-events: none; font-family: var(--mono); opacity: 0; transition: opacity 0.15s; }
+.cel.img-t .cel-lbl { color: rgba(46,139,87,0.85); }
+.cel:hover .cel-lbl { opacity: 1; }
+.cel img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; display: block; }
+/* 18 px: Platzhalter-Symbol auf dem Blatt, keine Textgröße — bewusst außerhalb der Skala. */
+.cel-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 18px; pointer-events: none; }
+.rh { position: absolute; bottom: 0; right: 0; width: 10px; height: 10px; cursor: se-resize; background: var(--accent); opacity: 0.7; border-radius: 3px 0 0 0; }
+.cel.img-t .rh { background: var(--green); }
+.cel.sta-t { border-color: rgba(183,116,10,0.55); background: rgba(183,116,10,0.05); }
+.cel.sta-t .cel-lbl { color: rgba(183,116,10,0.9); }
+.cel.sel.sta-t { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber); }
+.cel.sta-t .rh { background: var(--amber); }
+
+/* Zoom bar — schwebt als kompakte Pille über der Arbeitsfläche statt als durchgehender Balken. */
+.zoom-bar { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); background: rgba(255,255,255,.92); backdrop-filter: blur(8px); border: 1px solid var(--border); border-radius: var(--r-pille); box-shadow: var(--shadow-m); padding: 6px 16px; display: flex; align-items: center; gap: 12px; font-size: var(--fs-klein); font-family: var(--mono); color: var(--text-dim); pointer-events: auto; }
+.zb { background: none; border: none; color: var(--text-dim); cursor: pointer; font-size: var(--fs-symbol); line-height: 1; font-family: var(--sans); }
+.zb:hover { color: var(--accent); }
+
+/* Right panel */
+.right-panel { background: var(--bg2); border-left: 1px solid var(--border); overflow-y: auto;
+               overflow-x: hidden; min-width: 0; }
+/* Beim Einklappen soll der Inhalt nicht umbrechen, sondern sauber verschwinden */
+.right-panel > * { min-width: 250px; }
+.props-empty { text-align: center; color: var(--text-muted); font-size: var(--fs-klein); padding: 32px 14px; line-height: 2.2; }
+
+/* Bildlaufleisten: schmal, warmgrau, ohne Spur */
+* { scrollbar-width: thin; scrollbar-color: var(--border-hi) transparent; }
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 8px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background-color: #C4BFB7; }
+
+/* Wer im System „Bewegung reduzieren" gesetzt hat, bekommt keine Übergänge mehr. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Toast — dunkle Pille, die einzige dunkle Fläche: Meldungen heben sich vom hellen Grund ab. */
+.toast { position: fixed; bottom: 48px; left: 50%; transform: translateX(-50%) translateY(8px); background: var(--text); color: var(--bg3); border: none; border-radius: var(--r-m); padding: 11px 18px; font-size: var(--fs-basis); box-shadow: var(--shadow-l); z-index: 12000; opacity: 0; pointer-events: none; transition: opacity .18s, transform .18s; max-width: 70vw; }
+.toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Shortcuts overlay */
+.shortcuts-overlay { position: fixed; inset: 0; z-index: 9998; display: none; align-items: center; justify-content: center; }
+.shortcuts-overlay.open { display: flex; }
+.shortcuts-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-l); padding: 24px 26px; min-width: 400px; max-width: 480px; box-shadow: var(--shadow-l); }
+.shortcuts-title { font-family: var(--sans); font-size: var(--fs-symbol); font-weight: 600; margin-bottom: 18px; display: flex; justify-content: space-between; align-items: center; }
+.sc-group { margin-bottom: 16px; }
+.sc-group-title { font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.sc-row { display: flex; align-items: center; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid var(--border); }
+.sc-row:last-child { border-bottom: none; }
+.sc-desc { font-size: var(--fs-klein); color: var(--text-dim); }
+.sc-key { display: flex; gap: 4px; }
+.kbd { background: var(--bg2); border: 1px solid var(--line-input); border-bottom-width: 2px; border-radius: var(--r-xs); padding: 2px 7px; font-size: var(--fs-mikro); color: var(--text); font-family: var(--mono); }
+
+/* Fill progress */
+.fill-progress { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-s); padding: 9px 11px; margin-top: 8px; display: none; }
+.fill-progress.visible { display: block; }
+.fill-bar-wrap { background: var(--bg); border-radius: var(--r-xs); height: 4px; overflow: hidden; margin-bottom: 6px; }
+.fill-bar { height: 100%; background: var(--green); border-radius: var(--r-xs); width: 0%; transition: width 0.3s; }
+.fill-msg { font-size: var(--fs-klein); color: var(--text-dim); }
+
+/* ── Utility-Klassen (aus wiederholten Inline-Styles extrahiert) ── */
+/* Die sechs Fristen sind eine SKALA (1 · 2 · 3 · 7 · 14 · 30): drei Spalten, zwei Reihen —
+   kurze Fristen oben, lange unten. */
+.day-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+.settings-day-btn {
+  padding: 6px 4px; border-radius: var(--r-s); border: 1px solid var(--line-input);
+  background: var(--bg2); color: var(--text-dim); font-size: var(--fs-klein);
+  font-family: inherit; font-weight: 500; cursor: pointer;
+  min-height: 32px; display: flex; align-items: center; justify-content: center;
+}
+.settings-day-btn:hover { border-color: var(--border-hi); color: var(--text); }
+/* Gewählte Frist. Rahmen und Grund kommen schon von .an (weiter unten) — hier nur Schriftfarbe
+   und -stärke. Keine Inline-Farben im Skript, sonst greift das hier nicht. */
+.settings-day-btn.an { color: var(--accent); font-weight: 600; }
+.sec-label {
+  font-size: var(--fs-mikro); font-weight: 600; color: var(--text-muted); letter-spacing: var(--ls-label);
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.radio-label {
+  display: flex; align-items: center; gap: 12px; padding: 10px 12px;
+  border-radius: var(--r-m); border: 1px solid var(--line-input);
+  cursor: pointer; background: var(--bg2); transition: border-color .12s, background-color .12s;
+}
+.radio-label:hover { border-color: var(--border-hi); }
+.radio-label:has(input:checked) { border-color: var(--accent); background: var(--accent-glow); }
+/* Gruppenüberschrift im Export-Menü. Die Trennlinie darüber macht aus drei Überschriften drei
+   sichtbare Blöcke. */
+.export-sep {
+  font-size: 10px; font-weight: 600; color: var(--text-muted); padding: 10px 10px 4px;
+  margin-top: 6px; letter-spacing: var(--ls-label); text-transform: uppercase;
+  border-top: 1px solid var(--border);
+}
+.export-sep:first-child { border-top: none; margin-top: 0; padding-top: 4px; }
+
+/* ── Übersicht / Statistik ── */
+.ov-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 4px; }
+/* Kennzahl-Kachel: die Zahl trägt die Karte, darunter die Beschriftung (ohne Symbol). */
+.ov-card { position: relative; background: var(--bg2); border: 1px solid var(--border);
+           border-radius: var(--r-m); padding: 14px 14px 12px; transition: border-color .15s, box-shadow .15s; }
+.ov-card:hover { border-color: var(--border-hi); box-shadow: var(--shadow-s); }
+/* 28 px: die Kennzahl SELBST, kein Text — sie trägt die Kachel und steht bewusst
+   außerhalb der Schriftgrößen-Skala. */
+.ov-num { font-family: var(--sans); font-size: 28px; font-weight: 600; line-height: 1;
+          letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.ov-lbl { font-size: 10px; font-weight: 500; color: var(--text-muted); letter-spacing: var(--ls-label); text-transform: uppercase;
+          margin-top: 8px; line-height: 1.35; }
+.ov-sec-title { font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); margin: 20px 0 10px; }
+.ov-bar-row { display: flex; align-items: flex-end; gap: 5px; height: 84px; padding: 4px 0; }
+.ov-bar { width: 100%; background: var(--accent); border-radius: 4px 4px 1px 1px; min-height: 2px; transition: height 0.3s; }
+
+/* ── Wiederverwendbare Bausteine (aus wiederholten Inline-Styles extrahiert) ── */
+.dd-wrap { position: relative; display: inline-block; }            /* Dropdown/Popover-Anker */
+/* Ecken + Schatten kommen aus dem gemeinsamen Dialog-Gerüst ganz oben (eine Stelle) */
+.popover { display: none; position: absolute; right: 0; top: calc(100% + 6px); background: var(--bg2); border: 1px solid var(--border); z-index: 999; }
+.vdiv { width: 1px; background: var(--border); margin: 0 4px; }     /* vertikaler Trenner (Höhe inline) */
+.card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 14px; }
+.ulabel { font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); } /* Mikro-Label (Abstand/Farbe ggf. inline) */
+.tab-col { display: none; height: 100%; flex-direction: column; }  /* scrollbare Tab-Spalte */
+/* ── Schalter-Kasten und sein „An"-Zustand: EINE Definition ───────────────
+   Anklickbare Zeile mit Schalter/Punkt und Beschriftung. Den aktiven Zustand NICHT per Inline-Stil
+   malen: Klasse `an` setzen, Farbe kommt von hier. Die Varianten wirken NUR zusammen mit `an`, sonst
+   bliebe der Kasten dauerhaft eingefärbt. Reihenfolge zählt: die an-Regeln stehen hinter
+   .schaltkarte und gewinnen dadurch bei gleicher Spezifität.
+
+   WAS DIE FARBEN BEDEUTEN — bitte so halten:
+   an            Akzent = eingeschaltet / gewählt. Gilt für ALLE Schalter.
+   an an-gruen   Grün   = eingeschaltet bei grün kodierten Dingen (Menge × Felder, Überspringen).
+   Amber kommt hier bewusst NICHT vor: ein Rahmen darf nicht zwei Bedeutungen tragen. Gewarnt wird
+   im TEXT (z. B. „Achtung:" bei „Erneut laden erzwingen", s. dlForceChange). */
+.schaltkarte { padding: 10px 12px; border-radius: var(--r-m); border: 1px solid var(--line-input);
+               background: var(--bg2); cursor: pointer; transition: border-color .15s, background-color .15s; }
+.schaltkarte:hover { border-color: var(--border-hi); }
+.an          { border-color: var(--accent); background: var(--accent-glow); }
+.an.an-gruen { border-color: var(--green);  background: var(--green-dim); }
+.rdot { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid var(--border-hi); flex-shrink: 0; transition: all 0.15s; background: var(--bg2); }
+.an .rdot          { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 2.5px var(--bg2); }
+.an.an-gruen .rdot { border-color: var(--green);  background: var(--green); }
+.an .opt-title          { color: var(--accent); }
+.an.an-gruen .opt-title { color: var(--green); }
+.hstack { display: flex; align-items: center; }                     /* horizontale Zeile (gap/Rest inline) */
+.hsb { display: flex; align-items: center; justify-content: space-between; }
+.u11 { font-size: var(--fs-klein); color: var(--text); }
+.opt-title { font-size: var(--fs-klein); font-weight: 600; color: var(--text); }
+.scrolly { flex: 1; overflow-y: auto; }
+/* Regler-Zeile im Laser-Tab: Beschriftung links, Wert rechts. */
+.srow { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.sval { font-size: var(--fs-klein); font-family: var(--mono); font-weight: 500; color: var(--accent); }
+/* Fortschrittsbalken beim Laden (dl-progress) und Ladehinweise */
+.lade-kasten { margin-top: 10px; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-m); padding: 12px; }
+/* Zeitplan (renderSchedule): je Tag eine Zeile — Schalter, Tag + Uhrzeit, darunter Fenster und letzter
+   Lauf; ✎ klappt die Eingaben auf. */
+.zp-karte { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 8px 10px; transition: border-color .2s, opacity .2s, box-shadow .2s; }
+.zp-karte.an { border-color: var(--accent-rand); background: var(--bg2); box-shadow: var(--shadow-s); }
+.zp-karte.aus { opacity: .55; }
+.zp-kopf { display: flex; align-items: center; gap: 6px; }
+.zp-ikon { padding: 3px 7px; border-radius: var(--r-xs); border: none; background: transparent; color: var(--text-muted); cursor: pointer; font-family: inherit; font-size: var(--fs-basis); line-height: 1; }
+.zp-ikon:hover { background: var(--bg3); color: var(--text); }
+.zp-ikon.an { color: var(--accent); background: var(--accent-glow); }
+.zp-was { flex: 1; min-width: 0; cursor: pointer; line-height: 1.3; white-space: nowrap; }
+.zp-was b { font-size: var(--fs-basis); font-weight: 600; color: var(--text); }
+.zp-uhr { font-size: var(--fs-basis); font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; }
+/* Zeitraum und letzter Lauf: passt beides nicht in eine Zeile, rutscht der Lauf darunter (sonst wurde
+   der Zeitraum zu „ab Vor…" abgeschnitten). */
+.zp-unter { display: flex; flex-wrap: wrap; column-gap: 8px; margin: 3px 0 0 44px; font-size: var(--fs-mikro); color: var(--text-muted); white-space: nowrap; }
+.zp-ok { color: var(--green); font-variant-numeric: tabular-nums; }
+.zp-bearbeiten { margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+.zp-zeile { display: flex; gap: 6px; }
+.zp-zeile select, .zp-zeile input { flex: 1; min-width: 0; font-size: var(--fs-mikro); padding-top: 5px; padding-bottom: 5px; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Layout-Einstellungen (Dialog ⚙ an der Layout-Karte)
+   Stand früher als zweiter <style>-Block hinter dem Skript. Reihenfolge beibehalten:
+   diese Regeln kommen NACH dem Grundgerüst, damit die Kaskade unverändert bleibt.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* Checkbox, Radio und Regler brauchen hier NICHTS: die native Darstellung gilt seit der Rückausnahme
+   im Grundgerüst oben für die ganze App. */
+#layout-settings-overlay input[type="number"] { width: 70px; padding: 4px 8px; }
+/* Nur die Abweichung vom globalen Feld-Stil: größere Schrift. Pfeil, Breite und Polster kommen
+   von dort (der native Pfeil stand früher zusätzlich da — zwei Pfeile). */
+#layout-settings-overlay select { font-size: var(--fs-basis); }
+/* ── Aufbau des Dialogs: Gruppe → Karte → Option ─────────────────────────── */
+#layout-settings-overlay .ls-grp { border-top: 1px solid var(--border); padding-top: 13px; }
+#layout-settings-overlay .ls-grp:first-of-type { border-top: none; padding-top: 0; }
+/* .ls-fmt steht EINMAL, unten bei den Format-Kacheln. (Hier stand eine zweite Regel
+   mit gap 7px/14px, die von der unteren komplett überschrieben wurde — tot.) */
+/* Eingerückter Unterblock — gehört sichtbar zum Format darüber */
+#layout-settings-overlay .ls-card {
+  margin-top: 11px; padding: 11px 12px; border: 1px solid var(--border);
+  border-left: 2px solid var(--accent); border-radius: var(--r-s); background: var(--bg3);
+}
+#layout-settings-overlay .ls-card-title { font-size: var(--fs-klein); font-weight: 700; letter-spacing: var(--ls-label); color: var(--text-dim); margin-bottom: 9px; }
+/* Eine Option = Häkchen + eine Zeile Erklärung darunter, eingerückt */
+#layout-settings-overlay .ls-opt { display: flex; flex-direction: column; gap: 2px; cursor: pointer; margin-top: 9px; }
+#layout-settings-overlay .ls-card .ls-opt:first-of-type { margin-top: 11px; }
+#layout-settings-overlay .ls-opt-head { display: flex; align-items: center; gap: 8px; font-size: var(--fs-basis); color: var(--text); }
+#layout-settings-overlay .ls-opt .umut { margin-left: 24px; line-height: 1.45; }
+
+/* ── Dialog-Gerüst: Kopf und Fuß stehen, nur der Inhalt scrollt ──────────── */
+#layout-settings-overlay .ls-karte {
+  background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-l);
+  width: 540px; max-width: 95vw; max-height: 88vh;
+  display: flex; flex-direction: column; overflow: hidden;
+  box-shadow: var(--shadow-l);
+}
+#layout-settings-overlay .ls-kopf {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  padding: 18px 22px 14px; border-bottom: 1px solid var(--border); background: var(--bg2);
+}
+#layout-settings-overlay .ls-schliessen {
+  background: none; border: none; cursor: pointer; font-size: var(--fs-symbol); line-height: 1;
+  color: var(--text-muted); padding: 4px 6px; border-radius: var(--r-s); flex-shrink: 0;
+}
+#layout-settings-overlay .ls-schliessen:hover { background: var(--bg3); color: var(--text); }
+#layout-settings-overlay .ls-body {
+  flex: 1 1 auto; overflow-y: auto; padding: 20px 22px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+#layout-settings-overlay .ls-fuss {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 14px 22px; border-top: 1px solid var(--border); background: var(--bg3);
+}
+/* Die Knöpfe im Fuß sind die gemeinsamen (.btn .btn-muted/.btn-accent .btn-dialog).
+   Vorher hatte dieser Dialog mit .ls-btn/.ls-btn-prim eine eigene Knopf-Bauform samt
+   eigener Größe (8x18 statt 7x14) — zwei Dialoge, zwei Knopfgrößen. */
+
+/* ── Format-Kacheln: das ganze Feld ist anklickbar, aktiv = akzentuiert ──── */
+#layout-settings-overlay .ls-fmt { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+#layout-settings-overlay .ls-chip {
+  display: flex; align-items: center; gap: 9px; cursor: pointer;
+  padding: 9px 11px; border: 1px solid var(--border); border-radius: var(--r-m);
+  background: var(--bg3); transition: border-color .12s, background .12s;
+}
+#layout-settings-overlay .ls-chip:hover { border-color: var(--text-muted); }
+#layout-settings-overlay .ls-chip.on { border-color: var(--accent); background: var(--accent-glow); }
+#layout-settings-overlay .ls-chip.ls-chip-gruen.on { border-color: var(--green); background: var(--green-dim); }
+#layout-settings-overlay .ls-chip-txt { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+#layout-settings-overlay .ls-chip-txt b { font-size: var(--fs-basis); font-weight: 600; color: var(--text); }
+#layout-settings-overlay .ls-chip-txt i { font-size: var(--fs-mikro); font-style: normal; color: var(--text-muted); }
+#layout-settings-overlay .ls-chip.ls-chip-gruen .ls-chip-txt b { color: var(--green); }
+
+/* ── Umbau 08.10.2026: Automatik oben, Dateien als Beispiel, Seltenes unter „Erweitert" ── */
+#layout-settings-overlay .ls-auto {
+  display: flex; gap: 10px; align-items: flex-start; cursor: pointer;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--r-m); background: var(--bg3);
+}
+#layout-settings-overlay .ls-auto.on { border-color: var(--green); background: var(--green-dim); }
+#layout-settings-overlay .ls-auto input { margin-top: 2px; }
+#layout-settings-overlay .ls-auto > span { display: flex; flex-direction: column; gap: 3px; }
+#layout-settings-overlay .ls-auto b { font-size: var(--fs-basis); color: var(--text); }
+#layout-settings-overlay .ls-asin { margin-top: 6px; font-family: var(--mono); }
+#layout-settings-overlay .ls-warn {
+  margin-top: 8px; padding: 7px 9px; font-size: var(--fs-klein); color: var(--red);
+  background: var(--red-dim); border: 1px solid var(--red); border-radius: var(--r-s);
+}
+#layout-settings-overlay .ls-beispiel {
+  margin-top: 8px; padding: 7px 9px; border: 1px solid var(--border); border-radius: var(--r-s); background: var(--bg3);
+}
+#layout-settings-overlay #ls-dateiname-vorschau {
+  margin-top: 3px; font-family: var(--mono); font-size: var(--fs-klein); color: var(--text);
+  line-height: 1.6; white-space: pre-line; overflow-wrap: anywhere;
+}
+/* details ist der einzige seiner Art und fiele sonst unter .ls-grp:first-of-type (ohne Linie) */
+#layout-settings-overlay details.ls-erweitert.ls-grp { border-top: 1px solid var(--border); padding-top: 13px; }
+#layout-settings-overlay .ls-erweitert > summary { cursor: pointer; list-style: none; }
+#layout-settings-overlay .ls-erweitert > summary::-webkit-details-marker { display: none; }
+#layout-settings-overlay .ls-erweitert > summary::before { content: '▸ '; color: var(--text-muted); }
+#layout-settings-overlay .ls-erweitert[open] > summary::before { content: '▾ '; }
+#layout-settings-overlay .ls-erweitert-an { color: var(--accent); }
+
+/* ── ASIN-Check: Reiter „ASIN" und Dialog #asin-overlay ─────────────────────
+   Dialog-Gerüst wie die Layout-Einstellungen (Kopf und Fuß stehen, der Inhalt
+   scrollt), aber breit: die Vorschau braucht Platz. z-index unter #app-modal
+   (9999), damit dessen Bestätigungsdialog darüber liegt. */
+.asin-status { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-s);
+               padding: 8px 10px; margin-bottom: 10px; font-size: var(--fs-klein); }
+.asin-status[hidden] { display: none; }
+.asin-status-fehler { border-color: var(--red); }
+.asin-balken { height: 4px; background: var(--bg); border-radius: var(--r-xs); overflow: hidden; margin: 4px 0; }
+.asin-balken i { display: block; height: 100%; background: var(--accent); transition: width .3s; }
+.asin-zeile { cursor: pointer; margin-bottom: 5px; align-items: flex-start; }
+.asin-code { font-family: var(--mono); font-size: var(--fs-klein); color: var(--text); }
+.asin-titel { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin: 2px 0; }
+.marke.asin-warn { border-color: var(--amber); color: var(--amber); }
+
+#asin-overlay { position: fixed; inset: 0; z-index: 9998;
+                align-items: center; justify-content: center; }
+.asin-karte-dlg { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-l);
+                  width: 1100px; max-width: 95vw; height: 90vh; display: flex; flex-direction: column;
+                  overflow: hidden; box-shadow: var(--shadow-l); }
+.asin-kopf { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+             padding: 18px 22px 14px; border-bottom: 1px solid var(--border); }
+.asin-dlg-titel { font-size: var(--fs-titel); font-weight: 600; color: var(--text);
+                  white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.asin-schliessen { background: none; border: none; cursor: pointer; font-size: var(--fs-symbol); line-height: 1;
+                   color: var(--text-muted); padding: 4px 6px; border-radius: var(--r-s); }
+.asin-schliessen:hover { background: var(--bg3); color: var(--text); }
+.asin-body { flex: 1 1 auto; overflow-y: auto; padding: 18px 22px; display: flex; flex-direction: column; gap: 14px; }
+.asin-fuss { display: flex; align-items: center; justify-content: space-between; gap: 12px;
+             padding: 14px 22px; border-top: 1px solid var(--border); background: var(--bg3); }
+.asin-block { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 14px 16px; }
+details.asin-block > summary { cursor: pointer; margin-bottom: 0; }
+details.asin-block[open] > summary { margin-bottom: 10px; }
+.asin-hinweis { border-color: var(--amber); color: var(--text-dim); font-size: var(--fs-klein); line-height: 1.6; }
+.asin-lay { padding: 6px 0; border-top: 1px solid var(--border); font-size: var(--fs-klein); color: var(--text); }
+.asin-lay:first-of-type { border-top: none; }
+.asin-warn-txt { color: var(--amber); font-size: var(--fs-klein); margin-top: 2px; }
+.asin-ok-txt { color: var(--green); font-size: var(--fs-klein); margin-top: 2px; }
+.asin-seite { display: flex; gap: 16px; align-items: flex-start; padding: 12px 0; border-top: 1px solid var(--border); }
+.asin-seite:first-of-type { border-top: none; padding-top: 4px; }
+.asin-seite-titel { font-weight: 700; color: var(--text); margin-bottom: 8px; font-size: var(--fs-basis); }
+.asin-vorschau { position: relative; width: 300px; flex-shrink: 0; background: var(--bg3);
+                 border: 1px solid var(--border); border-radius: var(--r-s); overflow: hidden; }
+.asin-vorschau img, .asin-vorschau svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.asin-vorschau img { object-fit: contain; }
+.asin-r-text { fill: rgba(59,91,219,.16); stroke: var(--accent); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.asin-r-bild { fill: rgba(46,139,87,.16); stroke: var(--green); stroke-width: 1.5px; vector-effect: non-scaling-stroke; }
+.asin-r-text-t, .asin-r-bild-t { fill: #fff; font-family: var(--mono); font-weight: 700;
+                                 paint-order: stroke; stroke: rgba(0,0,0,.75); stroke-width: 3px; }
+.asin-el { display: flex; gap: 10px; align-items: baseline; padding: 5px 0; font-size: var(--fs-klein); color: var(--text-dim); }
+.asin-el b { color: var(--text); font-weight: 600; }
+.asin-nr { flex-shrink: 0; min-width: 74px; font-family: var(--mono); font-size: var(--fs-mikro); font-weight: 700;
+           color: var(--accent); background: var(--accent-glow); border-radius: var(--r-xs); padding: 1px 6px; text-align: center; }
+.asin-nr-bild { color: var(--green); background: var(--green-dim); }
+.asin-nr-auswahl { color: var(--text-dim); background: var(--bg3); }
+.asin-nr-warn { color: var(--amber); background: var(--amber-dim); }
+@media (max-width: 800px) { .asin-seite { flex-direction: column; } .asin-vorschau { width: 100%; } }
+.asin-dlg-status { margin: 10px 18px 0; }
+
+/* ── Dropdowns (25.09.2026): Feld-Abschnitt „Dropdown" und „Nur Bestellungen mit" ── */
+.dd-grp .ig { margin-bottom: 6px; }
+.dd-hinweis { line-height: 1.5; margin-top: 4px; }
+.dd-warn { color: var(--amber); font-weight: 700; }
+.dd-zeile { display: grid; grid-template-columns: minmax(0, 40%) minmax(0, 1fr); gap: 6px; align-items: center; margin-bottom: 4px; }
+.dd-wert { font-size: var(--fs-klein); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-werte { display: flex; flex-direction: column; gap: 3px; }
+.dd-wahl { display: flex; align-items: center; gap: 6px; font-size: var(--fs-klein); padding: 4px 6px; border: 1px solid var(--border); border-radius: var(--r-s); cursor: pointer; }
+.dd-wahl.an { border-color: var(--accent); }
+.dd-wahl input { margin: 0; }
+.dd-werte-raster { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+.dd-werte-raster .dd-wahl { padding: 3px 4px; gap: 4px; font-family: var(--mono); }
+.dd-umleitung { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 4px 0 8px; padding: 7px 8px; font-size: var(--fs-klein); color: var(--text); background: var(--accent-glow); border: 1px solid var(--accent-rand); border-radius: var(--r-s); }
+.asin-dd-tag { display: inline-block; margin-left: 6px; font: 10.5px/1 var(--mono); padding: 3px 6px; border-radius: 3px; background: var(--bg3); color: var(--text-dim); vertical-align: 1px; }
+.asin-dd-tag.auto { background: var(--green-dim); color: var(--green); }
+.asin-dd-tag.feld { background: var(--accent-glow); color: var(--accent); }
+.asin-dd-tag.warn { background: var(--amber-dim); color: var(--amber); }
+
+/* Dropdown-Regeln am Feld (Stand 25.09. abends): Bedingung, Motiv je Antwort, Motivauswahl */
+.dd-schalter { display: flex; align-items: center; gap: 6px; font-size: var(--fs-klein); margin: 4px 0 6px; cursor: pointer; }
+.dd-schalter input { margin: 0; }
+.dd-block { font-size: var(--fs-klein); font-weight: 700; color: var(--text); margin: 10px 0 6px; padding-top: 8px; border-top: 1px solid var(--border); }
+.dd-kacheln { display: grid; grid-template-columns: repeat(auto-fill, minmax(44px, 1fr)); gap: 4px; margin: 4px 0; }
+.dd-kachel { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 3px 2px; border: 1px solid var(--accent); border-radius: var(--r-s); background: var(--bg2); color: var(--text); cursor: pointer; min-width: 0; }
+.dd-kachel img { width: 34px; height: 26px; object-fit: contain; background: #fff; border-radius: 2px; }
+.dd-kachel.offen { border-style: dashed; border-color: var(--border); }
+.dd-kachel.fehlt { border-color: var(--red); }
+.dd-k-wert { font: 600 var(--fs-mikro)/1 var(--mono); max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dd-k-offen, .dd-k-leer, .dd-k-fehlt { font-size: 9.5px; line-height: 26px; color: var(--text-muted); }
+.dd-k-fehlt { color: var(--red); }
+.dd-zeile2 { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin: 4px 0; }
+#dd-motiv-wahl { position: fixed; inset: 0; z-index: 10050; display: flex; align-items: center; justify-content: center; padding: 16px; }
+.dd-mw-box { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-l); box-shadow: var(--shadow-l); width: min(760px, 100%); max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+.dd-mw-kopf { display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid var(--border); }
+.dd-mw-kopf input { flex: 1; min-width: 0; }
+.dd-mw-raster { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; padding: 12px; overflow-y: auto; }
+.dd-mw-kachel { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px; border: 1px solid var(--border); border-radius: var(--r-s); background: var(--bg3); color: var(--text); cursor: pointer; min-width: 0; }
+.dd-mw-kachel:hover, .dd-mw-kachel.an { border-color: var(--accent); }
+.dd-mw-kachel img { width: 100%; height: 70px; object-fit: contain; background: #fff; border-radius: var(--r-xs); }
+.dd-mw-leer { height: 70px; display: flex; align-items: center; font-weight: 700; color: var(--text-muted); }
+.dd-mw-name { font-size: var(--fs-mikro); max-width: 100%; overflow-wrap: anywhere; text-align: center; }
+
+/* ── Maschinen → Ezcad ─────────────────────────────────────────────────────
+   Baut auf den vorhandenen Bausteinen auf: Karte = .ord/.ord-kopf (wie die Layout-Ordner),
+   Marken = .marke, Abschnitte = .il-block, Programmwahl = .seg. Hier steht nur, was es dort
+   nicht gibt — mit den Marken (--fs-* / --r-*), keine eigenen Größen. */
+.ez-karte > summary { list-style: none; }
+.ez-karte > summary::-webkit-details-marker { display: none; }
+.ez-karte[open] > summary { border-bottom: 1px solid var(--border); }
+.ez-karte[open] .ord-pfeil { transform: rotate(90deg); }
+.ez-karte.ez-leer .ord-name { color: var(--text-muted); }
+.ez-karte.ez-gewaehlt { border-color: var(--accent); }
+/* Kopf: Name nie wegdrücken — passen die Marken nicht daneben, rutschen sie in die zweite Zeile */
+.ez-karte > .ord-kopf { flex-wrap: wrap; row-gap: 5px; }
+.ez-karte > .ord-kopf .ord-name { flex: 1 0 auto; max-width: calc(100% - 22px); }
+.ez-karte > .ord-kopf .marke { flex: none; white-space: nowrap; }
+.ez-inhalt { padding: 10px; font-size: var(--fs-klein); line-height: 1.5; }
+.ez-inhalt > .il-block:first-child, .ez-block > .il-block:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.ez-block + .ez-block { margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border); }
+/* Farben für Marken, Prüfzeilen und Meldungen */
+.marke.ez-ok { border-color: var(--green); color: var(--green); }
+.marke.ez-warn { border-color: var(--amber); color: var(--amber); }
+.marke.ez-fehler { border-color: var(--red); color: var(--red); }
+.ez-zeile { display: flex; gap: 6px; align-items: baseline; overflow-wrap: anywhere; }
+.ez-zeile > i { font-style: normal; font-weight: 700; flex-shrink: 0; width: 1em; text-align: center; }
+.ez-zeile.ez-warn { color: var(--amber); }
+.ez-zeile.ez-fehler { color: var(--red); }
+.ez-zeile.ez-ok > i { color: var(--green); }
+.ez-zeile.ez-info { color: var(--text-muted); }
+.ez-meldung { margin-bottom: 6px; padding: 5px 8px; border: 1px solid; border-radius: var(--r-s); font-size: var(--fs-mikro); }
+.ez-meldung.ez-warn { border-color: var(--amber); color: var(--amber); background: var(--amber-dim); }
+.ez-meldung.ez-fehler { border-color: var(--red); color: var(--red); background: var(--red-dim); font-weight: 700; }
+/* Pfadleiste: Ordner klein und gedimmt, Datei darunter; Klick kopiert den Windows-Pfad */
+.ez-pfad { margin: 4px 0; padding: 5px 8px; border-left: 2px solid var(--accent); border-radius: 0 var(--r-s) var(--r-s) 0;
+  background: var(--bg3); font-family: var(--mono); cursor: copy; }
+.ez-pfad:hover { background: var(--head-hover); }
+.ez-pfad-dir { font-size: var(--fs-mikro); color: var(--text-muted); overflow-wrap: anywhere; line-height: 1.35; }
+.ez-pfad-datei { display: flex; flex-wrap: wrap; align-items: baseline; font-size: var(--fs-klein); font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+.ez-pfad-datei i { font-style: normal; color: var(--accent); margin-right: 6px; }
+.ez-pfad-fehl { border-left-color: var(--red); }
+.ez-pfad-fehl .ez-pfad-datei { color: var(--red); }
+.ez-zeit { margin-left: auto; padding-left: 6px; font-weight: 400; font-size: var(--fs-mikro); color: var(--text-muted); white-space: nowrap; }
+/* Kleiner Knopf in Prüfzeilen und Objektliste („wie Layout setzen", „✎ Lage ändern") */
+.ez-knopf { padding: 0 7px; border: 1px solid var(--border); border-radius: var(--r-s); background: var(--bg3);
+  color: var(--text-dim); cursor: pointer; font-size: var(--fs-klein); line-height: 18px; }
+.ez-knopf:hover { color: var(--accent); border-color: var(--accent); }
+.ez-sicherung { display: flex; align-items: center; gap: 6px; margin-top: 6px; }
+.ez-sicherung select { flex: 1; min-width: 0; font-size: var(--fs-mikro); }
+.ez-satz { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+/* Aufklapper (Objekte, Plätze) */
+.ez-aufklapp { margin-top: 6px; }
+.ez-aufklapp > summary { cursor: pointer; font-size: var(--fs-mikro); color: var(--text-muted); }
+.ez-aufklapp > summary:hover { color: var(--text); }
+/* Objekte: Liste (die Lage als Bild zeigt die Bühne) */
+.ez-objliste { max-height: 260px; overflow-y: auto; border: 1px solid var(--border); border-radius: var(--r-s); }
+.ez-obj { display: grid; grid-template-columns: 16px 11px 1fr 14px 34px 34px; gap: 3px; align-items: center;
+  padding: 2px 5px; font: var(--fs-mikro) var(--mono); border-top: 1px solid var(--border); }
+.ez-obj[data-pfad] { cursor: copy; }
+.ez-obj:hover { background: var(--bg3); }
+.ez-obj > span:first-child, .ez-obj > span:nth-child(n+4) { color: var(--text-muted); text-align: right; }
+.ez-obj > span:nth-child(3) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ez-obj i { font-style: normal; color: var(--accent); }
+.ez-obj-kopf { border-top: none; position: sticky; top: 0; background: var(--bg3); color: var(--text-muted); }
+.ez-obj-in > span:nth-child(3) { padding-left: 8px; }
+.ez-obj-in > span:nth-child(3)::before { content: '↳ '; color: var(--text-muted); }
+.ez-obj-fehl > span:nth-child(3) { color: var(--red); }
+.ez-obj-aus { opacity: .45; }
+/* Entwurf einer .ezd (Lage/Stifte geändert, noch nicht übernommen) */
+.ez-meldung.ez-entwurf { border-color: var(--accent); color: var(--text); background: var(--accent-glow); font-size: var(--fs-klein); }
+.ez-lage-kopf { margin: 4px 0; gap: 6px; }
+.ez-obj input.ez-lage { width: 100%; min-width: 0; padding: 0 2px; font: var(--fs-mikro) var(--mono); text-align: right;
+  border: 1px solid var(--accent); border-radius: var(--r-xs); background: var(--bg2); color: var(--text); }
+.ez-obj input.ez-lage::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.ez-objliste.ez-bearbeiten .ez-obj { grid-template-columns: 16px 11px 1fr 14px 62px 62px; }
+/* ── Maschinen → LightBurn (Konzept, 20.10.2026) ───────────────────────────
+   Links die geplanten Projektdateien (Knöpfe gesperrt), auf der Bühne der Ablauf in vier Schritten
+   und die Ebenen. Nur Bausteine von oben (.card, .marke, .il-block) plus diese Zeilen. */
+.lb-hinweis { display: flex; align-items: center; gap: 8px; font-size: var(--fs-klein); color: var(--text-muted); }
+.lb-dateien { display: flex; flex-direction: column; gap: 6px; }
+.lb-datei { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px dashed var(--border-hi);
+  border-radius: var(--r-m); background: var(--bg2); }
+.lb-datei-name { flex: 1; min-width: 0; font: 600 var(--fs-klein) var(--mono); color: var(--text-dim);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-knoepfe { display: flex; flex-direction: column; gap: 6px; margin-top: 14px; }
+.lb-konzept { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+.lb-fluss { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.lb-schritt { position: relative; display: flex; flex-direction: column; gap: 4px; padding: 14px; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: var(--r-m); font-size: var(--fs-klein); color: var(--text-muted); line-height: 1.5; }
+.lb-schritt b { font-size: var(--fs-basis); color: var(--text); }
+.lb-schritt + .lb-schritt::before { content: '→'; position: absolute; left: -10px; top: 50%; width: 10px; transform: translateY(-50%);
+  text-align: center; color: var(--text-muted); }
+.lb-nr { width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; margin-bottom: 4px;
+  border-radius: var(--r-pille); background: var(--accent-glow); color: var(--accent); font: 600 var(--fs-mikro) var(--mono); }
+.lb-reihe { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-items: start; }
+.lb-reihe .card-titel { margin-bottom: 10px; }
+.lb-ebene { display: grid; grid-template-columns: 12px 34px minmax(0, 1fr) auto; gap: 8px; align-items: center;
+  padding: 6px 0; border-top: 1px solid var(--border); font-size: var(--fs-klein); color: var(--text); }
+.lb-ebene i { width: 12px; height: 12px; border-radius: var(--r-xs); }
+.lb-ebene code { font: 600 var(--fs-mikro) var(--mono); color: var(--text-dim); }
+.lb-ebene small { font-size: var(--fs-mikro); color: var(--text-muted); text-align: right; }
+.lb-fuss { margin-top: 8px; }
+.lb-liste { margin: 0; padding-left: 16px; font-size: var(--fs-klein); color: var(--text-dim); line-height: 1.8; }
+
+/* ── Reklamation: Foto-Gravur nachbessern ─────────────────────────────────── */
+#rekla-foto { margin-bottom: 10px; }
+.rf-karte { background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-m);
+            padding: 10px; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+.rf-titel { display: flex; justify-content: space-between; gap: 6px; align-items: baseline; }
+.rf-stand { font-size: var(--fs-klein); color: var(--accent); text-align: right; }
+.rf-bilder { display: flex; gap: 8px; }
+.rf-bild { flex: 1 1 0; min-width: 0; text-align: center; }
+.rf-bild-rahmen { position: relative; background: #000; border-radius: var(--r-s); overflow: hidden; }
+.rf-bild-rahmen img, .rf-bild-rahmen canvas { display: block; width: 100%; height: auto; }
+.rf-leer { display: flex; align-items: center; justify-content: center; aspect-ratio: 33 / 54;
+           color: #888; font-size: var(--fs-klein); }
+.rf-zoombar { cursor: zoom-in; }
+.rf-unter { font-size: var(--fs-klein); color: var(--text-dim); margin-top: 2px; }
+.rf-art { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 8px; padding: 6px 8px;
+          border: 1px solid var(--accent-rand); background: var(--accent-glow); border-radius: var(--r-m); }
+.rf-art b { color: var(--accent); }
+.rf-art .btn { font-size: var(--fs-klein); padding: 5px 8px; white-space: nowrap; }
+.rf-knoepfe { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 4px; }
+.rf-knoepfe .btn { min-width: 0; white-space: normal; line-height: 1.25; }
+.rf-knoepfe .btn, .rf-karte .btn-full, .rf-seite .btn-full { font-size: var(--fs-klein); padding: 6px 4px; }
+.rf-zeile { display: flex; gap: 4px; align-items: center; }
+.rf-zeile .btn { flex: 1; font-size: var(--fs-klein); padding: 5px 4px; }
+.rf-status { min-height: 1em; line-height: 1.5; }
+.rf-status:empty { display: none; }
+/* Große Ansicht: vorher | jetzt bzw. alle Fassungen, gemeinsamer Zoom */
+.rf-zoom { position: fixed; inset: 0; z-index: 9000; background: rgba(24, 23, 21, .94);
+           display: flex; flex-direction: column; padding: 14px; gap: 12px; }
+.rf-zoom-kopf { display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+                background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 8px 12px; }
+.rf-zoom-kopf .btn { font-size: var(--fs-klein); padding: 6px 12px; }
+.rf-kopf-foto { height: 46px; width: auto; border-radius: var(--r-s); display: block; }
+.rf-segment { display: inline-flex; align-items: center; border: 1px solid var(--line-input); border-radius: var(--r-s); overflow: hidden; }
+.rf-segment button { background: transparent; border: 0; color: var(--text); padding: 6px 12px; cursor: pointer; font: inherit; font-size: var(--fs-klein); }
+.rf-segment button.an { background: var(--accent); color: #fff; }
+.rf-segment span { padding: 0 6px; font-size: var(--fs-klein); min-width: 34px; text-align: center; }
+.rf-zoom-rumpf { flex: 1; display: flex; gap: 12px; min-height: 0; }
+.rf-felder { flex: 1; display: flex; gap: 12px; min-width: 0; min-height: 0; }
+.rf-felder-galerie { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+                     grid-auto-rows: minmax(340px, 46vh); overflow: auto; align-content: start; }
+.rf-feld { flex: 1 1 0; min-width: 0; min-height: 0; display: flex; flex-direction: column; gap: 6px;
+           background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 8px; }
+.rf-feld-an { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
+.rf-feld-hinweis { align-items: center; justify-content: center; text-align: center; max-width: 260px; }
+.rf-feld-titel { font-size: var(--fs-klein); font-weight: 700; min-height: 1.3em; }
+.rf-feld-bild { flex: 1; min-height: 0; overflow: auto; background: #000; border-radius: var(--r-s); }
+.rf-feld-bild canvas { display: block; margin: 0 auto; image-rendering: pixelated; cursor: zoom-in; }
+.rf-feld .btn { font-size: var(--fs-klein); padding: 6px 4px; }
+.rf-seite { width: 300px; flex: none; overflow: auto; background: var(--bg2); border: 1px solid var(--border);
+            border-radius: var(--r-m); padding: 10px; display: flex; flex-direction: column; gap: 8px; }
+.rf-feld-knoepfe { display: flex; gap: 4px; }
+.rf-feld-knoepfe .btn:first-child { flex: 1; }
+#rekla-abschluss .rf-abschluss-knopf { margin-bottom: 8px; font-weight: 700; }
+/* Reklamation: nummerierte Schritte, Artikel in Klartext, Kundenbilder eingeklappt */
+.rk-schritt { font-weight: 600; font-size: var(--fs-basis); color: var(--text); margin: 16px 0 8px; }
+#tab-rekla .rk-schritt:first-of-type { margin-top: 4px; }
+.rk-artikel { margin-top: 4px; color: var(--text); }
+.rk-bilder > summary { cursor: pointer; margin-bottom: 6px; }
+/* Reklamation: Weg wählen (mit / ohne Bestellnummer), Eingabe ohne Bestellung */
+.rk-weg { margin: -4px 0 12px; }
+.rk-weg .seg-b { height: 30px; font-size: var(--fs-klein); }
+#rk-nr > .tab-titel-text, #rk-ohne > .tab-titel-text { margin-top: 0; }
+.rm-feld { margin-bottom: 10px; }
+.rm-wo { font-weight: 400; color: var(--text-muted); }
+.rm-bild { display: flex; gap: 10px; align-items: center; }
+.rm-bild canvas { width: 72px; height: auto; flex-shrink: 0; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-s); }
+.rm-bild-knoepfe { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 0; }
+.rm-hinweis { color: var(--amber); font-size: var(--fs-klein); line-height: 1.5; margin: 6px 0 10px; }
+/* Reklamation: Text-/PDF-Vorschau */
+.rt-kunde { background: var(--bg2); border-radius: var(--r-s); padding: 6px 8px; line-height: 1.5; word-break: break-word; }
+.rt-vorschau { display: flex; flex-direction: column; gap: 6px; }
+.rt-datei { cursor: zoom-in; text-align: center; }
+.rt-bild { background: #f4f1ea; border-radius: var(--r-s); overflow: hidden; max-height: 160px; display: flex; align-items: center; justify-content: center; }
+.rt-bild canvas, .rt-bild img { display: block; max-width: 100%; max-height: 160px; height: auto; }
+.rt-gross .rt-bild { max-height: none; }
+.rt-gross .rt-bild canvas, .rt-gross .rt-bild img { max-height: none; }
+.rt-leer { aspect-ratio: auto; padding: 14px 6px; background: var(--bg2); border-radius: var(--r-s); }
+.rt-hinweis { color: var(--amber); font-size: var(--fs-klein); line-height: 1.4; }
+.rt-foto { background: #000; }
+.rk-ordner { background: var(--bg3); border: 1px solid var(--green); border-radius: var(--r-s); padding: 8px 10px;
+             margin-bottom: 8px; font-size: var(--fs-klein); line-height: 1.5; display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.rk-pfad { font-family: var(--mono); word-break: break-all; user-select: all; color: var(--text); }
+
+/* ── Maschinen-Bühne: im Reiter „Maschinen" statt des Blatts (Klasse .maschinen-an an .workspace) ──
+   Der gewählte Vorlagen-Ordner groß: Blech mit den platzN.bmp an der Lage aus der .ezd, rechts die
+   Startklar-Liste. Zeilen/Marken kommen aus den Ezcad-Regeln oben (.ez-zeile, .marke). */
+.mb-buehne { display: none; flex: 1; min-height: 0; flex-direction: column; gap: 12px; padding: 16px 20px; overflow: hidden; background: var(--bg); }
+.workspace.maschinen-an #canvas-area, .workspace.maschinen-an #page-navigator { display: none !important; }
+.workspace.maschinen-an .mb-buehne { display: flex; }
+.workspace.maschinen-an.hat-auswahl { grid-template-columns: 68px 264px 1fr 0px; }
+.mb-leer { margin: auto; color: var(--text-muted); font-size: var(--fs-klein); text-align: center; }
+.mb-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 14px; }
+.mb-titel { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.mb-titel b { font-family: var(--mono); font-size: var(--fs-symbol); font-weight: 700; color: var(--text); overflow-wrap: anywhere; }
+.mb-ansicht { margin-left: auto; }
+.mb-ansicht .seg-b { flex: none; padding: 0 12px; }
+.mb-unter { flex-basis: 100%; font-size: var(--fs-klein); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.mb-rumpf { flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 300px; grid-template-rows: minmax(0, 1fr); gap: 14px; }
+/* Die Bühne ist bewusst DUNKEL (17.10.2026, Nutzer: „Kontrast zu gering“): die gerasterten Bilder sind
+   fast weiß mit schwarzen Punkten und verschwanden auf dem hellen Grund. Farben --buehne-*. */
+.mb-flaeche { min-width: 0; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 12px;
+              background: var(--buehne); border: 1px solid var(--buehne); border-radius: var(--r-m); }
+.mb-flaeche .mb-leer { color: var(--buehne-text); }
+.mb-svg { width: 100%; height: 100%; display: block; }
+.mb-start { min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; font-size: var(--fs-klein); line-height: 1.5; }
+.mb-start > .il-block { margin-top: 0; padding-top: 0; border-top: none; }
+.mb-fuss { margin-top: 6px; line-height: 1.5; }
+/* SVG des Blechs — Maße in mm */
+.mb-blech { fill: var(--buehne-blech); stroke: var(--buehne-linie); stroke-width: .5; }
+.mb-grund { fill: #fff; }
+.mb-rand { fill: none; stroke: var(--buehne-akzent); stroke-width: .5; }
+.mb-platz { cursor: zoom-in; }
+.mb-platz:hover .mb-rand { stroke-width: 1; }
+.mb-ist-leer image { display: none; }
+.mb-ist-leer .mb-grund { fill: var(--buehne); }
+.mb-ist-leer .mb-rand { stroke: var(--buehne-text); stroke-dasharray: 2 1.5; }
+.mb-ist-fehlt .mb-grund { fill: var(--red-dim); }
+.mb-ist-fehlt .mb-rand, .mb-abw .mb-rand { stroke: var(--red); stroke-width: .9; }
+.mb-soll { fill: none; stroke: var(--amber); stroke-width: .45; stroke-dasharray: 2.2 1.6; pointer-events: none; }
+.mb-nr { font: 700 5px var(--mono); fill: var(--accent); dominant-baseline: hanging; paint-order: stroke; stroke: #fff; stroke-width: 1.4px; }
+.mb-ist-leer .mb-nr { stroke: var(--buehne); fill: var(--buehne-text); }
+.mb-hinweis { font: 400 4px var(--mono); fill: var(--buehne-text); text-anchor: middle; dominant-baseline: central; }
+.mb-ist-fehlt .mb-hinweis { fill: var(--red); font-weight: 700; }
+.mb-text circle { fill: var(--buehne-gruen); }
+.mb-text text { font: 400 3.2px var(--mono); fill: var(--buehne-gruen); dominant-baseline: central; }
+.mb-text.mb-abw circle, .mb-text.mb-abw text { fill: var(--red); }
+@media (max-width: 1100px) { .mb-rumpf { grid-template-columns: minmax(0, 1fr); grid-template-rows: minmax(320px, 1fr) auto; } .mb-buehne { overflow-y: auto; } }
+/* Bestellnummer je Platz (Bühne) — Einzelstück neutral, mehrere Stücke einer Bestellung in einer Farbe */
+.mb-best { cursor: copy; }
+.mb-best rect { fill: var(--text); fill-opacity: .82; }
+.mb-best text { font: 600 2.6px var(--mono); fill: #fff; text-anchor: middle; dominant-baseline: central; }
+.mb-best:hover rect { fill-opacity: 1; }
+.mb-gruppe-0 rect { fill: var(--accent); } .mb-gruppe-1 rect { fill: var(--green); } .mb-gruppe-2 rect { fill: var(--amber); }
+.mb-gruppe-3 rect { fill: #2A7FA8; } .mb-gruppe-4 rect { fill: #A8458C; }
+.mb-best[class*="mb-gruppe-"] rect { fill-opacity: .95; }
+/* Marken je Platz (Bühne): verlorene Zeichnung ab Warngrenze gelb, Hinweise dunkel */
+.mb-marke text { font: 700 2.5px var(--mono); text-anchor: middle; dominant-baseline: central; }
+.mb-marke-warn rect { fill: var(--amber); } .mb-marke-warn text { fill: #fff; }
+.mb-marke-info rect { fill: var(--text); fill-opacity: .85; stroke: var(--amber); stroke-width: .25; } .mb-marke-info text { fill: var(--amber); font-weight: 500; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Bausteine des Stils „Kalk & Graphit" (17.10.2026) — Symbole, Dialoge, Ablageflächen, Hinweise.
+   Neue Oberfläche damit bauen statt mit Inline-Stilen.
+   ═══════════════════════════════════════════════════════════════════════════ */
+/* ── Symbole: EINE Bauart für Linien-Icons — Kopfleiste, Werkzeugspalte, Menüs ── */
+svg.ik { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+svg.ik-klein { width: 13px; height: 13px; margin-right: -3px; opacity: .8; }
+.nav-btn svg.ik { width: 19px; height: 19px; stroke-width: 1.6; }
+/* Gruppenpunkt im Export-Menü: Amber = Laser, Grau = Druck, Grün = Sublimation */
+.ex-punkt { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; background: var(--c, var(--border-hi)); }
+/* Karten-Titel in den Einstellungen */
+.card-titel { font-size: var(--fs-basis); font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.card-text { font-size: var(--fs-klein); color: var(--text-muted); line-height: 1.5; margin-bottom: 12px; }
+/* Dialog-Kasten der Skript-Dialoge (Bestätigen/Eingabe, Neuer Ordner) */
+.dlg-kasten { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-l); padding: 22px 24px; box-shadow: var(--shadow-l); }
+.dlg-titel { font-size: var(--fs-titel); font-weight: 600; color: var(--text); letter-spacing: -.01em; }
+.dlg-zu { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: var(--fs-symbol); line-height: 1; padding: 5px 7px; border-radius: var(--r-s); }
+.dlg-zu:hover { background: var(--bg3); color: var(--text); }
+/* Ablagefläche zum Hochladen (Schriften, Motive) */
+.ablage-zone { display: flex; align-items: center; padding: 18px 14px; border: 1.5px dashed var(--border-hi); border-radius: var(--r-m);
+               background: var(--bg3); color: var(--text-dim); font-size: var(--fs-klein); line-height: 1.5; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.ablage-zone:hover { border-color: var(--accent); background: var(--accent-glow); }
+.ablage-plus { width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 50%;
+               background: var(--bg2); border: 1px solid var(--line-input); color: var(--accent); font-size: var(--fs-symbol); line-height: 1; margin-bottom: 2px; }
+#motiv-drop .ablage-plus { margin: 0 auto 8px; }
+/* Suchfeld mit Lupe */
+.such-feld { padding-left: 32px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238C877F' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E");
+             background-repeat: no-repeat; background-position: 10px center; background-size: 14px 14px; }
+/* ASIN-Filter: Breite nach Beschriftung, sonst schneidet „Mit Layout (105)" ab */
+#asin-filter .wahl-knopf { flex: 1 1 auto; padding-left: 6px; padding-right: 6px; }
+.lay-karte.aktiv .lay-werkzeug { background: linear-gradient(90deg, transparent, #EFF2FC 12px); }
+/* Ruhiger Hinweis-Kasten (Stand nach dem Laden u. ä.) */
+.info-kasten { margin-top: 12px; padding: 10px 12px; background: var(--bg3); border-radius: var(--r-s); line-height: 1.6; }
+/* Bestellstatus mitten in der Kopfleiste: einzeilig, kürzt sich bei schmalem Fenster statt umzubrechen */
+#orders-status { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+/* Klappbereich für Einrichtungs-Einstellungen (Füll-Einstellungen, Dithering-Feineinstellung):
+   zu = Alltag, auf = Einrichten. Auf/Zu merkt sich _klappMerken. */
+.klapp-block { border: 1px solid var(--line-input); border-radius: var(--r-m); background: var(--bg2); margin-bottom: 12px; }
+.klapp-block > summary { list-style: none; display: flex; align-items: center; gap: 8px; padding: 10px 12px; cursor: pointer;
+                         font-size: var(--fs-klein); font-weight: 600; color: var(--text); user-select: none; border-radius: var(--r-m); white-space: nowrap; }
+.klapp-block > summary::-webkit-details-marker { display: none; }
+.klapp-block > summary::before { content: '▸'; color: var(--text-muted); font-size: var(--fs-mikro); transition: transform .15s; }
+.klapp-block[open] > summary::before { transform: rotate(90deg); }
+.klapp-block > summary:hover { background: var(--bg3); }
+.klapp-block[open] > summary { border-bottom: 1px solid var(--border); border-radius: var(--r-m) var(--r-m) 0 0; }
+.klapp-rumpf { padding: 12px; }
+.klapp-rumpf > .il-block:first-of-type { margin-top: 0; padding-top: 0; border-top: none; }
+/* Maschinen: „Tag laden" oben in der Karte, abgesetzt von den .ezd-Einzelheiten darunter */
+.ez-tag-laden { padding-bottom: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
+/* Übersicht beginnt mit „Heute" — erster Abschnittstitel ohne großen Abstand nach oben */
+#overview-content > .ov-sec-title:first-child { margin-top: 4px; }
+/* Übersicht: Zu prüfen heute */
+.ov-pruef { display: flex; flex-direction: column; gap: 4px; }
+.ov-pruef-leer { font-size: var(--fs-klein); color: var(--green); background: var(--green-dim); border-radius: var(--r-s); padding: 8px 10px; }
+.ov-pruef-zeile { display: flex; gap: 8px; font-size: var(--fs-klein); line-height: 1.45; color: var(--text); background: var(--amber-dim);
+                  border-left: 3px solid var(--amber); border-radius: 0 var(--r-s) var(--r-s) 0; padding: 7px 10px; overflow-wrap: anywhere; }
+.ov-pruef-zeile.fehler { background: var(--red-dim); border-left-color: var(--red); }
+.ov-pruef-zeile.kopierbar { cursor: copy; }
+.ov-pruef-zeile.kopierbar:hover { filter: brightness(.97); }
+.ov-pruef-zeit { flex-shrink: 0; color: var(--text-muted); font-family: var(--mono); font-size: var(--fs-mikro); padding-top: 1px; }
+/* Layout-Liste: grüne Zahl = Bestellungen im aktuellen Lauf (Legende in der Zählzeile), graue Zahl = Layouts im Ordner */
+.ord-lauf { display: inline-flex; align-items: center; justify-content: center; min-width: 20px; height: 18px; padding: 0 6px; border-radius: var(--r-pille);
+            background: var(--green); color: #fff; font-size: var(--fs-mikro); font-weight: 600; font-variant-numeric: tabular-nums; flex-shrink: 0; }
+.ord-zahl { font-size: var(--fs-mikro); color: var(--text-muted); font-variant-numeric: tabular-nums; min-width: 14px; text-align: right; flex-shrink: 0; }
+.lay-lauf { color: var(--green); font-weight: 600; }
+/* Motive als Raster */
+.mv-raster { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; grid-auto-flow: dense; }
+.mv-kachel { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 8px; background: var(--bg2); border: 1px solid var(--border);
+             border-radius: var(--r-m); cursor: grab; min-width: 0; transition: border-color .12s, box-shadow .12s; }
+.mv-kachel:hover { border-color: var(--border-hi); box-shadow: var(--shadow-s); }
+.mv-bild { height: 64px; display: flex; align-items: center; justify-content: center; background: #fff; border: 1px solid var(--border); border-radius: var(--r-s); overflow: hidden; }
+.mv-bild img { max-width: 92%; max-height: 56px; }
+.mv-name { font-size: var(--fs-mikro); font-weight: 500; color: var(--text); line-height: 1.3; overflow-wrap: anywhere;
+           display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.mv-spalt { color: var(--accent); font-weight: 600; }
+.mv-werkzeug { position: absolute; top: 10px; right: 10px; display: flex; gap: 2px; opacity: 0; transition: opacity .12s; }
+.mv-kachel:hover .mv-werkzeug { opacity: 1; }
+.mv-werkzeug .zp-ikon { background: rgba(255,255,255,.92); box-shadow: var(--shadow-s); }
+.mv-fehler { border-color: var(--red-rand); cursor: default; }
+.mv-einst { grid-column: 1 / -1; background: var(--bg3); border: 1px solid var(--border); border-radius: var(--r-m); padding: 12px; }
+.mv-einst-kopf { font-size: var(--fs-klein); font-weight: 600; margin-bottom: 4px; overflow-wrap: anywhere; }
+.mv-weg { display: none !important; }

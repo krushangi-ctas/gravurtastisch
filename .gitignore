@@ -28,3 +28,25 @@ npm-shrinkwrap.json
 logs/
 *.log
 .DS_Store
+
+# Printomation-uebergabe runtime & test data
+printomation-uebergabe/**/node_modules/
+printomation-uebergabe/**/.env
+printomation-uebergabe/**/.env.*
+printomation-uebergabe/**/20*/
+printomation-uebergabe/**/exports/
+printomation-uebergabe/**/testfoto/
+printomation-uebergabe/**/ezd-sicherung/
+printomation-uebergabe/**/asin-profile/
+printomation-uebergabe/**/tmp/
+printomation-uebergabe/**/logs/
+printomation-uebergabe/**/queue/
+printomation-uebergabe/**/sicherungen/
+printomation-uebergabe/**/session.json
+printomation-uebergabe/**/processed-orders.json
+printomation-uebergabe/**/activity.json
+printomation-uebergabe/**/rekla-urteile.json
+printomation-uebergabe/**/vorlage-stand.json
+printomation-uebergabe/**/fetch-watermark.json
+printomation-uebergabe/**/data/*.db
+

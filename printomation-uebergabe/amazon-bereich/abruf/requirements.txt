@@ -1,0 +1,3 @@
+requests>=2.32
+# optional — config.py liest die .env auch ohne:
+python-dotenv>=1.0

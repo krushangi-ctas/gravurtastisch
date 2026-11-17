@@ -1,0 +1,2 @@
+onnxruntime-web 1.19.2 (MIT, Microsoft) — nur der WASM-Teil: ort.wasm.min.mjs + ort-wasm-simd-threaded.(mjs|wasm).
+Genutzt von der Gesichts-Automatik der Laser-Pipeline (YuNet, s. vendor/yunet), geladen erst bei Bedarf, ein Faden.

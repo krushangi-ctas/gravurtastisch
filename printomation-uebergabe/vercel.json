@@ -1,0 +1,8 @@
+{
+  "buildCommand": "cd printomation/src/public && node generate-config.js",
+  "outputDirectory": "printomation/src/public",
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "/", "destination": "/layout-editor.html" }
+  ]
+}

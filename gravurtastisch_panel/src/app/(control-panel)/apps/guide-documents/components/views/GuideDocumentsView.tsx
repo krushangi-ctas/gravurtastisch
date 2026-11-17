@@ -637,11 +637,10 @@ export default function GuideDocumentsView() {
 											<button
 												type="button"
 												onClick={() => setIsManageMode(false)}
-												className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${
-													!isManageMode
+												className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${!isManageMode
 														? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-300 shadow-xs'
 														: 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-												}`}
+													}`}
 											>
 												<FuseSvgIcon size={14}>lucide:eye</FuseSvgIcon>
 												Viewer
@@ -649,11 +648,10 @@ export default function GuideDocumentsView() {
 											<button
 												type="button"
 												onClick={() => setIsManageMode(true)}
-												className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${
-													isManageMode
+												className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${isManageMode
 														? 'bg-white dark:bg-slate-700 text-primary-600 dark:text-primary-300 shadow-xs'
 														: 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-												}`}
+													}`}
 											>
 												<FuseSvgIcon size={14}>lucide:pencil</FuseSvgIcon>
 												Manage
@@ -744,27 +742,24 @@ export default function GuideDocumentsView() {
 											return (
 												<div
 													key={pid}
-													className={`rounded-xl border transition-all overflow-hidden ${
-														selectedParentId === pid
+													className={`rounded-xl border transition-all overflow-hidden ${selectedParentId === pid
 															? 'border-primary-300 dark:border-primary-800 bg-white dark:bg-slate-800/60 shadow-xs'
 															: 'border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-800/40 shadow-2xs'
-													}`}
+														}`}
 												>
 													{/* Parent Header */}
 													<div
 														onClick={() => handleParentClick(parent)}
-														className={`flex items-center justify-between p-2.5 px-3 cursor-pointer transition-colors select-none ${
-															isParentSelected
+														className={`flex items-center justify-between p-2.5 px-3 cursor-pointer transition-colors select-none ${isParentSelected
 																? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300'
 																: 'bg-slate-50/70 dark:bg-slate-800/70 hover:bg-slate-100/70 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200'
-														}`}
+															}`}
 													>
 														<div className="flex items-center gap-2 min-w-0 flex-1">
 															<FuseSvgIcon
 																size={16}
-																className={`text-slate-400 transition-transform ${
-																	isExpanded ? 'rotate-90' : ''
-																}`}
+																className={`text-slate-400 transition-transform ${isExpanded ? 'rotate-90' : ''
+																	}`}
 															>
 																lucide:chevron-right
 															</FuseSvgIcon>
@@ -875,11 +870,10 @@ export default function GuideDocumentsView() {
 																		<div
 																			key={cid}
 																			onClick={() => handleSelectChild(parent, child)}
-																			className={`group flex items-center justify-between p-2 px-3 rounded-lg cursor-pointer text-xs transition-all ${
-																				isSelected
+																			className={`group flex items-center justify-between p-2 px-3 rounded-lg cursor-pointer text-xs transition-all ${isSelected
 																					? 'bg-primary-50 dark:bg-primary-950/50 text-primary-700 dark:text-primary-300 font-semibold border-l-3 border-primary-500 shadow-2xs'
 																					: 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/60 dark:hover:bg-slate-800/60'
-																			}`}
+																				}`}
 																		>
 																			<div className="flex items-center gap-2 min-w-0 flex-1">
 																				<FuseSvgIcon
@@ -915,22 +909,20 @@ export default function GuideDocumentsView() {
 																								onClick={(e) =>
 																									handleTogglePublish(child, e)
 																								}
-																								className={`text-[9px] px-1.5 py-0.5 rounded cursor-pointer ${
-																									child.isPublished
+																								className={`text-[9px] px-1.5 py-0.5 rounded cursor-pointer ${child.isPublished
 																										? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
 																										: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-																								}`}
+																									}`}
 																							>
 																								{child.isPublished ? 'Live' : 'Draft'}
 																							</span>
 																						</Tooltip>
 																					) : (
 																						<span
-																							className={`text-[9px] px-1.5 py-0.5 rounded ${
-																								child.isPublished
+																							className={`text-[9px] px-1.5 py-0.5 rounded ${child.isPublished
 																									? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
 																									: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-																							}`}
+																								}`}
 																						>
 																							{child.isPublished ? 'Live' : 'Draft'}
 																						</span>
@@ -1026,11 +1018,11 @@ export default function GuideDocumentsView() {
 														</h2>
 														{(selectedData.module?.description ||
 															selectedChild.description) && (
-															<p className="text-sm text-slate-600 dark:text-slate-400 pt-1 leading-relaxed">
-																{selectedData.module?.description ||
-																	selectedChild.description}
-															</p>
-														)}
+																<p className="text-sm text-slate-600 dark:text-slate-400 pt-1 leading-relaxed">
+																	{selectedData.module?.description ||
+																		selectedChild.description}
+																</p>
+															)}
 													</div>
 
 													{/* Top Actions in Banner */}
@@ -1077,15 +1069,13 @@ export default function GuideDocumentsView() {
 																		? 'Live'
 																		: 'Draft'
 																}
-																className={`text-xs font-semibold ${
-																	isManageMode && userCanUpdate
+																className={`text-xs font-semibold ${isManageMode && userCanUpdate
 																		? 'cursor-pointer hover:opacity-85'
 																		: ''
-																} ${
-																	(selectedData.module?.isPublished ?? selectedChild.isPublished)
+																	} ${(selectedData.module?.isPublished ?? selectedChild.isPublished)
 																		? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
 																		: 'bg-amber-50 text-amber-700 border border-amber-200'
-																}`}
+																	}`}
 															/>
 														</Tooltip>
 														<Chip
@@ -1291,11 +1281,10 @@ export default function GuideDocumentsView() {
 																key={stepKey}
 																type="button"
 																onClick={() => scrollToStep(`step-${stepNum}`, stepKey)}
-																className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all block truncate ${
-																	isActive
+																className={`w-full text-left px-3 py-2 rounded-lg text-xs font-medium transition-all block truncate ${isActive
 																		? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold shadow-2xs'
 																		: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
-																}`}
+																	}`}
 																title={step.title || `Step ${stepNum}`}
 															>
 																{step.title || `Step ${stepNum}`}
@@ -1347,15 +1336,13 @@ export default function GuideDocumentsView() {
 																		? 'Published / Live'
 																		: 'Draft Mode'
 																}
-																className={`text-xs font-medium ${
-																	isManageMode && userCanUpdate
+																className={`text-xs font-medium ${isManageMode && userCanUpdate
 																		? 'cursor-pointer hover:opacity-85'
 																		: ''
-																} ${
-																	selectedParent.isPublished
+																	} ${selectedParent.isPublished
 																		? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
 																		: 'bg-amber-50 text-amber-700 border border-amber-200'
-																}`}
+																	}`}
 															/>
 														</Tooltip>
 														<Chip
@@ -1457,11 +1444,10 @@ export default function GuideDocumentsView() {
 																		<FuseSvgIcon size={16}>lucide:file-text</FuseSvgIcon>
 																	</div>
 																	<span
-																		className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
-																			child.isPublished
+																		className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${child.isPublished
 																				? 'bg-emerald-50 text-emerald-700'
 																				: 'bg-amber-50 text-amber-700'
-																		}`}
+																			}`}
 																	>
 																		{child.isPublished ? 'Live' : 'Draft'}
 																	</span>
@@ -1571,13 +1557,12 @@ export default function GuideDocumentsView() {
 				<div className="p-6 pb-5 bg-white dark:bg-slate-900 flex items-start justify-between gap-4">
 					<div className="flex items-start gap-3.5">
 						<div
-							className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${
-								confirmState.actionType === 'delete'
+							className={`w-11 h-11 rounded-full flex items-center justify-center shrink-0 ${confirmState.actionType === 'delete'
 									? 'bg-red-100 text-red-500 dark:bg-red-950/50 dark:text-red-400'
 									: confirmState.targetPublished
-									? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
-									: 'bg-amber-100 text-amber-500 dark:bg-amber-950/50 dark:text-amber-400'
-							}`}
+										? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400'
+										: 'bg-amber-100 text-amber-500 dark:bg-amber-950/50 dark:text-amber-400'
+								}`}
 						>
 							<FuseSvgIcon
 								size={24}
@@ -1585,15 +1570,15 @@ export default function GuideDocumentsView() {
 									confirmState.actionType === 'delete'
 										? 'text-red-500 dark:text-red-400'
 										: confirmState.targetPublished
-										? 'text-emerald-600 dark:text-emerald-400'
-										: 'text-amber-500 dark:text-amber-400'
+											? 'text-emerald-600 dark:text-emerald-400'
+											: 'text-amber-500 dark:text-amber-400'
 								}
 							>
 								{confirmState.actionType === 'delete'
 									? 'heroicons-outline:trash'
 									: confirmState.targetPublished
-									? 'heroicons-outline:check-circle'
-									: 'heroicons-outline:exclamation-triangle'}
+										? 'heroicons-outline:check-circle'
+										: 'heroicons-outline:exclamation-triangle'}
 							</FuseSvgIcon>
 						</div>
 						<div className="flex flex-col">
@@ -1627,21 +1612,20 @@ export default function GuideDocumentsView() {
 						type="button"
 						onClick={handleConfirmAction}
 						disabled={isActionLoading}
-						className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white disabled:opacity-50 ${
-							confirmState.actionType === 'delete'
+						className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white disabled:opacity-50 ${confirmState.actionType === 'delete'
 								? 'bg-red-600 hover:bg-red-700'
 								: confirmState.targetPublished
-								? 'bg-emerald-600 hover:bg-emerald-700'
-								: 'bg-amber-600 hover:bg-amber-700'
-						}`}
+									? 'bg-emerald-600 hover:bg-emerald-700'
+									: 'bg-amber-600 hover:bg-amber-700'
+							}`}
 					>
 						{isActionLoading && <CircularProgress size={14} color="inherit" />}
 						<span>
 							{confirmState.actionType === 'delete'
 								? 'Delete'
 								: confirmState.targetPublished
-								? 'Publish'
-								: 'Unpublish'}
+									? 'Publish'
+									: 'Unpublish'}
 						</span>
 					</button>
 				</div>

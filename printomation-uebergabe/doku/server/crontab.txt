@@ -1,0 +1,2 @@
+15 3 * * * /var/www/printomation/amazon-bereich/abruf/abruf.sh >> /var/www/printomation/amazon-bereich/abruf/data/cron.log 2>&1
+*/15 * * * * /var/www/printomation/amazon-bereich/abruf/abruf.sh --erststart >> /var/www/printomation/amazon-bereich/abruf/data/cron.log 2>&1
