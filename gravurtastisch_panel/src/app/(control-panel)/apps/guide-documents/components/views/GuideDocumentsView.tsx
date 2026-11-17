@@ -1226,7 +1226,7 @@ export default function GuideDocumentsView() {
 																			<div
 																				onClick={() =>
 																					setLightboxImage({
-																						url: step.screenshotUrl!,
+																						url: getImageUrl(step.screenshotUrl)!,
 																						title: step.title || `Step ${stepNum}`
 																					})
 																				}
