@@ -12,6 +12,7 @@ import {
 	Switch,
 	FormControlLabel,
 	CircularProgress,
+	Chip,
 	MenuItem,
 	Select,
 	FormControl,
@@ -60,6 +61,7 @@ export default function ModuleDialog({
 		control,
 		handleSubmit,
 		reset,
+		watch,
 		setError,
 		clearErrors,
 		formState: { errors }
@@ -72,6 +74,8 @@ export default function ModuleDialog({
 			isPublished: false
 		}
 	});
+
+	const isAdminSectionWatch = watch('isAdminSection');
 
 	useEffect(() => {
 		if (open) {
@@ -244,6 +248,61 @@ export default function ModuleDialog({
 							/>
 						)}
 					/>
+
+					{/* Target Scope Switch (Admin vs Seller/User) */}
+					{!isChild ? (
+						<div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
+							<div>
+								<div className="text-sm font-medium text-slate-800 dark:text-slate-200 flex items-center gap-2">
+									<span>Guide Target Scope</span>
+									<Chip
+										size="small"
+										label={isAdminSectionWatch !== false ? 'Admin Panel' : 'Seller / User Panel'}
+										className={`text-[10px] font-bold h-5 ${
+											isAdminSectionWatch !== false
+												? 'bg-purple-50 text-purple-700 border border-purple-200'
+												: 'bg-blue-50 text-blue-700 border border-blue-200'
+										}`}
+									/>
+								</div>
+								<div className="text-xs text-slate-500 pt-0.5">
+									{isAdminSectionWatch !== false
+										? 'This category is visible in the Admin panel.'
+										: 'This category is visible to Sellers in the Seller panel.'}
+								</div>
+							</div>
+							<Controller
+								name="isAdminSection"
+								control={control}
+								render={({ field }) => (
+									<FormControlLabel
+										control={
+											<Switch
+												checked={field.value !== false}
+												onChange={(e) => field.onChange(e.target.checked)}
+												color="primary"
+											/>
+										}
+										label=""
+										className="m-0"
+									/>
+								)}
+							/>
+						</div>
+					) : (
+						<div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/70 dark:border-slate-700/70 flex items-center justify-between text-xs">
+							<span className="text-slate-500">Scope (Inherited from Parent):</span>
+							<Chip
+								size="small"
+								label={parentModule?.isAdminSection !== false ? 'Admin Panel' : 'Seller / User Panel'}
+								className={`text-[10px] font-bold h-5 ${
+									parentModule?.isAdminSection !== false
+										? 'bg-purple-50 text-purple-700 border border-purple-200'
+										: 'bg-blue-50 text-blue-700 border border-blue-200'
+								}`}
+							/>
+						</div>
+					)}
 
 					<div className="flex items-center justify-between p-3 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
 						<div>

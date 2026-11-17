@@ -85,7 +85,8 @@ export default function GuideDocumentsView() {
 	// Determine whether current session is admin or seller
 	const isAdmin = scope === 'admin' || isSuperAdmin || user?.userType === 'admin';
 	const userCanManage = isAdmin && (userCanCreate || userCanUpdate || userCanDelete);
-	const targetAdminSection = isAdmin;
+	const [adminScopeFilter, setAdminScopeFilter] = useState<'admin' | 'seller'>('admin');
+	const targetAdminSection = isAdmin ? adminScopeFilter === 'admin' : false;
 
 	// View mode vs Manage mode (only users with manage permissions can toggle)
 	const [isManageMode, setIsManageMode] = useState(false);
@@ -630,6 +631,44 @@ export default function GuideDocumentsView() {
 							</div>
 
 							<div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+								{/* Admin Scope Selector: Admin Guides vs Seller Guides */}
+								{isAdmin && (
+									<div className="flex items-center bg-slate-100 dark:bg-slate-800 rounded-lg p-0.5 border border-slate-200 dark:border-slate-700">
+										<button
+											type="button"
+											onClick={() => {
+												setAdminScopeFilter('admin');
+												setSelectedParentId(null);
+												setSelectedChildId(null);
+											}}
+											className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+												adminScopeFilter === 'admin'
+													? 'bg-white dark:bg-slate-700 text-purple-600 dark:text-purple-300 shadow-xs'
+													: 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+											}`}
+										>
+											<FuseSvgIcon size={14}>lucide:shield</FuseSvgIcon>
+											Admin Guides
+										</button>
+										<button
+											type="button"
+											onClick={() => {
+												setAdminScopeFilter('seller');
+												setSelectedParentId(null);
+												setSelectedChildId(null);
+											}}
+											className={`px-3 py-1.5 rounded-md text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+												adminScopeFilter === 'seller'
+													? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-xs'
+													: 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+											}`}
+										>
+											<FuseSvgIcon size={14}>lucide:store</FuseSvgIcon>
+											Seller Guides
+										</button>
+									</div>
+								)}
+
 								{/* Admin / Manage Controls */}
 								{userCanManage && (
 									<>
