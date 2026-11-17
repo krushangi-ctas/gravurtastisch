@@ -1277,7 +1277,7 @@ function AmazonCredentialsView() {
   };
 
   if (!canView('amazon-credentials')) {
-    return <AccessDeniedView sectionTitle="Amazon Authorisation" />;
+    return <AccessDeniedView sectionTitle="Amazon Authorization" />;
   }
 
   if (isCredentialsLoading || isMarketplacesLoading) {
