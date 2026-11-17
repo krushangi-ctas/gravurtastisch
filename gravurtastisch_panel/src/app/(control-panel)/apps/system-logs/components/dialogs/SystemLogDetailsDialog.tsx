@@ -24,8 +24,8 @@ interface SystemLogDetailsDialogProps {
 export function formatActionKey(key: string): string {
 	if (!key) return '—';
 	const map: Record<string, string> = {
-		'update-amazon-credentials': 'Update Amazon Authorisation',
-		'update-amazon-authorisation': 'Update Amazon Authorisation',
+		'update-amazon-credentials': 'Update Amazon Authorization',
+		'update-amazon-authorisation': 'Update Amazon Authorization',
 		'update-general-settings': 'Update General Settings',
 		'login-user': 'User Login',
 		'logout-user': 'User Logout',

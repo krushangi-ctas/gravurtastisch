@@ -753,26 +753,6 @@
       ]
     },
     {
-      "id": "manage-role-guard",
-      "title": "Role Scope & Hierarchy Guard",
-      "overview": "Enforces role boundary protection preventing sellers from modifying admin accounts.",
-      "code": "const mongoose = require('mongoose');\nconst User = require('../models/user.model');\nconst httpStatus = require('http-status');\n\nconst getUserStoreList = async (userId) => {\n  try {\n    const userData = await User.aggregate([\n      {\n        $match: {\n          _id: new mongoose.Types.ObjectId(userId),\n        },\n      },\n      {\n        $lookup: {\n          from: 'tbl_roles',\n          localField: 'role_id',\n          foreignField: '_id',\n          as: 'role_data',\n        },\n      },\n      {\n        $project: {\n          store_ids: { $arrayElemAt: ['$role_data.store_ids', 0] },\n          isSuperAdmin: 1,\n        },\n      },\n    ]);\n\n    if (!userData || userData.length === 0) {\n      return null;\n    }\n\n    const user = userData[0];\n\n    if (!user.isSuperAdmin) {\n      const storeIds = Array.isArray(user.store_ids)\n        ? user.store_ids\n        : [user.store_ids];\n      return {\n        isSuperAdmin: false,\n        storeIds: storeIds.map((id) => new mongoose.Types.ObjectId(id)),\n      };\n    }\n\n    return { isSuperAdmin: true, storeIds: [] };\n  } catch (error) {\n    console.error('Error fetching user store list:', error);\n    throw error;\n  }\n};\n\n// Middleware to check user stores\nconst checkUserStores = async (req, res, next) => {\n  try {\n    const userId =\n      req.userId || req.params.userId || req.body.userId || req.query.userId; // Adjust as per your request structure\n    if (!userId) {\n      return res\n        .status(httpStatus.BAD_REQUEST)\n        .json({ error: 'User ID is required' });\n    }\n    const userData = await getUserStoreList(userId);\n    if (!userData) {\n      return res.status(httpStatus.NOT_FOUND).json({ error: 'User not found' });\n    }\n\n    req.storeIds = userData.storeIds;\n    req.isSuperAdmin = userData.isSuperAdmin;\n\n    next(); // Proceed to the next middleware or route handler\n  } catch (error) {\n    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({ error: error.message });\n  }\n};\n\nmodule.exports = checkUserStores;\n",
-      "notes": [
-        "Verifies operator role hierarchy before role updates.",
-        "Ensures seller team members can only be managed by their owner."
-      ],
-      "highlights": [
-        {
-          "label": "Type",
-          "value": "Hierarchy Validator"
-        },
-        {
-          "label": "Scope",
-          "value": "Admin & Seller Isolation"
-        }
-      ]
-    },
-    {
       "id": "validate-pipe",
       "title": "Joi Schema Validation Middleware",
       "overview": "Request payload validator enforcing schema constraints on body, query, and path parameters.",

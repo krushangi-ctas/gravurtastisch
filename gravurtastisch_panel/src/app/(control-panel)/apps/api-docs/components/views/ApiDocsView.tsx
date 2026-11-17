@@ -92,7 +92,7 @@ function ApiDocsView() {
 	const [selectedSection, setSelectedSection] = useState<'api-docs' | 'models' | 'middlewares' | 'utilities' | 'plugins' | 'configuration'>('api-docs');
 	const [selectedChildId, setSelectedChildId] = useState<string>('');
 	const [mobileView, setMobileView] = useState<'nav' | 'content'>('nav');
-	// Default: expand all sections so all 14 models, 7 middlewares, 6 utilities, 3 plugins are immediately visible
+	// Default: expand all sections so all models, middlewares, utilities, plugins are immediately visible
 	const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
 		models: true,
 		middlewares: true,
@@ -583,7 +583,7 @@ function ApiDocsView() {
 							)}
 						</div>
 
-						{/* 3. Middlewares: ALL 7 shown clearly! */}
+						{/* 3. Middlewares: active guards in codebase */}
 						<div>
 							<button
 								type="button"

@@ -48,7 +48,7 @@ const navigationConfig: FuseNavItemType[] = [
 			},
 			{
 				id: 'amazon-credentials',
-				title: 'Amazon Authorisation',
+				title: 'Amazon Authorization',
 				type: 'item',
 				icon: 'lucide:lock',
 				url: '/amazon-credentials',

@@ -64,6 +64,43 @@ const Root = styled(FusePageCarded)(() => ({
 	}
 }));
 
+function GuideStepScreenshot({
+	url,
+	title,
+	onZoom
+}: {
+	url?: string;
+	title: string;
+	onZoom: () => void;
+}) {
+	const [hasError, setHasError] = useState(false);
+
+	if (!url || hasError) return null;
+
+	const fullUrl = getImageUrl(url);
+	if (!fullUrl) return null;
+
+	return (
+		<div className="w-full">
+			<div
+				onClick={onZoom}
+				className="group relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950 cursor-zoom-in transition-all hover:border-primary-400 shadow-xs flex items-center justify-center p-2 sm:p-3"
+			>
+				<img
+					src={fullUrl}
+					alt={title}
+					onError={() => setHasError(true)}
+					className="w-full max-h-[620px] object-contain mx-auto transition-transform duration-200 group-hover:scale-[1.01] rounded-lg"
+				/>
+				<div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs rounded-xl">
+					<FuseSvgIcon size={18}>lucide:maximize-2</FuseSvgIcon>
+					<span>Click to view full screen</span>
+				</div>
+			</div>
+		</div>
+	);
+}
+
 export default function GuideDocumentsView() {
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
@@ -1259,32 +1296,17 @@ export default function GuideDocumentsView() {
 
 																{/* Card Body */}
 																<div className="p-3.5 sm:p-4 space-y-3">
-																	{/* Uploaded Screenshot Box (Full width & Centered) */}
-																	{hasScreenshot && (
-																		<div className="w-full">
-																			<div
-																				onClick={() =>
-																					setLightboxImage({
-																						url: getImageUrl(step.screenshotUrl)!,
-																						title: step.title || `Step ${stepNum}`
-																					})
-																				}
-																				className="group relative w-full rounded-xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-950 cursor-zoom-in transition-all hover:border-primary-400 shadow-xs flex items-center justify-center p-2 sm:p-3"
-																			>
-																				<img
-																					src={getImageUrl(step.screenshotUrl)}
-																					alt={step.title || `Screenshot step ${stepNum}`}
-																					className="w-full max-h-[620px] object-contain mx-auto transition-transform duration-200 group-hover:scale-[1.01] rounded-lg"
-																				/>
-																				<div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs rounded-xl">
-																					<FuseSvgIcon size={18}>
-																						lucide:maximize-2
-																					</FuseSvgIcon>
-																					<span>Click to view full screen</span>
-																				</div>
-																			</div>
-																		</div>
-																	)}
+																	{/* Uploaded Screenshot Box (Only renders if image exists and loads successfully) */}
+																	<GuideStepScreenshot
+																		url={step.screenshotUrl}
+																		title={step.title || `Step ${stepNum}`}
+																		onZoom={() =>
+																			setLightboxImage({
+																				url: getImageUrl(step.screenshotUrl)!,
+																				title: step.title || `Step ${stepNum}`
+																			})
+																		}
+																	/>
 
 																	{/* Step Description & Inline Pasted Content */}
 																	{step.description && (

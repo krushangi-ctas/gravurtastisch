@@ -9,7 +9,7 @@ const AmazonCredentialsView = lazy(() => import('./components/views/amazonCreden
  */
 const Route: FuseRouteItemType = {
   path: '/amazon-credentials',
-  element: <PermissionGuard section="amazon-credentials" title="Amazon Authorisation" />,
+  element: <PermissionGuard section="amazon-credentials" title="Amazon Authorization" />,
   children: [
     {
       path: '',

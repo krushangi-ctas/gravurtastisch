@@ -72,6 +72,7 @@ export default function GuideStepFormView() {
 	const [titleError, setTitleError] = useState<string | null>(null);
 	const [description, setDescription] = useState('');
 	const [screenshotUrl, setScreenshotUrl] = useState('');
+	const [previewError, setPreviewError] = useState(false);
 	const [stepOrder, setStepOrder] = useState<number>(1);
 	const [isUploadingImage, setIsUploadingImage] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -81,6 +82,7 @@ export default function GuideStepFormView() {
 
 	// Populate form on mount or when activeStep is resolved
 	useEffect(() => {
+		setPreviewError(false);
 		if (isEdit && activeStep) {
 			setTitle(activeStep.title || '');
 			setDescription(activeStep.description || '');
@@ -109,6 +111,7 @@ export default function GuideStepFormView() {
 			const res = await uploadScreenshotMutation.mutateAsync(file);
 			const url = res.data?.url || res.data?.screenshotUrl;
 			if (url) {
+				setPreviewError(false);
 				setScreenshotUrl(url);
 				enqueueSnackbar('Screenshot uploaded successfully', { variant: 'success' });
 			} else {
@@ -385,25 +388,32 @@ export default function GuideStepFormView() {
 								{/* Screenshot Preview or Upload Box */}
 								{screenshotUrl ? (
 									<div className="space-y-3">
-										<div
-											onClick={() =>
-												setLightboxImage({
-													url: getImageUrl(screenshotUrl),
-													title: title || 'Screenshot Preview'
-												})
-											}
-											className="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950 cursor-zoom-in"
-										>
-											<img
-												src={getImageUrl(screenshotUrl)}
-												alt="Screenshot"
-												className="w-full max-h-48 object-contain"
-											/>
-											<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white text-xs font-semibold backdrop-blur-2xs">
-												<FuseSvgIcon size={16}>lucide:maximize-2</FuseSvgIcon>
-												<span>Zoom</span>
+										{previewError ? (
+											<div className="p-3 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/30 text-amber-800 dark:text-amber-200 text-xs flex items-center justify-between">
+												<span>Screenshot unavailable on server. Click Replace to upload a new one.</span>
 											</div>
-										</div>
+										) : (
+											<div
+												onClick={() =>
+													setLightboxImage({
+														url: getImageUrl(screenshotUrl),
+														title: title || 'Screenshot Preview'
+													})
+												}
+												className="relative group rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-950 cursor-zoom-in"
+											>
+												<img
+													src={getImageUrl(screenshotUrl)}
+													alt="Screenshot"
+													onError={() => setPreviewError(true)}
+													className="w-full max-h-48 object-contain"
+												/>
+												<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1.5 text-white text-xs font-semibold backdrop-blur-2xs">
+													<FuseSvgIcon size={16}>lucide:maximize-2</FuseSvgIcon>
+													<span>Zoom</span>
+												</div>
+											</div>
+										)}
 
 										<div className="flex items-center justify-between gap-2">
 											<Button
