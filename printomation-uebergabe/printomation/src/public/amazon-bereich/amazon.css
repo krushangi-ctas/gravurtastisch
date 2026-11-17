@@ -1,0 +1,337 @@
+/* ── Bereich „Amazon" (amazon.js, verkaeufe.js, experimente.js, produkte.js) ───────────────────
+   Nutzt die Marken des Editors (Farben, Ecken, Schriftgrößen aus layout-editor.css) und dessen
+   Bausteine .seg/.seg-b, .tgl, .btn, .card, .ov-pruef. Im Amazon-Bereich (body.bereich-amazon)
+   wird alles Gravur-Eigene nur AUSGEBLENDET — nichts davon wird verändert. */
+
+/* Umschalter Gravur | Amazon (nur für entwickler, amazon.js nimmt hidden weg) */
+.bereich-wahl { flex: none; }
+.bereich-wahl[hidden] { display: none; }
+.bereich-wahl .seg-b { flex: none; padding: 0 14px; font-size: var(--fs-klein); }
+
+/* Gravur ausblenden, Amazon einblenden */
+.icon-nav .amz, .amz-links, .amz-buehne { display: none; }
+body.bereich-amazon .icon-nav > :not(.amz) { display: none !important; }
+body.bereich-amazon .icon-nav > .nav-btn.amz { display: flex; }
+body.bereich-amazon .icon-nav > .nav-gruppe.amz { display: block; }
+body.bereich-amazon .left-panel > :not(#amz-links) { display: none !important; }
+body.bereich-amazon #amz-links { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+body.bereich-amazon #canvas-area, body.bereich-amazon #page-navigator, body.bereich-amazon #maschinen-buehne,
+body.bereich-amazon .right-panel { display: none !important; }
+body.bereich-amazon .workspace { grid-template-columns: 68px 264px 1fr 0px !important; }
+body.bereich-amazon #amazon-buehne { display: flex; }
+body.bereich-amazon #kopf-kontext, body.bereich-amazon #orders-status,
+body.bereich-amazon .header-actions, body.bereich-amazon .kopf-insel { visibility: hidden; }
+.amz-links-seite { display: none; }
+.amz-links-seite.amz-sichtbar { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.amz-links-inhalt { padding: 4px 16px 16px; }
+/* Einstellungen unten in der Werkzeugspalte (Abstandhalter wie im Editor) */
+.icon-nav .amz-nav-luecke { display: none; }
+body.bereich-amazon .icon-nav > .amz-nav-luecke { display: block; flex: 1; }
+.amz-einst { display: flex; flex-direction: column; gap: 12px; }
+.amz-hilfe { line-height: 1.55; }
+
+/* Eigenständige Seite (start.html): Kopfzeile so hoch wie im Editor (Arbeitsfläche rechnet mit 56 px) */
+.amz-eigenstaendig header { height: 56px; flex-shrink: 0; }
+.amz-eigen-titel { font-size: var(--fs-basis); font-weight: 600; color: var(--accent); }
+.amz-eigen-konto { display: flex; align-items: center; gap: 10px; font-size: var(--fs-klein); color: var(--text-muted); }
+#amz-toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; z-index: 50;
+  background: var(--text); color: #fff; padding: 9px 16px; border-radius: var(--r-s); font-size: var(--fs-klein); transition: opacity .2s, transform .2s; }
+#amz-toast.an { opacity: 1; transform: translate(-50%, 0); }
+
+/* ── Bühne ── */
+.amz-buehne { flex: 1; min-height: 0; flex-direction: column; overflow-y: auto; padding: 18px 24px 28px; background: var(--bg); }
+.amz-buehne.laedt { opacity: .55; pointer-events: none; transition: opacity .2s; }
+.amz-buehne > * { flex-shrink: 0; }
+.amz-buehne > .ov-pruef-zeile { margin-top: 10px; }
+.amz-buehne .ov-pruef-zeile.kopierbar { cursor: pointer; }
+.amz-buehne .plus { color: var(--green); }
+.amz-buehne .minus { color: var(--red); }
+.amz-kopf { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 14px; }
+.amz-kopf-zeit { font-size: var(--fs-klein); color: var(--text-muted); font-family: var(--mono); }
+.amz-kopf-zeit b { color: var(--text); font-weight: 600; }
+.amz-rechts { margin-left: auto; }
+.amz-karte { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 12px 14px; margin-top: 14px; min-width: 0; }
+.amz-karte-kopf { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 8px; }
+.amz-karte-kopf .seg-b { flex: none; padding: 0 12px; }
+.amz-karte-titel { font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+.amz-karte-fuss { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px 16px; flex-wrap: wrap; margin-top: 8px; }
+.amz-abschnitt-kopf { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; margin: 20px 0 10px; }
+.amz-abschnitt-kopf .ov-sec-title { margin: 0; }
+.amz-abschnitt-kopf .seg-b { flex: none; padding: 0 10px; }
+.amz-hinweis { font-size: var(--fs-mikro); color: var(--text-muted); margin-top: 6px; line-height: 1.5; }
+.amz-block { margin: 10px 0 0; }
+.amz-mehr { align-self: flex-start; margin-top: 2px; }
+.amz-fund { align-items: center; }
+.amz-leer-kasten { margin: 40px auto; max-width: 460px; text-align: center; color: var(--text-dim); }
+.amz-leer-kasten p { margin: 10px 0 16px; line-height: 1.55; }
+.amz-filter-chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: var(--r-pille); background: var(--amber-dim);
+  color: var(--amber); font-size: var(--fs-klein); font-weight: 600; box-shadow: inset 0 0 0 1px var(--amber-rand); }
+.amz-filter-chip a { color: inherit; text-decoration: underline; font-weight: 500; }
+.amz-filter-chip.blau { background: var(--accent-glow); color: var(--accent); box-shadow: inset 0 0 0 1px var(--accent-rand); }
+
+/* ── Linke Spalte ── */
+.amz-links .sec-label { margin: 16px 0 8px; }
+.amz-links .amz-links-inhalt > .sec-label:first-child { margin-top: 4px; }
+.amz-seg .seg-b { padding: 0 6px; }
+/* Zeitraum hat fünf Knöpfe — sonst wird „Gesamt" in der schmalen Spalte abgeschnitten */
+.amz-seg[data-feld="zeitraum"] .seg-b { padding: 0 2px; }
+.amz-tag-zeile { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 8px; font-size: var(--fs-klein); color: var(--text-dim); }
+.amz-datum { width: 140px; padding: 4px 6px; border: 1px solid var(--line-input); border-radius: var(--r-s); background: var(--bg2); color: var(--text);
+  font: inherit; font-size: var(--fs-klein); }
+.amz-warn { color: var(--amber); }
+.amz-laeuft { color: var(--accent); font-weight: 500; }
+.amz-link { color: var(--accent); text-decoration: none; font-weight: 500; }
+.amz-link:hover { text-decoration: underline; }
+.amz-mehr-optionen { margin-top: 18px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 12px 0; }
+.amz-mehr-optionen > summary { cursor: pointer; font-size: var(--fs-klein); font-weight: 600; color: var(--text-dim); list-style: none; }
+.amz-mehr-optionen > summary::-webkit-details-marker { display: none; }
+.amz-mehr-optionen > summary::before { content: '▸ '; color: var(--text-muted); }
+.amz-mehr-optionen[open] > summary::before { content: '▾ '; }
+.amz-schalter-gruppe { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+.amz-schalter { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: var(--fs-klein); color: var(--text); cursor: pointer; }
+.amz-zeile { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+.amz-auswahl { flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid var(--line-input); border-radius: var(--r-s); background: var(--bg2);
+  color: var(--text); font: inherit; font-size: var(--fs-klein); }
+.amz-voll { width: 100%; flex: none; }
+.amz-prod-kopf { display: flex; align-items: center; justify-content: space-between; margin-top: 20px !important; }
+.amz-knopfpaar { display: inline-flex; gap: 6px; }
+.amz-suche { width: 100%; padding: 7px 10px; margin-bottom: 8px; border: 1px solid var(--line-input); border-radius: var(--r-s);
+  background: var(--bg2); color: var(--text); font: inherit; font-size: var(--fs-klein); }
+.amz-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.amz-chip { padding: 4px 10px; border-radius: var(--r-pille); border: 1px solid var(--line-input); background: var(--bg2); color: var(--text-dim);
+  font: inherit; font-size: var(--fs-mikro); font-weight: 500; cursor: pointer; }
+.amz-chip:hover { color: var(--text); border-color: var(--border-hi); }
+.amz-chip.an { background: var(--accent-glow); border-color: var(--accent-rand); color: var(--accent); font-weight: 600; }
+
+/* Produktliste und Produktbild (Amazons Hauptbild, sonst Vorschaubild der Personalisierung, sonst Anfangsbuchstabe) */
+.amz-produktliste { display: flex; flex-direction: column; gap: 3px; }
+.amz-prod { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%;
+  padding: 5px 8px 5px 5px; border: 1px solid transparent; border-left: 3px solid transparent; border-radius: var(--r-s);
+  background: none; cursor: pointer; font: inherit; color: var(--text); text-align: left; }
+.amz-prod:hover { background: var(--bg3); }
+.amz-prod.gewaehlt { background: var(--bg3); border-color: var(--border); border-left-color: var(--farbe); }
+.amz-prod[hidden] { display: none; }
+.amz-prod-text { display: flex; flex-direction: column; min-width: 0; }
+.amz-prod-name { font-size: var(--fs-klein); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.amz-prod-zusatz { font-size: var(--fs-mikro); color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amz-prod-wert { font-family: var(--mono); font-size: var(--fs-mikro); color: var(--text-muted); }
+.amz-gruppe { font-family: var(--mono); font-weight: 600; color: var(--text-dim); }
+.amz-bild { position: relative; width: 40px; height: 40px; flex: none; border-radius: var(--r-xs); overflow: hidden; background: var(--bg3);
+  box-shadow: inset 0 0 0 1px var(--border); display: inline-flex; align-items: center; justify-content: center; }
+.amz-bild::before { content: attr(data-b); font-weight: 600; color: var(--text-muted); font-size: var(--fs-basis); }
+.amz-bild img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; background: #fff; }
+.amz-bild.klein { width: 30px; height: 30px; }
+/* Mehrere Produkte (Experimente): bis zu drei Bilder übereinander */
+.amz-bilder { display: inline-flex; flex: none; width: 40px; height: 40px; position: relative; }
+.amz-bilder .amz-bild { position: absolute; width: 26px; height: 26px; box-shadow: 0 0 0 2px var(--bg2), inset 0 0 0 1px var(--border); }
+.amz-bilder .amz-bild:nth-child(1) { left: 0; top: 0; z-index: 3; }
+.amz-bilder .amz-bild:nth-child(2) { left: 7px; top: 7px; z-index: 2; }
+.amz-bilder .amz-bild:nth-child(3) { left: 14px; top: 14px; z-index: 1; }
+
+/* ── Kacheln: jetzt · Vergleich · Prozent ── */
+.amz-kpis { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+.amz-abschnitt-kopf + .amz-kpis { margin-top: 0; }
+.amz-kachel { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-m); padding: 14px 16px; min-width: 0; }
+.amz-kachel.ziel { border-color: var(--accent-rand); box-shadow: inset 0 3px 0 var(--accent); }
+.amz-k-lbl { font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); }
+.amz-k-wert { font-size: 26px; font-weight: 600; line-height: 1.15; margin-top: 6px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amz-k-vgl { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 2px 8px; margin-top: 8px; padding-top: 8px;
+  border-top: 1px solid var(--border); font-size: var(--fs-klein); color: var(--text-muted); }
+.amz-k-vgl small { grid-column: 1 / -1; font-size: var(--fs-mikro); }
+.amz-k-vgl span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.amz-k-vgl b { font-family: var(--mono); font-weight: 600; white-space: nowrap; }
+
+/* ── Diagramm (SVG) ── */
+.amz-diagramm { position: relative; width: 100%; }
+.amz-svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.amz-svg.klickbar { cursor: pointer; }
+.amz-gitter { stroke: var(--border); stroke-width: 1; }
+.amz-achse { font-size: 10.5px; fill: var(--text-muted); font-family: var(--sans); }
+.amz-linie { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.amz-linie.vgl { stroke-width: 1.5; stroke-dasharray: 5 3; opacity: .45; }
+.amz-marke-linie { stroke: var(--red); stroke-width: 1.5; stroke-dasharray: 4 3; opacity: .7; }
+.amz-fadenkreuz { stroke: var(--border-hi); stroke-width: 1; }
+.amz-auswahl-band { fill: var(--accent); fill-opacity: .12; }
+.amz-tip { position: absolute; top: 8px; z-index: 5; min-width: 180px; max-width: 380px; padding: 8px 10px; background: var(--bg2);
+  border: 1px solid var(--border); border-radius: var(--r-s); box-shadow: var(--shadow-m); font-size: var(--fs-mikro); pointer-events: none; }
+.amz-tip[hidden] { display: none; }
+.amz-tip > b { display: block; margin-bottom: 4px; color: var(--text); }
+.amz-tip div { display: grid; grid-template-columns: 9px minmax(0, 1fr) auto auto; align-items: center; gap: 6px; line-height: 1.6; }
+.amz-tip i { width: 9px; height: 9px; border-radius: 2px; }
+.amz-tip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-dim); }
+.amz-tip div b { font-family: var(--mono); color: var(--text); }
+.amz-tip em { font-style: normal; font-family: var(--mono); color: var(--text-muted); }
+.amz-tip .amz-tip-kopf { line-height: 1.3; margin-bottom: 2px; }
+.amz-tip .amz-tip-kopf i { background: none; }
+.amz-tip .amz-tip-kopf b, .amz-tip .amz-tip-kopf em { font-family: var(--sans); font-weight: 500; font-size: 10px; color: var(--text-muted); }
+.amz-tip .amz-tip-marke { display: block; color: var(--red); margin-bottom: 4px; white-space: normal; }
+.amz-tip-klick { display: block; margin-top: 4px; color: var(--accent); }
+.amz-legende { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 0; flex: 1; min-width: 0; font-size: var(--fs-mikro); color: var(--text-dim); }
+.amz-legende span { display: inline-flex; align-items: center; gap: 6px; max-width: 100%; }
+.amz-legende i { width: 10px; height: 10px; border-radius: 2px; flex: none; }
+.amz-legende-vgl i { width: 16px !important; height: 0 !important; border-radius: 0 !important; background: none !important; border-top: 2px dashed var(--text-muted); }
+.amz-legende-tipp { color: var(--text-muted); }
+.amz-vgl-wahl { display: flex; align-items: center; gap: 8px; margin-left: auto; font-size: var(--fs-mikro); color: var(--text-muted); white-space: nowrap; }
+.amz-vgl-wahl .seg-b { flex: none; padding: 0 10px; }
+
+/* ── Tabellen ── */
+.amz-tabelle-rahmen { padding: 0; overflow-x: auto; }
+.amz-tabelle { width: 100%; border-collapse: collapse; font-size: var(--fs-klein); }
+.amz-tabelle th { position: sticky; top: 0; background: var(--bg3); text-align: right; font-size: var(--fs-mikro); font-weight: 600; color: var(--text-muted);
+  letter-spacing: var(--ls-label); text-transform: uppercase; padding: 8px 10px; cursor: pointer; white-space: nowrap; user-select: none; border-bottom: 1px solid var(--border); }
+.amz-tabelle th.txt, .amz-tabelle th:first-child, .amz-tabelle td:first-child { text-align: left; }
+.amz-tabelle td { padding: 7px 10px; border-bottom: 1px solid var(--border); text-align: right; font-family: var(--mono); font-size: var(--fs-mikro); white-space: nowrap; }
+.amz-tabelle td:first-child { font-family: var(--sans); font-size: var(--fs-klein); white-space: normal; min-width: 220px; }
+.amz-tabelle td.txt { text-align: left; font-family: var(--sans); font-size: var(--fs-klein); white-space: normal; }
+.amz-tabelle tbody tr { cursor: pointer; }
+.amz-tabelle tbody tr:hover { background: var(--bg3); }
+.amz-tabelle tbody tr.gewaehlt { background: var(--bg3); box-shadow: inset 3px 0 0 var(--farbe); }
+.amz-tabelle tbody tr:last-child td { border-bottom: none; }
+.amz-tabelle-fuss { padding: 8px 10px; border-top: 1px solid var(--border); }
+.amz-zelle-prod { display: flex; align-items: center; gap: 10px; }
+.amz-zelle-prod > span { display: flex; flex-direction: column; min-width: 0; }
+.amz-marke { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: var(--r-xs); background: var(--amber-dim); color: var(--amber);
+  font-size: var(--fs-mikro); font-weight: 500; white-space: nowrap; }
+/* Varianten aufklappen (Verkäufe → Tabelle): einzeln oder nach Farbe/Menge */
+.amz-aufklapp { border: none; background: none; padding: 0; font: inherit; font-size: var(--fs-mikro); color: var(--accent); cursor: pointer; }
+.amz-aufklapp:hover { text-decoration: underline; }
+.amz-tabelle tr.amz-kind td { background: var(--bg3); font-size: var(--fs-mikro); padding-top: 5px; padding-bottom: 5px; }
+.amz-tabelle tr.amz-kind td:first-child { padding-left: 50px; }
+.amz-tabelle tr.amz-kind.still { cursor: default; }
+.amz-kind-name { font-family: var(--mono); font-size: var(--fs-mikro); color: var(--text); }
+.amz-kind-wahl { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; font-size: var(--fs-mikro); color: var(--text-muted); }
+
+/* ── Experimente ── */
+.amz-ex-filter { margin-top: 12px; align-items: center; }
+.amz-bilanz { display: flex; flex-wrap: wrap; gap: 4px 12px; margin-top: 12px; padding: 10px 12px; border-radius: var(--r-s); background: var(--bg3);
+  font-size: var(--fs-klein); line-height: 1.5; color: var(--text-dim); }
+.amz-bilanz span { white-space: nowrap; }
+.amz-bilanz .plus { color: var(--green); }
+.amz-bilanz .minus { color: var(--red); }
+.amz-ex-gruppe { margin: 16px 0 6px; font-size: var(--fs-mikro); font-weight: 600; letter-spacing: var(--ls-label); text-transform: uppercase; color: var(--text-muted); }
+.amz-ex-liste { display: flex; flex-direction: column; gap: 3px; margin-top: 12px; }
+.amz-ex-eintrag { position: relative; display: grid; grid-template-columns: 40px minmax(0, 1fr); gap: 10px; align-items: start; width: 100%; padding: 6px 8px 6px 5px;
+  border: 1px solid transparent; border-left: 3px solid transparent; border-radius: var(--r-s); background: none; cursor: pointer; font: inherit; color: var(--text); text-align: left; }
+.amz-ex-eintrag:hover { background: var(--bg3); }
+.amz-ex-eintrag.gewaehlt { background: var(--bg3); border-color: var(--border); border-left-color: var(--accent); }
+.amz-ex-eintrag .amz-prod-text { padding-right: 22px; }
+.amz-ex-eintrag .amz-urteil { align-self: flex-start; margin-top: 4px; }
+.amz-urteil { display: inline-block; padding: 2px 8px; border-radius: var(--r-pille); font-family: var(--sans); font-size: var(--fs-mikro); font-weight: 600; white-space: nowrap; }
+.amz-urteil.gut { background: var(--green-dim); color: var(--green); }
+.amz-urteil.schlecht { background: var(--red-dim); color: var(--red); }
+.amz-urteil.neutral { background: var(--bg3); color: var(--text-dim); box-shadow: inset 0 0 0 1px var(--border); }
+.amz-urteil.wenig { background: var(--amber-dim); color: var(--amber); }
+.amz-urteil.laeuft { background: var(--accent-glow); color: var(--accent); }
+.amz-fortschritt { display: block; height: 5px; margin-top: 6px; border-radius: 3px; background: var(--bg3); box-shadow: inset 0 0 0 1px var(--border); overflow: hidden; }
+.amz-fortschritt i { display: block; height: 100%; background: var(--accent); border-radius: 3px; }
+.amz-fortschritt.gross { height: 8px; margin: 10px 0 2px; }
+.amz-erkannt-link { display: block; margin-top: 16px; padding: 9px 12px; border-radius: var(--r-s); background: var(--amber-dim); color: var(--amber);
+  font-size: var(--fs-klein); font-weight: 500; text-decoration: none; }
+.amz-erkannt-link:hover { filter: brightness(.97); }
+/* ⋯-Menü an den Experimenten */
+.amz-mehr-knopf { position: absolute; top: 4px; right: 4px; width: 26px; height: 26px; border: none; border-radius: var(--r-xs); background: none;
+  color: var(--text-muted); font-size: 16px; line-height: 1; cursor: pointer; }
+.amz-mehr-knopf:hover { background: var(--bg2); color: var(--text); box-shadow: 0 0 0 1px var(--border); }
+.amz-menue { position: fixed; z-index: 60; min-width: 170px; padding: 4px; background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-s);
+  box-shadow: var(--shadow-m); display: flex; flex-direction: column; }
+.amz-menue button { text-align: left; padding: 7px 10px; border: none; background: none; border-radius: 6px; font: inherit; font-size: var(--fs-klein); color: var(--text); cursor: pointer; }
+.amz-menue button:hover { background: var(--bg3); }
+.amz-menue button.rot { color: var(--red); }
+/* Detail rechts: Kopf, Satz-Status, Kacheln, Details */
+.amz-einfuehrung { display: flex; gap: 16px; align-items: flex-start; justify-content: space-between; margin-bottom: 14px; padding: 12px 16px;
+  border: 1px solid var(--accent-rand); border-radius: var(--r-m); background: var(--accent-glow); font-size: var(--fs-klein); line-height: 1.55; }
+.amz-einfuehrung ol { margin: 6px 0; padding-left: 18px; }
+.amz-ex-kopf { display: flex; align-items: center; gap: 12px; }
+.amz-ex-kopf .amz-bild, .amz-ex-kopf .amz-bilder { width: 52px; height: 52px; }
+.amz-ex-kopf .amz-bilder .amz-bild { width: 34px; height: 34px; }
+.amz-ex-kopf .amz-bilder .amz-bild:nth-child(2) { left: 9px; top: 9px; }
+.amz-ex-kopf .amz-bilder .amz-bild:nth-child(3) { left: 18px; top: 18px; }
+.amz-ex-titel { flex: 1; min-width: 0; }
+.amz-ex-namen { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 2px; }
+.amz-status { margin-top: 14px; padding: 14px 16px; border-radius: var(--r-m); border: 1px solid var(--border); background: var(--bg2); }
+.amz-status.gut { border-color: var(--green-rand); background: var(--green-dim); }
+.amz-status.schlecht { border-color: var(--red-rand); background: var(--red-dim); }
+.amz-status.wenig { border-color: var(--amber-rand); background: var(--amber-dim); }
+.amz-status.laeuft { border-color: var(--accent-rand); }
+.amz-status-satz { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+.amz-status.gut .amz-status-satz { color: var(--green); }
+.amz-status.schlecht .amz-status-satz { color: var(--red); }
+.amz-status-zeichen { font-size: 20px; }
+.amz-status-zeile { display: flex; flex-wrap: wrap; gap: 6px 28px; margin: 10px 0 4px; font-size: var(--fs-basis); }
+.amz-status-zeile small { display: block; font-size: var(--fs-mikro); color: var(--text-muted); text-transform: uppercase; letter-spacing: var(--ls-label); }
+.amz-details { margin-top: 14px; }
+.amz-details > summary { cursor: pointer; font-size: var(--fs-klein); font-weight: 600; color: var(--accent); list-style: none; padding: 6px 0; }
+.amz-details > summary::-webkit-details-marker { display: none; }
+.amz-details > summary::before { content: '▸ '; }
+.amz-details[open] > summary::before { content: '▾ '; }
+.amz-vorher-nachher { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 10px; margin-top: 14px; font-size: var(--fs-basis); }
+.amz-vorher-nachher > div { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--r-s); padding: 8px 12px; }
+.amz-vorher-nachher small { display: block; font-size: var(--fs-mikro); color: var(--text-muted); text-transform: uppercase; letter-spacing: var(--ls-label); margin-bottom: 2px; }
+.amz-vorher-nachher > span { color: var(--text-muted); }
+.amz-notiz { width: 100%; margin-top: 6px; padding: 8px 10px; border: 1px solid var(--line-input); border-radius: var(--r-s); background: var(--bg2);
+  color: var(--text); font: inherit; font-size: var(--fs-klein); resize: vertical; }
+.amz-aktionen { justify-content: flex-end; border-top: 1px solid var(--border); padding-top: 10px; margin-top: 14px; }
+.amz-vorschlaege { padding: 6px 14px; }
+.amz-vorschlag { display: flex; align-items: center; gap: 8px; padding: 6px 0; font-size: var(--fs-klein); border-bottom: 1px solid var(--border); }
+.amz-vorschlag:last-child { border-bottom: none; }
+.amz-vorschlag > span:not(.amz-bild) { flex: 1; min-width: 0; }
+/* Formular „Neue Änderung" */
+.amz-formular { border-color: var(--accent-rand); }
+.amz-schritt { display: flex; align-items: center; gap: 8px; font-size: var(--fs-basis); font-weight: 600; margin: 18px 0 8px; }
+.amz-schritt:first-child { margin-top: 0; }
+.amz-schritt span { width: 22px; height: 22px; border-radius: 50%; background: var(--accent); color: #fff; font-size: var(--fs-mikro);
+  display: inline-flex; align-items: center; justify-content: center; }
+.amz-schritt em { font-style: normal; font-weight: 500; font-size: var(--fs-klein); color: var(--accent); margin-left: 4px; }
+.amz-schnellwahl { margin-bottom: 8px; }
+.amz-produktwahl { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 4px; max-height: 260px; overflow-y: auto;
+  padding: 2px; border: 1px solid var(--border); border-radius: var(--r-s); }
+.amz-produktwahl .amz-prod { grid-template-columns: 40px minmax(0, 1fr) 18px; }
+.amz-prod-haken { visibility: hidden; color: var(--accent); font-weight: 700; }
+.amz-prod.gewaehlt .amz-prod-haken { visibility: visible; }
+.amz-formular #exf-ebene { margin-bottom: 10px; }
+.amz-form-zeile { display: flex; flex-wrap: wrap; gap: 12px 20px; align-items: flex-end; margin-top: 10px; }
+.amz-form-zeile .amz-feld { flex: none; }
+.amz-form-zeile .seg-b, .amz-ziel-zeile .seg-b { flex: none; padding: 0 10px; }
+.amz-ziel-zeile { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
+.amz-ziel-wert { flex: 1; min-width: 200px; }
+.amz-form-raster { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px 12px; }
+.amz-breit { grid-column: 1 / -1; }
+.amz-formular .amz-feld.amz-breit { margin-top: 10px; }
+.amz-mehr-angeben { margin: 6px 0 4px; }
+.amz-feld { display: flex; flex-direction: column; gap: 4px; font-size: var(--fs-mikro); color: var(--text-muted); min-width: 0; }
+.amz-feld input { padding: 6px 8px; border: 1px solid var(--line-input); border-radius: var(--r-s); background: var(--bg2); color: var(--text); font: inherit; font-size: var(--fs-klein); }
+.amz-fehler { color: var(--red); font-size: var(--fs-klein); }
+
+/* ── Produkte ── */
+.amz-pr-name .amz-suche { flex: 1; min-width: 220px; margin: 0; font-size: var(--fs-basis); font-weight: 600; }
+.amz-pr-aktionen { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 14px; padding: 10px 12px; border-radius: var(--r-m);
+  background: var(--bg2); border: 1px solid var(--border); position: sticky; top: -18px; z-index: 4; }
+.amz-pr-aktionen .amz-auswahl { flex: 0 1 280px; }
+.amz-pr-anzahl { font-size: var(--fs-klein); font-weight: 600; color: var(--text-dim); }
+.amz-pr-neu[hidden] { display: none; }
+.amz-pr-neu .amz-suche { flex: 1; max-width: 360px; margin: 0; }
+.amz-pr-tabelle td.amz-pr-haken, .amz-pr-tabelle th.amz-pr-haken { width: 28px; min-width: 0; padding-right: 0; }
+.amz-pr-tabelle td:nth-child(2) { min-width: 200px; }
+.amz-pr-tabelle tr.amz-pr-still td { color: var(--text-muted); }
+.amz-status-marke { display: inline-block; padding: 1px 7px; border-radius: var(--r-pille); font-size: var(--fs-mikro); font-weight: 600; white-space: nowrap;
+  background: var(--bg3); color: var(--text-dim); box-shadow: inset 0 0 0 1px var(--border); }
+.amz-status-marke.gruen { background: var(--green-dim); color: var(--green); box-shadow: none; }
+.amz-status-marke.blau { background: var(--accent-glow); color: var(--accent); box-shadow: none; }
+.amz-status-marke.grau { color: var(--text-muted); }
+.amz-status-marke.gelb { background: var(--amber-dim); color: var(--amber); box-shadow: none; }
+
+/* Sprache (Einstellungen und Kopfzeile der eigenständigen Seite) */
+.amz-sprache { margin-top: 6px; }
+.amz-sprache .seg-b { flex: 1; padding: 0 10px; }
+.amz-eigen-konto .amz-sprache { margin-top: 0; }
+.amz-eigen-konto .amz-sprache .seg-b { flex: none; }
+
+/* ── Links ── */
+.amz-li-eingabe { display: flex; flex-wrap: wrap; gap: 12px; }
+.amz-li-eingabe .amz-feld { flex: 1 1 180px; }
+.amz-li-eingabe .amz-feld:has(#li-tag) { flex-grow: 2; }
+.amz-li-suche { margin-top: 8px; }
+.amz-li-marke-hilfe { flex-basis: 100%; margin-top: -4px; }
+.amz-li-zeile { margin-top: 0; flex-wrap: nowrap; }
+.amz-li-url { flex: 1; min-width: 0; padding: 6px 8px; border: 1px solid var(--line-input); border-radius: var(--r-s); background: var(--bg);
+  color: var(--text); font-family: var(--mono); font-size: var(--fs-klein); }

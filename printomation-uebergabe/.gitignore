@@ -1,0 +1,23 @@
+# Zugangsdaten
+.env
+# Abhängigkeiten
+node_modules/
+__pycache__/
+# Kundendaten und Laufzeitdaten (liegen in der Zip, gehören nicht ins Repo)
+printomation/src/public/20*/
+printomation/src/public/exports/
+printomation/src/testfoto/
+printomation/src/ezd-sicherung/
+printomation/src/asin-profile/
+printomation/src/tmp/
+printomation/src/logs/
+printomation/src/queue/
+printomation/src/daten/session.json
+printomation/src/daten/processed-orders.json
+printomation/src/daten/activity.json
+printomation/src/daten/rekla-urteile.json
+printomation/src/daten/vorlage-stand.json
+printomation/src/daten/fetch-watermark.json
+printomation/sicherungen/
+amazon-bereich/abruf/data/
+*.bak*

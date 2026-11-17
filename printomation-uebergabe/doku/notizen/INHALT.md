@@ -1,0 +1,125 @@
+# Projekt-Notizen (Inhalt)
+
+Entscheidungen, Fallstricke und Hintergründe aus der bisherigen Entwicklung, je Thema eine Datei.
+
+- [Deployment-Setup](deployment-setup.md) — PM2 `printomation` Port 3002, Node 24; `pm2 restart printomation`, NIE `pm2 update`
+- [Amazon-Customization-JSON-Struktur](amazon-customization-json-struktur.md) — zwei Text-Strukturen; Zeilen-Nr. an "Texteingabe N"; DXF-Zentrierung
+- [Layout-Editor testen](layout-editor-testen.md) — Headless-Test (snap-chromium, lexical-scope-Fallstrick)
+- [Betriebs-Konventionen](betriebs-konventionen.md) — Dead-Letter, .bak, atomares JSON, Log-Rotation; NICHTS Internes unter public/
+- [Download ohne ZIP](download-ohne-zip.md) — flach in item-N/, Snapshots bild-1/bild-2 (S01: bild-2 = Rückseite)
+- [S01-Raster](s01-raster.md) — Rund/Herz linker Rand x=30; Herz-Raster x 42,2 / y 81,5
+- [Platzierungsfläche Bildfelder](platzierungsflaeche-bildfelder.md) — Feldform = Amazon-Fläche (PlacementContainer), nicht Kundenfoto
+- [Export-Forensik](export-forensik.md) — Logs UTC; Export = Session des Laufs; DXF/PDF-Prüftechniken
+- [Schreibschrift-Dalih-Font](schreibschrift-dalih-font.md) — Dalih ohne Umlaute; seit 07.10. Alex Brush als Alias
+- [Feste Gravurhöhe](feste-gravurhoehe.md) — Höhe = DXF-Höhe mm-genau; Breite läuft über außer overflowMode stauch/hybrid
+- [Download-Windowing-Bug](download-windowing-bug.md) — Kauf- statt Änderungsdatum → Pending-Nachzügler fehlen; Ledger
+- [Code-Audit 2026-07](code-audit-2026-07.md) — 8 Bugs behoben 09.07.; offen: tote ASIN-Auswahl, Monolith
+- [ASIN-Check](asin-check.md) — Reiter 🔍: Profile je Produkt (src/asin-profile/), Layout-Abgleich, Scan 0,5/s
+- [Aufräumen 24.09.](aufraeumen-2026-09-24.md) — Altdateien weg, npm statt yarn, Prüfweg für toten Code
+- [Aufräumen 06.10. Maschinen](aufraeumen-2026-10-06-maschinen.md) — gravurN.bmp-Zweig, CSS-Reste, nurRahmen entfernt
+- [Code-Audit Laser 2026-09](code-audit-2026-09.md) — 18.09. behoben; offen: Überstand in der Messfläche
+- [Stornierte Bestellungen](stornierte-bestellungen-im-export.md) — Storno nach Download unbemerkt; Gravurtext nur in item-JSON
+- [Re-Export versandter Bestellungen](reexport-versandter-bestellungen.md) — LastUpdateDate-Bump macht Alt-Order zum Duplikat
+- [Editor fields/_pages-State](editor-fields-pages-state.md) — vor Lesen aus `_pages` saveCurrentPageSnapshot()
+- [Kombi-Feld](kombifeld-feature.md) — gestapelte Zeilen gleich hoch; S01, FL03/05, F02 V1–V7
+- [Foto-Gravur-Workflow EZCAD](foto-gravur-workflow-ezcad.md) — Diffusion Dither 400 DPI → PNG → EZCAD
+- [FL01 Array & Mengenstufen](fl01-array-mengenstufen.md) — Blatt = 1 Bestellung × Slots; Menge über Anzahl Bleche
+- [FL02 Raster](fl02-raster-mengenstufen.md) — 2×10 Slots, Raster 14,222; alle 24 Layouts in Ordner FL02
+- [FL04 Raster](fl04-raster-mengenstufen.md) — 2×7 Slots, Raster 29,3167, x 43,5/131,5; Höhe 8 mm
+- [FL03 & FL05 Kombi](fl03-fl05-kombi-layouts.md) — einzige FL mit comboPals [1,2]; FL03 12, FL05 10 Slots
+- [M10 volle Spalte](m10-volle-spalte-regel.md) — linke Spalte zuerst komplett (Maschinen-Positionierung)
+- [K01 Raster](k01-raster-mengenstufen.md) — 15 Positionen 5,0→195,0, Höhe 4,5; M1 unabhängig, M10+ Master+Kopien
+- [Mehr-Artikel-Bestellungen](mehr-artikel-bestellungen.md) — Zuordnung über _orderKey, nie orderId
+- [Server-Zugänge](server-zugaenge.md) — Hetzner/root/Basic-Auth; Rollen gravur, entwickler, zuschauer; 3002 nur lokal
+- [Laser-Parameter-Wirkung](laser-parameter-wirkung.md) — Schwellenwert nur Bayer, Gamma = Dichte, Serpentine −99 % Drift
+- [Amazon-Fehler 101077](amazon-fehler-101077.md) — merchant_suggested_asin leer lassen
+- [SP-API nur Orders-Rolle](sp-api-nur-orders-rolle.md) — Listings/Sellers 403; Attribute nur per Lagerbestandsbericht
+- [Amazon-Index-Latenz](amazon-index-latenz.md) — Abfrage hinkt 30-90 Min nach; Prüfrezept
+- [2-Min-Blindfenster](versandbestaetigung-2min-blindfenster.md) — Versandmeldung kurz vor dem Lauf verschluckt Dutzende Orders
+- [Alten Lauf nachexportieren](alten-lauf-nachexportieren.md) — Session aus meta.json downloadedAt rekonstruieren
+- [Lauf wiederholen (↻)](lauf-wiederholen-knopf.md) — ergänzt nur; Session wird je Lauf zurückgesetzt
+- [Export nimmt gespeicherte Werte](export-nimmt-gespeicherte-werte.md) — Ungespeichertes erreicht keinen Export
+- [Reklamation: Einzelbestellung](reklamation-einzelbestellung.md) — Reiter „Reklam.": Nr. neu laden, Layouts zur ASIN auto
+- [Reklamation ohne Bestellung](rekla-ohne-bestellung.md) — seit 26.10. zweiter Weg: Layout wählen, Text/Bild eintragen; 000-Nummer in tmp/rekla-manuell, Ordner = Name
+- [Ledger zurücksetzen](ledger-zuruecksetzen.md) — processed-orders.json kürzen + pm2 restart
+- [Amazon-PDF-Upload](amazon-pdf-upload-ankuendigung.md) — pdftoppm-Rasterung beim Download
+- [F02-Feuerzeug-Layouts](f02-feuerzeug-layouts.md) — Schwarz/Silber V5–V7; Layer `Bild` nie gravieren; Rückseite fehlt überall
+- [Bildcache-Feld-ID-Kollision](bildcache-feld-id-kollision.md) — fremdes Kundenfoto im Export; Feld-ID nicht global
+- [DXF-Block-Zentrierungs-Bug](dxf-block-zentrierung-bug.md) — centerOrigin+TextAsBlock verschob halbe Blattgröße
+- [F02 V2 Oben/Mitte-Tausch](f02-v2-oben-mitte-tausch.md) — Silber-V2 palNum getauscht; Schwarz korrekt
+- [F02 12er-Raster](f02-12er-raster.md) — 4×3, Fläche 33×54; STAND 11.10. Raster 41,22 × 61,7
+- [Motive & Vektorgrafiken](motive-vektorgrafiken.md) — Reiter ◆ Motive, Parser AI/EPS/SVG/DXF/PDF; Baustein „Motiv"
+- [Amazon Text-Container](amazon-textcontainer-nummerierung.md) — Zeilen je Container ab 1; fortlaufend durchzählen
+- [Schriftart je Bestellung](amazon-schriftart-je-bestellung.md) — FontCustomization ist Geschwister der Textzeilen
+- [F02-Vorlagen-Betrieb](f02-vorlagen-betrieb.md) — V5–V7 12er-Vorlage mit gravur/rueckseite.dxf; _Vorlage nur Ezcad
+- [Ezcad Dynamic File](ezcad-vorlage-dynamic-file.md) — graviert aktuell, Bildschirm zeigt alten Stand
+- [BMP je Platz](bmp-je-platz.md) — bmpProSlot, sonst graviert die Maschine leere Plätze
+- [Arabischer Text](arabischer-text-dxf-absturz.md) — GSUB Typ 7 kippte DXF; behoben, Rückfall auf Arial
+- [Export-Trockenlauf](export-trockenlauf.md) — Auto-Export per Puppeteer ohne Schreibzugriff, A/B alt/neu
+- [Ezcad-Reiter](ezcad-reiter.md) — 🛠 Maschinen → Ezcad: Stift-Werte ändern mit Sicherung; Pfade nur lesen
+- [Tag laden.bat & Defender](tag-laden-bat-defender.md) — nur reines cmd.exe, kein Polyglot
+- [F02 Nummernbilder](f02-nummernbilder.md) — platz1–12 = Zahlen in _Vorlage-Ordnern
+- [Maschine 2 MOPA](maschine2-mopa-fotogravur.md) — Startwerte Foto auf schwarzem Feuerzeug; Test offen
+- [F02 Deckeltext je Platz](f02-deckeltext-je-platz.md) — gravurN.bmp + gravurN.dxf mit 30×8-Rahmen
+- [Auto-Gamma je Foto](auto-gamma.md) — Ziel-Gravurdichte 45 %, Neigung 0,85
+- [Lokaler Kontrast](lokaler-kontrast.md) — localContrast, dämpft sich selbst
+- [Foto-Qualität messen](fotoqualitaet-kennzahlen.md) — Tonwertumfang trennt am besten
+- [KI-Bildverbesserung abgelehnt](ki-bildverbesserung-abgelehnt.md) — erfindet Gesichtszüge; nicht vorschlagen
+- [Testblech 1](testblech-1-ergebnis.md) — weniger Gravurfläche schlägt alles
+- [F02-Schwarz-Einstellung](f02-schwarz-einstellung.md) — Stand 21.09. (überholt durch spätere Einträge)
+- [Kanten & Dichte-Regelung](kanten-und-dichteregelung.md) — edgeBoost + densityTarget
+- [Laser-Regression 18.09.](laser-regression-18-09.md) — Kantenverstärkung klemmte Tonwerte; Prüfaufbau je Platz
+- [Überstand wird graviert](ueberstand-wird-graviert.md) — behoben 17.09.
+- [Standardbild Testbleche](standardbild-testbleche.md) — Testfoto 304-0821813; Testbleche aus echter Pipeline
+- [Testbleche 5-7 Gravurdichte](testblech-5-dichtetreppe.md) — 19 % Fläche + Kanten 45 %; graviert = HELL
+- [Sprenkel wegschneiden](sprenkel-wegschneiden.md) — inkDropout, Default 0, ungeprüft am Werkstück
+- [Vorschau mit Farbbild](vorschau-mit-farbbild.md) — vorschau.png über das _Text-Layout
+- [Grafik-Weiche](grafik-weiche.md) — Logos/Schrift erkannt (≤64 Stufen), überspringen Fotoaufbereitung
+- [Motiv-Automatik](motiv-automatik.md) — autoMotiv misst Dichte im Motiv; Blech steht aus
+- [Verlorene Zeichnung](verlorene-zeichnung.md) — DIE Kennzahl + drei bestätigte Rezepte
+- [Dropdowns](dropdowns-analyse.md) — Positionsregel, Packliste, „Inhalt aus Dropdown", ddNur
+- [F02 V5 Foto/Text-Paarung](f02-v5-foto-text-paarung.md) — fotolose Bestellungen verschoben Texte; behoben 25.09.
+- [Bereichsausgleich](bereichsausgleich.md) — Himmel/Schatten je Bereich ab 40 % verlorener Zeichnung
+- [Schwarz-Weiß-Bilder & Logos](schwarz-weiss-bilder.md) — S/W-Grafik-Erkennung, Atkinson-Logo-Weiche
+- [Stockfoto-Prüfstand](stockfoto-pruefstand.md) — 1.600 Fotos; Logo-Automatik ~1 % Fehlalarm, bleibt an
+- [Bild N = N-tes Kundenfoto](bild-n-kundenfoto.md) — seit 26.09.
+- [Code-Audit 26.09.](code-audit-2026-09-26.md) — alles behoben; Backend wirkt erst nach pm2 restart
+- [Übergabe Fotoqualität 27.09.](uebergabe-fotoqualitaet-2026-09-27.md) — Befund + widerlegte Hypothesen
+- [Gesichter/Konturen 27.–29.09.](gesichter-konturen-2026-09-27.md) — Freeze 29.09.; Labor: Pipeline-Eingang mitschneiden
+- [Schaltpult-Dashboard](schaltpult-dashboard.md) — Artifact; Reihenfolge per ↑↓ (rank); code:true-Aufgaben bei Sitzungsbeginn anbieten; erst lesen
+- [F02 V3 Monogramm](f02-v3-monogramm.md) — Gravur 1 = MITTE; Motive A…Z; autoExport AN
+- [F02 V4 Old London](f02-v4-old-london.md) — Text 79 pt OldLondon.ttf; autoExport AN
+- [Aufräumen 03.10.](aufraeumen-2026-10-03.md) — Sicherungen gebündelt, 33 GB Temp weg, Nacht-Sicherung 14 Tage
+- [Weiße Bilder V7 02.10.](weisse-bilder-2026-10-02.md) — Nutzer erledigt selbst
+- [Baustein Dropdown-Text](dropdown-text-baustein.md) — Dropdown-Antwort in fester Schrift, Gravur-Nr 99↓
+- [Logo-Testbleche 06.10.](testblech-logos-2026-10-06.md) — Löwenwasch + CTW-Germany; Urteil offen
+- [Sammel-Reklamation & Hautkurve](sammel-reklamation-f02.md) — Hautkurve 0,8 LIVE seit 06.10.; Prüfstand jetzt im Papierkorb 12.10.
+- [Code-Durchsicht 06./07.10.](code-durchsicht-2026-10-06.md) — Werkzeuge in src/tools/; nginx-gzip wartet; Editor-Änderungen erst an Kopie testen
+- [Nacht-Durchsicht 09./10.10.](code-durchsicht-2026-10-10-nacht.md) — Sicherungs-Überschreiben, Watermark, .ezd behoben
+- [Nacht-Durchsicht 10./11.10.](code-durchsicht-2026-10-11-nacht.md) — protocolTimeout LIVE; Rest ersetzt durch vorschlaege-2026-10-12/
+- [V6 zu hell 08.10.](v6-zu-hell-2026-10-08.md) — Motivzonen laufen zu; Urteil offen
+- [SP-API v0 Abkündigung](sp-api-v0-abkuendigung.md) — bis 27.03.2027 auf v2026-01-01 umstellen
+- [Rekla: Foto nachbessern](rekla-foto-nachbessern.md) — Vorschau, Pixel-Zoom, Gesicht antippen; Fehlerkatalog; Fälle 13.10. (Kanten+lok. Kontrast)
+- [Kinderbesteck B01–B04](b01-kinderbesteck.md) — Lücke 36 bei 4 mm, y 39/79/119/159; autoExport AN
+- [V7 zu hell 11.10.](v7-zu-hell-2026-10-11.md) — Ursache Kundenfotos; Werte überholt durch Rezept 13.10.
+- [Einstellungs-Prüfung 11.10.](einstellungs-pruefung-2026-10-11.md) — Kanten 45 % statt Konturen LIVE; Urteil offen
+- [Gesichtsfinder-Vergleich](gesichtsfinder-vergleich.md) — YuNet (MIT) 83 %; Lizenz zuerst prüfen
+- [Gesichts-Automatik](gesichts-automatik.md) — seit 13.10. in F02_Schw AUS (Rezept CLAHE); Reklamation nutzt YuNet
+- [Abhängigkeiten 11.10.](abhaengigkeiten-2026-10-11.md) — offen: jsPDF 3, ORT-Update
+- [Maschinen-Ausbau-Ideen](maschinen-ausbau-ideen.md) — Nutzer will A1, A2, B1; A1+A2 + Paket 1–4 (Aktualisieren, Satz-Knopf, Bestellung/Warnung je Platz) LIVE 12.10.; offen 5–8
+- [Nacht-Durchsicht 11./12.10.](code-durchsicht-2026-10-12-nacht.md) — Vorschläge in vorschlaege-2026-10-12/ warten auf Freigabe
+- [Aufräumen 12.10.](aufraeumen-2026-10-12.md) — Ungenutztes (4,5 GB) in /root/papierkorb-2026-10-12/; rm blockiert
+- [PNG-Layouts F02](png-layouts-f02.md) — V5–V7_PNG = Originalfotos + Bestellnr (V5 + Deckel); seit 13.10. als <Layout>.png im Ordner UND in _Vorlage (Speichern in: Ezcad-Vorlage)
+- [Rekla 302-2919311 Camouflage](rekla-302-2919311-camo.md) — 12.10.: Gesicht 20 % + Dichte 19 % gegen weißes Shirt/schwarzes Gesicht; Gesichts-Automatik regelt die Umgebung mit
+- [Reihenfolge-Labor 12.10.](reihenfolge-labor-2026-10-12.md) — 56 Plätze für Kanten/Schärfen getestet; Recherche: Tonwerte vor Schärfen, Dithering zuletzt; Nutzer mag Aufhellen um Gesichter
+- [Emoji-Paket](emoji-paket.md) — seit 17.10. Emojis inline (Noto mono, Versalhöhe); Schalter „Emojis übernehmen" + Fundliste in ⚙; fehlende Zeichen (ツ) werden weggelassen + ⚠
+- [F02-Schwarz-Rezept 13.10.](f02-schwarz-rezept-13-10.md) — CLAHE, 250→500 DPI, Dichte 35 %; Nutzer: gut, NICHT ändern
+- [Stil „Kalk & Graphit"](stil-kalk-graphit.md) — Redesign 17.10. LIVE: hell, Geist, Kobalt; Bausteine .tab-titel/.wahl-knopf/.dlg-kasten; Sicherung vor-redesign
+- [Amazon-Bereich](amazon-bereich-plan.md) — eigener Ordner /var/www/printomation/amazon-bereich; Verkäufe, Experimente, Produkte LIVE; Katalogbilder brauchen Rolle „Product Listing“; Listing offen
+- [UI + Durchsicht 20.10.](ui-2026-10-20-lightburn-testblatt.md) — LightBurn-Konzept, Stift raus, Felder-Rahmen, Testblatt, Knöpfe Kobalt, Code-Durchsicht; LIVE 20.10. abends; V5 + V5_PNG mehrseitig AN 20.10.; offen: activity.json-Grenze
+- [Rekla 303-2788363 Glitzer-Grafik](rekla-303-2788363-glitzer-grafik.md) — 20.10.: Grafik-Weiche Schwelle 128 fraß Glitzer-Schrift; laserJe threshold 30; Rekla-Knöpfe wirken bei Grafiken nicht
+- [Rekla: Als … erkannt](rekla-als-art-erkannt.md) — Zeile + EIN Knopf „Als Foto/Grafik rechnen“; grafikErzwingen; LIVE 20.10.; Sicherung sicherungen/2026-10-20-vor-rekla-art.tar.gz
+- [Durchsicht 23.10. Rekla/Maschinen/Dithering](durchsicht-2026-10-23-rekla-masch-dither.md) — 9 Fehler behoben, LIVE; Dithering-Funktionen behalten, keine Sammel-Rekla, kein Grafik-Abschnitt im Tageslauf
+- [Komplett-Durchsicht 24.10.](durchsicht-2026-10-24-komplett.md) — CORS weg, Zeitumstellung behoben; Editor-JS in layout-editor.js, Daten in src/daten/; 2. Durchgang 18:00 (Abruf-Fehlermeldung, Schalter-Kästen); HTML/CSS 18:50; 25.10. Performance (Blob-Vorschau nur Editor, Nachtlauf bitgleich halten); alles LIVE
+- [Komplett-Durchsicht 26.10.](durchsicht-2026-10-26-komplett.md) — CSRF-Schutz, Motiv-Upload sicher, alte Rekla → „Ohne Bestellung“, Waltograph zurück; LIVE versehentlich ohne Freigabe, Rückfall-Tarball vorhanden
+- [Durchsicht 27.10.](durchsicht-2026-10-27.md) — 6 kleine Korrekturen + README, LIVE 27.10. 09:19 mit OK; Rückfall-Tarball; Top-10-Features vorgeschlagen
