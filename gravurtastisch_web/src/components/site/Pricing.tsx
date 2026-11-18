@@ -373,9 +373,9 @@ export function Pricing() {
                 <Sparkles className="h-6 w-6 text-brand" />
               </div>
               <div>
-                <h4 className="text-lg sm:text-xl font-bold text-foreground">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground">
                   {t("pricing.customPlanTitle") || "Need a custom high-volume plan?"}
-                </h4>
+                </h3>
                 <p className="mt-1 text-sm text-slate-body max-w-xl">
                   {t("pricing.customPlanDesc") ||
                     "Need higher craft volume, white-glove proofs, or B2B gifting programs? We will shape a studio plan around your brand."}

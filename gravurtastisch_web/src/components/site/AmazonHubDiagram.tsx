@@ -279,15 +279,15 @@ export function AmazonHubDiagram() {
             <span className="uppercase tracking-wider">Optics</span>
           </div>
           <div className="space-y-0.5 pt-1 border-t border-slate-100 dark:border-white/06">
-            <div className="flex justify-between items-center text-slate-500">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
               <span>Beam</span>
               <span className="font-bold text-[#0032ab] dark:text-[#4f6ef7]">0.05mm</span>
             </div>
-            <div className="flex justify-between items-center text-slate-500">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
               <span>Power</span>
               <span className="font-bold text-navy-deep dark:text-white">120W</span>
             </div>
-            <div className="flex justify-between items-center text-slate-500">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
               <span>Speed</span>
               <span className="font-bold text-navy-deep dark:text-white">850mm/s</span>
             </div>
@@ -301,15 +301,15 @@ export function AmazonHubDiagram() {
             <span className="uppercase tracking-wider">Quality</span>
           </div>
           <div className="space-y-0.5 pt-1 border-t border-slate-100 dark:border-white/06">
-            <div className="flex justify-between items-center text-slate-500">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
               <span>Proof</span>
               <span className="font-bold text-emerald-600 dark:text-emerald-400">100% OK</span>
             </div>
-            <div className="flex justify-between items-center text-slate-500">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
               <span>Color</span>
               <span className="font-bold text-navy-deep dark:text-white">Pantone</span>
             </div>
-            <div className="flex justify-between items-center text-slate-500">
+            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
               <span>Route</span>
               <span className="font-bold text-[#0032ab] dark:text-[#4f6ef7]">DHL 24h</span>
             </div>
@@ -425,9 +425,9 @@ export function AmazonHubDiagram() {
                 <span className="text-[9px] font-mono text-[#0032ab] dark:text-[#4f6ef7] font-bold block uppercase tracking-wider">
                   {currentJob.id}
                 </span>
-                <h5 className="text-xs sm:text-[13px] font-extrabold text-navy-deep dark:text-white tracking-tight">
+                <p className="text-xs sm:text-[13px] font-extrabold text-navy-deep dark:text-white tracking-tight">
                   {currentJob.shortName}
-                </h5>
+                </p>
                 <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400 block font-medium">
                   {currentJob.coords}
                 </span>

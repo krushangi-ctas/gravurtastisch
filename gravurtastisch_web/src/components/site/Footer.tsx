@@ -196,7 +196,7 @@ export function Footer() {
                   <Mail className="h-4 w-4" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">{t('footer.emailUs', 'Email Us')}</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-slate-600 font-mono font-semibold">{t('footer.emailUs', 'Email Us')}</span>
                   <span className="text-xs sm:text-sm font-bold text-navy-deep group-hover:text-brand transition-colors truncate block">
                     {contactEmail}
                   </span>
@@ -211,7 +211,7 @@ export function Footer() {
                   <Phone className="h-4 w-4" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">{t('footer.directLine', 'Direct Line')}</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-slate-600 font-mono font-semibold">{t('footer.directLine', 'Direct Line')}</span>
                   <span className="text-xs sm:text-sm font-bold text-navy-deep group-hover:text-brand transition-colors truncate block">
                     {contactPhone}
                   </span>
@@ -223,7 +223,7 @@ export function Footer() {
                   <MapPin className="h-4 w-4" strokeWidth={1.8} />
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[11px] uppercase tracking-wider text-slate-500 font-mono font-semibold">{t('footer.studioAddress', 'Studio Address')}</span>
+                  <span className="block text-[11px] uppercase tracking-wider text-slate-600 font-mono font-semibold">{t('footer.studioAddress', 'Studio Address')}</span>
                   <span className="text-xs text-slate-700 leading-relaxed block font-medium">
                     {contactAddress}
                   </span>
@@ -355,7 +355,7 @@ export function Footer() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label={label}
-                  className="group relative h-9 w-9 grid place-items-center rounded-xl bg-white hover:bg-blue-50/90 border border-slate-300/90 hover:border-brand/50 text-slate-700 hover:text-brand shadow-xs hover:shadow-[0_4px_12px_rgba(0,50,171,0.12)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 ease-out"
+                  className="group relative min-h-[44px] min-w-[44px] h-11 w-11 grid place-items-center rounded-xl bg-white hover:bg-blue-50/90 border border-slate-300/90 hover:border-brand/50 text-slate-700 hover:text-brand shadow-xs hover:shadow-[0_4px_12px_rgba(0,50,171,0.12)] hover:-translate-y-0.5 active:scale-95 transition-all duration-300 ease-out"
                 >
                   <Icon className="h-4 w-4 transition-transform duration-300 group-hover:scale-110" strokeWidth={1.85} />
                 </a>
@@ -365,7 +365,7 @@ export function Footer() {
             {/* Back to Top Animated Button */}
             <button
               onClick={scrollToTop}
-              className="group inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-white hover:bg-blue-50/90 border border-slate-300/90 hover:border-brand/50 text-xs font-bold text-slate-800 hover:text-brand transition-all shadow-xs hover:shadow-[0_4px_12px_rgba(0,50,171,0.1)] hover:-translate-y-0.5 cursor-pointer"
+              className="group inline-flex items-center gap-1.5 px-4 py-2.5 min-h-[44px] rounded-full bg-white hover:bg-blue-50/90 border border-slate-300/90 hover:border-brand/50 text-xs font-bold text-slate-800 hover:text-brand transition-all shadow-xs hover:shadow-[0_4px_12px_rgba(0,50,171,0.1)] hover:-translate-y-0.5 cursor-pointer"
             >
               <span>{t('footer.backToTop', 'Back to top')}</span>
               <ArrowUp className="h-3.5 w-3.5 text-brand group-hover:-translate-y-0.5 transition-transform" />
@@ -386,7 +386,7 @@ function FooterCol({ title, links }: { title: string; links: [string, string][] 
           {title}
         </p>
       </div>
-      <ul className="space-y-2.5 text-xs sm:text-[13px]">
+      <ul className="space-y-1 text-xs sm:text-[13px]">
         {links.map(([label, href]) => (
           <li key={label}>
             {href.startsWith("http") ? (
@@ -394,7 +394,7 @@ function FooterCol({ title, links }: { title: string; links: [string, string][] 
                 href={href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group inline-flex items-center gap-1 text-slate-600 hover:text-brand hover:translate-x-1 font-medium transition-all duration-200"
+                className="group inline-flex items-center gap-1 py-1 text-slate-600 hover:text-brand hover:translate-x-1 font-medium transition-all duration-200"
               >
                 <span>{label}</span>
                 <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 text-brand transition-opacity" />
@@ -402,7 +402,7 @@ function FooterCol({ title, links }: { title: string; links: [string, string][] 
             ) : href.startsWith("/#") || href.startsWith("#") ? (
               <a
                 href={href}
-                className="group inline-flex items-center gap-1 text-slate-600 hover:text-brand hover:translate-x-1 font-medium transition-all duration-200"
+                className="group inline-flex items-center gap-1 py-1 text-slate-600 hover:text-brand hover:translate-x-1 font-medium transition-all duration-200"
               >
                 <span>{label}</span>
                 <span className="h-1 w-1 rounded-full bg-brand opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -410,7 +410,7 @@ function FooterCol({ title, links }: { title: string; links: [string, string][] 
             ) : (
               <Link
                 to={href}
-                className="group inline-flex items-center gap-1 text-slate-600 hover:text-brand hover:translate-x-1 font-medium transition-all duration-200"
+                className="group inline-flex items-center gap-1 py-1 text-slate-600 hover:text-brand hover:translate-x-1 font-medium transition-all duration-200"
               >
                 <span>{label}</span>
                 <span className="h-1 w-1 rounded-full bg-brand opacity-0 group-hover:opacity-100 transition-opacity" />

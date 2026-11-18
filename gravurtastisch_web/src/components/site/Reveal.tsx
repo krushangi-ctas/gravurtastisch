@@ -72,8 +72,8 @@ export function Reveal<T extends React.ElementType = "div">({
   return (
     <Comp
       ref={ref}
-      className={`transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform ${
-        shown ? "opacity-100 translate-y-0 scale-100" : "opacity-0 translate-y-8 scale-[0.99]"
+      className={`transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform ${
+        shown ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
       } ${className}`}
       style={{
         transitionDelay: shown ? `${effectiveDelay}ms` : "0ms",
