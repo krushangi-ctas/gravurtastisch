@@ -165,14 +165,15 @@ export function Nav() {
       }`}
     >
       {/* EcomRetails-style Liquid Top Accent Line */}
-      <div
-        className="absolute top-0 left-0 right-0 h-[2.5px] pointer-events-none"
-        style={{
-          background: "linear-gradient(90deg, #0032ab 0%, #4f6ef7 50%, #0032ab 100%)",
-          backgroundSize: "200% 100%",
-          animation: "liquid-flow 6s linear infinite",
-        }}
-      />
+      <div className="absolute top-0 left-0 right-0 h-[2.5px] overflow-hidden pointer-events-none">
+        <div
+          className="w-[200%] h-full will-change-transform"
+          style={{
+            background: "linear-gradient(90deg, #0032ab 0%, #4f6ef7 25%, #0032ab 50%, #4f6ef7 75%, #0032ab 100%)",
+            animation: "composited-liquid-flow 6s linear infinite",
+          }}
+        />
+      </div>
       <Container className="h-16 lg:h-17 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
           <img
@@ -303,7 +304,7 @@ export function Nav() {
               <NavigationMenuItem className="relative">
                 <NavigationMenuTrigger
                   aria-label={t("nav.languageSwitcherLabel")}
-                  className={`h-9 md:h-10 w-auto min-w-[50px] md:min-w-[130px] text-xs md:text-sm font-medium rounded-full border px-3 md:px-4 bg-transparent cursor-pointer transition-all inline-flex items-center justify-between gap-1.5 shadow-none
+                  className={`h-9 md:h-10 min-h-[44px] md:min-h-[40px] w-auto min-w-[50px] md:min-w-[130px] text-xs md:text-sm font-medium rounded-full border px-3 md:px-4 bg-transparent cursor-pointer transition-all inline-flex items-center justify-between gap-1.5 shadow-none
                     ${
                       solid
                         ? "text-slate-body border-border hover:border-navy-deep hover:bg-slate-100/50 data-[state=open]:border-navy-deep"
@@ -349,7 +350,7 @@ export function Nav() {
 
           <Link
             to="/register"
-            className="h-9 md:h-10 inline-flex items-center justify-center gap-1.5 rounded-full btn-glass-primary !py-0 px-4 md:px-5 text-xs md:text-sm font-semibold !text-white shadow-[0_4px_16px_rgba(0,50,171,0.3)] hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
+            className="h-9 md:h-10 min-h-[44px] md:min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-full btn-glass-primary !py-0 px-4 md:px-5 text-xs md:text-sm font-semibold !text-white shadow-[0_4px_16px_rgba(0,50,171,0.3)] hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
           >
             <span className="hidden sm:inline">{t("nav.registerAsSeller")}</span>
             <span className="sm:hidden">{t("nav.registerShort") || "Register"}</span>
@@ -360,7 +361,7 @@ export function Nav() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`lg:hidden p-2 rounded-lg border transition-colors ${
+            className={`lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-lg border transition-colors ${
               solid
                 ? "border-border text-navy-deep hover:bg-slate-100"
                 : "border-white/20 text-white hover:bg-white/10"

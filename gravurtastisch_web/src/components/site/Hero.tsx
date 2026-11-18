@@ -52,13 +52,11 @@ export function Hero() {
           <img
             src="/home1.webp"
             alt="Personalized Photo Mug & Laser Engraved Keepsakes"
-            className="w-full h-auto object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,40,150,0.1)]"
-            loading="eager"
-            // @ts-ignore
-            fetchPriority="high"
+            className="w-full h-auto aspect-[900/772] object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,40,150,0.1)]"
+            loading="lazy"
             decoding="async"
             width="480"
-            height="480"
+            height="412"
           />
         </div>
       </div>
@@ -73,13 +71,11 @@ export function Hero() {
           <img
             src="/home2.webp"
             alt="Custom Engraved Bottle, Keychain & Photo Frame"
-            className="w-full h-auto object-contain drop-shadow-[0_25px_45px_rgba(20,40,140,0.15)] float-y"
-            loading="eager"
-            // @ts-ignore
-            fetchPriority="high"
+            className="w-full h-auto aspect-[900/772] object-contain drop-shadow-[0_25px_45px_rgba(20,40,140,0.15)] float-y will-change-transform"
+            loading="lazy"
             decoding="async"
             width="400"
-            height="400"
+            height="343"
           />
 
           {/* Frosted Glass Pill Badge: Your Design Our Craft 💜 */}

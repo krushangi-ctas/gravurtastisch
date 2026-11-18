@@ -362,7 +362,7 @@ export function VectorPreflightShowcase() {
                       <strong className="text-xs sm:text-sm font-extrabold text-navy-deep block leading-tight">
                         {t("vectorPreflight.feature1Title", "Contour & Anchor Point Optimization")}
                       </strong>
-                      <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
+                      <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-relaxed">
                         {t("vectorPreflight.feature1Desc", "Eliminates jagged edges and self-intersecting paths with 1200 DPI vector fidelity.")}
                       </p>
                     </div>
@@ -377,7 +377,7 @@ export function VectorPreflightShowcase() {
                       <strong className="text-xs sm:text-sm font-extrabold text-navy-deep block leading-tight">
                         {t("vectorPreflight.feature2Title", "360° Conical Taper Projection")}
                       </strong>
-                      <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
+                      <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-relaxed">
                         {t("vectorPreflight.feature2Desc", "Compensates for tumbler taper angles so logos wrap straight without barrel distortion.")}
                       </p>
                     </div>
@@ -392,7 +392,7 @@ export function VectorPreflightShowcase() {
                       <strong className="text-xs sm:text-sm font-extrabold text-navy-deep block leading-tight">
                         {t("vectorPreflight.feature3Title", "Substrate Etch Contrast Check")}
                       </strong>
-                      <p className="text-[11px] sm:text-xs text-slate-500 mt-0.5 leading-relaxed">
+                      <p className="text-[11px] sm:text-xs text-slate-600 mt-0.5 leading-relaxed">
                         {t("vectorPreflight.feature3Desc", "Validates optical contrast against stainless steel, slate, and solid wood.")}
                       </p>
                     </div>

@@ -8,8 +8,6 @@ import { styled } from '@mui/material/styles';
 import {
 	Button,
 	IconButton,
-	TextField,
-	InputAdornment,
 	CircularProgress,
 	Tooltip,
 	Switch,
@@ -199,6 +197,16 @@ export default function GuideDocumentsView() {
 
 	const isLoadingTree =
 		(isManageMode && userCanManage ? modulesTreeQuery.isLoading : publishedTreeQuery.isLoading);
+
+	const handleRefresh = () => {
+		setSearchQuery('');
+		modulesTreeQuery.refetch();
+		publishedTreeQuery.refetch();
+		if (selectedChildId) {
+			adminModuleDetailsQuery.refetch();
+			publishedChildQuery.refetch();
+		}
+	};
 
 	// Filter tree by client search when in published mode
 	const filteredTree = useMemo(() => {
@@ -758,25 +766,31 @@ export default function GuideDocumentsView() {
 						<div className="flex-1 flex flex-row min-h-0 overflow-x-auto overflow-y-hidden bg-slate-50/50 dark:bg-slate-950">
 							{/* Left Sidebar: Modules Hierarchy Tree */}
 							<aside className="w-52 sm:w-60 md:w-64 lg:w-72 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col shrink-0 h-full">
-								{/* Search filter in sidebar */}
-								<div className="p-3 border-b border-slate-100 dark:border-slate-800">
-									<TextField
-										value={searchQuery}
-										onChange={(e) => setSearchQuery(e.target.value)}
-										placeholder="Search guides or categories..."
-										size="small"
-										fullWidth
-										InputProps={{
-											startAdornment: (
-												<InputAdornment position="start">
-													<FuseSvgIcon size={16} className="text-slate-400">
-														lucide:search
-													</FuseSvgIcon>
-												</InputAdornment>
-											),
-											className: 'rounded-lg bg-slate-50 dark:bg-slate-800/60 text-xs'
-										}}
-									/>
+								{/* Search filter in sidebar with Refresh button */}
+								<div className="p-3 border-b border-slate-100 dark:border-slate-800 flex items-center gap-2">
+									<div className="relative flex-1">
+										<input
+											type="text"
+											value={searchQuery}
+											onChange={(e) => setSearchQuery(e.target.value)}
+											placeholder="Search guides or categories..."
+											className="w-full h-[38px] pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20 font-medium transition-all"
+										/>
+										<div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 flex items-center justify-center">
+											<FuseSvgIcon size={16}>lucide:search</FuseSvgIcon>
+										</div>
+									</div>
+									<Tooltip title="Refresh" arrow>
+										<button
+											type="button"
+											onClick={handleRefresh}
+											className="h-[38px] w-[38px] flex items-center justify-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 shadow-2xs transition-all cursor-pointer shrink-0"
+										>
+											<FuseSvgIcon size={17} className="text-slate-700 dark:text-slate-200">
+												heroicons-outline:arrow-path
+											</FuseSvgIcon>
+										</button>
+									</Tooltip>
 								</div>
 
 								{/* Tree List */}

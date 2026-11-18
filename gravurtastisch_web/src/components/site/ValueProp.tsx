@@ -265,9 +265,9 @@ export function ValueProp() {
                     <span className="text-[10px] font-mono uppercase text-[#0032ab] dark:text-brand-bright font-bold tracking-wider">
                       SAMPLE PRODUCT OUTPUT
                     </span>
-                    <h4 className="mt-1 text-base font-bold text-navy-deep dark:text-white">
+                    <p className="mt-1 text-base font-bold text-navy-deep dark:text-white">
                       {active.previewTitle}
-                    </h4>
+                    </p>
                     <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                       {active.previewSub}
                     </p>

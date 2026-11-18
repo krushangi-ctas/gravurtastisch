@@ -270,7 +270,7 @@ export function AmazonShowcase() {
                       </p>
                     </div>
 
-                    <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500 group-hover:text-slate-900 transition-colors">
+                    <div className="mt-6 pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-600 group-hover:text-slate-900 transition-colors">
                       <span className="font-mono text-[11px] uppercase tracking-wider text-[#0032ab] font-bold">
                         {t("amazonShowcase.verifiedTag", "Craft verified")}
                       </span>
@@ -361,7 +361,7 @@ export function AmazonShowcase() {
               {/* Matrix Table Header */}
               <div className="grid grid-cols-1 md:grid-cols-12 border-b border-slate-200/80 dark:border-white/10 bg-slate-50/70 dark:bg-white/5">
                 <div className="md:col-span-3 p-4 sm:p-5 flex items-center">
-                  <span className="text-xs font-bold uppercase tracking-wider text-slate-500 font-mono">
+                  <span className="text-xs font-bold uppercase tracking-wider text-slate-600 font-mono">
                     Workflow Dimension
                   </span>
                 </div>

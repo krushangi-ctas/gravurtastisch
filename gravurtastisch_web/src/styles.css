@@ -90,7 +90,7 @@
   --secondary: var(--surface-alt);
   --secondary-foreground: #0f172b;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted-foreground: #475569;
   --accent: #eef2ff;
   /* Soft Royal Tint */
   --accent-foreground: #0032ab;
@@ -273,7 +273,7 @@
 
 @keyframes laser-sweep {
   0% {
-    top: 10%;
+    transform: translateY(20px);
     opacity: 0.2;
   }
   20% {
@@ -283,12 +283,14 @@
     opacity: 1;
   }
   100% {
-    top: 90%;
+    transform: translateY(260px);
     opacity: 0.2;
   }
 }
 
 .laser-sweep-line {
+  top: 0;
+  will-change: transform, opacity;
   animation: laser-sweep 2.8s ease-in-out infinite alternate;
 }
 
@@ -613,6 +615,15 @@
 /* ========================================================================== */
 /* EcomRetails.in Liquid Glassmorphism, Orbs & Button System                  */
 /* ========================================================================== */
+@keyframes composited-liquid-flow {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
 @keyframes liquid-flow {
   0% {
     background-position: 0% 50%;

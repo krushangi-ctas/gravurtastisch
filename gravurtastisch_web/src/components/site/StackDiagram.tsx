@@ -268,9 +268,9 @@ export function StackDiagram() {
               <div className="h-10 w-10 rounded-xl bg-purple-500/10 border border-purple-500/20 grid place-items-center text-purple-600 mb-3.5 group-hover:scale-105 transition-transform">
                 <Database className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-navy-deep dark:text-white text-sm sm:text-base">
+              <h3 className="font-bold text-navy-deep dark:text-white text-sm sm:text-base">
                 {t("stackDiagram.listItem1", "Encrypted asset vault")}
-              </h4>
+              </h3>
               <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Vector artwork, custom typography, and proof files are stored in scoped, encrypted vaults with strict access rules.
               </p>
@@ -280,9 +280,9 @@ export function StackDiagram() {
               <div className="h-10 w-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 grid place-items-center text-emerald-600 mb-3.5 group-hover:scale-105 transition-transform">
                 <Cpu className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-navy-deep dark:text-white text-sm sm:text-base">
+              <h3 className="font-bold text-navy-deep dark:text-white text-sm sm:text-base">
                 {t("stackDiagram.listItem2", "Proof-gated job queue")}
-              </h4>
+              </h3>
               <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Physical laser, rotary, and embroidery cells never start production without explicit digital proof signoff.
               </p>
@@ -292,9 +292,9 @@ export function StackDiagram() {
               <div className="h-10 w-10 rounded-xl bg-[#0032ab]/10 border border-[#0032ab]/20 grid place-items-center text-[#0032ab] mb-3.5 group-hover:scale-105 transition-transform">
                 <Zap className="w-5 h-5" />
               </div>
-              <h4 className="font-bold text-navy-deep dark:text-white text-sm sm:text-base">
+              <h3 className="font-bold text-navy-deep dark:text-white text-sm sm:text-base">
                 {t("stackDiagram.listItem3", "Per-channel order webhooks")}
-              </h4>
+              </h3>
               <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Seamless real-time order intake and tracking dispatch for Amazon, Shopify, Etsy, and corporate B2B storefronts.
               </p>
