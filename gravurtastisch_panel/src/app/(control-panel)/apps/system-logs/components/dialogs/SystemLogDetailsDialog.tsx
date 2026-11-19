@@ -23,7 +23,7 @@ interface SystemLogDetailsDialogProps {
 /**
  * Format system log action keys into clean, human-readable display names
  */
-export function formatActionKey(key: string, t?: (k: string, d?: string) => string): string {
+export function formatActionKey(key: string, t?: any): string {
 	if (!key) return '—';
 	const map: Record<string, string> = {
 		'update-amazon-credentials': 'Update Amazon Authorization',
@@ -82,7 +82,7 @@ function isIdField(key: string): boolean {
 /**
  * Format field keys into clean, human-readable labels
  */
-export function formatFieldLabel(key: string, t?: (k: string, d?: string) => string): string {
+export function formatFieldLabel(key: string, t?: any): string {
 	if (!key) return '';
 	const map: Record<string, string> = {
 		activeMarketplaces: 'Active Marketplaces',
@@ -128,7 +128,7 @@ export function formatFieldLabel(key: string, t?: (k: string, d?: string) => str
 /**
  * Format primitive and complex values into clean, elegant UI representations
  */
-function renderFormattedValue(value: any, t?: (k: string, d?: string) => string): React.ReactNode {
+function renderFormattedValue(value: any, t?: any): React.ReactNode {
 	if (value === null || value === undefined || value === '') {
 		return <span className="text-slate-400 dark:text-slate-500 italic text-[12px]">—</span>;
 	}
