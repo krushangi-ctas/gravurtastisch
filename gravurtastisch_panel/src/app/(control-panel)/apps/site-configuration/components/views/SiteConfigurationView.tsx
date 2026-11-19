@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useForm, Controller as HookFormController } from 'react-hook-form';
 
 const Controller = HookFormController as React.ComponentType<any>;
@@ -210,6 +211,7 @@ type SiteConfigurationViewProps = {
 };
 
 function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationViewProps = {}) {
+	const { t } = useTranslation();
 	const { canView, canUpdate } = usePermissions();
 	const hasAccess =
 		canView('/settings/site-configuration') ||
@@ -359,7 +361,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 					}`}
 			>
 				<FuseSvgIcon size={15}>lucide:briefcase</FuseSvgIcon>
-				<span>Company Details</span>
+				<span>{t('siteConfig.tabCompany', 'Company Details')}</span>
 				{Boolean(errors.company && Object.keys(errors.company).length > 0) && (
 					<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
 				)}
@@ -374,7 +376,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 					}`}
 			>
 				<FuseSvgIcon size={15}>lucide:map-pin</FuseSvgIcon>
-				<span>Contact & Location</span>
+				<span>{t('siteConfig.tabContact', 'Contact & Location')}</span>
 				{Boolean(errors.contact && Object.keys(errors.contact).length > 0) && (
 					<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
 				)}
@@ -389,7 +391,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 					}`}
 			>
 				<FuseSvgIcon size={15}>lucide:share-2</FuseSvgIcon>
-				<span>Social Media Links</span>
+				<span>{t('siteConfig.tabSocial', 'Social Media Links')}</span>
 				{Boolean(errors.social_links && Object.keys(errors.social_links).length > 0) && (
 					<span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" />
 				)}
@@ -420,10 +422,10 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								</div>
 								<div>
 									<Typography className="text-[15px] font-bold text-slate-900 dark:text-white">
-										Company Details
+										{t('siteConfig.companyDetailsTitle', 'Company Details')}
 									</Typography>
 									<Typography className="text-[12px] text-slate-500 dark:text-slate-400">
-										General identity, official name, website link, and copyright notice
+										{t('siteConfig.companyDetailsSubtitle', 'General identity, official name, website link, and copyright notice')}
 									</Typography>
 								</div>
 							</div>
@@ -432,7 +434,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Company Name */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Company Name <span className="text-red-500">*</span>
+										{t('siteConfig.companyName', 'Company Name')} <span className="text-red-500">*</span>
 									</label>
 									<Controller
 										name="company.name"
@@ -442,7 +444,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. Gravurtastisch"
+												placeholder={t('siteConfig.companyNamePlaceholder', 'e.g. Gravurtastisch')}
 												inputProps={{ maxLength: 100 }}
 												error={Boolean(errors.company?.name)}
 												helperText={errors.company?.name?.message}
@@ -465,7 +467,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Website URL */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Website URL
+										{t('siteConfig.websiteUrl', 'Website URL')}
 									</label>
 									<Controller
 										name="company.website"
@@ -475,7 +477,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. https://gravurtastisch.com"
+												placeholder={t('siteConfig.websiteUrlPlaceholder', 'e.g. https://gravurtastisch.com')}
 												inputProps={{ maxLength: 150 }}
 												error={Boolean(errors.company?.website)}
 												helperText={errors.company?.website?.message}
@@ -498,7 +500,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Tagline */}
 								<div className="md:col-span-2">
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Tagline
+										{t('siteConfig.tagline', 'Tagline')}
 									</label>
 									<Controller
 										name="company.tagline"
@@ -508,7 +510,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. Automated Amazon buyer review requests built on official SP-API"
+												placeholder={t('siteConfig.taglinePlaceholder', 'e.g. Automated Amazon buyer review requests built on official SP-API')}
 												inputProps={{ maxLength: 150 }}
 												error={Boolean(errors.company?.tagline)}
 												helperText={errors.company?.tagline?.message}
@@ -531,7 +533,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* About / Description */}
 								<div className="md:col-span-2">
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										About / Description
+										{t('siteConfig.about', 'About / Description')}
 									</label>
 									<Controller
 										name="company.about"
@@ -542,7 +544,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												fullWidth
 												multiline
 												rows={3}
-												placeholder="Write a short summary about the company and its services..."
+												placeholder={t('siteConfig.aboutPlaceholder', 'Write a short summary about the company and its services...')}
 												inputProps={{ maxLength: 1000 }}
 												error={Boolean(errors.company?.about)}
 												helperText={errors.company?.about?.message}
@@ -558,7 +560,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Copyright Text */}
 								<div className="md:col-span-2">
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Copyright Text
+										{t('siteConfig.copyrightText', 'Copyright Text')}
 									</label>
 									<Controller
 										name="company.copyright_text"
@@ -568,7 +570,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. © 2026 Gravurtastisch. All rights reserved."
+												placeholder={t('siteConfig.copyrightPlaceholder', 'e.g. © 2026 Gravurtastisch. All rights reserved.')}
 												inputProps={{ maxLength: 150 }}
 												error={Boolean(errors.company?.copyright_text)}
 												helperText={errors.company?.copyright_text?.message}
@@ -603,10 +605,10 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								</div>
 								<div>
 									<Typography className="text-[15px] font-bold text-slate-900 dark:text-white">
-										Contact & Location Details
+										{t('siteConfig.contactDetailsTitle', 'Contact & Location Details')}
 									</Typography>
 									<Typography className="text-[12px] text-slate-500 dark:text-slate-400">
-										Public contact email, customer support phone, business address, and operational hours
+										{t('siteConfig.contactDetailsSubtitle', 'Public contact email, customer support phone, business address, and operational hours')}
 									</Typography>
 								</div>
 							</div>
@@ -615,7 +617,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Email */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Official Email Address
+										{t('siteConfig.officialEmail', 'Official Email Address')}
 									</label>
 									<Controller
 										name="contact.email"
@@ -648,7 +650,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Phone */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Phone Number
+										{t('siteConfig.phone', 'Phone Number')}
 									</label>
 									<Controller
 										name="contact.phone"
@@ -681,7 +683,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Full Address */}
 								<div className="md:col-span-2">
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Street Address
+										{t('siteConfig.address', 'Street Address')}
 									</label>
 									<Controller
 										name="contact.address"
@@ -714,7 +716,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* City */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										City
+										{t('siteConfig.city', 'City')}
 									</label>
 									<Controller
 										name="contact.city"
@@ -740,7 +742,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* State */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										State / Province
+										{t('siteConfig.state', 'State / Province')}
 									</label>
 									<Controller
 										name="contact.state"
@@ -766,7 +768,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Country */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Country
+										{t('siteConfig.country', 'Country')}
 									</label>
 									<Controller
 										name="contact.country"
@@ -792,7 +794,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Postal Code */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Postal / ZIP Code
+										{t('siteConfig.postalCode', 'Postal / ZIP Code')}
 									</label>
 									<Controller
 										name="contact.postal_code"
@@ -818,7 +820,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Working Hours */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Working Hours
+										{t('siteConfig.workingHours', 'Working Hours')}
 									</label>
 									<Controller
 										name="contact.working_hours"
@@ -851,7 +853,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								{/* Timezone */}
 								<div>
 									<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Default Timezone
+										{t('siteConfig.timezone', 'Default Timezone')}
 									</label>
 									<Controller
 										name="contact.timezone"
@@ -896,10 +898,10 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								</div>
 								<div>
 									<Typography className="text-[15px] font-bold text-slate-900 dark:text-white">
-										Social Media Links
+										{t('siteConfig.socialLinksTitle', 'Social Media Links')}
 									</Typography>
 									<Typography className="text-[12px] text-slate-500 dark:text-slate-400">
-										Official profiles on Facebook, Instagram, LinkedIn, and YouTube
+										{t('siteConfig.socialLinksSubtitle', 'Official profiles on Facebook, Instagram, LinkedIn, and YouTube')}
 									</Typography>
 								</div>
 							</div>
@@ -1047,8 +1049,8 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 					>
 						<Typography className="text-xs text-slate-500 dark:text-slate-400">
 							{isDirty
-								? 'You have unsaved changes in your website configuration.'
-								: 'All settings are up to date and live.'}
+								? t('siteConfig.unsavedChangesNotice', 'You have unsaved changes in your website configuration.')
+								: t('siteConfig.allUpToDateNotice', 'All settings are up to date and live.')}
 						</Typography>
 
 						<div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
@@ -1059,7 +1061,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 								style={{ height: '34px' }}
 								className="w-full sm:w-auto px-4 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
 							>
-								Discard Changes
+								{t('siteConfig.discardChanges', 'Discard Changes')}
 							</button>
 							<button
 								type="submit"
@@ -1074,7 +1076,11 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 										lucide:save
 									</FuseSvgIcon>
 								)}
-								<span>{updateMutation.isPending ? 'Saving...' : 'Save Configuration'}</span>
+								<span>
+									{updateMutation.isPending
+										? t('siteConfig.saving', 'Saving...')
+										: t('siteConfig.saveConfiguration', 'Save Configuration')}
+								</span>
 							</button>
 						</div>
 					</Paper>

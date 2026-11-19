@@ -2,6 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import AccessDeniedView from '@/components/AccessDeniedView';
@@ -67,6 +68,7 @@ export type SectionsViewProps = {
 };
 
 function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
+	const { t } = useTranslation();
 	const { canView, canCreate, canUpdate, canDelete, scope } = usePermissions();
 	const { enqueueSnackbar } = useSnackbar();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
@@ -812,26 +814,28 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								</div>
 								<div className="flex flex-col">
 									<h3 className="text-base font-bold text-slate-800 dark:text-slate-100 m-0">
-										{confirmState.type === 'delete' ? 'Delete Section' : 'Change Section Status'}
+										{confirmState.type === 'delete'
+											? t('confirm.deleteSectionTitle', 'Delete Section')
+											: t('confirm.changeSectionStatusTitle', 'Change Section Status')}
 									</h3>
 									<p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1.5 leading-relaxed m-0">
 										{confirmState.type === 'delete' ? (
 											<>
-												Are you sure you want to delete{' '}
+												{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
 												<strong className="text-slate-800 dark:text-slate-200 font-semibold">
 													{confirmState.section?.title || confirmState.section?.name}
 												</strong>
-												? This action cannot be undone.
+												? {t('confirm.thisActionCannotBeUndone', 'This action cannot be undone.')}
 											</>
 										) : (
 											<>
-												Are you sure you want to change status of{' '}
+												{t('confirm.changeStatusPrompt', 'Are you sure you want to change status of')}{' '}
 												<strong className="text-slate-800 dark:text-slate-200 font-semibold">
 													{confirmState.section?.title || confirmState.section?.name}
 												</strong>{' '}
-												to{' '}
+												{t('confirm.to', 'to')}{' '}
 												<strong className="text-slate-800 dark:text-slate-200 font-semibold">
-													{confirmState.targetStatus === 1 ? 'Active' : 'Inactive'}
+													{confirmState.targetStatus === 1 ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
 												</strong>
 												?
 											</>
@@ -855,7 +859,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								disabled={isActionLoading}
 								className="h-9 px-5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
 							>
-								Cancel
+								{t('confirm.cancel', 'Cancel')}
 							</button>
 							<button
 								type="button"
@@ -867,7 +871,11 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 									}`}
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}
-								<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>
+								<span>
+									{confirmState.type === 'delete'
+										? t('confirm.delete', 'Delete')
+										: t('confirm.changeStatus', 'Change Status')}
+								</span>
 							</button>
 						</div>
 					</Dialog>

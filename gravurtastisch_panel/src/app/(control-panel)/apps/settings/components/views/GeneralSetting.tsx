@@ -12,6 +12,7 @@ import CustomStatusSwitch from '@/components/CustomSwitch';
 import { useEffect } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import usePermissions from '@/hooks/usePermissions';
 import { GeneralSettingFormType } from './GeneralSetAppView';
@@ -23,6 +24,7 @@ function GeneralSetting({
   generalSettingMutation: any;
   generalSetting: any;
 }) {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { canUpdate } = usePermissions();
   const canEdit = canUpdate('/settings/generalsetting');
@@ -106,7 +108,7 @@ function GeneralSetting({
                 heroicons-outline:information-circle
               </FuseSvgIcon>
               <span>
-                <strong>View-only mode:</strong> You do not have permission to modify general settings. All controls are read-only.
+                <strong>{t('generalSetting.viewOnlyMode', 'View-only mode:')}</strong> {t('generalSetting.viewOnlyDesc', 'You do not have permission to modify general settings. All controls are read-only.')}
               </span>
             </div>
           )}
@@ -120,16 +122,16 @@ function GeneralSetting({
                 </div>
                 <div>
                   <Typography className="text-[18px] font-bold text-slate-900 dark:text-white tracking-tight">
-                    Review Automation Settings
+                    {t('generalSetting.reviewAutomationSettings', 'Review Automation Settings')}
                   </Typography>
                   <Typography className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    Configure automated review request rules, channels, and delivery triggers.
+                    {t('generalSetting.reviewAutomationSubtitle', 'Configure automated review request rules, channels, and delivery triggers.')}
                   </Typography>
                 </div>
               </div>
               <div className="self-start sm:self-auto">
                 <Chip
-                  label={autoSendRequestValue ? 'Automation Active' : 'Automation Paused'}
+                  label={autoSendRequestValue ? t('generalSetting.automationActive', 'Automation Active') : t('generalSetting.automationPaused', 'Automation Paused')}
                   size="small"
                   className={`font-semibold border text-xs px-3 py-1 ${autoSendRequestValue
                       ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 border-emerald-300 dark:border-emerald-700'
@@ -147,10 +149,10 @@ function GeneralSetting({
             <div className="pt-0 space-y-4">
               <div>
                 <Typography className="text-[16px] font-semibold text-slate-900 dark:text-white">
-                  Target Orders & Fulfillment Channel
+                  {t('generalSetting.targetOrdersChannel', 'Target Orders & Fulfillment Channel')}
                 </Typography>
                 <Typography className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Select which orders and fulfillment methods qualify for feedback requests.
+                  {t('generalSetting.targetOrdersSubtitle', 'Select which orders and fulfillment methods qualify for feedback requests.')}
                 </Typography>
               </div>
 
@@ -158,7 +160,7 @@ function GeneralSetting({
                 {/* Target Order Status */}
                 <div className="flex flex-col">
                   <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                    Order Status
+                    {t('generalSetting.orderStatus', 'Order Status')}
                   </label>
                   <Controller
                     name="order_status"
@@ -182,7 +184,7 @@ function GeneralSetting({
                               <FuseSvgIcon size={18} className="text-primary-600 dark:text-primary-400">
                                 lucide:package-check
                               </FuseSvgIcon>
-                              Shipped Orders Only
+                              {t('generalSetting.shippedOrdersOnly', 'Shipped Orders Only')}
                             </span>
                           </MenuItem>
                         </Select>
@@ -190,14 +192,14 @@ function GeneralSetting({
                     )}
                   />
                   <p className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-1.5">
-                    Emails are sent only after Amazon marks the order as shipped.
+                    {t('generalSetting.orderStatusHelp', 'Emails are sent only after Amazon marks the order as shipped.')}
                   </p>
                 </div>
 
                 {/* Fulfillment Channels */}
                 <div className="md:col-span-2 flex flex-col">
                   <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                    Fulfillment Channel
+                    {t('generalSetting.fulfillmentChannel', 'Fulfillment Channel')}
                   </label>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <Controller
@@ -223,7 +225,7 @@ function GeneralSetting({
                             <div className="flex items-baseline gap-1.5">
                               <span className="text-[14px] font-bold text-slate-900 dark:text-white">FBA</span>
                               <span className="text-[13px] text-slate-500 dark:text-slate-400">
-                                (Amazon)
+                                {t('generalSetting.fbaSub', '(Amazon)')}
                               </span>
                             </div>
                           </div>
@@ -257,7 +259,7 @@ function GeneralSetting({
                             <div className="flex items-baseline gap-1.5">
                               <span className="text-[14px] font-bold text-slate-900 dark:text-white">FBM</span>
                               <span className="text-[13px] text-slate-500 dark:text-slate-400">
-                                (Merchant)
+                                {t('generalSetting.fbmSub', '(Merchant)')}
                               </span>
                             </div>
                           </div>
@@ -269,7 +271,7 @@ function GeneralSetting({
                     />
                   </div>
                   <p className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-1.5">
-                    Enable FBA and/or FBM to target specific fulfillment orders.
+                    {t('generalSetting.fulfillmentHelp', 'Enable FBA and/or FBM to target specific fulfillment orders.')}
                   </p>
                 </div>
               </div>
@@ -280,15 +282,15 @@ function GeneralSetting({
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <Typography className="text-[16px] font-semibold text-slate-900 dark:text-white">
-                    Automatic Dispatch Schedule
+                    {t('generalSetting.automaticDispatchSchedule', 'Automatic Dispatch Schedule')}
                   </Typography>
                   <Typography className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    Specify the delivery delay in days and the preferred dispatch time.
+                    {t('generalSetting.dispatchScheduleSubtitle', 'Specify the delivery delay in days and the preferred dispatch time.')}
                   </Typography>
                 </div>
                 <div className="flex items-center gap-2.5 self-start sm:self-auto bg-slate-50 dark:bg-slate-800/70 border border-slate-200 dark:border-slate-800 rounded-xl px-3.5 py-1.5">
                   <span className="text-[13px] font-semibold text-slate-800 dark:text-slate-100">
-                    Auto-Send
+                    {t('generalSetting.autoSend', 'Auto-Send')}
                   </span>
                   <Controller
                     name="autoSendRequest"
@@ -310,7 +312,7 @@ function GeneralSetting({
                   {/* Day Picker */}
                   <div className="flex flex-col">
                     <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                      Delay (Days)
+                      {t('generalSetting.delayDays', 'Delay (Days)')}
                     </label>
                     <Controller
                       name="day"
@@ -335,7 +337,7 @@ function GeneralSetting({
                           >
                             {days.map((d) => (
                               <MenuItem key={d} value={d}>
-                                <span className="text-[14px] font-medium">{d} {d === 1 ? 'Day' : 'Days'}</span>
+                                <span className="text-[14px] font-medium">{d} {d === 1 ? t('generalSetting.daySingular', 'Day') : t('generalSetting.daysPlural', 'Days')}</span>
                               </MenuItem>
                             ))}
                           </Select>
@@ -347,7 +349,7 @@ function GeneralSetting({
                   {/* Hour */}
                   <div className="flex flex-col">
                     <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                      Hour
+                      {t('generalSetting.hour', 'Hour')}
                     </label>
                     <Controller
                       name="hour"
@@ -366,7 +368,7 @@ function GeneralSetting({
                           >
                             {hours.map((h) => (
                               <MenuItem key={h} value={h}>
-                                <span className="text-[14px] font-medium">{h.toString().padStart(2, '0')} hrs</span>
+                                <span className="text-[14px] font-medium">{h.toString().padStart(2, '0')} {t('generalSetting.hrs', 'hrs')}</span>
                               </MenuItem>
                             ))}
                           </Select>
@@ -378,7 +380,7 @@ function GeneralSetting({
                   {/* Minute */}
                   <div className="flex flex-col">
                     <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                      Minute
+                      {t('generalSetting.minute', 'Minute')}
                     </label>
                     <Controller
                       name="minute"
@@ -397,7 +399,7 @@ function GeneralSetting({
                           >
                             {minsSecs.map((m) => (
                               <MenuItem key={m} value={m}>
-                                <span className="text-[14px] font-medium">{m.toString().padStart(2, '0')} min</span>
+                                <span className="text-[14px] font-medium">{m.toString().padStart(2, '0')} {t('generalSetting.min', 'min')}</span>
                               </MenuItem>
                             ))}
                           </Select>
@@ -409,7 +411,7 @@ function GeneralSetting({
                   {/* Second */}
                   <div className="flex flex-col">
                     <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                      Second
+                      {t('generalSetting.second', 'Second')}
                     </label>
                     <Controller
                       name="second"
@@ -428,7 +430,7 @@ function GeneralSetting({
                           >
                             {minsSecs.map((s) => (
                               <MenuItem key={s} value={s}>
-                                <span className="text-[14px] font-medium">{s.toString().padStart(2, '0')} sec</span>
+                                <span className="text-[14px] font-medium">{s.toString().padStart(2, '0')} {t('generalSetting.sec', 'sec')}</span>
                               </MenuItem>
                             ))}
                           </Select>
@@ -444,12 +446,12 @@ function GeneralSetting({
                     <FuseSvgIcon size={20}>lucide:clock</FuseSvgIcon>
                   </div>
                   <Typography className="text-[13px] leading-[20px] text-primary-950 dark:text-primary-200 font-medium">
-                    Emails will be sent automatically{' '}
+                    {t('generalSetting.emailsSentAutomatically', 'Emails will be sent automatically')}{' '}
                     <span className="font-bold underline decoration-primary-400 text-primary-900 dark:text-primary-100">
-                      {selectedDay || 0} days
+                      {selectedDay || 0} {selectedDay === 1 ? t('generalSetting.daySingular', 'day') : t('generalSetting.daysPlural', 'days')}
                     </span>{' '}
-                    after the order is confirmed as{' '}
-                    <span className="font-bold text-primary-900 dark:text-primary-100">delivered (estimated)</span>.
+                    {t('generalSetting.daysAfterOrderConfirmed', 'after the order is confirmed as')}{' '}
+                    <span className="font-bold text-primary-900 dark:text-primary-100">{t('generalSetting.deliveredEstimated', 'delivered (estimated)')}</span>.
                   </Typography>
                 </div>
               </div>
@@ -459,17 +461,17 @@ function GeneralSetting({
             <div className="pt-7 space-y-4">
               <div>
                 <Typography className="text-[16px] font-semibold text-slate-900 dark:text-white">
-                  Order Matching Rules
+                  {t('generalSetting.orderMatchingRules', 'Order Matching Rules')}
                 </Typography>
                 <Typography className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-0.5">
-                  Define inventory targeting conditions for review request campaigns.
+                  {t('generalSetting.orderMatchingSubtitle', 'Define inventory targeting conditions for review request campaigns.')}
                 </Typography>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-start">
                 <div className="flex flex-col">
                   <label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-                    Target Inventory
+                    {t('generalSetting.targetInventory', 'Target Inventory')}
                   </label>
                   <Controller
                     disabled
@@ -494,7 +496,7 @@ function GeneralSetting({
                               <FuseSvgIcon size={18} className="text-slate-500">
                                 lucide:layers
                               </FuseSvgIcon>
-                              All Products in Inventory
+                              {t('generalSetting.allProductsInventory', 'All Products in Inventory')}
                             </span>
                           </MenuItem>
                           <MenuItem value="shipped items">
@@ -502,7 +504,7 @@ function GeneralSetting({
                               <FuseSvgIcon size={18} className="text-slate-500">
                                 lucide:package
                               </FuseSvgIcon>
-                              Shipped Items Only
+                              {t('generalSetting.shippedItemsOnly', 'Shipped Items Only')}
                             </span>
                           </MenuItem>
                         </Select>
@@ -510,7 +512,7 @@ function GeneralSetting({
                     )}
                   />
                   <p className="text-[13px] leading-[20px] text-slate-500 dark:text-slate-400 mt-1.5">
-                    This campaign automatically applies across your active product catalog.
+                    {t('generalSetting.targetInventoryHelp', 'This campaign automatically applies across your active product catalog.')}
                   </p>
                 </div>
               </div>
@@ -522,10 +524,10 @@ function GeneralSetting({
           <div className="px-4 sm:px-6 md:px-8 py-4 sm:py-5 bg-slate-50/70 dark:bg-slate-900/80 border-t border-slate-100 dark:border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
             <Typography className="text-[13px] text-slate-500 dark:text-slate-400 text-center sm:text-left">
               {!canEdit
-                ? 'Read-only mode (Save disabled)'
+                ? t('account.readOnlyMode', 'Read-only mode (Save disabled)')
                 : Object.keys(dirtyFields).length > 0
-                ? 'Unsaved changes detected'
-                : 'Configure settings and click Save Settings to apply.'}
+                ? t('account.unsavedChanges', 'Unsaved changes detected')
+                : t('generalSetting.configureAndSaveHint', 'Configure settings and click Save Settings to apply.')}
             </Typography>
 
             <Button
@@ -539,7 +541,7 @@ function GeneralSetting({
                 </FuseSvgIcon>
               }
             >
-              {!canEdit ? 'Save Disabled' : isPending ? 'Saving changes...' : 'Save Settings'}
+              {!canEdit ? t('generalSetting.saveDisabled', 'Save Disabled') : isPending ? t('account.savingChanges', 'Saving changes...') : t('generalSetting.saveSettings', 'Save Settings')}
             </Button>
           </div>
         </form>

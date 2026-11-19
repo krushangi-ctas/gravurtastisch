@@ -39,6 +39,7 @@ import {
 	subMonths
 } from 'date-fns';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import { type MRT_ColumnDef, type MRT_Row, type MRT_SortingState } from 'material-react-table';
 import DataTable from 'src/components/data-table/DataTable';
 import { useAutoScrollRef } from 'src/hooks/useAutoScrollRef';
@@ -155,6 +156,7 @@ interface DateRangePickerProps {
 }
 
 function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProps) {
+	const { t } = useTranslation();
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 	const [tempRange, setTempRange] = useState<Record<string, Date | null>>(value);
@@ -320,11 +322,11 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 					}}
 					sx={{ textTransform: 'none', fontSize: '12px', color: 'text.secondary' }}
 				>
-					All Dates
+					{t('filter.allDates', 'All Dates')}
 				</Button>
 				<Box sx={{ display: 'flex', gap: 1 }}>
 					<Button size="small" onClick={handleCancel}>
-						Cancel
+						{t('common.cancel', 'Cancel')}
 					</Button>
 					<Button
 						size="small"
@@ -332,7 +334,7 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 						onClick={handleApply}
 						disabled={!tempRange.from}
 					>
-						Apply
+						{t('common.apply', 'Apply')}
 					</Button>
 				</Box>
 			</Box>
@@ -357,6 +359,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 		scope
 	} = usePermissions();
 	const { enqueueSnackbar } = useSnackbar();
+	const { t } = useTranslation();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 
 	const isTeamMode = variant === 'team';
@@ -1235,7 +1238,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										whiteSpace: 'nowrap'
 									}}
 								>
-									Cancelled
+									{t('user.cancelled', 'Cancelled')}
 								</Typography>
 							);
 						}
@@ -1250,7 +1253,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										whiteSpace: 'nowrap'
 									}}
 								>
-									Expired
+									{t('user.expired', 'Expired')}
 								</Typography>
 							);
 						}
@@ -1521,7 +1524,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 	};
 
 	const formatDateRange = () => {
-		if (!searchDate.from && !searchDate.to) return 'Date Range';
+		if (!searchDate.from && !searchDate.to) return t('filter.dateRange', 'Date Range');
 		if (searchDate.from && searchDate.to) {
 			if (isSameDay(searchDate.from, searchDate.to)) {
 				return format(searchDate.from, 'dd MMM yyyy');
@@ -1530,7 +1533,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 		}
 		if (searchDate.from) return format(searchDate.from, 'dd MMM yyyy');
 		if (searchDate.to) return format(searchDate.to, 'dd MMM yyyy');
-		return 'Date Range';
+		return t('filter.dateRange', 'Date Range');
 	};
 
 	const actionButtons = isSellersMode ? (
@@ -1666,7 +1669,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									<FuseSvgIcon size={15} className="text-slate-600 dark:text-slate-300">
 										heroicons-outline:sparkles
 									</FuseSvgIcon>
-									ALL PLANS
+									{t('filter.allPlans', 'ALL PLANS')}
 								</span>
 							);
 						}
@@ -1675,7 +1678,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 							.filter(Boolean);
 						const label =
 							selectedNames.length > 2
-								? `${selectedNames.length} Plans`
+								? t('filter.plansCount', { count: selectedNames.length, defaultValue: `${selectedNames.length} Plans` })
 								: selectedNames.join(', ');
 						return (
 							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs font-semibold truncate max-w-[150px]">
@@ -1714,7 +1717,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 							}}
 						/>
 						<em className="text-xs font-semibold not-italic text-slate-800 dark:text-slate-100">
-							ALL PLANS
+							{t('filter.allPlans', 'ALL PLANS')}
 						</em>
 					</MenuItem>
 					{allPlans.map((plan: any) => {
@@ -1769,7 +1772,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
 			</FuseSvgIcon>
-			<span>Add User</span>
+			<span>{isTeamMode ? t('user.addMember', 'Add Member') : t('user.addUser', 'Add User')}</span>
 		</button>
 	) : null;
 
@@ -2265,7 +2268,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										</FuseSvgIcon>
 									</div>
 									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
-										{isTeamMode ? 'Create Team Member' : 'Create Admin User'}
+										{isTeamMode ? t('user.createTeamMember', 'Create Team Member') : t('user.createAdminUser', 'Create Admin User')}
 									</h2>
 								</div>
 
@@ -2274,7 +2277,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									onClick={() => setCreateOpen(false)}
 									disabled={isCreatingUser}
 									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-									aria-label="Close"
+									aria-label={t('common.close', 'Close')}
 								>
 									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
@@ -2291,13 +2294,13 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Full Name <span className="text-red-500">*</span>
+											{t('user.fullName', 'Full Name')} <span className="text-red-500">*</span>
 										</label>
 										<TextField
 											fullWidth
 											required
 											sx={dialogInputSx}
-											placeholder="e.g., Alex Wright"
+											placeholder={t('user.fullNamePlaceholder', 'e.g., Alex Wright')}
 											value={formName}
 											onChange={(e) => {
 												setFormName(e.target.value);
@@ -2326,14 +2329,14 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Email Address <span className="text-red-500">*</span>
+											{t('user.emailAddress', 'Email Address')} <span className="text-red-500">*</span>
 										</label>
 										<TextField
 											fullWidth
 											required
 											type="email"
 											sx={dialogInputSx}
-											placeholder="e.g., alex@gravurtastisch.de"
+											placeholder={t('user.emailPlaceholder', 'e.g., alex@gravurtastisch.de')}
 											value={formEmail}
 											onChange={(e) => {
 												setFormEmail(e.target.value);
@@ -2362,12 +2365,12 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Phone Number
+											{t('user.phoneNumber', 'Phone Number')}
 										</label>
 										<TextField
 											fullWidth
 											sx={dialogInputSx}
-											placeholder="e.g., +49 151 2345001"
+											placeholder={t('user.phonePlaceholder', 'e.g., +49 151 2345001')}
 											value={formPhone}
 											onKeyDown={(e) => {
 												if (e.key === '-') {
@@ -2409,7 +2412,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									{!isSellersMode && (
 										<div>
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-												Role <span className="text-red-500">*</span>
+												{t('user.role', 'Role')} <span className="text-red-500">*</span>
 											</label>
 											<FormControl fullWidth size="small" required error={!!createErrors.roleId} sx={dialogInputSx}>
 												<Select
@@ -2421,7 +2424,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 													displayEmpty
 													renderValue={(selected) => {
 														if (!selected) {
-															return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+															return <span className="text-gray-400 text-xs sm:text-sm">{t('user.selectRole', 'Select a role...')}</span>;
 														}
 														const roleObj = roles.find((r) => (r.id || r._id) === selected);
 														return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
@@ -2480,7 +2483,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										textTransform: 'capitalize'
 									}}
 								>
-									Cancel
+									{t('common.cancel', 'Cancel')}
 								</Button>
 								<Button
 									variant="contained"
@@ -2501,7 +2504,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										py: 1
 									}}
 								>
-									{isCreatingUser ? 'Creating...' : 'Create User'}
+									{isCreatingUser ? t('user.creating', 'Creating...') : t('user.createUser', 'Create User')}
 								</Button>
 							</DialogActions>
 						</div>
@@ -2534,7 +2537,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										</FuseSvgIcon>
 									</div>
 									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
-										Edit User
+										{t('user.editUser', 'Edit User')}
 									</h2>
 								</div>
 
@@ -2543,7 +2546,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									onClick={() => setEditOpen(false)}
 									disabled={isUpdatingUser}
 									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-									aria-label="Close"
+									aria-label={t('common.close', 'Close')}
 								>
 									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
 								</IconButton>
@@ -2560,13 +2563,13 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Full Name <span className="text-red-500">*</span>
+											{t('user.fullName', 'Full Name')} <span className="text-red-500">*</span>
 										</label>
 										<TextField
 											fullWidth
 											required
 											sx={dialogInputSx}
-											placeholder="Full Name"
+											placeholder={t('user.fullName', 'Full Name')}
 											value={formName}
 											onChange={(e) => {
 												setFormName(e.target.value);
@@ -2591,12 +2594,12 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Phone Number
+											{t('user.phoneNumber', 'Phone Number')}
 										</label>
 										<TextField
 											fullWidth
 											sx={dialogInputSx}
-											placeholder="Phone Number"
+											placeholder={t('user.phoneNumber', 'Phone Number')}
 											value={formPhone}
 											onKeyDown={(e) => {
 												if (e.key === '-') {
@@ -2643,7 +2646,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									{!isSellersMode && (
 										<div>
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-												Role
+												{t('user.role', 'Role')}
 											</label>
 											<FormControl fullWidth size="small" sx={dialogInputSx}>
 												<Select
@@ -2655,7 +2658,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 													displayEmpty
 													renderValue={(selected) => {
 														if (!selected) {
-															return <span className="text-gray-400 text-xs sm:text-sm">Select a role...</span>;
+															return <span className="text-gray-400 text-xs sm:text-sm">{t('user.selectRole', 'Select a role...')}</span>;
 														}
 														const roleObj = roles.find((r) => (r.id || r._id) === selected);
 														return <span className="text-gray-800 text-xs sm:text-sm font-semibold">{roleObj?.role_name || selected}</span>;
@@ -2685,11 +2688,11 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										<>
 											<div>
 												<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-													Brand Name
+													{t('user.brandName', 'Brand Name')}
 												</label>
 												<TextField
 													sx={dialogInputSx}
-													placeholder="Brand Name"
+													placeholder={t('user.brandName', 'Brand Name')}
 													value={editBusinessName}
 													onChange={(e) => {
 														setEditBusinessName(e.target.value);
@@ -2717,7 +2720,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 												<>
 													<div>
 														<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-															Maximum Active Marketplaces
+															{t('user.maxMarketplaces', 'Maximum Active Marketplaces')}
 														</label>
 														<TextField
 															type="number"
@@ -2759,7 +2762,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 													<div>
 														<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-															Monthly Review Request Quota
+															{t('user.monthlyQuota', 'Monthly Review Request Quota')}
 														</label>
 														<TextField
 															type="number"
@@ -2825,7 +2828,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										textTransform: 'capitalize'
 									}}
 								>
-									Cancel
+									{t('common.cancel', 'Cancel')}
 								</Button>
 								<Button
 									variant="contained"
@@ -2846,7 +2849,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 										py: 1
 									}}
 								>
-									{isUpdatingUser ? 'Saving...' : 'Save Changes'}
+									{isUpdatingUser ? t('user.saving', 'Saving...') : t('user.saveChanges', 'Save Changes')}
 								</Button>
 							</DialogActions>
 						</div>
@@ -2880,26 +2883,31 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								</div>
 								<div className="flex flex-col">
 									<h3 className="text-base font-bold text-slate-800 m-0">
-										{confirmState.type === 'delete' ? 'Delete User' : confirmState.type === 'cancelPlan' ? 'Cancel Subscription Plan' : 'Change User Status'}
+										{confirmState.type === 'delete'
+											? t('confirm.deleteUserTitle', 'Delete User')
+											: confirmState.type === 'cancelPlan'
+												? t('confirm.cancelPlanTitle', 'Cancel Subscription Plan')
+												: t('confirm.changeUserStatusTitle', 'Change User Status')}
 									</h3>
 									<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
 										{confirmState.type === 'delete' ? (
 											<>
-												Are you sure you want to delete{' '}
-												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong>? This action cannot be undone.
+												{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
+												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong>? {t('confirm.thisActionCannotBeUndone', 'This action cannot be undone.')}
 											</>
 										) : confirmState.type === 'cancelPlan' ? (
 											<>
-												Are you sure you want to cancel the subscription plan for{' '}
-												<strong className="text-slate-800 font-semibold">{confirmState.user?.name || confirmState.user?.email}</strong>?
-												The seller will no longer be able to use marketplaces or send review requests until a new plan is assigned.
+												{t('confirm.cancelPlanPrompt', 'Are you sure you want to cancel the subscription plan for')}{' '}
+												<strong className="text-slate-800 font-semibold">{confirmState.user?.name || confirmState.user?.email}</strong>?{' '}
+												{t('confirm.cancelPlanWarning', 'The seller will no longer be able to use marketplaces or send review requests until a new plan is assigned.')}
 											</>
 										) : (
 											<>
-												Are you sure you want to change status of{' '}
-												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong> to{' '}
+												{t('confirm.changeStatusPrompt', 'Are you sure you want to change status of')}{' '}
+												<strong className="text-slate-800 font-semibold">{confirmState.user?.name}</strong>{' '}
+												{t('confirm.to', 'to')}{' '}
 												<strong className="text-slate-800 font-semibold">
-													{confirmState.targetStatus === 1 ? 'Active' : 'Inactive'}
+													{confirmState.targetStatus === 1 ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
 												</strong>
 												?
 											</>
@@ -2923,7 +2931,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 								disabled={isActionLoading}
 								className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
 							>
-								Cancel
+								{t('confirm.cancel', 'Cancel')}
 							</button>
 							<button
 								type="button"
@@ -2935,7 +2943,13 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									}`}
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}
-								<span>{confirmState.type === 'delete' ? 'Delete' : confirmState.type === 'cancelPlan' ? 'Cancel Plan' : 'Change Status'}</span>
+								<span>
+									{confirmState.type === 'delete'
+										? t('confirm.delete', 'Delete')
+										: confirmState.type === 'cancelPlan'
+											? t('confirm.cancelPlan', 'Cancel Plan')
+											: t('confirm.changeStatus', 'Change Status')}
+								</span>
 							</button>
 						</div>
 					</Dialog>

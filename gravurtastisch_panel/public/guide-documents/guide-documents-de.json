@@ -1,0 +1,530 @@
+{
+  "modules": {
+    "6afb0a454fafc2ec57b6579a": {
+      "id": "6afb0a454fafc2ec57b6579a",
+      "title": "Benutzerverwaltung",
+      "moduleName": "Benutzerverwaltung",
+      "description": "Verwaltung von Administrator-Benutzern, Systembereichen und Rollen.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb0a6a4fafc2ec57b657a2": {
+      "id": "6afb0a6a4fafc2ec57b657a2",
+      "title": "Benutzer-Modul",
+      "moduleName": "Benutzer-Modul",
+      "description": "Verwalten von Administrator-Konten, Rollenzuweisungen und Benutzerstatus.",
+      "parentId": "6afb0a454fafc2ec57b6579a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb0bda4fafc2ec57b659fd": {
+      "id": "6afb0bda4fafc2ec57b659fd",
+      "title": "Bereichs-Modul",
+      "moduleName": "Bereichs-Modul",
+      "description": "Dynamische Systembereichsdefinitionen und Plattformzugriffssteuerung.",
+      "parentId": "6afb0a454fafc2ec57b6579a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb0bfc4fafc2ec57b65a23": {
+      "id": "6afb0bfc4fafc2ec57b65a23",
+      "title": "Rollen-Modul",
+      "moduleName": "Rollen-Modul",
+      "description": "Rollendefinitionen und granulare Bereichsberechtigungen.",
+      "parentId": "6afb0a454fafc2ec57b6579a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1206b7343e00853ba37a": {
+      "id": "6afb1206b7343e00853ba37a",
+      "title": "Verkäufer",
+      "moduleName": "Verkäufer",
+      "description": "Verkäuferverwaltung, Händlerprofile und Kontingentlimits.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1212b7343e00853ba386": {
+      "id": "6afb1212b7343e00853ba386",
+      "title": "Verkäufer-Modul",
+      "moduleName": "Verkäufer-Modul",
+      "description": "Verkäuferkonten, Händlershops und Abonnements überprüfen.",
+      "parentId": "6afb1206b7343e00853ba37a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1336b7343e00853ba4f5": {
+      "id": "6afb1336b7343e00853ba4f5",
+      "title": "Kundensupport",
+      "moduleName": "Kundensupport",
+      "description": "Kundenanfragen, Support-Tickets und Lösungsverwaltung.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb134eb7343e00853ba4fd": {
+      "id": "6afb134eb7343e00853ba4fd",
+      "title": "Support-Modul",
+      "moduleName": "Support-Modul",
+      "description": "Bearbeitung von Support-Anfragen, Ticket-Status und Kundenkommunikation.",
+      "parentId": "6afb1336b7343e00853ba4f5",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1401b7343e00853ba54a": {
+      "id": "6afb1401b7343e00853ba54a",
+      "title": "Blogs",
+      "moduleName": "Blogs",
+      "description": "Erstellung und Veröffentlichung von Artikeln und Blogbeiträgen.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb140eb7343e00853ba552": {
+      "id": "6afb140eb7343e00853ba552",
+      "title": "Blog-Verwaltung",
+      "moduleName": "Blog-Verwaltung",
+      "description": "Erstellen, Formatieren, Vorschau und Löschen von Blogartikeln.",
+      "parentId": "6afb1401b7343e00853ba54a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb153cb7343e00853ba5bb": {
+      "id": "6afb153cb7343e00853ba5bb",
+      "title": "Abonnementpläne",
+      "moduleName": "Abonnementpläne",
+      "description": "Kommerzielle Abonnementstufen, Preisgestaltung und Limits.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1558b7343e00853ba5c7": {
+      "id": "6afb1558b7343e00853ba5c7",
+      "title": "Pläne & Abonnements",
+      "moduleName": "Pläne & Abonnements",
+      "description": "Abonnementstufen, Marktplatzkontingente und Überprüfungslimits.",
+      "parentId": "6afb153cb7343e00853ba5bb",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb164cb7343e00853ba638": {
+      "id": "6afb164cb7343e00853ba638",
+      "title": "Einstellungen",
+      "moduleName": "Einstellungen",
+      "description": "Profilkontoeinstellungen und globale Website-Konfiguration.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb165eb7343e00853ba644": {
+      "id": "6afb165eb7343e00853ba644",
+      "title": "Profil & Administratorkonto",
+      "moduleName": "Profil & Administratorkonto",
+      "description": "Persönliche Daten, Kontaktinformationen, Profilbild und Sicherheit.",
+      "parentId": "6afb164cb7343e00853ba638",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb16deb7343e00853ba67d": {
+      "id": "6afb16deb7343e00853ba67d",
+      "title": "Website-Konfiguration",
+      "moduleName": "Website-Konfiguration",
+      "description": "Unternehmensidentität, Markenauftritt, Website-URL und Copyright.",
+      "parentId": "6afb164cb7343e00853ba638",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afc2328c157f7fe3413b321": {
+      "id": "6afc2328c157f7fe3413b321",
+      "title": "Systemprotokolle",
+      "moduleName": "Systemprotokolle",
+      "description": "Revisionssichere Protokollierung aller Aktivitäten und Benutzeraktionen.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afc2350c157f7fe3413b32c": {
+      "id": "6afc2350c157f7fe3413b32c",
+      "title": "Systemprotokolle",
+      "moduleName": "Systemprotokolle",
+      "description": "Systemereignisse, Audit-Trails, Authentifizierungsverlauf und IP-Tracking.",
+      "parentId": "6afc2328c157f7fe3413b321",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afc3d32c157f7fe3413b665": {
+      "id": "6afc3d32c157f7fe3413b665",
+      "title": "Teamverwaltung",
+      "moduleName": "Teamverwaltung",
+      "description": "Interne Teammitglieder, Mitarbeiterrollen und Zugriffsberechtigungen.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc3d3ec157f7fe3413b66d": {
+      "id": "6afc3d3ec157f7fe3413b66d",
+      "title": "Teammitglieder",
+      "moduleName": "Teammitglieder",
+      "description": "Mitarbeiter hinzufügen, Kontaktdaten und Rollenzuweisung.",
+      "parentId": "6afc3d32c157f7fe3413b665",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4765f3debc00853645dc": {
+      "id": "6afc4765f3debc00853645dc",
+      "title": "Bereichsliste",
+      "moduleName": "Bereichsliste",
+      "description": "Übersicht über verfügbare Händlerbereiche und Zugriffsebenen.",
+      "parentId": "6afc3d32c157f7fe3413b665",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4812f3debc008536461d": {
+      "id": "6afc4812f3debc008536461d",
+      "title": "Rollen & Berechtigungen",
+      "moduleName": "Rollen & Berechtigungen",
+      "description": "Benutzerdefinierte Mitarbeiterrollen und Berechtigungsmatrix definieren.",
+      "parentId": "6afc3d32c157f7fe3413b665",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4b93f3debc008536469d": {
+      "id": "6afc4b93f3debc008536469d",
+      "title": "Bestellungs-Modul",
+      "moduleName": "Bestellungs-Modul",
+      "description": "Kundenbestellungen, Erfüllungsstatus und Bewertungsanfragen.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4bbaf3debc00853646a9": {
+      "id": "6afc4bbaf3debc00853646a9",
+      "title": "Bestellungen",
+      "moduleName": "Bestellungen",
+      "description": "Bestellübersicht, Sendungsverfolgung und Bewertungsanforderung.",
+      "parentId": "6afc4b93f3debc008536469d",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc50c5f3debc0085364704": {
+      "id": "6afc50c5f3debc0085364704",
+      "title": "Amazon-Autorisierung",
+      "moduleName": "Amazon-Autorisierung",
+      "description": "Verbindung und Autorisierung von Amazon Seller Central-Konten.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc50fbf3debc008536471a": {
+      "id": "6afc50fbf3debc008536471a",
+      "title": "Amazon-Autorisierung",
+      "moduleName": "Amazon-Autorisierung",
+      "description": "Schritt-für-Schritt-Einrichtung der Amazon SP-API-Zugangsdaten und Marktplätze.",
+      "parentId": "6afc50c5f3debc0085364704",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc5437f3debc00853647dd": {
+      "id": "6afc5437f3debc00853647dd",
+      "title": "Einstellungen",
+      "moduleName": "Einstellungen",
+      "description": "Verkäufer-Kontoeinstellungen und allgemeine Automatisierung.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc5445f3debc00853647e9": {
+      "id": "6afc5445f3debc00853647e9",
+      "title": "Kontoeinstellungen",
+      "moduleName": "Kontoeinstellungen",
+      "description": "Verkäuferprofil, Markenname, Kontaktdaten und Profilbild.",
+      "parentId": "6afc5437f3debc00853647dd",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc5456f3debc00853647f5": {
+      "id": "6afc5456f3debc00853647f5",
+      "title": "Allgemeine Einstellungen",
+      "moduleName": "Allgemeine Einstellungen",
+      "description": "Automatisierungsregeln, Erfüllungskanäle (FBA/FBM) und Versandzeitpläne.",
+      "parentId": "6afc5437f3debc00853647dd",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc55a0f3debc008536485e": {
+      "id": "6afc55a0f3debc008536485e",
+      "title": "Systemprotokolle",
+      "moduleName": "Systemprotokolle",
+      "description": "Aktivitätsüberwachung, Audit-Trails und Vorgangsdetails für Verkäufer.",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc55acf3debc0085364869": {
+      "id": "6afc55acf3debc0085364869",
+      "title": "Systemprotokolle",
+      "moduleName": "Systemprotokolle",
+      "description": "Verkäufer-Audit-Trail, Ereignisverlauf und Inspektionsdialog.",
+      "parentId": "6afc55a0f3debc008536485e",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    }
+  },
+  "steps": {
+    "6afb0ab14fafc2ec57b657be": {
+      "id": "6afb0ab14fafc2ec57b657be",
+      "guideModuleId": "6afb0a6a4fafc2ec57b657a2",
+      "stepOrder": 1,
+      "title": "Benutzerdaten ausfüllen und Rolle zuweisen",
+      "description": "<p>Um ein neues Benutzerkonto im System zu erstellen, füllen Sie die erforderlichen Angaben im Dialog \"Administrator-Benutzer erstellen\" aus:</p><p>1. Vollständiger Name:</p><p>• Geben Sie den vollständigen Namen des Benutzers ein.</p><p>• Dies ist ein Pflichtfeld.</p><p>2. E-Mail-Adresse:</p><p>• Geben Sie eine gültige geschäftliche oder persönliche E-Mail-Adresse ein.</p><p>• Diese E-Mail dient als primäre Anmeldeinformation und zum Empfang von Systembenachrichtigungen.</p><p>• Dies ist ein Pflichtfeld.</p><p>3. Telefonnummer (Optional):</p><p>• Geben Sie die Telefonnummer einschließlich Ländervorwahl ein.</p><p>4. Rolle:</p><p>• Wählen Sie eine passende Rolle aus dem Dropdown-Menü (z. B. Support, Management, Mitarbeiter).</p><p>• Die zugewiesene Rolle bestimmt, auf welche Bereiche und Aktionen (Anzeigen, Erstellen, Aktualisieren, Löschen) der Benutzer zugreifen darf.</p><p>• Dies ist ein Pflichtfeld.</p><p>5. Benutzer speichern:</p><p>• Nachdem Sie alle Pflichtfelder ausgefüllt haben, klicken Sie auf die Schaltfläche \"Benutzer erstellen\", um das neue Konto zu speichern.</p><p>• Klicken Sie auf \"Abbrechen\", um die Änderungen ohne Speichern zu verwerfen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911503613-978553334.png"
+    },
+    "6afb0be44fafc2ec57b65a09": {
+      "id": "6afb0be44fafc2ec57b65a09",
+      "guideModuleId": "6afb0bda4fafc2ec57b659fd",
+      "stepOrder": 1,
+      "title": "Bereichsübersicht & Systemzugriffskontrollen",
+      "description": "<p>Die Bereichskonfigurationsseite ermöglicht es Administratoren, dynamische Systembereiche, Betriebsberechtigungen und plattformweiten Funktionszugriff einzusehen und zu verwalten. Nachfolgend finden Sie eine detaillierte Erläuterung der Funktionen auf dieser Seite:</p><p>1. Navigationstabs:</p><p>Wechseln Sie nahtlos zwischen den Reitern \"Benutzer\", \"Bereich\" und \"Rolle\" in der oberen Navigationsleiste, um die vollständige rollenbasierte Zugriffskontrolle (RBAC) zu verwalten.</p><p>2. Bereichsliste & vordefinierte Module:</p><p>Zeigen Sie alle verfügbaren Systembereiche an (z. B. Website-Konfiguration, Administratorkonto, Leitfaden-Dokument, Einstellungen, Pläne, Blog-Verwaltung, Kundensupport, Rollen, Verkäufer usw.), die zentrale Anwendungsmodule darstellen.</p><p>3. Bereiche durchsuchen:</p><p>Verwenden Sie das obere Suchfeld, um einen bestimmten Systembereich schnell anhand seines Namens in Echtzeit zu finden.</p><p>4. Status-Umschalter (Aktiv / Inaktiv):</p><p>Verwenden Sie den Kippschalter in der Statusspalte, um einen Bereich plattformweit zu aktivieren (Aktiv) oder zu deaktivieren (Inaktiv). Deaktivierte Bereiche schränken den Zugriff für zugehörige Rollen und Benutzer ein.</p><p>5. Tabellensortierung:</p><p>Klicken Sie auf eine Tabellenspaltenüberschrift mit Sortiersymbolen (Datum, Bereichsname oder Status), um Datensätze aufsteigend oder absteigend alphabetisch bzw. chronologisch zu ordnen.</p><p>6. Symbolleisten-Aktionen (oben rechts):</p><p>- Aktualisieren: Lädt die Bereichsliste mit den neuesten Daten vom Server neu.</p><p>- Filter & Spalten: Passen Sie die Tabellendichte an und blenden Sie bestimmte Spalten nach Ihren Wünschen ein oder aus.</p><p>7. Paginierung:</p><p>Wählen Sie die Anzahl der angezeigten Bereiche pro Seite (z. B. 100 Einträge pro Seite) und navigieren Sie über die Seitenschaltflächen unten rechts durch die Seiten.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911651616-225493214.png"
+    },
+    "6afb0c084fafc2ec57b65a2f": {
+      "id": "6afb0c084fafc2ec57b65a2f",
+      "guideModuleId": "6afb0bfc4fafc2ec57b65a23",
+      "stepOrder": 1,
+      "title": "Neue Rolle erstellen & Bereichsberechtigungen konfigurieren",
+      "description": "<p>Der Dialog \"Rolle erstellen\" ermöglicht es Administratoren, benutzerdefinierte administrative Rollen zu definieren und granulare, bereichsbezogene Zugriffsberechtigungen festzulegen. Befolgen Sie die folgenden Schritte, um eine neue Rolle zu konfigurieren:</p><p>1. Rollenname (Erforderlich):</p><p>Geben Sie einen klaren und beschreibenden Namen für die Rolle ein (z. B. \"Produktionsleiter\", \"Support-Spezialist\" oder \"Content-Moderator\"). Dieses Feld ist obligatorisch.</p><p>2. Rollenbeschreibung (Optional):</p><p>Geben Sie eine kurze Zusammenfassung ein, die den Verantwortungsbereich, die Befugnisse oder die Abteilung erläutert, die dieser Rolle zugeordnet sind.</p><p>3. Matrix für Bereichsberechtigungen:</p><p>Konfigurieren Sie granulare Betriebsberechtigungen für jedes Modul auf der gesamten Plattform:</p><p>- BEREICH: Listet alle Systembereiche auf (Verkäufer, Administrator-Benutzer, Rollen, Bereiche, Kundensupport, Blog-Verwaltung, Pläne, Einstellungen, Administratorkonto, Leitfaden-Dokument, Website-Konfiguration).</p><p>- ALLE: Aktivieren Sie dieses Kontrollkästchen, um sofort vollen Zugriff (Anzeigen, Erstellen, Aktualisieren, Löschen) auf dieses Modul zu gewähren.</p><p>- ANZEIGEN: Erlaubt Benutzern mit dieser Rolle, Datensätze in diesem Bereich zu durchsuchen und anzusehen.</p><p>- ERSTELLEN: Gewährt die Berechtigung, neue Datensätze oder Dokumente hinzuzufügen.</p><p>- AKTUALISIEREN: Gewährt die Berechtigung, vorhandene Datensätze und Status zu bearbeiten oder zu ändern.</p><p>- LÖSCHEN: Gewährt die Berechtigung, Datensätze dauerhaft zu löschen.</p><p>4. Speichern oder Abbrechen:</p><p>- Klicken Sie unten rechts auf die Schaltfläche \"Rolle erstellen\", um die neue Rolle und ihre Berechtigungsmatrix zu speichern.</p><p>- Klicken Sie auf \"Abbrechen\" oder das Schließen-Symbol (X), um Änderungen zu verwerfen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911761342-624258960.png"
+    },
+    "6afb1281b7343e00853ba404": {
+      "id": "6afb1281b7343e00853ba404",
+      "guideModuleId": "6afb1212b7343e00853ba386",
+      "stepOrder": 1,
+      "title": "Verkäuferverwaltung: Shop-Profile, Abonnements & Kontoverwaltung",
+      "description": "<p>Die Verkäufer-Verwaltungstabelle ermöglicht es Administratoren, alle registrierten Händlerkonten zu überwachen, Shop-Profile einzusehen, Abonnementpläne und Kontingentlimits zu verwalten sowie Aktionen auf Kontoebene durchzuführen. Nachfolgend finden Sie eine detaillierte Anleitung zu allen Bedienelementen auf dieser Seite:</p><p>1. Such- & Datumsbereichsfilter:</p><p>• Suchleiste: Suchen Sie schnell nach Händlernamen, E-Mail-Adressen, Handynummern oder Markennamen in Echtzeit.</p><p>• Datumsbereichsfilter: Filtern Sie die Händlerliste nach Registrierungsdatum oder benutzerdefinierten Zeiträumen.</p><p>• Plan-Filter: Filtern Sie Händler nach ihrer aktuellen Abonnementstufe (z. B. Starter-Plan, Bronze-Plan, Gold-Plan).</p><p>2. Händlerdatentabelle:</p><p>• DATUM: Registrierungszeitstempel des Händlers.</p><p>• NAME & E-MAIL: Vollständiger Name und E-Mail-Adresse des Händlers mit praktischer Kopierfunktion per Klick.</p><p>• MOBIL: Registrierte geschäftliche Telefonnummer.</p><p>• MARKE: Verknüpfter Händlermarken- oder Geschäftsname.</p><p>• PLAN: Aktuell aktiver Abonnementplan.</p><p>• ABLAUFDATUM: Gültigkeitsdatum des Abonnements oder Status (z. B. Gekündigt, Abgelaufen).</p><p>• MÄRKTE: Anzahl der verbundenen Amazon-Marktplatzregionen.</p><p>• KONTINGENT: Zugewiesenes monatliches Limit für Bewertungsanfragen.</p><p>3. Aktionen:</p><p>• Status-Kippschalter: Händlerkonto aktivieren oder deaktivieren.</p><p>• Bearbeiten & Löschen: Händlerdetails anpassen oder bei Bedarf das Konto entfernen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794839084629-690416300.png"
+    },
+    "6afb13a5b7343e00853ba529": {
+      "id": "6afb13a5b7343e00853ba529",
+      "guideModuleId": "6afb134eb7343e00853ba4fd",
+      "stepOrder": 1,
+      "title": "Kundensupport: Anfragen, Ticket-Lösung & Statusverwaltung",
+      "description": "<p>Das Support-Verwaltungsmodul ermöglicht es Administratoren, Kunden- und Verkäuferanfragen effizient einzusehen, zu verfolgen, zu priorisieren und zu lösen. Nachfolgend finden Sie eine detaillierte Erläuterung aller Funktionen:</p><p>1. Such- & Filterleiste:</p><p>• Suchen Sie in Echtzeit nach Namen, E-Mail-Adresse oder Ticketnachricht.</p><p>• Status-Filter: Filtern Sie nach Ausstehend (Pending) oder Gelöst (Resolved).</p><p>• Aktualisieren-Schaltfläche: Lädt neu eingegangene Anfragen direkt vom Server neu.</p><p>2. Support-Anfragetabelle:</p><p>• NAME: Zeigt die Initialen und den vollständigen Namen des Absenders.</p><p>• E-MAIL: E-Mail-Adresse des Kunden mit Ein-Klick-Kopierfunktion für schnelle Antworten.</p><p>• NACHRICHT: Die vollständige Frage, Problembeschreibung oder Support-Anfrage des Kunden/Verkäufers.</p><p>• STATUS: Visuelle Statusanzeige (Ausstehend = orange / Gelöst = grün).</p><p>• EINGEREICHT AM: Genaue Uhrzeit und Datum der Ticketerstellung.</p><p>3. Aktionen:</p><p>• Schnellumschaltung: Klicken Sie auf das Uhren- bzw. Häkchen-Symbol, um den Status direkt zwischen Ausstehend und Gelöst umzuschalten, sobald die Anfrage beantwortet wurde.</p><p>4. Tabellen-Paginierung:</p><p>Wählen Sie aus, wie viele Anfragen pro Seite angezeigt werden sollen, und navigieren Sie bequem durch die Seiten.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910396804-803355928.png"
+    },
+    "6afb143db7343e00853ba566": {
+      "id": "6afb143db7343e00853ba566",
+      "guideModuleId": "6afb140eb7343e00853ba552",
+      "stepOrder": 1,
+      "title": "Blogartikel erstellen & veröffentlichen: Überschrift, Inhalt, Titelbild & Status",
+      "description": "<p>Die Seite \"Blog hinzufügen\" ermöglicht es Redakteuren und Administratoren, Artikel für die Marktplatz-Website zu verfassen, zu formatieren und zu veröffentlichen. Nachfolgend finden Sie eine detaillierte Anleitung zu den einzelnen Abschnitten:</p><p>1. Artikelüberschrift & Übersicht:</p><p>- Blog-Titel (Erforderlich): Geben Sie eine ansprechende, SEO-optimierte Überschrift ein (bis zu 100 Zeichen), z. B. \"So automatisieren Sie Amazon-Produktbewertungsanfragen im Jahr 2026\".</p><p>- Kurzbeschreibung / Teaser: Verfassen Sie eine aussagekräftige 2-3-sätzige Zusammenfassung (bis zu 250 Zeichen). Dieser Text erscheint bei Social-Media-Freigaben und auf Blog-Übersichtskarten.</p><p>2. Vollständiger Artikelinhalt (Rich-Text-Editor):</p><p>- Verfassen Sie den Haupttext des Artikels mithilfe der Formatierungssymbolleiste.</p><p>- Nutzen Sie Überschriften (H1, H2, H3), Fett, Kursiv, Unterstrichen, Aufzählungslisten und fügen Sie Medien oder Bilder ein, um den Leitfaden ansprechend zu gestalten.</p><p>3. Titelbild & Mediengalerie:</p><p>- Klicken Sie auf \"+ Titelbild hinzufügen\", um ein hochauflösendes Bannerfoto (JPG, PNG oder WEBP) hochzuladen.</p><p>- Das Hauptbild wird als zentrales Titelbanner auf der Artikelkarte und der Blog-Übersichtsseite angezeigt.</p><p>4. Veröffentlichungsstatus & Metadaten:</p><p>- Status: Zeigt den redaktionellen Zustand des Artikels an (Standard: \"Entwurf\").</p><p>- Gesamte Zeichenanzahl: Verfolgt Länge und Wortfortschritt Ihrer Inhalte in Echtzeit.</p><p>- Zielgruppe: Bestimmt das anvisierte Lesersegment (z. B. \"Amazon-Verkäufer\").</p><p>5. Veröffentlichen oder Abbrechen:</p><p>- Klicken Sie unten rechts auf \"Artikel veröffentlichen\", um den Beitrag zu speichern und live auf der Website zu schalten.</p><p>- Klicken Sie auf \"Abbrechen\", um ungespeicherte Änderungen zu verwerfen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910186446-459319173.png"
+    },
+    "6afb15b2b7343e00853ba5e1": {
+      "id": "6afb15b2b7343e00853ba5e1",
+      "guideModuleId": "6afb1558b7343e00853ba5c7",
+      "stepOrder": 1,
+      "title": "Neuen Abonnementplan erstellen: Preisgestaltung, Kontingente, Laufzeit & Live-Vorschau",
+      "description": "<p>Die Seite \"Plan hinzufügen\" ermöglicht es Administratoren, neue kommerzielle Abonnementpakete mit individuellen Preisen, Abrechnungszyklen, Verkäuferkontingenten und Verfügbarkeiten zu konfigurieren. Nachfolgend finden Sie eine detaillierte Erläuterung aller Optionen:</p><p>1. Plan-Identifikation & Preisgestaltung:</p><p>- Planname (Erforderlich): Geben Sie einen unverwechselbaren Namen ein (z. B. \"Starter\", \"Pro\" oder \"Enterprise\"), der Verkäufern beim Upgrade angezeigt wird.</p><p>- Preis (€ EUR) (Erforderlich): Legen Sie die wiederkehrende Abonnementgebühr pro Abrechnungszyklus fest.</p><p>- Abrechnungshäufigkeit (Erforderlich): Wählen Sie das Verlängerungsintervall aus dem Dropdown-Menü (z. B. \"Monatlich\" oder \"Jährlich\").</p><p>2. Sichtbarkeit & Lebenszyklus:</p><p>- Status-Kippschalter (Aktiv / Inaktiv): Bestimmen Sie, ob der Plan für Händler sofort zur Auswahl und Buchung sichtbar ist.</p><p>- Ablaufdatum des Plans (Optional): Legen Sie ein Datum fest, ab dem keine neuen Verkäufer diesen Tarif mehr abonnieren können.</p><p>3. Kontingente & Betriebslimits:</p><p>- Erlaubte Marktplätze (Erforderlich): Legen Sie fest, wie viele regionale Amazon-Marktplätze ein Verkäufer mit diesem Plan maximal verbinden kann (z. B. 1, 3, 5).</p><p>- Anfragekontingent (Erforderlich): Geben Sie die maximale Anzahl an Bewertungsanfrage-E-Mails pro Abrechnungszyklus ein (z. B. 500, 2000, 5000). Kontingente werden monatlich automatisch zurückgesetzt.</p><p>4. Live-Marktplatz-Vorschau:</p><p>- Überprüfen Sie auf der rechten Seite in Echtzeit, wie Titel, Preis, Marktplatzanzahl und Kontingent im Shop für Verkäufer dargestellt werden.</p><p>5. Speichern oder Abbrechen:</p><p>- Klicken Sie unten rechts auf \"+ Plan erstellen\", um die neue Abonnementstufe zu speichern und freizugeben.</p><p>- Klicken Sie auf \"Abbrechen\", um zur Planliste zurückzukehren.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910619502-918296470.png"
+    },
+    "6afb168ab7343e00853ba658": {
+      "id": "6afb168ab7343e00853ba658",
+      "guideModuleId": "6afb165eb7343e00853ba644",
+      "stepOrder": 1,
+      "title": "Administrator-Kontoeinstellungen: Profilbild, persönliche Angaben & Sicherheit",
+      "description": "<p>Der Bereich \"Kontoeinstellungen\" ermöglicht es Administratoren, ihre persönliche Profilidentität, Kontaktinformationen, das Profilbild sowie Kontosicherheitseinstellungen zu verwalten. Nachfolgend finden Sie eine detaillierte Erläuterung aller Einstellungen:</p><p>1. Navigationstabs (Einstellungsmenü):</p><p>- Konto: Aktiver Tab zur Aktualisierung administrativer Anmeldedaten und Profilangaben.</p><p>- Website-Konfiguration: Plattformweite Betriebseinstellungen, Markenauftritt und globale Regeln verwalten.</p><p>2. Profilbild & Avatar:</p><p>- Avatar-Vorschau: Zeigt Ihr aktuelles Profilbild oder die Kontoinitialen (z. B. \"G\").</p><p>- Bild hochladen: Klicken Sie hier, um ein hochauflösendes Bild hochzuladen (JPG, PNG oder WEBP, max. 5 MB). Ihr Avatar wird in der oberen Navigation, in Protokollen und Mitteilungen angezeigt.</p><p>- Entfernen: Benutzerdefiniertes Bild löschen und zu den Standardinitialen zurückkehren.</p><p>3. Formular für persönliche Angaben:</p><p>- Vollständiger Name (Erforderlich): Geben Sie den vollständigen Namen des Administrators oder Mitarbeiters ein.</p><p>- Kontaktnummer (Erforderlich): Geben Sie eine aktive Telefonnummer für Benachrichtigungen und Sicherheitsprüfungen an.</p><p>- E-Mail-Adresse (Primärer Login): Zeigt die registrierte E-Mail-Adresse an. Dieses Feld ist schreibgeschützt, da es fest mit Ihrer Systemauthentifizierung verknüpft ist.</p><p>4. Sicherheits- & Datenschutzhinweis:</p><p>- Bestätigt, dass alle administrativen Daten nach modernen Unternehmensstandards verschlüsselt und sicher aufbewahrt werden.</p><p>5. Änderungen speichern:</p><p>- Überprüfen Sie die Statusanzeige (\"Alle Profildetails sind aktuell\").</p><p>- Klicken Sie unten rechts auf \"Änderungen speichern\", um alle aktualisierten Details dauerhaft zu übernehmen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911098321-354918129.png"
+    },
+    "6afb1702b7343e00853ba690": {
+      "id": "6afb1702b7343e00853ba690",
+      "guideModuleId": "6afb16deb7343e00853ba67d",
+      "stepOrder": 1,
+      "title": "Website-Konfiguration: Unternehmensidentität, Markenauftritt, Website-URL & Copyright",
+      "description": "<p>Der Bereich \"Website-Konfiguration\" ermöglicht es Administratoren, das globale Branding der Plattform, die Unternehmensidentität, die offizielle Website-Domain, Meta-Beschreibungen und rechtliche Hinweise anzupassen. Nachfolgend finden Sie eine Übersicht über den Tab \"Unternehmensdetails\":</p><p>1. Navigationstabs der Website-Konfiguration:</p><p>- Unternehmensdetails: Offiziellen Markennamen, Website-URL, Slogan und Unternehmensbeschreibungen einstellen.</p><p>- Kontakt & Standort: Öffentliche Support-E-Mails, Telefonnummern und Büroanschrift verwalten.</p><p>- Social-Media-Links: Offizielle Profile (z. B. LinkedIn, Facebook, Instagram, YouTube) für den Website-Footer konfigurieren.</p><p>2. Formular Unternehmensdetails:</p><p>- Firmenname (Erforderlich): Geben Sie den offiziellen Geschäftsnamen ein (z. B. \"Gravurtastisch\"). Dieser Name wird in E-Mail-Vorlagen, Rechnungen und Webseiten-Headern verwendet.</p><p>- Website-URL: Geben Sie die primäre Domainadresse des Live-Shops ein.</p><p>- Slogan / Motto: Eine kurze Zusammenfassung Ihres Leistungsversprechens (z. B. \"Automatisiertes Amazon Feedback- & Bewertungsmanagement\").</p><p>- Über uns / Beschreibung: Umfassende Übersicht über den Wert und die Funktionen der Plattform für SEO-Meta-Tags und öffentliche Unternehmensseiten.</p><p>- Copyright-Text: Rechtlicher Hinweis im globalen Website-Footer (z. B. \"© 2026 Gravurtastisch. Alle Rechte vorbehalten.\").</p><p>3. Aktionen & Status:</p><p>- Statusanzeige: Zeigt an, ob die Einstellungen synchronisiert sind (\"Alle Einstellungen sind aktuell und live\").</p><p>- Änderungen verwerfen: Nicht gespeicherte Änderungen auf die letzte Konfiguration zurücksetzen.</p><p>- Konfiguration speichern: Klicken Sie unten rechts auf \"Konfiguration speichern\", um die Aktualisierungen live auf der gesamten Website zu aktivieren.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911077435-726374906.png"
+    },
+    "6afc23a9c157f7fe3413b344": {
+      "id": "6afc23a9c157f7fe3413b344",
+      "guideModuleId": "6afc2350c157f7fe3413b32c",
+      "stepOrder": 1,
+      "title": "Systemprotokolle: Benutzeraktivitäten, Vorgänge, IP-Tracking & Ereignisverlauf",
+      "description": "<p>Die Systemprotokoll-Oberfläche bietet einen vollständigen, manipulationssicheren Prüfpfad aller Plattformaktivitäten, administrativen Vorgänge, Authentifizierungsereignisse und Datenänderungen. Administratoren können Sicherheitsereignisse in Echtzeit überwachen.</p><p>1. Filter- & Suchsteuerung:</p><p>- Suchleiste: Schnelle Suche nach Benutzername, E-Mail-Adresse, Aktionsschlüssel oder Stichwörtern.</p><p>- Benutzer-Filter: Protokolleinträge nach bestimmten Konten filtern.</p><p>- Vorgangs-Filter: Datensätze nach Aktionstyp eingrenzen (LOGIN, ERSTELLEN, AKTUALISIEREN, LÖSCHEN).</p><p>- Datumsbereichsauswahl: Zeitraum flexibel wählen, um historische Aktivitäten zu prüfen.</p><p>- Aktualisieren-Schaltfläche: Ereignisse sofort mit dem Server synchronisieren.</p><p>2. Audit-Log-Tabelle:</p><p>- Name & E-Mail: Identität des Benutzers, der die Aktion ausgelöst hat.</p><p>- Rolle: Zum Zeitpunkt des Ereignisses zugewiesene Rolle (z. B. Super Admin, Verkäufer).</p><p>- Aktion: Konkreter Vorgangsschlüssel (z. B. Benutzer erstellen, Leitfaden bearbeiten).</p><p>- IP-Adresse: Öffentliche IP-Adresse des Aufrufers zur Betrugsprävention und Sicherheitsüberwachung.</p><p>- Zeitstempel: Exakte Uhrzeit und Datum der Ausführung.</p><p>3. Inspektions-Aktion:</p><p>- Klicken Sie auf das Augen-Symbol in der Aktionsspalte, um den Dialog \"Systemprotokolldetails\" zu öffnen und die genauen Feldänderungen und Nutzlasten einzusehen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794909991346-938114082.png"
+    },
+    "6afc3da9c157f7fe3413b67d": {
+      "id": "6afc3da9c157f7fe3413b67d",
+      "guideModuleId": "6afc3d3ec157f7fe3413b66d",
+      "stepOrder": 1,
+      "title": "Teammitglied erstellen: Neues Personal hinzufügen, Kontaktdaten & Rollenzuweisung",
+      "description": "<p>Der Dialog \"Teammitglied erstellen\" ermöglicht es Administratoren und Shop-Managern, neue interne Mitarbeiter anzulegen und ihnen maßgeschneiderte Betriebsrollen zuzuweisen. Befolgen Sie diese Schritte zum Anlegen:</p><p>1. Erforderliche Personaldaten:</p><p>• Vollständiger Name (*): Geben Sie den vollständigen Namen des Mitarbeiters ein (Pflichtfeld).</p><p>• E-Mail-Adresse (*): Geben Sie eine gültige geschäftliche E-Mail-Adresse ein. Diese dient als Anmeldename für das Verkäufer-Dashboard.</p><p>• Telefonnummer (Optional): Kontakttelefonnummer für Benachrichtigungen angeben.</p><p>2. Rollenzuweisung:</p><p>• Rolle (*): Wählen Sie eine im Team konfigurierte Rolle aus (z. B. Kundensupport, Bestellprüfer, Produktionsleiter). Die Rolle steuert Berechtigungen für Bestellungen, Amazon-Autorisierung und Einstellungen.</p><p>3. Speichern oder Abbrechen:</p><p>• Klicken Sie auf \"Erstellen\", um das Teammitglied anzulegen und Zugangsdaten bereitzustellen.</p><p>• Klicken Sie auf \"Abbrechen\", um das Fenster ohne Änderungen zu schließen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794916538274-573377720.png"
+    },
+    "6afc4786f3debc00853645ec": {
+      "id": "6afc4786f3debc00853645ec",
+      "guideModuleId": "6afc4765f3debc00853645dc",
+      "stepOrder": 1,
+      "title": "Bereichsübersicht: Dynamische Moduldefinitionen, Betriebsberechtigungen & Statuskontrollen",
+      "description": "<p>Die Bereichsübersicht für Verkäufer zeigt alle für den Shop verfügbaren Anwendungsmodule und Schnittstellen. Händler können Berechtigungen und den Betriebsstatus einsehen:</p><p>1. Modulbereiche:</p><p>• Übersicht über Module wie Bestellungen, Amazon-Autorisierung, Verkäufer-Benutzer, Rollen, Einstellungen und Leitfaden-Dokumente.</p><p>2. Statuskontrolle:</p><p>• Überprüfen Sie, welche Systembereiche für Ihr Team aktiv geschaltet sind.</p><p>3. Such- und Sortierfunktionen:</p><p>• Schnelles Filtern nach Bereichsnamen und Sortieren nach Erstellungsdatum oder Status.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794918275559-223570812.png"
+    },
+    "6afc4836f3debc008536462d": {
+      "id": "6afc4836f3debc008536462d",
+      "guideModuleId": "6afc4812f3debc008536461d",
+      "stepOrder": 1,
+      "title": "Verkäuferrolle erstellen: Benutzerdefinierte Rollen, Beschreibungen & granulare Bereichsberechtigungen",
+      "description": "<p>Der Dialog \"Verkäuferrolle erstellen\" ermöglicht es Shopleitern, maßgeschneiderte Rollen auf Verkäuferebene zu erstellen und granulare Berechtigungen pro Bereich zu vergeben. So wird sichergestellt, dass Mitarbeiter nur Zugriff auf ihre jeweiligen Aufgabenbereiche haben.</p><p>1. Rollendefinition & Details:</p><p>- Rollenname (*): Geben Sie einen eindeutigen Titel ein (z. B. Bestellprüfer, Produktionsleiter, Support-Mitarbeiter).</p><p>- Beschreibung (Optional): Fassen Sie Verantwortlichkeiten und Befugnisse prägnant zusammen.</p><p>2. Granulare Bereichsberechtigungsmatrix:</p><p>- Verfügbare Bereiche: Berechtigungen für Bestellungen, Amazon-Autorisierung, Verkäufer-Benutzer, Rollen, Einstellungen und Leitfaden-Dokument festlegen.</p><p>- ALLE: Aktivieren Sie das Kästchen, um sofort Anzeigen, Erstellen, Bearbeiten und Löschen freizuschalten.</p><p>- ANZEIGEN: Erlaubt das Einsehen von Datensätzen ohne Bearbeitungsrechte.</p><p>- ERSTELLEN: Berechtigt zum Hinzufügen neuer Datensätze.</p><p>- AKTUALISIEREN: Berechtigt zum Bearbeiten von Daten, Einstellungen und Status.</p><p>- LÖSCHEN: Berechtigt zum dauerhaften Entfernen von Datensätzen.</p><p>3. Rolle erstellen:</p><p>- Klicken Sie auf \"Rolle erstellen\", um die Definition zu speichern. Sie steht danach sofort bei der Mitarbeiterverwaltung zur Verfügung.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794918450927-549142297.png"
+    },
+    "6afc4c04f3debc00853646bd": {
+      "id": "6afc4c04f3debc00853646bd",
+      "guideModuleId": "6afc4bbaf3debc00853646a9",
+      "stepOrder": 1,
+      "title": "Bestellungsverwaltung: Suche, Filter, Mehrfachartikel-Tracking & Bewertungsanfragen",
+      "description": "<p>Die Bestellungsverwaltung ermöglicht es Verkäufern, Kundenbestellungen zu verfolgen, Erfüllungsfristen zu überwachen, Marktplatzkanäle einzusehen und Bewertungsanfragen zu verwalten. Nachfolgend finden Sie eine detaillierte Erläuterung aller Funktionen:</p><p>1. Obere Symbolleiste & Filtersteuerung:</p><p>• Suchleiste: Suchen Sie in Echtzeit nach Amazon-Bestellnummer, Käufer-E-Mail, ASIN, Artikel-ID oder Produkttitel.</p><p>• Aktualisieren: Neueste Bestellungen und Statusänderungen direkt über die Amazon SP-API synchronisieren.</p><p>• Marktplatz-Auswahl: Bestellungen nach aktiven Amazon-Regionen filtern (z. B. Deutschland / Amazon.de).</p><p>• Datumsbereichsfilter: Bestellliste nach flexiblen Zeiträumen eingrenzen.</p><p>• Spaltensichtbarkeit & Dichte: Anzeige anpassen.</p><p>2. Bestell- & Käuferdaten:</p><p>• BESTELLDATUM: Zeitpunkt der Bestellung durch den Kunden.</p><p>• BESTELL-ID: Offizielle Amazon-Bestellnummer mit praktischer Ein-Klick-Kopierfunktion. Mehrfachartikel werden übersichtlich unter einer Nummer gruppiert.</p><p>• KÄUFER-E-MAIL: Anonymisierte Kundenadresse für die Amazon-Kommunikation mit Kopierfunktion.</p><p>3. Bewertungsanfragen & Status:</p><p>• STATUS:</p><p>  - \"Ausstehend\" (Gelbes Badge): Anfrage ist in der Warteschlange oder im vorgeschriebenen Wartefenster von Amazon.</p><p>  - \"Gesendet\" (Grünes Badge): Produktbewertungsanfrage wurde erfolgreich versendet.</p><p>  - \"Senden\" (Blauer Aktionsbutton): Manuelle sofortige Auslösung für berechtigte Bestellungen.</p><p>4. Produkt- & Artikeldaten:</p><p>• ASIN: Amazon-Standard-Identifikationsnummer mit Kopiersymbol.</p><p>• ARTIKEL-ID: Eindeutige Amazon-Bestellartikel-ID.</p><p>• PRODUKT: Produktname mit Tooltip für vollständige Beschreibungen und Personalisierungstexte.</p><p>• ANZAHL / ZUSTAND: Bestellte Menge und Artikelzustand (z. B. Neu).</p><p>5. Erfüllung & Fristen:</p><p>• KANAL: Erfüllungsmethode (z. B. MFN Amazon.de).</p><p>• LIEFERUNG (EDD): Voraussichtliches Lieferdatum mit Countdown-Badge (z. B. \"noch 3 Tage\"), um Versandfristen zuverlässig einzuhalten.</p><p>• GESAMTBETRAG: Transaktionswert in Landeswährung (€).</p><p>6. Paginierung:</p><p>Einträge pro Seite auswählen (10, 25, 50, 100) und über die Seitenschaltflächen navigieren.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794919424253-947447358.png"
+    },
+    "6afc511cf3debc008536472d": {
+      "id": "6afc511cf3debc008536472d",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 1,
+      "title": "Amazon-Autorisierung - Schritt 1: Verbundene Marktplätze & Kontingentzuweisung auswählen",
+      "description": "<p>Der erste Schritt der Amazon-Autorisierung ermöglicht es Ihnen auszuwählen, welche regionalen Amazon-Marktplätze mit Ihrem Verkäuferkonto verknüpft werden sollen:</p><p>1. Schritt-Navigation:</p><p>• Zeigt den aktuellen Schritt (\"Marktplätze auswählen\") sowie die Folgeschritte (\"API-Zugangsdaten\" und \"Prüfen & Speichern\") an.</p><p>2. Marktplatz-Kontingentleiste:</p><p>• Zeigt das erlaubte Kontingent Ihres Abonnements an (z. B. \"Marktplatz-Kontingent: 1 / 2 Ausgewählt\").</p><p>• Gibt an, wie viele Marktplatzverbindungen noch verfügbar sind.</p><p>3. Regionale Marktplatz-Kacheln:</p><p>• Wählen Sie Ihre Zielregionen (z. B. Deutschland, Frankreich, Italien, Spanien, Großbritannien, USA usw.).</p><p>• Jede Kachel zeigt Landesflagge, Namen, Ländercode und Amazon-Marktplatz-ID (z. B. DE - A1PA6795UKMFR9).</p><p>• Klicken Sie auf eine Kachel, um sie auszuwählen.</p><p>4. Navigationsschaltflächen:</p><p>• Zurück: Vorgang abbrechen.</p><p>• Nächster Schritt: Weiter zu Schritt 2, sobald mindestens ein Marktplatz gewählt ist.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794920728599-491662043.png"
+    },
+    "6afc547bf3debc0085364805": {
+      "id": "6afc547bf3debc0085364805",
+      "guideModuleId": "6afc5445f3debc00853647e9",
+      "stepOrder": 1,
+      "title": "Kontoeinstellungen: Profil, Geschäftsdaten, Avatar & Kontaktangaben aktualisieren",
+      "description": "<p>Die Seite \"Persönliche Angaben\" ermöglicht es Verkäufern, ihr Profil, den Markennamen, das Profilbild und verifizierte Kontaktdaten zu pflegen:</p><p>1. Navigationstabs & Status:</p><p>• Wechseln Sie zwischen \"Persönliche Angaben\" und \"Abonnement\" (Plan- und Rechnungsdetails).</p><p>• Status-Badge (\"AKTIVES KONTO\"): Bestätigt den geprüften und aktiven Kontostatus.</p><p>2. Profilbild-Bereich:</p><p>• Bildvorschau mit Option zum Hochladen hochauflösender Fotos (JPG, PNG, WEBP bis 5 MB) oder zum Zurücksetzen auf Initialen.</p><p>3. Profil- & Kontaktfelder:</p><p>• Vollständiger Name (*): Gesetzlicher Name oder primärer Ansprechpartner.</p><p>• Unternehmens- / Markenname (*): Name Ihres Amazon-Shops (z. B. Gruvi) für die Kundenkommunikation.</p><p>• Telefonnummer (*): Telefonnummer für dringende operative Mitteilungen.</p><p>• E-Mail-Adresse (Gesperrt): Zeigt die primäre Login-Adresse sicher und schreibgeschützt an.</p><p>4. Datenschutz & Sicherheit:</p><p>• Bestätigt die verschlüsselte und gesicherte Aufbewahrung aller Händlerdaten.</p><p>5. Speichern:</p><p>• Klicken Sie auf \"Änderungen speichern\", um Aktualisierungen dauerhaft zu übernehmen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921587209-463383458.png"
+    },
+    "6afc54dcf3debc0085364834": {
+      "id": "6afc54dcf3debc0085364834",
+      "guideModuleId": "6afc5456f3debc00853647f5",
+      "stepOrder": 1,
+      "title": "Allgemeine Einstellungen: Bewertungsautomatisierung, Erfüllungskanäle & Versandzeitplan",
+      "description": "<p>Die allgemeinen Einstellungen ermöglichen es Verkäufern, automatisierte Bewertungsanfrage-Kampagnen zu konfigurieren, Zielkanäle (FBA/FBM) festzulegen und Verzögerungszeitpläne zu steuern:</p><p>1. Übersicht & Automatisierungsstatus:</p><p>• Zeigt an, ob automatische Bewertungsanfragen aktuell pausiert oder aktiv ausgeführt werden.</p><p>2. Zielbestellungen & Erfüllungskanal:</p><p>• Bestellstatus: Legen Sie fest, ab wann Anfragen vorbereitet werden (z. B. \"Nur versandte Bestellungen\").</p><p>• Erfüllungskanal:</p><p>  - \"FBA (Amazon)\": Bestellungen über Amazon-Versandzentren berücksichtigen.</p><p>  - \"FBM (Händler)\": Bestellungen mit eigenem Händlerversand berücksichtigen.</p><p>3. Automatischer Versandzeitplan & Auslöser:</p><p>• Automatisches Senden aktivieren/deaktivieren.</p><p>• Verzögerungstage nach Lieferung festlegen (z. B. 5 bis 30 Tage gemäß Amazon-Richtlinien).</p><p>4. Speichern:</p><p>• Übernehmen Sie Ihre Automatisierungseinstellungen mit einem Klick auf \"Einstellungen speichern\".</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921688311-596664816.png"
+    },
+    "6afc55ccf3debc0085364881": {
+      "id": "6afc55ccf3debc0085364881",
+      "guideModuleId": "6afc55acf3debc0085364869",
+      "stepOrder": 1,
+      "title": "Systemprotokolle: Audit-Trail, Aktivitätsverlauf, Filter & Ereignisinspektion",
+      "description": "<p>Der Bereich \"Systemprotokolle\" bietet Verkäufern einen vollständigen Audit-Trail aller Vorgänge im Shop, wie Teamaktivitäten, Datenbankänderungen und Amazon-Autorisierungsaktualisierungen:</p><p>1. Filter- und Suchleiste:</p><p>• Protokolleinträge nach Benutzer, Vorgangstyp oder Datum filtern.</p><p>• Aktualisieren-Schaltfläche zur sofortigen Synchronisation.</p><p>2. Audit-Informationstabelle:</p><p>• Listet Zeitstempel, Benutzer, Rolle, Aktion und IP-Adresse transparent auf.</p><p>3. Detailinspektion:</p><p>• Klicken Sie auf das Augen-Symbol, um den genauen Änderungsverlauf einer Aktion im Detail anzuzeigen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921929311-840736575.png"
+    },
+    "6afb0ba14fafc2ec57b65805": {
+      "id": "6afb0ba14fafc2ec57b65805",
+      "guideModuleId": "6afb0a6a4fafc2ec57b657a2",
+      "stepOrder": 2,
+      "title": "Benutzerverwaltung: Suche, Sortierung, Aktionen & Paginierung",
+      "description": "<p>Die Benutzer-Verwaltungstabelle ermöglicht es Administratoren, Konten von Mitarbeitern und Administratoren einzusehen, zu filtern und zu verwalten. Nachfolgend finden Sie eine detaillierte Anleitung:</p><p>1. Top-Toolbar & Navigation:</p><p>• Wechseln Sie bequem zwischen den Reitern Benutzer, Bereiche und Rollen.</p><p>• Verwenden Sie die Suchleiste, um Benutzer schnell nach Namen oder E-Mail zu finden.</p><p>• Mit der Schaltfläche \"+ Benutzer hinzufügen\" legen Sie neue Konten an.</p><p>2. Benutzertabelle:</p><p>• DATUM: Erstellungszeitstempel des Kontos.</p><p>• NAME & E-MAIL: Benutzeridentität mit praktischer Ein-Klick-Kopierfunktion.</p><p>• MOBIL: Registrierte Telefonnummer.</p><p>• ROLLE: Zugewiesene Systemrolle (z. B. Support, Administrator).</p><p>• STATUS: Aktiv- oder Inaktiv-Status des Kontos.</p><p>3. Aktionen:</p><p>• Status umschalten: Benutzerzugang sofort aktivieren oder sperren.</p><p>• Bearbeiten: Rollen oder Kontaktdaten anpassen.</p><p>• Löschen: Benutzerkonto unwiderruflich entfernen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794838296420-850526744.png"
+    },
+    "6afb113db7343e00853ba2d6": {
+      "id": "6afb113db7343e00853ba2d6",
+      "guideModuleId": "6afb0bfc4fafc2ec57b65a23",
+      "stepOrder": 2,
+      "title": "Rollenverwaltung: Übersicht, Suche, Aktionen & zugewiesene Bereiche",
+      "description": "<p>Die Rollen-Verwaltungstabelle ermöglicht es Administratoren, administrative Rollen und deren zugewiesene Zugriffsberechtigungen einzusehen und zu bearbeiten:</p><p>1. Rollenübersicht:</p><p>• DATUM: Erstellungszeitpunkt der Rolle.</p><p>• ROLLE: Name der administrativen Rolle (z. B. Einstellungen, Support, Verkäuferverwaltung).</p><p>• BESCHREIBUNG: Kurze Zusammenfassung der Befugnisse.</p><p>• BEREICHE: Übersicht über alle freigeschalteten Module (z. B. Verkäufer, Rollen, Bereiche, Einstellungen).</p><p>2. Aktionen:</p><p>• Rolle bearbeiten: Berechtigungsmatrix und Namen ändern.</p><p>• Rolle löschen: Nicht mehr benötigte Rollen sicher entfernen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794838870670-373094895.png"
+    },
+    "6afb152ab7343e00853ba5a5": {
+      "id": "6afb152ab7343e00853ba5a5",
+      "guideModuleId": "6afb140eb7343e00853ba552",
+      "stepOrder": 2,
+      "title": "Blogartikel verwalten: Vorschau-, Bearbeitungs- & Löschaktionen",
+      "description": "<p>Jeder Blogartikel in der Liste verfügt über direkte Aktionssteuerelemente zur Verwaltung seines Veröffentlichungszyklus:</p><p>1. Vorschau (Auge-Symbol):</p><p>• Öffnet den vollständigen Artikel in einer Leseansicht, um Layout, Bilder und Formatierung vor der Freigabe zu überprüfen.</p><p>2. Bearbeiten (Stift-Symbol):</p><p>• Öffnet den Editor, um Titel, Text, Titelbild oder Veröffentlichungsstatus anzupassen.</p><p>3. Löschen (Mülleimer-Symbol):</p><p>• Entfernt den Blogartikel dauerhaft nach Bestätigung eines Sicherheitsdialogs.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794839847867-768232615.png"
+    },
+    "6afb1609b7343e00853ba60e": {
+      "id": "6afb1609b7343e00853ba60e",
+      "guideModuleId": "6afb1558b7343e00853ba5c7",
+      "stepOrder": 2,
+      "title": "Pläne-Verwaltung: Abonnementstufen, Preisgestaltung, Kontingente & Aktionen",
+      "description": "<p>Die Plan-Verwaltungstabelle ermöglicht es Administratoren, kommerzielle Abonnementstufen, Preise und Kontingente einzusehen und zu steuern:</p><p>1. Tabellenspalten:</p><p>• PLANNAME: Bezeichnung des Abonnements (z. B. Starter-Plan, Gold-Plan).</p><p>• PREIS: Gebühr pro Monat oder Jahr in Euro (€).</p><p>• MÄRKTE: Maximale Anzahl anbindbarer Amazon-Marktplätze.</p><p>• ANFRAGEKONTINGENT: Erlaubte monatliche Bewertungsanfragen.</p><p>• STATUS: Gibt an, ob der Plan für Händler aktiv buchbar ist.</p><p>2. Verwaltung & Aktionen:</p><p>• Neuen Plan über \"+ Plan hinzufügen\" anlegen.</p><p>• Vorhandene Pläne bearbeiten oder deaktivieren.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910742731-763018018.png"
+    },
+    "6afc41adf3debc008536451a": {
+      "id": "6afc41adf3debc008536451a",
+      "guideModuleId": "6afc3d3ec157f7fe3413b66d",
+      "stepOrder": 2,
+      "title": "Teamverwaltung: Übersicht, Suche, Sortierung, Statuskontrolle, Bearbeiten & Löschen",
+      "description": "<p>Die Teamverwaltung dient als zentrales Dashboard zur Organisation Ihrer internen Shop-Mitarbeiter:</p><p>1. Mitarbeiterliste:</p><p>• Schnelle Übersicht über Namen, E-Mails, Telefonnummern und Rollen.</p><p>• Statusanzeige mit Schalter zur sofortigen Aktivierung oder Deaktivierung.</p><p>2. Aktionen:</p><p>• Kontaktdaten und Rollen bearbeiten.</p><p>• Mitarbeiterzugänge bei Ausscheiden sicher löschen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794916778637-144641376.png"
+    },
+    "6afc49e2f3debc0085364665": {
+      "id": "6afc49e2f3debc0085364665",
+      "guideModuleId": "6afc4812f3debc008536461d",
+      "stepOrder": 2,
+      "title": "Rollenverwaltung: Übersicht, Suche, Sortierung, zugewiesene Bereiche, Bearbeiten & Löschen",
+      "description": "<p>Die Rollen-Verwaltungstabelle für Verkäufer fasst alle definierten Shop-Rollen zusammen:</p><p>1. Rollenübersicht:</p><p>• Zeigt Rollennamen, Aufgabenbeschreibungen und die jeweils verknüpften Bereiche.</p><p>2. Berechtigungsanpassung:</p><p>• Rollen flexibel anpassen und Mitarbeiterberechtigungen bedarfsgerecht erweitern oder einschränken.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794918876825-141859445.png"
+    },
+    "6afc5271f3debc008536475c": {
+      "id": "6afc5271f3debc008536475c",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 2,
+      "title": "Amazon-Autorisierung - Schritt 2: SP-API-Entwicklerzugangsdaten konfigurieren",
+      "description": "<p>Geben Sie im zweiten Schritt Ihre offiziellen Entwicklerzugangsdaten für die Amazon Selling Partner API (SP-API) ein, um die sichere Verbindung zu autorisieren:</p><p>1. Eingabefelder für Zugangsdaten:</p><p>• Client-ID (*): Geben Sie Ihre LWA-Anwendungs-Client-ID ein (z. B. amzn1.application-oa2-client.xxxx).</p><p>• Client-Geheimnis (*): Tragen Sie Ihren geheimen LWA-Schlüssel ein. Nutzen Sie das Augen-Symbol zur Überprüfung.</p><p>• Verkäufer-ID / Händler-Token (*): Ihr Amazon-Händler-Token aus Seller Central (z. B. A39Q604UXIR8Y9).</p><p>• Aktualisierungs-Token (*): Ihr langlebiges Login-with-Amazon-Aktualisierungstoken (beginnend mit \"Atzr|...\").</p><p>2. Sicherheitshinweis:</p><p>• Alle Schlüssel werden mit AES-256-Verschlüsselung nach Branchenstandard geschützt und ausschließlich für autorisierte API-Abgleiche verwendet.</p><p>3. Navigation:</p><p>• Klicken Sie auf \"Nächster Schritt\", um zu Schritt 3 für die abschließende Prüfung zu gelangen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921068990-156370368.png"
+    },
+    "6afc5649f3debc00853648b0": {
+      "id": "6afc5649f3debc00853648b0",
+      "guideModuleId": "6afc55acf3debc0085364869",
+      "stepOrder": 2,
+      "title": "Systemprotokolldetails: Prüf-Nutzlasten, Feldänderungen & Benutzeraktionen einsehen",
+      "description": "<p>Ein Klick auf das Augen-Symbol bei einem Protokolleintrag öffnet das Dialogfenster \"Systemprotokolldetails\". Diese Ansicht bietet eine detaillierte und transparente Aufschlüsselung der genauen Änderungen:</p><p>1. Kopfzeile & Ereignismetadaten:</p><p>• Zeigt den ausführenden Benutzer sowie Datum und Uhrzeit des Ereignisses an.</p><p>2. Benutzer- & Vorgangskarte:</p><p>• Benutzername, E-Mail-Adresse und Rollen-Badge.</p><p>• Vorgangstyp-Badge (z. B. \"ERSTELLEN\" in Grün, \"AKTUALISIEREN\" oder \"LÖSCHEN\").</p><p>• Aktionsschlüssel (z. B. \"Leitfaden-Modul erstellen\").</p><p>3. Prüftabelle für Felder & Werte:</p><p>• Strukturierte Tabelle aller veränderten oder erfassten Attribute.</p><p>4. Schließen:</p><p>• Klicken Sie auf \"Schließen\", um zur Protokollübersicht zurückzukehren.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794922054249-127607717.png"
+    },
+    "6afc52c3f3debc0085364784": {
+      "id": "6afc52c3f3debc0085364784",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 3,
+      "title": "Amazon-Autorisierung - Schritt 3: Konfiguration prüfen & Shop-Aktivierung",
+      "description": "<p>Im letzten Schritt überprüfen Sie Ihre Verbindungsdaten und wählen aus, welche verbundenen Shops aktiv synchronisiert werden sollen:</p><p>1. SP-API-Kontodatenkarte:</p><p>• Bestätigt Ihre verifizierte Verkäufer-ID und den Konfigurationsstatus (\"Konfiguriert\").</p><p>2. Verknüpfte Marktplätze:</p><p>• Zeigt die Anzahl und Ländercodes aller verknüpften Regionen (z. B. \"1 Gesamt - Deutschland DE\").</p><p>3. Shops für automatisierte Synchronisation aktivieren:</p><p>• Zeigt Ihr aktives Shop-Kontingent an (z. B. \"Aktive Marktplätze: 1 / 2 Aktiviert\").</p><p>• Aktivieren Sie die Kontrollkästchen für die Shops, die live nach Bestellungen abgefragt und für automatisierte Bewertungsanfragen genutzt werden sollen.</p><p>4. Speichern:</p><p>• Klicken Sie auf \"Änderungen speichern\", um den Bestätigungsdialog zu öffnen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921152246-474832149.png"
+    },
+    "6afc5325f3debc00853647ac": {
+      "id": "6afc5325f3debc00853647ac",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 4,
+      "title": "Amazon-Autorisierung - Schritt 4: Marktplatzaktivierung bestätigen & speichern",
+      "description": "<p>Beim Klick auf \"Änderungen speichern\" erscheint ein Bestätigungsdialog zur Überprüfung der Shopauswahl:</p><p>1. Bestätigungshinweis:</p><p>• Prüfen Sie die ausgewählten aktiven Marktplätze, bevor die Einstellungen übernommen werden.</p><p>2. Banner neuer aktiver Shops:</p><p>• Hebt hervor, welche Marktplätze sofort für die Hintergrund-Synchronisation aktiviert werden (z. B. \"NEUE AKTIVE SHOPS: Deutschland\").</p><p>3. Aktionen:</p><p>• Abbrechen: Schließt das Fenster ohne Speichern.</p><p>• Bestätigen & Speichern: Speichert die verschlüsselten API-Zugangsdaten sicher und aktiviert die Hintergrund-Synchronisation.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921250607-369739454.png"
+    }
+  }
+}

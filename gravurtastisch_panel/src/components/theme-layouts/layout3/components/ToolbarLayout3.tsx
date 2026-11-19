@@ -9,6 +9,7 @@ import FullScreenToggle from '../../components/FullScreenToggle';
 import NavigationSearch from '../../components/navigation/NavigationSearch';
 import UserMenu from '../../components/UserMenu';
 import QuickPanelToggleButton from '../../components/quickPanel/QuickPanelToggleButton';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import Logo from '../../components/Logo';
 import useThemeMediaQuery from '../../../../@fuse/hooks/useThemeMediaQuery';
 import ToolbarTheme from '@/contexts/ToolbarTheme';
@@ -41,7 +42,8 @@ function ToolbarLayout3(props: ToolbarLayout3Props) {
 						{!isMobile && <Logo />}
 					</div>
 
-					<div className="flex flex-auto items-center justify-end overflow-x-auto">
+					<div className="flex flex-auto items-center justify-end overflow-x-auto gap-1.5">
+						<LanguageSwitcher />
 						{isMobile && <NavigationSearch />}
 						<AdjustFontSize />
 						<FullScreenToggle />

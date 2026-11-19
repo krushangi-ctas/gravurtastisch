@@ -36,6 +36,7 @@ import { useState, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useSnackbar } from 'notistack';
+import { useTranslation } from 'react-i18next';
 import {
   useAmazonCredentialsById as useAmazon,
   useUpsertAmazonCredentials,
@@ -117,6 +118,7 @@ function AmazonCredentialsFormContent({
   canMutate?: boolean;
 }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
   const { control, formState, handleSubmit, setError, setValue, watch, trigger } =
     useFormContext<AmazonCredentialsFormType>();
   const { errors, isValid, dirtyFields } = formState;
@@ -128,9 +130,9 @@ function AmazonCredentialsFormContent({
 
   const [activeStep, setActiveStep] = useState(0);
   const steps = [
-    { label: 'Select Marketplaces', icon: 'lucide:globe' },
-    { label: 'API Credentials', icon: 'lucide:key' },
-    { label: 'Review & Save', icon: 'lucide:shield-check' },
+    { label: t('amazon.selectMarketplaces', 'Select Marketplaces'), icon: 'lucide:globe' },
+    { label: t('amazon.apiCredentials', 'API Credentials'), icon: 'lucide:key' },
+    { label: t('amazon.reviewSave', 'Review & Save'), icon: 'lucide:shield-check' },
   ];
 
   const [showSecret, setShowSecret] = useState(false);
@@ -476,10 +478,10 @@ function AmazonCredentialsFormContent({
                 </div>
                 <div>
                   <Typography className="text-[16px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                    Select Connected Marketplaces
+                    {t('amazon.selectConnectedMarketplaces', 'Select Connected Marketplaces')}
                   </Typography>
                   <Typography className="text-[12px] text-slate-500 dark:text-slate-400">
-                    Choose the Amazon regional marketplaces to link with your seller account.
+                    {t('amazon.selectConnectedSubtitle', 'Choose the Amazon regional marketplaces to link with your seller account.')}
                   </Typography>
                 </div>
               </div>
@@ -514,18 +516,18 @@ function AmazonCredentialsFormContent({
                           </div>
                           <div>
                             <span className="text-[12px] font-bold leading-tight block">
-                              Marketplace Quota: {selectedCount} / {maxAllowed} Selected
+                              {t('amazon.quotaSelected', 'Marketplace Quota: {{count}} / {{max}} Selected', { count: selectedCount, max: maxAllowed })}
                             </span>
                             <span className="text-[11px] opacity-80 block">
                               {isLimitReached
-                                ? `Maximum active limit reached (${maxAllowed}/${maxAllowed}). Unselect one to connect another.`
-                                : `Account allows up to ${maxAllowed} active marketplaces (${maxAllowed - selectedCount} remaining).`}
+                                ? t('amazon.limitReached', 'Maximum active limit reached ({{max}}/{{max}}). Unselect one to connect another.', { max: maxAllowed })
+                                : t('amazon.quotaRemaining', 'Account allows up to {{max}} active marketplaces ({{remaining}} remaining).', { max: maxAllowed, remaining: maxAllowed - selectedCount })}
                             </span>
                           </div>
                         </div>
 
                         <Chip
-                          label={`${selectedCount} / ${maxAllowed} Selected`}
+                          label={t('amazon.badgeSelected', '{{count}} / {{max}} Selected', { count: selectedCount, max: maxAllowed })}
                           size="small"
                           className={`self-start sm:self-center font-bold px-2 py-0 text-[11px] border h-6 ${isLimitReached
                             ? 'bg-amber-100 text-amber-900 border-amber-300'
@@ -630,10 +632,10 @@ function AmazonCredentialsFormContent({
                 </div>
                 <div>
                   <Typography className="text-[16px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                    Enter SP-API Credentials
+                    {t('amazon.enterCredentialsTitle', 'Enter SP-API Credentials')}
                   </Typography>
                   <Typography className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400">
-                    Enter your Amazon Selling Partner API developer credentials.
+                    {t('amazon.enterCredentialsSubtitle', 'Enter your Amazon Selling Partner API developer credentials.')}
                   </Typography>
                 </div>
               </div>
@@ -645,7 +647,7 @@ function AmazonCredentialsFormContent({
                     htmlFor="client_id"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Client ID <span className="text-red-500">*</span>
+                    {t('amazon.clientIdLabel', 'Client ID')} <span className="text-red-500">*</span>
                   </label>
                   <Controller
                     name="client_id"
@@ -689,7 +691,7 @@ function AmazonCredentialsFormContent({
                     htmlFor="client_secret"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Client Secret <span className="text-red-500">*</span>
+                    {t('amazon.clientSecretLabel', 'Client Secret')} <span className="text-red-500">*</span>
                   </label>
                   <Controller
                     name="client_secret"
@@ -706,7 +708,7 @@ function AmazonCredentialsFormContent({
                           variant="outlined"
                           error={!!errors.client_secret}
                           helperText={errors?.client_secret?.message as string}
-                          placeholder="Enter your client secret key"
+                          placeholder={t('amazon.clientSecretPlaceholder', 'Enter your client secret key')}
                           slotProps={{
                             htmlInput: {
                               maxLength: 85,
@@ -744,7 +746,7 @@ function AmazonCredentialsFormContent({
                     htmlFor="seller_id"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Seller ID (Merchant Token) <span className="text-red-500">*</span>
+                    {t('amazon.sellerIdLabel', 'Seller ID (Merchant Token)')} <span className="text-red-500">*</span>
                   </label>
                   <Controller
                     name="seller_id"
@@ -786,10 +788,10 @@ function AmazonCredentialsFormContent({
                   <div className="rounded-xl border border-primary-100 dark:border-primary-900/50 bg-primary-50/50 dark:bg-primary-950/30 p-3 h-full flex flex-col justify-center">
                     <div className="flex items-center gap-2 text-primary-700 dark:text-primary-300 font-semibold text-xs sm:text-[13px]">
                       <FuseSvgIcon size={18}>lucide:shield-alert</FuseSvgIcon>
-                      <span>Secure Credential Storage</span>
+                      <span>{t('amazon.secureStorageTitle', 'Secure Credential Storage')}</span>
                     </div>
                     <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 mt-1">
-                      Credentials are encrypted using AES-256 and used exclusively for authorized Selling Partner API data sync.
+                      {t('amazon.secureStorageSubtitle', 'Credentials are encrypted using AES-256 and used exclusively for authorized Selling Partner API data sync.')}
                     </p>
                   </div>
                 </div>
@@ -800,7 +802,7 @@ function AmazonCredentialsFormContent({
                     htmlFor="refresh_token"
                     className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                   >
-                    Refresh Token (LWA) <span className="text-red-500">*</span>
+                    {t('amazon.refreshTokenLabel', 'Refresh Token (LWA)')} <span className="text-red-500">*</span>
                   </label>
                   <Controller
                     name="refresh_token"
@@ -847,10 +849,10 @@ function AmazonCredentialsFormContent({
                 </div>
                 <div>
                   <Typography className="text-[16px] font-bold text-slate-900 dark:text-white tracking-tight leading-tight">
-                    Review & Confirm Settings
+                    {t('amazon.reviewConfirmTitle', 'Review & Confirm Settings')}
                   </Typography>
                   <Typography className="text-[12px] text-slate-500 dark:text-slate-400">
-                    Review your connection configuration and activate stores before saving.
+                    {t('amazon.reviewConfirmSubtitle', 'Review your connection configuration and activate stores before saving.')}
                   </Typography>
                 </div>
               </div>
@@ -865,11 +867,11 @@ function AmazonCredentialsFormContent({
                         <FuseSvgIcon size={14}>lucide:key</FuseSvgIcon>
                       </div>
                       <span className="text-[13px] font-bold text-slate-900 dark:text-white block leading-tight">
-                        SP-API Account Details
+                        {t('amazon.accountDetailsTitle', 'SP-API Account Details')}
                       </span>
                     </div>
                     <Chip
-                      label="Configured"
+                      label={t('amazon.configured', 'Configured')}
                       size="small"
                       className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700 text-[10px] px-1.5 h-5"
                     />
@@ -878,7 +880,7 @@ function AmazonCredentialsFormContent({
                   <div className="grid grid-cols-2 gap-2.5">
                     <div className="p-2 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                        Seller ID
+                        {t('amazon.sellerId', 'Seller ID')}
                       </span>
                       <span className="text-[12px] font-bold text-slate-900 dark:text-white font-mono block truncate">
                         {sellerId || '—'}
@@ -887,7 +889,7 @@ function AmazonCredentialsFormContent({
 
                     <div className="p-2 px-2.5 rounded-lg bg-slate-50 dark:bg-slate-800/60 border border-slate-200/70 dark:border-slate-700/60">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
-                        Client ID
+                        {t('amazon.clientId', 'Client ID')}
                       </span>
                       <span className="text-[12px] font-bold text-slate-900 dark:text-white font-mono block truncate">
                         {clientId ? `${clientId.substring(0, 10)}...` : '—'}
@@ -897,7 +899,7 @@ function AmazonCredentialsFormContent({
 
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-400">
                     <FuseSvgIcon size={12} className="text-slate-500">lucide:lock</FuseSvgIcon>
-                    <span>AES-256 Encrypted Connection</span>
+                    <span>{t('amazon.aesEncrypted', 'AES-256 Encrypted Connection')}</span>
                   </div>
                 </div>
 
@@ -909,11 +911,11 @@ function AmazonCredentialsFormContent({
                         <FuseSvgIcon size={14}>lucide:globe</FuseSvgIcon>
                       </div>
                       <span className="text-[13px] font-bold text-slate-900 dark:text-white block leading-tight">
-                        Linked Marketplaces
+                        {t('amazon.linkedMarketplacesTitle', 'Linked Marketplaces')}
                       </span>
                     </div>
                     <Chip
-                      label={`${marketplaceIds.length} Total`}
+                      label={t('amazon.totalCount', '{{count}} Total', { count: marketplaceIds.length })}
                       size="small"
                       className="bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 font-bold border border-slate-300 dark:border-slate-700 text-[10px] px-1.5 h-5"
                     />
@@ -921,7 +923,7 @@ function AmazonCredentialsFormContent({
 
                   <div className="p-2 px-2.5 rounded-lg bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200/70 dark:border-slate-700/60 min-h-[50px] flex flex-wrap gap-1.5 items-center">
                     {marketplaceIds.length === 0 ? (
-                      <span className="text-[12px] text-slate-400 italic">No marketplaces selected</span>
+                      <span className="text-[12px] text-slate-400 italic">{t('amazon.noMarketplacesSelected', 'No marketplaces selected')}</span>
                     ) : (
                       marketplaceIds.map((id) => {
                         const mp = marketplaceOptions?.find(
@@ -953,7 +955,7 @@ function AmazonCredentialsFormContent({
 
                   <div className="flex items-center gap-1.5 text-[11px] text-slate-400 dark:text-slate-400">
                     <FuseSvgIcon size={12} className="text-primary-600">lucide:check-circle</FuseSvgIcon>
-                    <span>Ready for live data synchronization</span>
+                    <span>{t('amazon.readySync', 'Ready for live data synchronization')}</span>
                   </div>
                 </div>
               </div>
@@ -962,10 +964,10 @@ function AmazonCredentialsFormContent({
               <div className="pt-2 space-y-3">
                 <div>
                   <Typography className="text-[14px] font-bold text-slate-900 dark:text-white leading-tight">
-                    Activate Stores for Automated Sync & Actions
+                    {t('amazon.activateStoresTitle', 'Activate Stores for Automated Sync & Actions')}
                   </Typography>
                   <Typography className="text-[12px] text-slate-500 dark:text-slate-400">
-                    Configure which connected stores the system runs orders and automated review actions on.
+                    {t('amazon.activateStoresSubtitle', 'Configure which connected stores the system runs orders and automated review actions on.')}
                   </Typography>
                 </div>
 
@@ -999,18 +1001,18 @@ function AmazonCredentialsFormContent({
                         </div>
                         <div>
                           <span className="text-[12px] font-bold leading-tight block">
-                            Active Marketplaces: {activeCount} / {maxAllowed} Activated
+                            {t('amazon.activeMarketplacesCount', 'Active Marketplaces: {{count}} / {{max}} Activated', { count: activeCount, max: maxAllowed })}
                           </span>
                           <span className="text-[11px] opacity-80 block">
                             {isLimitReached
-                              ? `Maximum active limit reached (${maxAllowed}/${maxAllowed}). Unselect one to activate another.`
-                              : `Activate up to ${maxAllowed} stores for live sync (${maxAllowed - activeCount} remaining).`}
+                              ? t('amazon.activeLimitReached', 'Maximum active limit reached ({{max}}/{{max}}). Unselect one to activate another.', { max: maxAllowed })
+                              : t('amazon.activateRemaining', 'Activate up to {{max}} stores for live sync ({{remaining}} remaining).', { max: maxAllowed, remaining: maxAllowed - activeCount })}
                           </span>
                         </div>
                       </div>
 
                       <Chip
-                        label={`${activeCount} / ${maxAllowed} Active`}
+                        label={t('amazon.badgeActive', '{{count}} / {{max}} Active', { count: activeCount, max: maxAllowed })}
                         size="small"
                         className={`self-start sm:self-center font-bold px-2 py-0 text-[11px] border h-6 ${isLimitReached
                           ? 'bg-amber-100 text-amber-900 border-amber-300'
@@ -1047,7 +1049,7 @@ function AmazonCredentialsFormContent({
                       >
                         {isActive && (
                           <span className="absolute top-1.5 right-1.5 bg-primary-700 text-white text-[9px] font-extrabold uppercase px-1.5 py-0.2 rounded-xs">
-                            Active
+                            {t('common.active', 'Active')}
                           </span>
                         )}
                         <Checkbox
@@ -1093,7 +1095,7 @@ function AmazonCredentialsFormContent({
               className="rounded-xl px-5 py-2 text-sm font-semibold capitalize border-slate-300 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40 h-10.5 transition-all"
               startIcon={<FuseSvgIcon size={18}>lucide:arrow-left</FuseSvgIcon>}
             >
-              Back
+              {t('common.back', 'Back')}
             </Button>
 
             {activeStep < 2 ? (
@@ -1104,7 +1106,7 @@ function AmazonCredentialsFormContent({
                 className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-6 py-2 shadow-xs hover:shadow transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800 h-10.5"
                 endIcon={<FuseSvgIcon size={18}>lucide:arrow-right</FuseSvgIcon>}
               >
-                Next Step
+                {t('amazon.nextStep', 'Next Step')}
               </Button>
             ) : (
               <Button
@@ -1131,7 +1133,7 @@ function AmazonCredentialsFormContent({
                   </FuseSvgIcon>
                 }
               >
-                {isPending ? 'Saving configuration...' : 'Save Changes'}
+                {isPending ? t('amazon.savingConfig', 'Saving configuration...') : t('amazon.saveChanges', 'Save Changes')}
               </Button>
             )}
           </div>
@@ -1154,18 +1156,18 @@ function AmazonCredentialsFormContent({
             <FuseSvgIcon className="text-amber-500" size={20}>
               heroicons-outline:exclamation-triangle
             </FuseSvgIcon>
-            Confirm Marketplace Activation
+            {t('amazon.confirmDialogTitle', 'Confirm Marketplace Activation')}
           </DialogTitle>
           <DialogContent>
             <DialogContentText className="text-[12px] leading-relaxed text-slate-600 mb-3">
-              Review your active marketplaces selection before confirming. You can update these settings anytime.
+              {t('amazon.confirmDialogText', 'Review your active marketplaces selection before confirming. You can update these settings anytime.')}
             </DialogContentText>
 
             {/* Previously Active */}
             {savedActiveMarketplaces && savedActiveMarketplaces.length > 0 && (
               <div className="bg-slate-50 border border-slate-200 rounded-lg p-2.5 mb-2.5">
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-1">
-                  Previously Active:
+                  {t('amazon.previouslyActive', 'Previously Active:')}
                 </span>
                 <div className="flex flex-wrap gap-1">
                   {savedActiveMarketplaces.map((id) => {
@@ -1192,11 +1194,11 @@ function AmazonCredentialsFormContent({
 
             <div className="bg-amber-50/90 border border-amber-200 rounded-lg p-2.5 mb-1">
               <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider block mb-1">
-                New Active Stores:
+                {t('amazon.newActiveStores', 'New Active Stores:')}
               </span>
               {activeMarketplaces.length === 0 ? (
                 <span className="text-[12px] text-amber-800 italic block">
-                  None (System operations will be inactive)
+                  {t('amazon.noneActiveWarning', 'None (System operations will be inactive)')}
                 </span>
               ) : (
                 <div className="flex flex-wrap gap-1">
@@ -1231,7 +1233,7 @@ function AmazonCredentialsFormContent({
                 textTransform: 'capitalize'
               }}
             >
-              Cancel
+              {t('common.cancel', 'Cancel')}
             </Button>
             <Button
               onClick={handleConfirmSubmit}
@@ -1244,7 +1246,7 @@ function AmazonCredentialsFormContent({
                 textTransform: 'capitalize'
               }}
             >
-              Confirm & Save
+              {t('amazon.confirmAndSave', 'Confirm & Save')}
             </Button>
           </DialogActions>
         </Dialog>

@@ -1,6 +1,7 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -98,6 +99,7 @@ function PlansContent({
 	onAddNew: () => void;
 	canCreate: boolean;
 }) {
+	const { t } = useTranslation();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 	const updateStatusMutation = useUpdatePlanStatus();
 	const { enqueueSnackbar } = useSnackbar();
@@ -203,7 +205,7 @@ function PlansContent({
 				Cell: ({ cell, row }: { cell: any; row: MRT_Row<Plan> }) => {
 					const val = cell.getValue() as number;
 					const cycle = row.original?.billingCycle;
-					const cycleText = cycle === 3 ? '/ yr' : cycle === 2 ? '/ qtr' : '/ mo';
+					const cycleText = cycle === 3 ? t('plan.perYearShort', '/ yr') : cycle === 2 ? t('plan.perQuarterShort', '/ qtr') : t('plan.perMonth', '/ mo');
 					const isINR = row.original?.currency === 'inr';
 					const symbol = isINR ? '₹' : '€';
 					const formattedPrice = val !== undefined && val !== null ? `${symbol}${Number(val).toLocaleString()}` : `${symbol}0`;
@@ -225,7 +227,7 @@ function PlansContent({
 				size: 140,
 				Cell: ({ cell }: { cell: any }) => {
 					const val = (cell.getValue() as number) ?? 1;
-					const label = val === 3 ? 'Yearly' : val === 2 ? 'Quarterly' : 'Monthly';
+					const label = val === 3 ? t('plan.billingYearly', 'Yearly') : val === 2 ? t('plan.billingQuarterly', 'Quarterly') : t('plan.billingMonthly', 'Monthly');
 
 					return (
 						<span
@@ -251,7 +253,7 @@ function PlansContent({
 								{val}
 							</span>
 							<span className="text-[11.5px] text-slate-500 font-normal">
-								{val === 1 ? 'Marketplace' : 'Marketplaces'}
+								{val === 1 ? t('plan.marketplace', 'Marketplace') : t('plan.marketplaces', 'Marketplaces')}
 							</span>
 						</div>
 					);
@@ -272,7 +274,7 @@ function PlansContent({
 								{Number(val).toLocaleString()}
 							</span>
 							<span className="text-[11.5px] text-slate-500 font-normal">
-								req / mo
+								{t('plan.reqMo', 'req / mo')}
 							</span>
 						</div>
 					);
@@ -292,7 +294,7 @@ function PlansContent({
 								<FuseSvgIcon size={14} className="text-slate-400">
 									heroicons-outline:minus-circle
 								</FuseSvgIcon>
-								<span>No Expiry</span>
+								<span>{t('plan.noExpiry', 'No Expiry')}</span>
 							</span>
 						);
 					}
@@ -305,18 +307,18 @@ function PlansContent({
 					let badgeClasses = 'bg-secondary-50 text-secondary-900 border-secondary-300';
 					let iconColor = 'text-secondary-700';
 					let icon = 'heroicons-outline:calendar-days';
-					let tooltipSuffix = `${daysLeft} days remaining`;
+					let tooltipSuffix = t('account.daysRemaining', { count: daysLeft, defaultValue: `${daysLeft} days remaining` });
 
 					if (isPast) {
 						badgeClasses = 'bg-rose-50 text-rose-800 border-rose-200 font-semibold';
 						iconColor = 'text-rose-600';
 						icon = 'heroicons-outline:exclamation-circle';
-						tooltipSuffix = 'Expired';
+						tooltipSuffix = t('plan.expired', 'Expired');
 					} else if (isExpiringSoon) {
 						badgeClasses = 'bg-amber-50 text-amber-800 border-amber-300 font-semibold';
 						iconColor = 'text-amber-600';
 						icon = 'heroicons-outline:clock';
-						tooltipSuffix = `Expiring soon (${daysLeft} days left)`;
+						tooltipSuffix = `${t('plan.expired', 'Expiring soon')} (${t('account.daysRemaining', { count: daysLeft, defaultValue: `${daysLeft} days remaining` })})`;
 					}
 
 					const formatted = mDate.format('DD MMM YYYY');
@@ -329,7 +331,7 @@ function PlansContent({
 								<FuseSvgIcon size={14} className={`${iconColor} shrink-0`}>
 									{icon}
 								</FuseSvgIcon>
-								<span className="tracking-tight">{formatted}</span>
+								<span className="tracking-tight">{isPast ? t('plan.expired', 'Expired') : formatted}</span>
 							</div>
 						</Tooltip>
 					);
@@ -393,21 +395,21 @@ function PlansContent({
 							return (
 								<span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs sm:text-sm font-medium">
 									<FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:funnel</FuseSvgIcon>
-									Status
+									{t('filter.status', 'Status')}
 								</span>
 							);
 						}
 						return (
 							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-semibold">
 								<FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:funnel</FuseSvgIcon>
-								{selected === 'active' ? 'Active' : selected === 'inactive' ? 'Inactive' : 'All Status'}
+								{selected === 'active' ? t('plan.active', 'Active') : selected === 'inactive' ? t('plan.inactive', 'Inactive') : t('plan.allStatus', 'All Status')}
 							</span>
 						);
 					}}
 				>
-					<MenuItem value=""><span className="text-xs sm:text-sm">All Status</span></MenuItem>
-					<MenuItem value="active"><span className="text-xs sm:text-sm">Active</span></MenuItem>
-					<MenuItem value="inactive"><span className="text-xs sm:text-sm">Inactive</span></MenuItem>
+					<MenuItem value=""><span className="text-xs sm:text-sm">{t('plan.allStatus', 'All Status')}</span></MenuItem>
+					<MenuItem value="active"><span className="text-xs sm:text-sm">{t('plan.active', 'Active')}</span></MenuItem>
+					<MenuItem value="inactive"><span className="text-xs sm:text-sm">{t('plan.inactive', 'Inactive')}</span></MenuItem>
 				</Select>
 			</FormControl>
 
@@ -421,7 +423,7 @@ function PlansContent({
 					<FuseSvgIcon size={16} className="text-white">
 						heroicons-outline:plus
 					</FuseSvgIcon>
-					<span>Add Plan</span>
+					<span>{t('plan.addPlan', 'Add Plan')}</span>
 				</button>
 			)}
 		</div>
@@ -599,13 +601,27 @@ function PlansContent({
 						</div>
 						<div className="flex flex-col">
 							<h3 className="text-base font-bold text-slate-800 m-0">
-								{confirmState.type === 'delete' ? 'Delete Plan' : 'Change Plan Status'}
+								{confirmState.type === 'delete'
+									? t('confirm.deletePlanTitle', 'Delete Plan')
+									: t('confirm.changePlanStatusTitle', 'Change Plan Status')}
 							</h3>
 							<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
-								{confirmState.type === 'delete'
-									? `Are you sure you want to delete "${confirmState.plan?.name}"?`
-									: `Are you sure you want to change status of "${confirmState.plan?.name}" to ${confirmState.targetStatus === 1 ? 'Active' : 'Inactive'
-									}?`}
+								{confirmState.type === 'delete' ? (
+									<>
+										{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
+										<strong className="text-slate-800 font-semibold">&ldquo;{confirmState.plan?.name}&rdquo;</strong>?
+									</>
+								) : (
+									<>
+										{t('confirm.changeStatusPrompt', 'Are you sure you want to change status of')}{' '}
+										<strong className="text-slate-800 font-semibold">&ldquo;{confirmState.plan?.name}&rdquo;</strong>{' '}
+										{t('confirm.to', 'to')}{' '}
+										<strong className="text-slate-800 font-semibold">
+											{confirmState.targetStatus === 1 ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
+										</strong>
+										?
+									</>
+								)}
 							</p>
 						</div>
 					</div>
@@ -625,7 +641,7 @@ function PlansContent({
 						disabled={isActionLoading}
 						className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
 					>
-						Cancel
+						{t('confirm.cancel', 'Cancel')}
 					</button>
 					<button
 						type="button"
@@ -637,7 +653,11 @@ function PlansContent({
 							}`}
 					>
 						{isActionLoading && <FuseSvgIcon size={16} className="animate-spin text-white">heroicons-outline:arrow-path</FuseSvgIcon>}
-						<span>{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}</span>
+						<span>
+							{confirmState.type === 'delete'
+								? t('confirm.delete', 'Delete')
+								: t('confirm.changeStatus', 'Change Status')}
+						</span>
 					</button>
 				</div>
 			</Dialog>

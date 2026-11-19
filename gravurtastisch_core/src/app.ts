@@ -11,6 +11,7 @@ const { authLimiter } = require('./middlewares/rateLimiter');
 const routes = require('./routes/v1.routes');
 const paymentController = require('./controllers/payment.controller');
 const { errorConverter, errorHandler } = require('./middlewares/error');
+const { toBilingualMessage } = require('./utils/bilingual-messages');
 
 const ApiError = require('./utils/ApiError');
 const app = express();
@@ -120,6 +121,36 @@ passport.use('jwt', jwtStrategy);
 if (config.env === 'production') {
   app.use('/v1/auth', authLimiter);
 }
+
+// Middleware to ensure all outgoing JSON responses with a message field have bilingual formatting
+app.use((req, res, next) => {
+  const originalJson = res.json;
+  res.json = function (body) {
+    if (body && typeof body === 'object' && typeof body.message === 'string') {
+      body.message = toBilingualMessage(body.message);
+    }
+    return originalJson.call(this, body);
+  };
+
+  const originalSend = res.send;
+  res.send = function (body) {
+    if (typeof body === 'string') {
+      try {
+        const parsed = JSON.parse(body);
+        if (parsed && typeof parsed === 'object' && typeof parsed.message === 'string') {
+          parsed.message = toBilingualMessage(parsed.message);
+          return originalSend.call(this, JSON.stringify(parsed));
+        }
+      } catch (e) {
+        // non-JSON string, pass through
+      }
+    } else if (body && typeof body === 'object' && typeof body.message === 'string') {
+      body.message = toBilingualMessage(body.message);
+    }
+    return originalSend.call(this, body);
+  };
+  next();
+});
 
 // v1 api routes  PRIVATE APIs
 app.use('/v1', routes);

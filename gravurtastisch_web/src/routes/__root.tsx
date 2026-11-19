@@ -257,9 +257,13 @@ function RootComponent() {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 4000);
         fetch(healthUrl, { method: "GET", cache: "no-store", signal: controller.signal })
-          .catch(() => {})
+          .catch(() => {
+            // ignore network failure on background keep-alive ping
+          })
           .finally(() => clearTimeout(timeoutId));
-      } catch {}
+      } catch {
+        // ignore keep-alive initialization errors
+      }
     };
 
     // Delay first ping by 15s to keep initial load and Core Web Vitals unblocked

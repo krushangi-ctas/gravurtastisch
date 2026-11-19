@@ -2,6 +2,7 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { useTranslation } from 'react-i18next';
 import {
 	MRT_GlobalFilterTextField,
 	MRT_LinearProgressBar,
@@ -67,6 +68,15 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 	} = table;
 
 	const { isFullScreen, showGlobalFilter } = getState();
+	const { t } = useTranslation();
+
+	const titleKey = typeof title === 'string' ? title.toLowerCase().replace(/[^a-z0-9]/g, '_') : '';
+	const translatedTitle = typeof title === 'string' ? t(`page.${titleKey}`, title) : title;
+	const rawSubtitle = subtitle || (typeof title === 'string' && defaultTableSubtitles[title]) || '';
+	const translatedSubtitle =
+		typeof rawSubtitle === 'string' && titleKey
+			? t(`subtitle.${titleKey}`, rawSubtitle)
+			: rawSubtitle;
 
 	const isMobile = useMediaQuery('(max-width:720px)');
 	const isTablet = useMediaQuery('(max-width:1024px)');
@@ -76,6 +86,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 	const stackAlertBanner = isMobile || !!renderTopToolbarCustomActions || (showGlobalFilter && isTablet);
 
 	const globalFilterProps = {
+		placeholder: t('common.search', 'Search...'),
 		sx: !isTablet
 			? {
 				zIndex: 2
@@ -171,11 +182,11 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 									{title && (
 										<div className="flex flex-col min-w-0 flex-1">
 											<h1 className="text-base sm:text-lg lg:text-xl font-bold tracking-tight text-slate-900 dark:text-slate-100 m-0 truncate leading-tight">
-												{title}
+												{translatedTitle}
 											</h1>
-											{(subtitle || (typeof title === 'string' && defaultTableSubtitles[title])) && (
+											{translatedSubtitle && (
 												<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium whitespace-normal leading-normal mt-0.5 sm:mt-1 break-words">
-													{subtitle || (typeof title === 'string' && defaultTableSubtitles[title])}
+													{translatedSubtitle}
 												</p>
 											)}
 										</div>
@@ -344,7 +355,7 @@ function DataTableTopToolbar<TData extends MRT_RowData>({
 							)}
 
 							{onRefresh && (
-								<Tooltip title="Refresh & Reset filters" arrow>
+								<Tooltip title={t('common.refresh', 'Refresh & Reset filters')} arrow>
 									<button
 										type="button"
 										onClick={handleRefreshClick}

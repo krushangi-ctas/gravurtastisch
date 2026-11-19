@@ -4,6 +4,7 @@ import { memo } from 'react';
 import NavbarToggleButton from 'src/components/theme-layouts/components/navbar/NavbarToggleButton';
 import useFuseLayoutSettings from '@fuse/core/FuseLayout/useFuseLayoutSettings';
 import FullScreenToggle from '../../components/FullScreenToggle';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import UserMenu from '../../components/UserMenu';
 import { Layout1ConfigDefaultsType } from '@/components/theme-layouts/layout1/Layout1Config';
 import useThemeMediaQuery from '../../../../@fuse/hooks/useThemeMediaQuery';
@@ -49,6 +50,7 @@ function ToolbarLayout1(props: ToolbarLayout1Props) {
           </div>
 
           <div className="flex items-center gap-1.5 shrink-0">
+            <LanguageSwitcher />
             <FullScreenToggle />
             <UserMenu onlyAvatar dense />
           </div>

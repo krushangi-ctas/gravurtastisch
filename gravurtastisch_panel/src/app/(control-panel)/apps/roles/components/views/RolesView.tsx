@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import AccessDeniedView from '@/components/AccessDeniedView';
@@ -84,6 +85,7 @@ export type RolesViewProps = {
 };
 
 function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
+	const { t } = useTranslation();
 	const { canView, canCreate, canUpdate, canDelete, scope } = usePermissions();
 	const { enqueueSnackbar } = useSnackbar();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
@@ -547,7 +549,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 			<FuseSvgIcon size={16} className="text-white">
 				heroicons-outline:plus
 			</FuseSvgIcon>
-			<span>Add Role</span>
+			<span>{t('role.addRole', 'Add Role')}</span>
 		</button>
 	) : null;
 
@@ -695,7 +697,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 										</FuseSvgIcon>
 									</div>
 									<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0 truncate">
-										{editing ? 'Edit Role' : 'Create Role'}
+										{editing ? t('role.editRole', 'Edit Role') : t('role.createRole', 'Create Role')}
 									</h2>
 								</div>
 
@@ -722,12 +724,12 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								<div className="bg-white border border-gray-200/90 rounded-xl p-4 sm:p-5 shadow-xs flex flex-col gap-4">
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Role Name <span className="text-red-500">*</span>
+											{t('role.roleName', 'Role Name')} <span className="text-red-500">*</span>
 										</label>
 										<TextField
 											fullWidth
 											required
-											placeholder="e.g., Production Lead, Support Specialist"
+											placeholder={t('role.roleNamePlaceholder', 'e.g., Production Lead, Support Specialist')}
 											value={roleName}
 											onChange={(e) => {
 												setRoleName(e.target.value);
@@ -752,11 +754,11 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 
 									<div>
 										<label className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-											Description
+											{t('role.description', 'Description')}
 										</label>
 										<TextField
 											fullWidth
-											placeholder="Briefly describe responsibilities and scope for this role..."
+											placeholder={t('role.descriptionPlaceholder', 'Briefly describe responsibilities and scope for this role...')}
 											value={description}
 											onChange={(e) => {
 												setDescription(e.target.value);
@@ -789,7 +791,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 											heroicons-outline:key
 										</FuseSvgIcon>
 										<Typography className="text-xs font-bold text-gray-800 uppercase tracking-wider">
-											Section Permissions
+											{t('role.sectionPermissions', 'Section Permissions')}
 										</Typography>
 									</div>
 
@@ -798,22 +800,22 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 											<TableHead className="bg-gray-100 dark:bg-gray-800 border-t border-b border-gray-200 dark:border-gray-700">
 												<TableRow>
 													<TableCell sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
-														Section
+														{t('role.section', 'Section')}
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
-														All
+														{t('role.all', 'All')}
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
-														View
+														{t('role.view', 'View')}
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
-														Create
+														{t('role.create', 'Create')}
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
-														Update
+														{t('role.update', 'Update')}
 													</TableCell>
 													<TableCell align="center" sx={{ fontWeight: 700, fontSize: 11.5, color: 'text.secondary', textTransform: 'uppercase' }}>
-														Delete
+														{t('role.delete', 'Delete')}
 													</TableCell>
 												</TableRow>
 											</TableHead>
@@ -834,7 +836,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 																	<span>{section.title}</span>
 																	{section.isCustom && (
 																		<Chip
-																			label="Custom"
+																			label={t('role.custom', 'Custom')}
 																			size="small"
 																			sx={{
 																				height: 18,
@@ -911,7 +913,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 										textTransform: 'capitalize'
 									}}
 								>
-									Cancel
+									{t('role.cancel', 'Cancel')}
 								</Button>
 								<Button
 									variant="contained"
@@ -932,7 +934,11 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 										py: 1
 									}}
 								>
-									{isSavingRole ? 'Saving...' : editing ? 'Save Changes' : 'Create Role'}
+									{isSavingRole
+										? t('role.saving', 'Saving...')
+										: editing
+										? t('role.saveChanges', 'Save Changes')
+										: t('role.createRole', 'Create Role')}
 								</Button>
 							</DialogActions>
 						</div>
@@ -961,11 +967,10 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 									</FuseSvgIcon>
 								</div>
 								<div className="flex flex-col">
-									<h3 className="text-base font-bold text-slate-800 m-0">Delete Role</h3>
+									<h3 className="text-base font-bold text-slate-800 m-0">{t('role.deleteRole', 'Delete Role')}</h3>
 									<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
-										Are you sure you want to delete role{' '}
-										<strong className="text-slate-800 font-semibold">{confirmDeleteState.role?.role_name}</strong>?
-										Users assigned to this role may lose their permissions.
+										{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
+										<strong className="text-slate-800 font-semibold">{confirmDeleteState.role?.role_name}</strong>? {t('confirm.thisActionCannotBeUndone', 'This action cannot be undone.')}
 									</p>
 								</div>
 							</div>
@@ -985,7 +990,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								disabled={isActionLoading}
 								className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
 							>
-								Cancel
+								{t('role.cancel', 'Cancel')}
 							</button>
 							<button
 								type="button"
@@ -994,7 +999,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 								className="h-9 px-5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5"
 							>
 								{isActionLoading && <CircularProgress size={14} color="inherit" />}
-								<span>Delete</span>
+								<span>{t('role.delete', 'Delete')}</span>
 							</button>
 						</div>
 					</Dialog>

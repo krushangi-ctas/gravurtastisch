@@ -23,7 +23,7 @@ const sanitizeScreenshotUrl = (url) => {
       const parsed = new URL(trimmed);
       return parsed.pathname;
     } catch {
-      return trimmed.replace(/^https?:\/\/[^\/]+/, '');
+      return trimmed.replace(/^https?:\/\/[^/]+/, '');
     }
   }
   return trimmed;

@@ -9,6 +9,7 @@ import SettingsAppNavigation from '../../lib/constants/SettingsAppNavigation';
 
 import usePermissions from '@/hooks/usePermissions';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 type SettingsAppSidebarContentProps = {
 	className?: string;
@@ -18,6 +19,7 @@ type SettingsAppSidebarContentProps = {
 type NavItemWithSection = FuseNavItemType & { authSection?: string };
 
 function SettingsAppSidebarContent(props: SettingsAppSidebarContentProps) {
+	const { t } = useTranslation();
 	const { className, onSetSidebarOpen } = props;
 	const isMobile = useThemeMediaQuery((theme) => theme.breakpoints.down('lg'));
 	const { canView } = usePermissions();
@@ -34,7 +36,7 @@ function SettingsAppSidebarContent(props: SettingsAppSidebarContentProps) {
 	return (
 		<div>
 			<div className={clsx('flex items-center justify-between p-4', className)}>
-				<Typography className="text-4xl leading-none font-extrabold tracking-tight"> Settings</Typography>
+				<Typography className="text-4xl leading-none font-extrabold tracking-tight"> {t('nav.settings', 'Settings')}</Typography>
 				{isMobile && (
 					<IconButton
 						onClick={() => onSetSidebarOpen(false)}

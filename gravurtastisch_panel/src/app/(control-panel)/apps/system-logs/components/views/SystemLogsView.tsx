@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -100,6 +101,7 @@ interface DateRangePickerProps {
 }
 
 function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProps) {
+	const { t } = useTranslation();
 	const [currentMonth, setCurrentMonth] = useState(new Date());
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 	const [tempRange, setTempRange] = useState<Record<string, Date | null>>(value);
@@ -265,11 +267,11 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 					}}
 					sx={{ textTransform: 'none', fontSize: '12px', color: 'text.secondary' }}
 				>
-					All Dates
+					{t('filter.allDates', 'All Dates')}
 				</Button>
 				<Box sx={{ display: 'flex', gap: 1 }}>
 					<Button size="small" onClick={handleCancel}>
-						Cancel
+						{t('common.cancel', 'Cancel')}
 					</Button>
 					<Button
 						size="small"
@@ -277,7 +279,7 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 						onClick={handleApply}
 						disabled={!tempRange.from}
 					>
-						Apply
+						{t('common.apply', 'Apply')}
 					</Button>
 				</Box>
 			</Box>
@@ -286,6 +288,7 @@ function CustomDateRangePicker({ value, onChange, onClose }: DateRangePickerProp
 }
 
 export default function SystemLogsView() {
+	const { t } = useTranslation();
 	const { scope } = usePermissions();
 	const activeScope = scope === 'seller' ? 'seller' : 'admin';
 
@@ -465,7 +468,7 @@ export default function SystemLogsView() {
 			{
 				id: 'name',
 				accessorFn: (row) => row.name || [row.first_name, row.last_name].filter(Boolean).join(' ') || row.email || '',
-				header: 'Name',
+				header: t('th.name', 'Name'),
 				size: 180,
 				Cell: ({ row }) => {
 					const item = row.original;
@@ -499,7 +502,7 @@ export default function SystemLogsView() {
 			},
 			{
 				accessorKey: 'email',
-				header: 'Email',
+				header: t('th.email', 'Email'),
 				size: 210,
 				Cell: ({ cell }) => {
 					const email = cell.getValue<string>();
@@ -526,7 +529,7 @@ export default function SystemLogsView() {
 			},
 			{
 				accessorKey: 'role_name',
-				header: 'Role',
+				header: t('th.role', 'Role'),
 				size: 130,
 				Cell: ({ cell }) => {
 					const roleName = cell.getValue<string>() || 'Super Admin';
@@ -546,10 +549,18 @@ export default function SystemLogsView() {
 			},
 			{
 				accessorKey: 'operation',
-				header: 'Operation',
+				header: t('th.operation', 'Operation'),
 				size: 110,
 				Cell: ({ cell }) => {
 					const op = (cell.getValue<string>() || '').toUpperCase();
+					const displayOp =
+						op === 'CREATE'
+							? t('systemLogs.opCreate', 'CREATE')
+							: op === 'UPDATE'
+								? t('systemLogs.opUpdate', 'UPDATE')
+								: op === 'DELETE'
+									? t('systemLogs.opDelete', 'DELETE')
+									: op;
 					return (
 						<Typography
 							sx={{
@@ -559,18 +570,18 @@ export default function SystemLogsView() {
 								whiteSpace: 'nowrap'
 							}}
 						>
-							{op || '—'}
+							{displayOp || '—'}
 						</Typography>
 					);
 				}
 			},
 			{
 				accessorKey: 'key',
-				header: 'Action / Key',
+				header: t('th.action___key', 'Action / Key'),
 				size: 210,
 				Cell: ({ cell }) => {
 					const key = cell.getValue<string>() || '';
-					const displayTitle = formatActionKey(key);
+					const displayTitle = formatActionKey(key, t);
 					return (
 						<div className="flex items-center gap-1.5 min-w-0">
 							<Tooltip title={key ? `Raw key: ${key}` : ''} arrow>
@@ -594,7 +605,7 @@ export default function SystemLogsView() {
 			},
 			{
 				accessorKey: 'ip_address',
-				header: 'IP Address',
+				header: t('th.ip_address', 'IP Address'),
 				size: 140,
 				Cell: ({ cell }) => {
 					const ip = cell.getValue<string>() || '—';
@@ -608,7 +619,7 @@ export default function SystemLogsView() {
 			},
 			{
 				accessorKey: 'createdAt',
-				header: 'Created At',
+				header: t('th.created_at', 'Created At'),
 				size: 170,
 				Cell: ({ cell }) => {
 					const dateVal = cell.getValue<string>();
@@ -633,7 +644,7 @@ export default function SystemLogsView() {
 				}
 			}
 		],
-		[]
+		[t]
 	);
 
 	// Action buttons in Top Toolbar
@@ -721,7 +732,7 @@ export default function SystemLogsView() {
 						}}
 					>
 						<MenuItem value="ALL">
-							All Users
+							{t('logs.allUsers', 'All Users')}
 						</MenuItem>
 						{usersList.map((u) => (
 							<MenuItem key={u.id} value={u.id}>
@@ -812,7 +823,7 @@ export default function SystemLogsView() {
 						}}
 					>
 						<MenuItem value="ALL">
-							All Operations
+							{t('logs.allOperations', 'All Operations')}
 						</MenuItem>
 						<MenuItem value="CREATE">
 							CREATE
@@ -845,7 +856,7 @@ export default function SystemLogsView() {
 						? isSameDay(searchDate.from, searchDate.to)
 							? format(searchDate.from, 'dd MMM yyyy')
 							: `${format(searchDate.from, 'dd MMM')} - ${format(searchDate.to, 'dd MMM')}`
-						: 'Date Range'}
+						: t('filter.dateRange', 'Date Range')}
 				</Button>
 
 				{/* Date Range Popover */}

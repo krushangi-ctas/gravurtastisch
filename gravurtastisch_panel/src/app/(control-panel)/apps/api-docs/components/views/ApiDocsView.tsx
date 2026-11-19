@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import Button from '@mui/material/Button';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -84,6 +85,9 @@ interface TechnicalDocData {
 }
 
 function ApiDocsView() {
+	const { t, i18n } = useTranslation();
+	const isDe = i18n.language === 'de';
+
 	const containerRef = useRef<HTMLDivElement>(null);
 	const [isLoading, setIsLoading] = useState(true);
 	const [loadError, setLoadError] = useState<string | null>(null);
@@ -148,7 +152,8 @@ function ApiDocsView() {
 
 	// Load Technical Sections Data
 	useEffect(() => {
-		fetch('/api-docs/technical-doc-sections.json')
+		const url = isDe ? '/api-docs/technical-doc-sections-de.json' : '/api-docs/technical-doc-sections.json';
+		fetch(url)
 			.then((res) => {
 				if (!res.ok) throw new Error('Failed to load technical doc sections data');
 				return res.json();
@@ -159,9 +164,9 @@ function ApiDocsView() {
 			.catch((err) => {
 				console.error('Could not load technical-doc-sections.json:', err);
 			});
-	}, []);
+	}, [isDe]);
 
-	// Initialize ReDoc when in api-docs section
+	// Initialize ReDoc when in api-docs section or when language changes
 	useEffect(() => {
 		if (selectedSection !== 'api-docs') return;
 
@@ -185,18 +190,14 @@ function ApiDocsView() {
 				return;
 			}
 
-			if (redocInitialized.current && containerRef.current.children.length > 0) {
-				if (isMounted) setIsLoading(false);
-				return;
-			}
-
 			try {
 				let spec: any = null;
+				const specUrl = isDe ? '/api-docs/openapi-de.json' : '/api-docs/openapi.json';
 				try {
-					const res = await fetch('/api-docs/openapi.json');
+					const res = await fetch(specUrl);
 					if (res.ok) spec = await res.json();
 				} catch (_e) {
-					console.error('Local /api-docs/openapi.json failed, falling back to backend');
+					console.error(`Local ${specUrl} failed, falling back to backend`);
 				}
 
 				if (!spec) {
@@ -304,7 +305,7 @@ function ApiDocsView() {
 			if (checkTimer) clearTimeout(checkTimer);
 			if (observer) observer.disconnect();
 		};
-	}, [selectedSection]);
+	}, [selectedSection, isDe]);
 
 	// Filtered lists for search
 	const filteredModels = useMemo(() => {
@@ -436,14 +437,14 @@ function ApiDocsView() {
 					<div>
 						<div className="flex items-center gap-2.5">
 							<h1 className="text-lg font-bold text-slate-900 dark:text-white m-0 tracking-tight">
-								Technical Documentation
+								{t('techDocs.title', 'Technical Documentation')}
 							</h1>
 							<span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono font-semibold border border-slate-300 dark:border-slate-700">
 								v1.0.0
 							</span>
 						</div>
 						<p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 m-0 font-medium mt-0.5">
-							Interactive REST APIs, Mongoose Schemas, Middlewares, Utilities & System Architecture
+							{t('techDocs.subtitle', 'Interactive REST APIs, Mongoose Schemas, Middlewares, Utilities & System Architecture')}
 						</p>
 					</div>
 				</div>
@@ -458,10 +459,10 @@ function ApiDocsView() {
 						className="lg:hidden flex items-center gap-1.5 px-3 py-1.5 rounded-lg border-blue-500/30 bg-blue-50/70 dark:bg-blue-950/40 text-[#0032ab] dark:text-blue-300 font-bold text-xs shadow-2xs"
 					>
 						<FuseSvgIcon size={16}>{mobileView === 'nav' ? 'lucide:file-text' : 'lucide:menu'}</FuseSvgIcon>
-						<span>{mobileView === 'nav' ? 'Show Details' : 'Docs Menu'}</span>
+						<span>{mobileView === 'nav' ? t('techDocs.showDetails', 'Show Details') : t('techDocs.docsMenu', 'Docs Menu')}</span>
 					</Button>
 
-					<Tooltip title={isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'}>
+					<Tooltip title={isFullscreen ? t('techDocs.exitFullscreen', 'Exit Fullscreen') : t('techDocs.fullscreen', 'Fullscreen')}>
 						<Button
 							variant="outlined"
 							size="small"
@@ -487,7 +488,7 @@ function ApiDocsView() {
 								type="text"
 								value={searchQuery}
 								onChange={(e) => setSearchQuery(e.target.value)}
-								placeholder="Search docs, models & modules..."
+								placeholder={t('techDocs.searchPlaceholder', 'Search docs, models & modules...')}
 								className="w-full pl-9 pr-3 py-2 text-[13px] rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500/20 font-medium"
 							/>
 							<div className="absolute left-3 top-2.5 text-slate-400">
@@ -512,7 +513,7 @@ function ApiDocsView() {
 								<FuseSvgIcon size={20} className={selectedSection === 'api-docs' ? 'text-[#0032ab] dark:text-blue-400' : 'text-slate-500'}>
 									lucide:book-open
 								</FuseSvgIcon>
-								<span>API Documentation</span>
+								<span>{t('techDocs.apiDocumentation', 'API Documentation')}</span>
 							</div>
 							<span className={`text-[11px] px-2 py-0.5 rounded font-mono font-semibold ${
 								selectedSection === 'api-docs'
@@ -538,7 +539,7 @@ function ApiDocsView() {
 									<FuseSvgIcon size={20} className={selectedSection === 'models' ? 'text-[#0032ab] dark:text-blue-400' : 'text-slate-500'}>
 										lucide:database
 									</FuseSvgIcon>
-									<span>Models ({filteredModels.length})</span>
+									<span>{t('techDocs.models', 'Models')} ({filteredModels.length})</span>
 								</div>
 								<span
 									onClick={(e) => toggleExpand('models', e)}
@@ -598,7 +599,7 @@ function ApiDocsView() {
 									<FuseSvgIcon size={20} className={selectedSection === 'middlewares' ? 'text-[#0032ab] dark:text-blue-400' : 'text-slate-500'}>
 										lucide:shield-check
 									</FuseSvgIcon>
-									<span>Middlewares ({filteredMiddlewares.length})</span>
+									<span>{t('techDocs.middlewares', 'Middlewares')} ({filteredMiddlewares.length})</span>
 								</div>
 								<span
 									onClick={(e) => toggleExpand('middlewares', e)}
@@ -651,7 +652,7 @@ function ApiDocsView() {
 									<FuseSvgIcon size={20} className={selectedSection === 'utilities' ? 'text-[#0032ab] dark:text-blue-400' : 'text-slate-500'}>
 										lucide:wrench
 									</FuseSvgIcon>
-									<span>Utilities ({filteredUtilities.length})</span>
+									<span>{t('techDocs.utilities', 'Utilities')} ({filteredUtilities.length})</span>
 								</div>
 								<span
 									onClick={(e) => toggleExpand('utilities', e)}
@@ -704,7 +705,7 @@ function ApiDocsView() {
 									<FuseSvgIcon size={20} className={selectedSection === 'plugins' ? 'text-[#0032ab] dark:text-blue-400' : 'text-slate-500'}>
 										lucide:puzzle
 									</FuseSvgIcon>
-									<span>Plugins ({filteredPlugins.length})</span>
+									<span>{t('techDocs.plugins', 'Plugins')} ({filteredPlugins.length})</span>
 								</div>
 								<span
 									onClick={(e) => toggleExpand('plugins', e)}
@@ -756,7 +757,7 @@ function ApiDocsView() {
 								<FuseSvgIcon size={20} className={selectedSection === 'configuration' ? 'text-[#0032ab] dark:text-blue-400' : 'text-slate-500'}>
 									lucide:settings
 								</FuseSvgIcon>
-								<span>Configuration</span>
+								<span>{t('techDocs.configuration', 'Configuration')}</span>
 							</div>
 							<span className={`text-[11px] px-2 py-0.5 rounded font-mono font-semibold ${
 								selectedSection === 'configuration'
@@ -781,15 +782,15 @@ function ApiDocsView() {
 							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-xs font-bold text-[#0032ab] dark:text-blue-400 hover:bg-slate-50 shadow-2xs cursor-pointer"
 						>
 							<FuseSvgIcon size={14}>lucide:arrow-left</FuseSvgIcon>
-							<span>‹ Docs Menu</span>
+							<span>‹ {t('techDocs.docsMenu', 'Docs Menu')}</span>
 						</button>
 						<span className="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">
-							{selectedSection === 'models' && (activeModel?.shortTitle || 'Models')}
-							{selectedSection === 'middlewares' && (activeMiddleware?.title || 'Middlewares')}
-							{selectedSection === 'utilities' && (activeUtility?.title || 'Utilities')}
-							{selectedSection === 'plugins' && (activePlugin?.title || 'Plugins')}
-							{selectedSection === 'api-docs' && 'API Documentation'}
-							{selectedSection === 'configuration' && 'Configuration'}
+							{selectedSection === 'models' && (activeModel?.shortTitle || t('techDocs.models', 'Models'))}
+							{selectedSection === 'middlewares' && (activeMiddleware?.title || t('techDocs.middlewares', 'Middlewares'))}
+							{selectedSection === 'utilities' && (activeUtility?.title || t('techDocs.utilities', 'Utilities'))}
+							{selectedSection === 'plugins' && (activePlugin?.title || t('techDocs.plugins', 'Plugins'))}
+							{selectedSection === 'api-docs' && t('techDocs.apiDocumentation', 'API Documentation')}
+							{selectedSection === 'configuration' && t('techDocs.configuration', 'Configuration')}
 						</span>
 					</div>
 
@@ -802,10 +803,10 @@ function ApiDocsView() {
 								<div className="flex flex-col items-center justify-center py-28 px-4 text-center">
 									<CircularProgress size={40} thickness={4} className="text-slate-800 mb-4" />
 									<h3 className="text-base font-semibold text-slate-800 dark:text-slate-200 m-0">
-										Loading Interactive OpenAPI Reference...
+										{t('techDocs.loadingApi', 'Loading Interactive OpenAPI Reference...')}
 									</h3>
 									<p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-										Mounting ReDoc OpenAPI specification with realistic request & response samples
+										{t('techDocs.mountingRedoc', 'Mounting ReDoc OpenAPI specification with realistic request & response samples')}
 									</p>
 								</div>
 							)}
@@ -814,7 +815,7 @@ function ApiDocsView() {
 								<div className="m-6 p-6 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 rounded-2xl text-rose-800 dark:text-rose-200">
 									<div className="flex items-center gap-2.5 font-bold text-base">
 										<FuseSvgIcon size={20}>lucide:alert-triangle</FuseSvgIcon>
-										<span>Unable to load API Documentation</span>
+										<span>{t('techDocs.unableToLoadApi', 'Unable to load API Documentation')}</span>
 									</div>
 									<p className="text-sm mt-1.5 text-rose-700 dark:text-rose-300">{loadError}</p>
 									<Button
@@ -823,7 +824,7 @@ function ApiDocsView() {
 										onClick={() => window.location.reload()}
 										className="mt-3.5 bg-rose-600 hover:bg-rose-700 text-white normal-case text-sm font-semibold rounded-lg"
 									>
-										Reload Page
+										{t('techDocs.reloadPage', 'Reload Page')}
 									</Button>
 								</div>
 							)}
@@ -870,7 +871,7 @@ function ApiDocsView() {
 										className="normal-case text-xs font-semibold px-3 py-1.5 rounded-lg border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-2xs transition-all flex items-center gap-1.5"
 									>
 										<FuseSvgIcon size={14}>lucide:chevron-left</FuseSvgIcon>
-										<span>Previous</span>
+										<span>{t('techDocs.previous', 'Previous')}</span>
 									</Button>
 									<Button
 										variant="outlined"
@@ -879,7 +880,7 @@ function ApiDocsView() {
 										onClick={goToNext}
 										className="normal-case text-xs font-semibold px-3 py-1.5 rounded-lg border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 disabled:opacity-40 hover:bg-slate-100 dark:hover:bg-slate-800 shadow-2xs transition-all flex items-center gap-1.5"
 									>
-										<span>Next</span>
+										<span>{t('techDocs.next', 'Next')}</span>
 										<FuseSvgIcon size={14}>lucide:chevron-right</FuseSvgIcon>
 									</Button>
 
@@ -896,7 +897,7 @@ function ApiDocsView() {
 													: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
 											}`}
 										>
-											Split
+											{t('techDocs.split', 'Split')}
 										</button>
 										<button
 											type="button"
@@ -907,7 +908,7 @@ function ApiDocsView() {
 													: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
 											}`}
 										>
-											Specs
+											{t('techDocs.specs', 'Specs')}
 										</button>
 										<button
 											type="button"
@@ -918,7 +919,7 @@ function ApiDocsView() {
 													: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
 											}`}
 										>
-											Source
+											{t('techDocs.source', 'Source')}
 										</button>
 									</div>
 								</div>
@@ -942,10 +943,10 @@ function ApiDocsView() {
 												<div>
 													<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-[#0032ab] dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 shadow-2xs">
 														<span className="w-2 h-2 rounded-full bg-[#0032ab] dark:bg-blue-400 animate-pulse" />
-														{selectedSection === 'models' && 'Mongoose Schema Definition'}
-														{selectedSection === 'middlewares' && 'Express Guard / Interceptor'}
-														{selectedSection === 'utilities' && 'Backend Utility Class'}
-														{selectedSection === 'plugins' && 'Mongoose Schema Plugin'}
+														{selectedSection === 'models' && t('techDocs.mongooseSchemaDef', 'Mongoose Schema Definition')}
+														{selectedSection === 'middlewares' && t('techDocs.expressGuardInterceptor', 'Express Guard / Interceptor')}
+														{selectedSection === 'utilities' && t('techDocs.backendUtilityClass', 'Backend Utility Class')}
+														{selectedSection === 'plugins' && t('techDocs.mongooseSchemaPlugin', 'Mongoose Schema Plugin')}
 													</span>
 													<h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-3 m-0 tracking-tight">
 														{selectedSection === 'models' && activeModel?.title}
@@ -1006,10 +1007,10 @@ function ApiDocsView() {
 														</div>
 														<div>
 															<h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 m-0">
-																Key Schema Properties & Indexes
+																{t('techDocs.keySchemaProperties', 'Key Schema Properties & Indexes')}
 															</h3>
 															<span className="text-xs text-slate-400 dark:text-slate-500">
-																Showing {filteredKeyFields.length} of {activeModel.keyFields.length} properties
+																{t('techDocs.showingProperties', { count: filteredKeyFields.length, total: activeModel.keyFields.length, defaultValue: `Showing ${filteredKeyFields.length} of ${activeModel.keyFields.length} properties` })}
 															</span>
 														</div>
 													</div>
@@ -1020,7 +1021,7 @@ function ApiDocsView() {
 															type="text"
 															value={propertySearchQuery}
 															onChange={(e) => setPropertySearchQuery(e.target.value)}
-															placeholder="Filter properties..."
+															placeholder={t('techDocs.filterProperties', 'Filter properties...')}
 															className="w-48 sm:w-56 px-3 py-1.5 text-xs rounded-lg bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-1 focus:ring-[#0032ab] shadow-inner"
 														/>
 														{propertySearchQuery && (
@@ -1051,7 +1052,7 @@ function ApiDocsView() {
 																		type="button"
 																		onClick={() => copyText(field.name, `prop-${idx}`)}
 																		className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-[#0032ab] dark:hover:text-blue-300"
-																		title="Copy property name"
+																		title={t('techDocs.copyPropertyName', 'Copy property name')}
 																	>
 																		<FuseSvgIcon size={14}>{isKeyCopied ? 'lucide:check' : 'lucide:copy'}</FuseSvgIcon>
 																	</button>
@@ -1072,24 +1073,24 @@ function ApiDocsView() {
 														<FuseSvgIcon size={16} className="text-indigo-600 dark:text-indigo-400">lucide:git-commit-horizontal</FuseSvgIcon>
 													</div>
 													<h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 m-0">
-														Express Request Lifecycle & Interception
+														{t('techDocs.requestLifecycleTitle', 'Express Request Lifecycle & Interception')}
 													</h3>
 												</div>
 												<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 													<div className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-slate-400">Step 1</span>
-														<div className="text-sm font-bold text-slate-900 dark:text-white mt-1">HTTP Request Arrival</div>
-														<p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 m-0">Inspects headers, Bearer tokens, cookies, and route parameters.</p>
+														<span className="text-[11px] font-bold uppercase text-slate-400">{t('techDocs.step1', 'Step 1')}</span>
+														<div className="text-sm font-bold text-slate-900 dark:text-white mt-1">{t('techDocs.step1Title', 'HTTP Request Arrival')}</div>
+														<p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 m-0">{t('techDocs.step1Desc', 'Inspects headers, Bearer tokens, cookies, and route parameters.')}</p>
 													</div>
 													<div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-[#0032ab] dark:text-blue-400">Step 2</span>
-														<div className="text-sm font-bold text-[#0032ab] dark:text-blue-300 mt-1">Security / Guard Hook</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">Decodes tokens, verifies session validity, checks user role authorization.</p>
+														<span className="text-[11px] font-bold uppercase text-[#0032ab] dark:text-blue-400">{t('techDocs.step2', 'Step 2')}</span>
+														<div className="text-sm font-bold text-[#0032ab] dark:text-blue-300 mt-1">{t('techDocs.step2Title', 'Security / Guard Hook')}</div>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.step2Desc', 'Decodes tokens, verifies session validity, checks user role authorization.')}</p>
 													</div>
 													<div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Step 3</span>
-														<div className="text-sm font-bold text-emerald-700 dark:text-emerald-300 mt-1">Resolution & Pipeline</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">Passes execution forward via next() or rejects with formatted ApiError.</p>
+														<span className="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400">{t('techDocs.step3', 'Step 3')}</span>
+														<div className="text-sm font-bold text-emerald-700 dark:text-emerald-300 mt-1">{t('techDocs.step3Title', 'Resolution & Pipeline')}</div>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.step3Desc', 'Passes execution forward via next() or rejects with formatted ApiError.')}</p>
 													</div>
 												</div>
 											</div>
@@ -1103,24 +1104,24 @@ function ApiDocsView() {
 														<FuseSvgIcon size={16} className="text-amber-600 dark:text-amber-400">lucide:layers</FuseSvgIcon>
 													</div>
 													<h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 m-0">
-														Utility Execution & Functional Scope
+														{t('techDocs.utilityScopeTitle', 'Utility Execution & Functional Scope')}
 													</h3>
 												</div>
 												<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 													<div className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-slate-400">Execution</span>
-														<div className="text-sm font-bold text-slate-900 dark:text-white mt-1">Async & Sync Safety</div>
-														<p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 m-0">Guarantees zero unhandled promise rejections and clean call stacks.</p>
+														<span className="text-[11px] font-bold uppercase text-slate-400">{t('techDocs.utilExec', 'Execution')}</span>
+														<div className="text-sm font-bold text-slate-900 dark:text-white mt-1">{t('techDocs.utilExecTitle', 'Async & Sync Safety')}</div>
+														<p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 m-0">{t('techDocs.utilExecDesc', 'Guarantees zero unhandled promise rejections and clean call stacks.')}</p>
 													</div>
 													<div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-[#0032ab] dark:text-blue-400">Modularity</span>
-														<div className="text-sm font-bold text-[#0032ab] dark:text-blue-300 mt-1">Pure Core Dependency</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">Re-usable across controllers, background workers, and CLI commands.</p>
+														<span className="text-[11px] font-bold uppercase text-[#0032ab] dark:text-blue-400">{t('techDocs.utilMod', 'Modularity')}</span>
+														<div className="text-sm font-bold text-[#0032ab] dark:text-blue-300 mt-1">{t('techDocs.utilModTitle', 'Pure Core Dependency')}</div>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.utilModDesc', 'Re-usable across controllers, background workers, and CLI commands.')}</p>
 													</div>
 													<div className="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-900/60 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-indigo-600 dark:text-indigo-400">Error Contracts</span>
-														<div className="text-sm font-bold text-indigo-700 dark:text-indigo-300 mt-1">Standardized Output</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">Uniform JSON payload response format matching the Gravurtastisch standard.</p>
+														<span className="text-[11px] font-bold uppercase text-indigo-600 dark:text-indigo-400">{t('techDocs.utilErr', 'Error Contracts')}</span>
+														<div className="text-sm font-bold text-indigo-700 dark:text-indigo-300 mt-1">{t('techDocs.utilErrTitle', 'Standardized Output')}</div>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.utilErrDesc', 'Uniform JSON payload response format matching the Gravurtastisch standard.')}</p>
 													</div>
 												</div>
 											</div>
@@ -1134,24 +1135,24 @@ function ApiDocsView() {
 														<FuseSvgIcon size={16} className="text-teal-600 dark:text-teal-400">lucide:puzzle</FuseSvgIcon>
 													</div>
 													<h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 m-0">
-														Mongoose Schema Plugin Architecture
+														{t('techDocs.pluginArchTitle', 'Mongoose Schema Plugin Architecture')}
 													</h3>
 												</div>
 												<div className="grid grid-cols-1 md:grid-cols-3 gap-3">
 													<div className="p-4 rounded-xl bg-slate-50/70 dark:bg-slate-800/40 border border-slate-200/80 dark:border-slate-800 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-slate-400">Binding</span>
-														<div className="text-sm font-bold text-slate-900 dark:text-white mt-1">schema.plugin(fn)</div>
-														<p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 m-0">Globally attaches methods, statics, and query transforms to schemas.</p>
+														<span className="text-[11px] font-bold uppercase text-slate-400">{t('techDocs.pluginBind', 'Binding')}</span>
+														<div className="text-sm font-bold text-slate-900 dark:text-white mt-1">{t('techDocs.pluginBindTitle', 'schema.plugin(fn)')}</div>
+														<p className="text-xs text-slate-500 dark:text-slate-400 mt-1.5 m-0">{t('techDocs.pluginBindDesc', 'Globally attaches methods, statics, and query transforms to schemas.')}</p>
 													</div>
 													<div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/40 border border-blue-200/80 dark:border-blue-900/60 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-[#0032ab] dark:text-blue-400">Serialization</span>
-														<div className="text-sm font-bold text-[#0032ab] dark:text-blue-300 mt-1">toJSON Sanitization</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">Automatically strips password, __v, and internal timestamps on output.</p>
+														<span className="text-[11px] font-bold uppercase text-[#0032ab] dark:text-blue-400">{t('techDocs.pluginSer', 'Serialization')}</span>
+														<div className="text-sm font-bold text-[#0032ab] dark:text-blue-300 mt-1">{t('techDocs.pluginSerTitle', 'toJSON Sanitization')}</div>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.pluginSerDesc', 'Automatically strips password, __v, and internal timestamps on output.')}</p>
 													</div>
 													<div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/40 border border-emerald-200/80 dark:border-emerald-900/60 text-center shadow-2xs">
-														<span className="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400">Pagination</span>
-														<div className="text-sm font-bold text-emerald-700 dark:text-emerald-300 mt-1">Unified Query Results</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">Computes limit, page, totalPages, and totalResults in a single call.</p>
+														<span className="text-[11px] font-bold uppercase text-emerald-600 dark:text-emerald-400">{t('techDocs.pluginPag', 'Pagination')}</span>
+														<div className="text-sm font-bold text-emerald-700 dark:text-emerald-300 mt-1">{t('techDocs.pluginPagTitle', 'Unified Query Results')}</div>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.pluginPagDesc', 'Computes limit, page, totalPages and totalResults in a single call.')}</p>
 													</div>
 												</div>
 											</div>
@@ -1165,7 +1166,7 @@ function ApiDocsView() {
 														<FuseSvgIcon size={16} className="text-emerald-600 dark:text-emerald-400">lucide:circle-check</FuseSvgIcon>
 													</div>
 													<h3 className="text-sm font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 m-0">
-														Implementation Guidelines & Behavior
+														{t('techDocs.implementationGuidelines', 'Implementation Guidelines & Behavior')}
 													</h3>
 												</div>
 												<ul className="space-y-3 p-0 m-0 list-none">
@@ -1215,7 +1216,7 @@ function ApiDocsView() {
 												className="normal-case text-xs font-semibold px-3 py-1.5 rounded-lg border-slate-700 bg-slate-800/70 text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-1.5 shadow-2xs transition-all"
 											>
 												<FuseSvgIcon size={14}>{copied ? 'lucide:check' : 'lucide:copy'}</FuseSvgIcon>
-												<span>{copied ? 'Copied!' : 'Copy Code'}</span>
+												<span>{copied ? t('techDocs.copied', 'Copied!') : t('techDocs.copyCode', 'Copy Code')}</span>
 											</Button>
 										</div>
 
@@ -1251,26 +1252,26 @@ function ApiDocsView() {
 								<div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#0032ab] via-blue-500 to-indigo-500" />
 
 								<span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-50 dark:bg-blue-950/70 text-[#0032ab] dark:text-blue-300 border border-blue-200/80 dark:border-blue-800/60 shadow-2xs">
-									Runtime Configuration
+									{t('techDocs.runtimeConfiguration', 'Runtime Configuration')}
 								</span>
 								<h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-3 m-0 tracking-tight">
-									Runtime Configuration & Environment
+									{t('techDocs.runtimeConfigEnv', 'Runtime Configuration & Environment')}
 								</h2>
 								<p className="text-base text-slate-600 dark:text-slate-300 mt-2 leading-relaxed m-0">
-									Server process ports, database cluster connection, and JWT session lifetimes.
+									{t('techDocs.runtimeConfigDesc', 'Server process ports, database cluster connection, and JWT session lifetimes.')}
 								</p>
 
 								<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
 									<div className="bg-white dark:bg-slate-900/90 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 text-center shadow-[0_4px_16px_-4px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] hover:shadow-md transition-all">
-										<div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Backend Port</div>
+										<div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('techDocs.backendPort', 'Backend Port')}</div>
 										<div className="text-3xl font-extrabold text-[#0032ab] dark:text-blue-400 mt-1.5">{docData.configuration.serverPort}</div>
 									</div>
 									<div className="bg-white dark:bg-slate-900/90 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 text-center shadow-[0_4px_16px_-4px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] hover:shadow-md transition-all">
-										<div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Environment</div>
+										<div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('techDocs.environment', 'Environment')}</div>
 										<div className="text-3xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-1.5 capitalize">{docData.configuration.environment}</div>
 									</div>
 									<div className="bg-white dark:bg-slate-900/90 p-5 rounded-xl border border-slate-200/80 dark:border-slate-800/80 text-center shadow-[0_4px_16px_-4px_rgba(0,0,0,0.05)] dark:shadow-[0_4px_16px_-4px_rgba(0,0,0,0.4)] hover:shadow-md transition-all">
-										<div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Auth Token Window</div>
+										<div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{t('techDocs.authTokenWindow', 'Auth Token Window')}</div>
 										<div className="text-3xl font-extrabold text-indigo-600 dark:text-indigo-400 mt-1.5">{docData.configuration.authWindow}</div>
 									</div>
 								</div>
@@ -1295,7 +1296,7 @@ function ApiDocsView() {
 															type="button"
 															onClick={() => copyText(entry.key, `env-${idx}-${eIdx}`)}
 															className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-[#0032ab] dark:hover:text-blue-300 p-1"
-															title="Copy variable key"
+															title={t('techDocs.copyVariableKey', 'Copy variable key')}
 														>
 															<FuseSvgIcon size={14}>{isEnvCopied ? 'lucide:check' : 'lucide:copy'}</FuseSvgIcon>
 														</button>

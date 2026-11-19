@@ -3,6 +3,7 @@ const httpStatus = require('http-status');
 const config = require('../config/config');
 const logger = require('../config/logger');
 const ApiError = require('../utils/ApiError');
+const { toBilingualMessage } = require('../utils/bilingual-messages');
 
 const errorConverter = (err, req, res, next) => {
   let error = err;
@@ -28,10 +29,11 @@ const errorHandler = (err, req, res, next) => {
   res.locals.errorMessage = err.message;
 
   const cleanMessage = (message || '').replace(/["\\]/g, '');
+  const bilingualMessage = toBilingualMessage(cleanMessage);
 
   const response = {
     code: statusCode,
-    message: cleanMessage,
+    message: bilingualMessage,
   };
 
   if (config.env === 'development') {

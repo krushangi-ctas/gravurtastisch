@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import {
 	Dialog,
 	DialogTitle,
@@ -12,11 +13,7 @@ import {
 	Switch,
 	FormControlLabel,
 	CircularProgress,
-	Chip,
-	MenuItem,
-	Select,
-	FormControl,
-	InputLabel
+	Chip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -48,6 +45,7 @@ export default function ModuleDialog({
 	isAdminUser = false,
 	defaultAdminSection = true
 }: ModuleDialogProps) {
+	const { t } = useTranslation();
 	const { enqueueSnackbar } = useSnackbar();
 	const createModuleMutation = useCreateModule();
 	const updateModuleMutation = useUpdateModule();
@@ -176,17 +174,12 @@ export default function ModuleDialog({
 							<h3 className="text-base font-semibold text-slate-900 dark:text-white">
 								{isEditing
 									? isChild
-										? 'Edit Child Module'
-										: 'Edit Parent Module'
+										? t('confirm.editChildModule', 'Edit Child Module')
+										: t('confirm.editParentModule', 'Edit Parent Module')
 									: isChild
-									? `Add Child to "${parentModule?.title}"`
-									: 'Create New Parent Module'}
+									? `${t('guide.addChild', 'Add Child')} "${parentModule?.title}"`
+									: t('confirm.createParentModule', 'Create New Parent Module')}
 							</h3>
-							<p className="text-xs text-slate-500">
-								{isChild
-									? 'Child modules contain step-by-step documentation guides.'
-									: 'Parent modules act as category containers for related guides.'}
-							</p>
 						</div>
 					</div>
 					<button
@@ -339,7 +332,7 @@ export default function ModuleDialog({
 						disabled={isPending}
 						className="text-slate-600 hover:bg-slate-100"
 					>
-						Cancel
+						{t('confirm.cancel', 'Cancel')}
 					</Button>
 					<Button
 						type="submit"
@@ -350,9 +343,9 @@ export default function ModuleDialog({
 						{isPending ? (
 							<CircularProgress size={18} className="text-white" />
 						) : isEditing ? (
-							'Save Changes'
+							t('confirm.saveChanges', 'Save Changes')
 						) : (
-							'Create Module'
+							t('confirm.createModule', 'Create Module')
 						)}
 					</Button>
 				</DialogActions>

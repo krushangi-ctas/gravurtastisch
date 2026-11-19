@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   type MRT_ColumnDef,
   type MRT_SortingState,
@@ -66,6 +67,7 @@ function OrdersTable({
   canUpdateOrders?: boolean;
 }) {
   const { enqueueSnackbar } = useSnackbar();
+  const { t } = useTranslation();
   const theme = useTheme();
   const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
   const queryClient = useQueryClient();
@@ -440,7 +442,7 @@ function OrdersTable({
                   }}
                 >
                   <FuseSvgIcon size={13}>heroicons-outline:check-circle</FuseSvgIcon>
-                  Sent
+                  {t('orders.sent', 'Sent')}
                 </Box>
               </Tooltip>
             );
@@ -469,7 +471,7 @@ function OrdersTable({
                   }}
                 >
                   <FuseSvgIcon size={13}>lucide:clock</FuseSvgIcon>
-                  Pending
+                  {t('orders.pending', 'Pending')}
                 </Box>
               </Tooltip>
             );
@@ -704,9 +706,9 @@ function OrdersTable({
 
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-              <Tooltip title={`Quantity: ${orderItem.quantityOrdered}`} arrow>
+              <Tooltip title={`${t('orders.qtyShort', 'Qty')}: ${orderItem.quantityOrdered}`} arrow>
                 <Typography sx={{ fontSize: 12, fontWeight: 600, color: 'text.primary', whiteSpace: 'nowrap' }}>
-                  Qty {orderItem.quantityOrdered}
+                  {t('orders.qtyShort', 'Qty')} {orderItem.quantityOrdered}
                 </Typography>
               </Tooltip>
               {orderItem.conditionSubtypeId && (
@@ -723,15 +725,15 @@ function OrdersTable({
                       fontWeight: 600,
                       lineHeight: 1.1,
                       height: 19,
-                      bgcolor: (t) =>
-                        t.palette.mode === 'dark'
+                      bgcolor: (tTheme) =>
+                        tTheme.palette.mode === 'dark'
                           ? 'rgba(21, 101, 192, 0.18)'
                           : 'rgba(21, 101, 192, 0.08)',
-                      color: (t) =>
-                        t.palette.mode === 'dark' ? '#90CAF9' : '#1565C0',
+                      color: (tTheme) =>
+                        tTheme.palette.mode === 'dark' ? '#90CAF9' : '#1565C0',
                       border: '1px solid',
-                      borderColor: (t) =>
-                        t.palette.mode === 'dark'
+                      borderColor: (tTheme) =>
+                        tTheme.palette.mode === 'dark'
                           ? 'rgba(21, 101, 192, 0.32)'
                           : 'rgba(21, 101, 192, 0.2)',
                       maxWidth: 80,
@@ -740,7 +742,11 @@ function OrdersTable({
                       whiteSpace: 'nowrap',
                     }}
                   >
-                    {orderItem.conditionSubtypeId}
+                    {String(orderItem.conditionSubtypeId).toLowerCase() === 'new'
+                      ? t('orders.conditionNew', 'New')
+                      : String(orderItem.conditionSubtypeId).toLowerCase() === 'used'
+                        ? t('orders.conditionUsed', 'Used')
+                        : orderItem.conditionSubtypeId}
                   </Box>
                 </Tooltip>
               )}
@@ -846,7 +852,7 @@ function OrdersTable({
                     const { color, bg } = urgencyToken(daysDiff as number);
                     return (
                       <Chip
-                        label={`${daysDiff}d left`}
+                        label={t('orders.daysLeft', { count: daysDiff, defaultValue: `${daysDiff}d left` })}
                         size="small"
                         sx={{ ...chipBase, height: 18, fontSize: 10.5, color, bgcolor: bg, flexShrink: 0, '& .MuiChip-label': { px: 0.6 } }}
                       />
@@ -949,7 +955,7 @@ function OrdersTable({
         },
       },
     ],
-    [theme]
+    [theme, t]
   );
 
   return (

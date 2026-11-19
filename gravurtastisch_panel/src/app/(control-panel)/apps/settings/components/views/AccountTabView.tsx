@@ -3,6 +3,7 @@
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
+import { useTranslation } from 'react-i18next';
 import { z } from 'zod';
 import { Controller as HookFormController, useForm } from 'react-hook-form';
 
@@ -94,6 +95,7 @@ const accountSchema = z.object({
 type FormType = z.infer<typeof accountSchema>;
 
 function AccountTabView() {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const { data: authUser } = useUser();
   const { canUpdate, scope } = usePermissions();
@@ -274,15 +276,21 @@ function AccountTabView() {
   const planName =
     paidPlan?.name ||
     (typeof user?.currentPlanId === 'object' ? user.currentPlanId?.name : null) ||
-    'Seller Subscription';
+    t('account.sellerSubscription', 'Seller Subscription');
   const price = Number(paidPlan?.price) || 0;
   const cycleNum =
     Number(paidPlan?.billingCycle) ||
     (typeof user?.currentPlanId === 'object' ? Number(user.currentPlanId?.billingCycle) : 1);
   const cycleText =
-    cycleNum === 3 ? 'Annual (Billed Yearly)' : cycleNum === 2 ? 'Quarterly (3 Months)' : 'Monthly';
+    cycleNum === 3
+      ? t('account.annualBilledYearly', 'Annual (Billed Yearly)')
+      : cycleNum === 2
+        ? t('account.quarterly3Months', 'Quarterly (3 Months)')
+        : t('account.monthly', 'Monthly');
   const planPriceText =
-    price > 0 ? `$${price} / ${cycleNum === 3 ? 'yr' : cycleNum === 2 ? 'qtr' : 'mo'}` : 'Free Plan';
+    price > 0
+      ? `$${price} ${cycleNum === 3 ? t('plan.perYearShort', '/ yr') : cycleNum === 2 ? t('plan.perQuarterShort', '/ qtr') : t('plan.perMonth', '/ mo')}`
+      : t('account.freePlan', 'Free Plan');
   const marketplaces =
     Number(paidPlan?.marketplace) || Number(user?.planLimits?.maxMarketplaces) || 1;
 
@@ -310,37 +318,37 @@ function AccountTabView() {
 
   const formattedExpiryDate = hasExpiry
     ? expiryMoment!.format('DD MMM YYYY')
-    : 'No Expiration';
+    : t('account.noExpiration', 'No Expiration');
 
   const expirySubtitle = hasExpiry
     ? isExpired
-      ? 'Plan has expired'
+      ? t('account.planHasExpired', 'Plan has expired')
       : daysLeft === 0
-        ? 'Expires today'
+        ? t('account.expiresToday', 'Expires today')
         : daysLeft === 1
-          ? 'Expires tomorrow'
-          : `${daysLeft} days remaining`
-    : 'Continuous access';
+          ? t('account.expiresTomorrow', 'Expires tomorrow')
+          : t('account.daysRemaining', { count: daysLeft, defaultValue: `${daysLeft} days remaining` })
+    : t('account.continuousAccess', 'Continuous access');
 
   const expiryDateText = expiryDate
     ? `Renews / Expires: ${moment(expiryDate).format('DD MMM YYYY')}`
-    : 'Auto-renews per cycle';
+    : t('account.autoRenewsPerCycle', 'Auto-renews per cycle');
 
   const subStatus = user?.subscriptionStatus;
-  let statusLabel = 'Active Subscription';
+  let statusLabel = t('account.activeSubscription', 'Active Subscription');
   let statusChipClass =
     'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300 font-semibold border border-emerald-300 dark:border-emerald-700 text-xs px-2.5 py-0.5';
 
   if (subStatus === 0) {
-    statusLabel = 'Pending Payment';
+    statusLabel = t('account.pendingPayment', 'Pending Payment');
     statusChipClass =
       'bg-amber-50 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300 font-semibold border border-amber-300 dark:border-amber-700 text-xs px-2.5 py-0.5';
   } else if (subStatus === 2) {
-    statusLabel = 'Past Due / Expired';
+    statusLabel = t('account.pastDueExpired', 'Past Due / Expired');
     statusChipClass =
       'bg-orange-50 text-orange-700 dark:bg-orange-950/60 dark:text-orange-300 font-semibold border border-orange-300 dark:border-orange-700 text-xs px-2.5 py-0.5';
   } else if (subStatus === 3) {
-    statusLabel = 'Canceled';
+    statusLabel = t('account.canceled', 'Canceled');
     statusChipClass =
       'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 font-semibold border border-red-300 dark:border-red-700 text-xs px-2.5 py-0.5';
   }
@@ -384,7 +392,7 @@ function AccountTabView() {
               }`}
           >
             <FuseSvgIcon size={15}>lucide:circle-user</FuseSvgIcon>
-            <span>Personal Information</span>
+            <span>{t('account.personalInfo', 'Personal Information')}</span>
           </button>
 
           <button
@@ -396,7 +404,7 @@ function AccountTabView() {
               }`}
           >
             <FuseSvgIcon size={15}>lucide:credit-card</FuseSvgIcon>
-            <span>Subscription</span>
+            <span>{t('account.subscription', 'Subscription')}</span>
           </button>
         </div>
       )}
@@ -428,17 +436,17 @@ function AccountTabView() {
                   </div>
                   <div>
                     <Typography className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                      Personal Information
+                      {t('account.personalInfo', 'Personal Information')}
                     </Typography>
                     <Typography className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-0.5">
-                      Update your personal profile details, photo, and contact information.
+                      {t('account.personalInfoSubtitle', 'Update your personal profile details, photo, and contact information.')}
                     </Typography>
                   </div>
                 </div>
                 <div className="self-start sm:self-auto">
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/60 shadow-xs">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Active Account
+                    {t('account.activeAccount', 'Active Account')}
                   </span>
                 </div>
               </div>
@@ -474,7 +482,7 @@ function AccountTabView() {
                   </div>
 
                   <Typography className="text-xs text-slate-500 dark:text-slate-400">
-                    Upload a high-resolution avatar photo. JPG, PNG, or WEBP (Max 5MB).
+                    {t('account.avatarUploadHint', 'Upload a high-resolution avatar photo. JPG, PNG, or WEBP (Max 5MB).')}
                   </Typography>
 
                   <div className="flex items-center gap-2.5 pt-1 flex-wrap justify-center sm:justify-start">
@@ -499,7 +507,7 @@ function AccountTabView() {
                         </FuseSvgIcon>
                       }
                     >
-                      {isUploadingAvatar ? 'Uploading...' : 'Upload Image'}
+                      {isUploadingAvatar ? t('account.uploading', 'Uploading...') : t('account.uploadImage', 'Upload Image')}
                     </Button>
 
                     <Button
@@ -515,7 +523,7 @@ function AccountTabView() {
                         </FuseSvgIcon>
                       }
                     >
-                      {isDeletingAvatar ? 'Removing...' : 'Remove'}
+                      {isDeletingAvatar ? t('account.removing', 'Removing...') : t('account.remove', 'Remove')}
                     </Button>
                   </div>
                 </div>
@@ -531,7 +539,7 @@ function AccountTabView() {
                       htmlFor="name"
                       className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                     >
-                      Full Name <span className="text-red-500 font-bold ml-0.5">*</span>
+                      {t('account.fullName', 'Full Name')} <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
                     <Controller
                       control={control}
@@ -540,7 +548,7 @@ function AccountTabView() {
                         <FormControl className="w-full">
                           <TextField
                             {...field}
-                            placeholder="Enter your full name"
+                            placeholder={t('account.fullNamePlaceholder', 'Enter your full name')}
                             id="name"
                             error={!!errors.name}
                             helperText={errors?.name?.message}
@@ -571,7 +579,7 @@ function AccountTabView() {
                         htmlFor="businessName"
                         className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                       >
-                        Business / Brand Name <span className="text-red-500 font-bold ml-0.5">*</span>
+                        {t('account.businessNameLabel', 'Business / Brand Name')} <span className="text-red-500 font-bold ml-0.5">*</span>
                       </label>
                       <Controller
                         control={control}
@@ -580,7 +588,7 @@ function AccountTabView() {
                           <FormControl className="w-full">
                             <TextField
                               {...field}
-                              placeholder="Enter your business or brand name"
+                              placeholder={t('account.businessNamePlaceholder', 'Enter your business or brand name')}
                               id="businessName"
                               error={!!errors.businessName}
                               helperText={errors?.businessName?.message}
@@ -611,7 +619,7 @@ function AccountTabView() {
                       htmlFor="contact_no"
                       className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block"
                     >
-                      Contact Number <span className="text-red-500 font-bold ml-0.5">*</span>
+                      {t('account.contactNumber', 'Contact Number')} <span className="text-red-500 font-bold ml-0.5">*</span>
                     </label>
                     <Controller
                       control={control}
@@ -628,7 +636,7 @@ function AccountTabView() {
                             onChange={(e) => {
                               field.onChange(e.target.value.replace(/-/g, ''));
                             }}
-                            placeholder="Enter your contact number (10-20 digits)"
+                            placeholder={t('account.contactNumberPlaceholder', 'Enter your contact number (10-20 digits)')}
                             id="contact_no"
                             error={!!errors.contact_no}
                             helperText={errors?.contact_no?.message}
@@ -659,11 +667,11 @@ function AccountTabView() {
                         htmlFor="email"
                         className="text-sm font-semibold text-slate-800 dark:text-slate-100 block"
                       >
-                        Email Address
+                        {t('account.emailAddress', 'Email Address')}
                       </label>
                       <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-md">
                         <FuseSvgIcon size={12} className="text-slate-400">lucide:lock</FuseSvgIcon>
-                        Primary Login
+                        {t('account.primaryLogin', 'Primary Login')}
                       </span>
                     </div>
                     <Controller
@@ -679,7 +687,7 @@ function AccountTabView() {
                             fullWidth
                             disabled
                             error={!!errors.email}
-                            helperText={errors?.email?.message || 'Email address is permanently linked to your account'}
+                            helperText={errors?.email?.message || t('account.emailNotice', 'Email address is permanently linked to your account')}
                             slotProps={{
                               input: {
                                 className:
@@ -710,10 +718,10 @@ function AccountTabView() {
                   </div>
                   <div>
                     <Typography className="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
-                      Security & Privacy Protection
+                      {t('account.securityPrivacy', 'Security & Privacy Protection')}
                     </Typography>
                     <Typography className="text-xs sm:text-[13px] text-slate-600 dark:text-slate-400 mt-1 leading-relaxed">
-                      Your profile name and avatar will appear across reports, notifications, and communications. Your data is encrypted and securely stored.
+                      {t('account.securityPrivacyDesc', 'Your profile name and avatar will appear across reports, notifications, and communications. Your data is encrypted and securely stored.')}
                     </Typography>
                   </div>
                 </div>
@@ -726,17 +734,17 @@ function AccountTabView() {
                 {!canEdit ? (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
                     <FuseSvgIcon size={14}>heroicons-outline:exclamation-circle</FuseSvgIcon>
-                    Read-only mode (Save disabled)
+                    {t('account.readOnlyMode', 'Read-only mode (Save disabled)')}
                   </span>
                 ) : _.isEmpty(dirtyFields) ? (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                     <FuseSvgIcon size={14} className="text-emerald-500">heroicons-outline:check-circle</FuseSvgIcon>
-                    All profile details are up to date
+                    {t('account.allUpToDate', 'All profile details are up to date')}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-800">
                     <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                    Unsaved changes detected
+                    {t('account.unsavedChanges', 'Unsaved changes detected')}
                   </span>
                 )}
               </div>
@@ -752,7 +760,7 @@ function AccountTabView() {
                   </FuseSvgIcon>
                 }
               >
-                {!canEdit ? 'Save Disabled' : isPending ? 'Saving changes...' : 'Save Changes'}
+                {!canEdit ? 'Save Disabled' : isPending ? t('account.savingChanges', 'Saving changes...') : t('account.saveChanges', 'Save Changes')}
               </Button>
             </div>
           </form>
@@ -774,10 +782,10 @@ function AccountTabView() {
                 </div>
                 <div>
                   <Typography className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
-                    Subscription & Billing
+                    {t('account.subscriptionBilling', 'Subscription & Billing')}
                   </Typography>
                   <Typography className="text-md text-slate-500 dark:text-slate-400">
-                    Review your plan subscription, request quota usage, and download invoices.
+                    {t('account.subscriptionBillingSubtitle', 'Review your plan subscription, request quota usage, and download invoices.')}
                   </Typography>
                 </div>
               </div>
@@ -798,7 +806,7 @@ function AccountTabView() {
               <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Current Plan
+                    {t('account.currentPlan', 'Current Plan')}
                   </span>
                   <FuseSvgIcon size={18} className="text-primary-600 dark:text-primary-400">
                     lucide:layers
@@ -816,7 +824,7 @@ function AccountTabView() {
               <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Billing Cycle
+                    {t('account.billingCycle', 'Billing Cycle')}
                   </span>
                   <FuseSvgIcon size={18} className="text-slate-500">
                     lucide:calendar
@@ -826,7 +834,7 @@ function AccountTabView() {
                   {cycleText}
                 </Typography>
                 <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Auto-renews per cycle
+                  {t('account.autoRenewsPerCycle', 'Auto-renews per cycle')}
                 </Typography>
               </div>
 
@@ -834,17 +842,17 @@ function AccountTabView() {
               <div className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    Marketplaces
+                    {t('account.marketplaces', 'Marketplaces')}
                   </span>
                   <FuseSvgIcon size={18} className="text-slate-500">
                     lucide:store
                   </FuseSvgIcon>
                 </div>
                 <Typography className="text-base font-bold text-slate-900 dark:text-white">
-                  {marketplaces} {marketplaces === 1 ? 'Marketplace' : 'Marketplaces'}
+                  {marketplaces} {marketplaces === 1 ? t('account.marketplace', 'Marketplace') : t('account.marketplaces', 'Marketplaces')}
                 </Typography>
                 <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                  Amazon store channels allowed
+                  {t('account.amazonStoreChannelsAllowed', 'Amazon store channels allowed')}
                 </Typography>
               </div>
 
@@ -852,7 +860,7 @@ function AccountTabView() {
               <div className="p-4 rounded-xl border border-red-200/80 dark:border-red-900/60 bg-red-50/80 dark:bg-red-950/30">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold uppercase tracking-wider text-red-700 dark:text-red-400">
-                    Expires At
+                    {t('account.expiresAt', 'Expires At')}
                   </span>
                   <FuseSvgIcon size={18} className="text-red-600 dark:text-red-400">
                     lucide:calendar-clock
@@ -876,11 +884,11 @@ function AccountTabView() {
                       lucide:zap
                     </FuseSvgIcon>
                     <Typography className="text-sm font-bold text-slate-900 dark:text-white">
-                      Review Requests Quota
+                      {t('account.reviewRequestsQuota', 'Review Requests Quota')}
                     </Typography>
                   </div>
                   <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                    Monthly quota of automated review solicitations sent to buyers.
+                    {t('account.reviewRequestsQuotaSubtitle', 'Monthly quota of automated review solicitations sent to buyers.')}
                   </Typography>
                 </div>
                 <div className="flex items-center gap-2">
@@ -888,7 +896,7 @@ function AccountTabView() {
                     {usedRequests.toLocaleString()} / {maxQuota.toLocaleString()}
                   </span>
                   <Chip
-                    label={`${remainingRequests.toLocaleString()} remaining`}
+                    label={`${remainingRequests.toLocaleString()} ${t('account.remaining', 'remaining')}`}
                     size="small"
                     className={`font-semibold text-xs ${usagePercent >= 90
                         ? 'bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300 border border-red-300'
@@ -922,8 +930,8 @@ function AccountTabView() {
               </div>
 
               <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-0.5">
-                <span>{usagePercent}% Used</span>
-                <span>Reset every monthly billing cycle</span>
+                <span>{usagePercent}% {t('account.used', 'Used')}</span>
+                <span>{t('account.resetEveryMonthlyBillingCycle', 'Reset every monthly billing cycle')}</span>
               </div>
             </div>
 
@@ -935,10 +943,10 @@ function AccountTabView() {
                 </div>
                 <div>
                   <Typography className="text-sm font-bold text-slate-900 dark:text-white">
-                    Subscription Invoice & Receipt
+                    {t('account.subscriptionInvoiceReceipt', 'Subscription Invoice & Receipt')}
                   </Typography>
                   <Typography className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 leading-relaxed">
-                    Download an official PDF invoice containing payment details, billing address, and subscription summary.
+                    {t('account.subscriptionInvoiceSubtitle', 'Download an official PDF invoice containing payment details, billing address, and subscription summary.')}
                   </Typography>
                 </div>
               </div>
@@ -949,7 +957,7 @@ function AccountTabView() {
                 className="shrink-0 font-semibold rounded-xl px-5 py-2.5 text-xs sm:text-sm border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:bg-white dark:hover:bg-slate-800 shadow-2xs capitalize"
                 startIcon={<FuseSvgIcon size={18}>lucide:download</FuseSvgIcon>}
               >
-                Download Invoice (PDF)
+                {t('account.downloadInvoicePdf', 'Download Invoice (PDF)')}
               </Button>
             </div>
           </div>

@@ -6,6 +6,7 @@ import {
 } from 'material-react-table';
 import _ from 'lodash';
 import { useMemo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { Theme } from '@mui/material/styles';
 import DataTableTopToolbar from './DataTableTopToolbar';
@@ -90,6 +91,23 @@ function DataTable<TData>({
   tabs,
   ...rest
 }: any) {
+  const { t } = useTranslation();
+
+  const translatedColumns = useMemo(() => {
+    if (!Array.isArray(columns)) return columns;
+    return columns.map((col: any) => {
+      let header = col.header;
+      if (typeof header === 'string' && header.trim()) {
+        const headerKey = header.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+        header = t(`th.${headerKey}`, header);
+      }
+      return {
+        ...col,
+        header,
+      };
+    });
+  }, [columns, t]);
+
   const getColumnOrderFromLocalStorage = (id: string) => {
     const storedOrder = localStorage.getItem(`columnOrder_${id}`);
     return storedOrder && storedOrder !== 'undefined'
@@ -345,7 +363,11 @@ function DataTable<TData>({
         paginationDisplayMode: 'pages',
         positionToolbarAlertBanner: 'top',
         localization: {
-          rowsPerPage: 'Items per page',
+          rowsPerPage: t('user.itemsPerPage', 'Items per page'),
+          search: t('common.search', 'Search...'),
+          searchPlaceholder: t('common.search', 'Search...'),
+          noRecordsToDisplay: t('common.noData', 'No data found'),
+          actions: t('th.actions', 'ACTIONS'),
         },
         muiPaginationProps: {
           color: 'secondary',
@@ -357,7 +379,7 @@ function DataTable<TData>({
           showLastButton: true,
         },
         muiTablePaginationProps: {
-          labelRowsPerPage: 'Items per page',
+          labelRowsPerPage: t('user.itemsPerPage', 'Items per page'),
           sx: {
             backgroundColor: 'transparent !important',
             border: 'none !important',
@@ -366,7 +388,7 @@ function DataTable<TData>({
           },
         },
         muiSearchTextFieldProps: {
-          placeholder: 'Search...',
+          placeholder: t('common.search', 'Search...'),
           sx: {
             minWidth: { xs: '160px', sm: '220px', md: '280px' },
             minHeight: '32px !important',
@@ -438,6 +460,7 @@ function DataTable<TData>({
         },
         displayColumnDefOptions: {
           'mrt-row-actions': {
+            header: t('th.actions', 'ACTIONS'),
             muiTableHeadCellProps: {
               className:
                 'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
@@ -552,15 +575,15 @@ function DataTable<TData>({
         ),
         icons: tableIcons,
       } as Partial<MaterialReactTableProps<TData>>),
-    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh, tabs]
+    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh, tabs, t]
   );
 
   const tableOptions = useMemo(
     () => ({
-      columns,
-      data,
       ...defaults,
       ...rest,
+      columns: translatedColumns,
+      data,
       muiTableProps: {
         ...(defaults.muiTableProps || {}),
         ...(rest.muiTableProps || {}),
@@ -697,6 +720,7 @@ function DataTable<TData>({
         ...(defaults.displayColumnDefOptions || {}),
         ...(rest.displayColumnDefOptions || {}),
         'mrt-row-actions': {
+          header: t('th.actions', 'ACTIONS'),
           ...(defaults.displayColumnDefOptions?.['mrt-row-actions'] || {}),
           ...(rest.displayColumnDefOptions?.['mrt-row-actions'] || {}),
           muiTableHeadCellProps: {
@@ -750,7 +774,7 @@ function DataTable<TData>({
         onGlobalFilterChange: rest.onGlobalFilterChange,
       }),
     }),
-    [columns, data, defaults, rest, columnOrder, tableId, density]
+    [translatedColumns, data, defaults, rest, columnOrder, tableId, density, t]
   );
 
 

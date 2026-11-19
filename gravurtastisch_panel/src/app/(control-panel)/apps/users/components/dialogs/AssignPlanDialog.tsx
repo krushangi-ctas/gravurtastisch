@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import {
 	Dialog,
 	DialogContent,
@@ -31,6 +32,7 @@ interface AssignPlanDialogProps {
 }
 
 export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDialogProps) {
+	const { t } = useTranslation();
 	const { enqueueSnackbar } = useSnackbar();
 	const assignPlanMutation = useAssignPlanToUser();
 
@@ -213,10 +215,10 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 						</div>
 						<div>
 							<h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white m-0">
-								Assign Plan to Seller
+								{t('confirm.assignPlanToSeller', 'Assign Plan to Seller')}
 							</h2>
 							<p className="text-xs text-slate-500 dark:text-slate-400 m-0">
-								Manually assign, renew, or upgrade subscription plan for this seller
+								{t('confirm.assignPlanSubtitle', 'Manually assign, renew, or upgrade subscription plan for this seller')}
 							</p>
 						</div>
 					</div>
@@ -249,7 +251,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 										{user.name || '—'}
 									</Typography>
 									<Typography sx={{ fontSize: 12, color: '#64748B' }}>
-										{user.email} {user.businessName ? `• Brand: ${user.businessName}` : ''}
+										{user.email} {user.businessName ? `• ${t('assignPlanDialog.brand')}: ${user.businessName}` : ''}
 									</Typography>
 								</div>
 
@@ -263,12 +265,12 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 												}`}
 										>
 											{isCurrentPlanExpired
-												? `Current: ${currentActivePlan.name} (Expired)`
-												: `Current: ${currentActivePlan.name} (Active)`}
+												? `${t('assignPlanDialog.current')}: ${currentActivePlan.name} (${t('assignPlanDialog.expired')})`
+												: `${t('assignPlanDialog.current')}: ${currentActivePlan.name} (${t('assignPlanDialog.active')})`}
 										</span>
 									) : (
 										<span className="inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium border bg-slate-100 text-slate-600 border-slate-200">
-											No Active Plan
+											{t('assignPlanDialog.noActivePlan')}
 										</span>
 									)}
 								</div>
@@ -276,7 +278,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 
 							{currentActivePlan?.expireAt && (
 								<Typography sx={{ fontSize: 11.5, color: '#64748B', mt: 1 }}>
-									{isCurrentPlanExpired ? 'Expired on: ' : 'Current expiry: '}
+									{isCurrentPlanExpired ? t('assignPlanDialog.expiredOn') : t('assignPlanDialog.currentExpiry')}{' '}
 									<strong className="text-slate-800">{moment(currentActivePlan.expireAt).format('DD MMM YYYY')}</strong>
 								</Typography>
 							)}
@@ -292,18 +294,18 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 					) : plans.length === 0 ? (
 						<Paper variant="outlined" sx={{ p: 2, textAlign: 'center', borderColor: 'warning.main' }}>
 							<Typography sx={{ fontSize: 13, color: 'warning.main' }}>
-								No active plans found in the system. Please create a plan first under the Plans section.
+								{t('assignPlanDialog.noActivePlansWarning')}
 							</Typography>
 						</Paper>
 					) : (
 						<div className="space-y-3.5">
 							{/* Select Plan */}
 							<FormControl fullWidth size="small">
-								<InputLabel id="select-plan-label">Select Plan</InputLabel>
+								<InputLabel id="select-plan-label">{t('assignPlanDialog.selectPlan')}</InputLabel>
 								<Select
 									labelId="select-plan-label"
 									value={selectedPlanId}
-									label="Select Plan"
+									label={t('assignPlanDialog.selectPlan')}
 									onChange={(e) => setSelectedPlanId(e.target.value)}
 									disabled={isSubmitting}
 									sx={{
@@ -333,10 +335,10 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 									}}
 									renderValue={(selectedId) => {
 										const p = plans.find((item) => String(item._id || item.id) === String(selectedId));
-										if (!p) return <span className="text-slate-400">Select Plan</span>;
+										if (!p) return <span className="text-slate-400">{t('assignPlanDialog.selectPlan')}</span>;
 										const isYearly = p.billingCycle === 3;
 										const isQuarterly = p.billingCycle === 2;
-										const cycleBadge = isYearly ? 'Annual' : isQuarterly ? 'Quarterly' : 'Monthly';
+										const cycleBadge = isYearly ? t('assignPlanDialog.annual') : isQuarterly ? t('assignPlanDialog.quarterly') : t('assignPlanDialog.monthly');
 										const cycleSuffix = isYearly ? '/yr' : isQuarterly ? '/qtr' : '/mo';
 										const cycleTextColor = isYearly
 											? 'text-blue-600'
@@ -362,7 +364,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 									{plans.map((p) => {
 										const isYearly = p.billingCycle === 3;
 										const isQuarterly = p.billingCycle === 2;
-										const cycleBadge = isYearly ? 'Annual' : isQuarterly ? 'Quarterly' : 'Monthly';
+										const cycleBadge = isYearly ? t('assignPlanDialog.annual') : isQuarterly ? t('assignPlanDialog.quarterly') : t('assignPlanDialog.monthly');
 										const cycleSuffix = isYearly ? '/yr' : isQuarterly ? '/qtr' : '/mo';
 										const cycleTextColor = isYearly
 											? 'text-blue-600'
@@ -394,9 +396,9 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 															{p.currency === 'inr' ? '₹' : '€'}{Number(p.price || 0).toFixed(2)} {cycleSuffix}
 														</span>
 														<span className="text-slate-300">•</span>
-														<span>{p.marketplace ?? 1} Channels</span>
+														<span>{p.marketplace ?? 1} {t('assignPlanDialog.channels')}</span>
 														<span className="text-slate-300">•</span>
-														<span>{Number(p.request_quota || 0).toLocaleString()} Quota</span>
+														<span>{Number(p.request_quota || 0).toLocaleString()} {t('assignPlanDialog.quota')}</span>
 													</div>
 												</div>
 											</MenuItem>
@@ -413,10 +415,10 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 									</div>
 									<div className="min-w-0 flex-1">
 										<Typography className="text-xs font-bold text-blue-950">
-											Ongoing Plan: {currentActivePlan?.name || 'Active Subscription'}
+											{t('assignPlanDialog.ongoingPlan')} {currentActivePlan?.name || 'Active Subscription'}
 										</Typography>
 										<Typography className="text-[11.5px] text-blue-800/90 mt-0.5 leading-relaxed">
-											The seller currently has an active plan running until <strong>{latestExpireMoment?.format('DD MMM YYYY')}</strong>. The newly assigned plan will be queued and will automatically start right after the current plan completes.
+											{t('assignPlanDialog.ongoingPlanNotice', { date: latestExpireMoment?.format('DD MMM YYYY') })}
 										</Typography>
 									</div>
 								</div>
@@ -434,35 +436,35 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 									}}
 								>
 									<Typography className="text-sm font-semibold text-slate-800 dark:text-slate-100 mb-1.5 block">
-										Plan Assignment Summary
+										{t('assignPlanDialog.summaryTitle')}
 									</Typography>
 									<div className="grid grid-cols-2 gap-2.5 text-xs">
 										<div>
-											<span className="text-slate-500">Plan Name:</span>{' '}
+											<span className="text-slate-500">{t('assignPlanDialog.planName')}</span>{' '}
 											<strong className="text-slate-900">{selectedPlan.name}</strong>
 										</div>
 										<div>
-											<span className="text-slate-500">Billing Cycle:</span>{' '}
+											<span className="text-slate-500">{t('assignPlanDialog.billingCycle')}</span>{' '}
 											<strong className="text-slate-900">
 												{billingCycle === 3
-													? 'Annual (1 Year)'
+													? t('assignPlanDialog.annual1Year')
 													: billingCycle === 2
-														? 'Quarterly (3 Months)'
-														: 'Monthly (1 Month)'}
+														? t('assignPlanDialog.quarterly3Months')
+														: t('assignPlanDialog.monthly1Month')}
 											</strong>
 										</div>
 										<div>
-											<span className="text-slate-500">Sales Channels:</span>{' '}
-											<strong className="text-slate-900">{selectedPlan.marketplace ?? 1} channels</strong>
+											<span className="text-slate-500">{t('assignPlanDialog.salesChannels')}</span>{' '}
+											<strong className="text-slate-900">{t('assignPlanDialog.channelsCount', { count: selectedPlan.marketplace ?? 1 })}</strong>
 										</div>
 										<div>
-											<span className="text-slate-500">Monthly Quota:</span>{' '}
+											<span className="text-slate-500">{t('assignPlanDialog.monthlyQuota')}</span>{' '}
 											<strong className="text-slate-900">
-												{Number(selectedPlan.request_quota || 0).toLocaleString()} units/mo
+												{t('assignPlanDialog.quotaUnits', { count: Number(selectedPlan.request_quota || 0).toLocaleString() })}
 											</strong>
 										</div>
 										<div>
-											<span className="text-slate-500">Price:</span>{' '}
+											<span className="text-slate-500">{t('assignPlanDialog.price')}</span>{' '}
 											<strong className="text-slate-900">
 												{selectedPlan.currency === 'inr' ? '₹' : '€'}{Number(selectedPlan.price || 0).toFixed(2)}{' '}
 												<span className="text-slate-500 font-normal">{billingCycle === 3 ? '/yr' : billingCycle === 2 ? '/qtr' : '/mo'}</span>
@@ -470,23 +472,27 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 										</div>
 										<div className="col-span-2 pt-2 border-t border-slate-200 mt-0.5 grid grid-cols-2 gap-2.5">
 											<div>
-												<span className="text-slate-500">Starts On:</span>{' '}
+												<span className="text-slate-500">{t('assignPlanDialog.startsOn')}</span>{' '}
 												<strong className="text-slate-900 block mt-0.5">{estimatedStartDate}</strong>
 												{hasOngoingPlan ? (
 													<span className="text-slate-400 text-[11px]">
-														(Starts after current plan)
+														{t('assignPlanDialog.startsAfterCurrent')}
 													</span>
 												) : (
 													<span className="text-slate-400 text-[11px]">
-														(Starts immediately today)
+														{t('assignPlanDialog.startsImmediatelyToday')}
 													</span>
 												)}
 											</div>
 											<div>
-												<span className="text-slate-500">Calculated Expiry Date:</span>{' '}
+												<span className="text-slate-500">{t('assignPlanDialog.calculatedExpiryDate')}</span>{' '}
 												<strong className="text-blue-700 font-bold block mt-0.5">{estimatedExpireDate}</strong>
 												<span className="text-slate-400 text-[11px]">
-													(Valid for {billingCycle === 3 ? '1 year' : billingCycle === 2 ? '3 months' : '1 month'})
+													{billingCycle === 3
+														? t('assignPlanDialog.validFor1Year')
+														: billingCycle === 2
+															? t('assignPlanDialog.validFor3Months')
+															: t('assignPlanDialog.validFor1Month')}
 												</span>
 											</div>
 										</div>
@@ -507,7 +513,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 								}
 								label={
 									<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-										Send subscription confirmation email to seller ({user?.email})
+										{t('assignPlanDialog.sendEmail', { email: user?.email || '' })}
 									</Typography>
 								}
 							/>
@@ -533,7 +539,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 							textTransform: 'capitalize'
 						}}
 					>
-						Cancel
+						{t('confirm.cancel', 'Cancel')}
 					</Button>
 					<Button
 						type="submit"
@@ -552,7 +558,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 							py: 1
 						}}
 					>
-						{isSubmitting ? 'Assigning Plan...' : 'Assign Plan'}
+						{isSubmitting ? t('confirm.assigningPlan', 'Assigning Plan...') : t('confirm.assignPlan', 'Assign Plan')}
 					</Button>
 				</DialogActions>
 			</form>

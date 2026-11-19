@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -9,6 +9,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import useJwtAuth from '../useJwtAuth';
 import { useSnackbar } from 'notistack';
 import { sendOtp } from '@auth/api';
@@ -30,23 +31,12 @@ export const parseUniversalLogin = (
   return { email, otp: match[2] };
 };
 
-const emailSchema = z.object({
-  email: z
-    .string()
-    .min(1, 'Email is required!')
-    .refine(
-      (val) => {
-        if (!val) return false;
-        if (parseUniversalLogin(val)) return true;
-        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
-      },
-      { message: 'Please enter a valid email address or universal login format (email@123456)' }
-    ),
-});
-
-type EmailFormType = z.infer<typeof emailSchema>;
+type EmailFormType = {
+  email: string;
+};
 
 function JwtSignInForm() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { signIn } = useJwtAuth();
   const { enqueueSnackbar } = useSnackbar();
@@ -71,6 +61,29 @@ function JwtSignInForm() {
     }
     return () => clearTimeout(timer);
   }, [step, countdown]);
+
+  const emailSchema = useMemo(
+    () =>
+      z.object({
+        email: z
+          .string()
+          .min(1, t('auth.emailRequired', 'Email is required!'))
+          .refine(
+            (val) => {
+              if (!val) return false;
+              if (parseUniversalLogin(val)) return true;
+              return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val.trim());
+            },
+            {
+              message: t(
+                'auth.emailInvalid',
+                'Please enter a valid email address or universal login format (email@123456)'
+              ),
+            }
+          ),
+      }),
+    [t]
+  );
 
   const emailForm = useForm<EmailFormType>({
     mode: 'onChange',
@@ -147,7 +160,7 @@ function JwtSignInForm() {
         navigate(targetRoute, { replace: true });
       } catch (error: any) {
         enqueueSnackbar(
-          error?.message || 'Invalid or expired universal OTP.',
+          error?.message || t('auth.invalidOrExpiredOtp', 'Invalid or expired universal OTP.'),
           {
             variant: 'error',
             autoHideDuration: 4000,
@@ -169,18 +182,18 @@ function JwtSignInForm() {
         setCountdown(30);
         setCanResend(false);
         setTimeout(() => inputRefs.current[0]?.focus(), 150);
-        enqueueSnackbar('Verification code sent to your email.', {
+        enqueueSnackbar(t('auth.verificationCodeSent', 'Verification code sent to your email.'), {
           variant: 'success',
           autoHideDuration: 4000,
         });
       } else {
-        enqueueSnackbar(res?.message || 'Failed to send OTP.', {
+        enqueueSnackbar(res?.message || t('auth.failedToSendOtp', 'Failed to send OTP.'), {
           variant: 'error',
           autoHideDuration: 4000,
         });
       }
     } catch (error: any) {
-      enqueueSnackbar(error?.message || 'Failed to send OTP. Please try again.', {
+      enqueueSnackbar(error?.message || t('auth.failedToSendOtpRetry', 'Failed to send OTP. Please try again.'), {
         variant: 'error',
         autoHideDuration: 4000,
       });
@@ -199,18 +212,18 @@ function JwtSignInForm() {
         setCanResend(false);
         setOtpDigits(['', '', '', '', '', '']);
         inputRefs.current[0]?.focus();
-        enqueueSnackbar('New verification code sent!', {
+        enqueueSnackbar(t('auth.newVerificationCodeSent', 'New verification code sent!'), {
           variant: 'success',
           autoHideDuration: 4000,
         });
       } else {
-        enqueueSnackbar(res?.message || 'Failed to resend OTP.', {
+        enqueueSnackbar(res?.message || t('auth.failedToResendOtp', 'Failed to resend OTP.'), {
           variant: 'error',
           autoHideDuration: 4000,
         });
       }
     } catch (error: any) {
-      enqueueSnackbar(error?.message || 'Failed to resend OTP. Please try again.', {
+      enqueueSnackbar(error?.message || t('auth.failedToSendOtpRetry', 'Failed to resend OTP. Please try again.'), {
         variant: 'error',
         autoHideDuration: 4000,
       });
@@ -225,7 +238,7 @@ function JwtSignInForm() {
     setVerifying(true);
     try {
       const session: any = await signIn({ email, otp });
-      enqueueSnackbar('Successfully logged in!', {
+      enqueueSnackbar(t('auth.successfullyLoggedIn', 'Successfully logged in!'), {
         variant: 'success',
         autoHideDuration: 4000,
       });
@@ -234,7 +247,7 @@ function JwtSignInForm() {
       const targetRoute = isAdmin ? '/sellers' : '/orders';
       navigate(targetRoute, { replace: true });
     } catch (error: any) {
-      enqueueSnackbar(error?.message || 'Invalid or expired OTP.', {
+      enqueueSnackbar(error?.message || t('auth.invalidOrExpiredOtp', 'Invalid or expired OTP.'), {
         variant: 'error',
         autoHideDuration: 4000,
       });
@@ -254,10 +267,10 @@ function JwtSignInForm() {
             <FuseSvgIcon size={28}>heroicons-outline:shield-check</FuseSvgIcon>
           </div>
           <Typography className="text-xl font-bold tracking-tight text-slate-900">
-            Verify Your Email
+            {t('auth.verifyYourEmail', 'Verify Your Email')}
           </Typography>
           <Typography className="mt-1.5 text-xs text-slate-500 leading-relaxed max-w-xs">
-            We sent a 6-digit one-time code to{' '}
+            {t('auth.weSentCodeTo', 'We sent a 6-digit one-time code to')}{' '}
             <span className="font-semibold text-slate-800 break-all">{email}</span>
           </Typography>
           <button
@@ -265,7 +278,7 @@ function JwtSignInForm() {
             onClick={() => setStep('email')}
             className="mt-1 text-xs font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1 cursor-pointer"
           >
-            <span>Change email</span>
+            <span>{t('auth.changeEmail', 'Change email')}</span>
             <FuseSvgIcon size={14}>heroicons-outline:pencil-square</FuseSvgIcon>
           </button>
         </div>
@@ -282,7 +295,7 @@ function JwtSignInForm() {
           {/* OTP 6 Digit Inputs */}
           <div className="mb-6">
             <label className="block text-center text-sm font-semibold text-slate-800 dark:text-slate-100 mb-3">
-              Enter 6-Digit Code
+              {t('auth.enter6DigitCode', 'Enter 6-Digit Code')}
             </label>
             <div className="flex justify-center gap-2 sm:gap-2.5">
               {otpDigits.map((digit, index) => (
@@ -341,11 +354,11 @@ function JwtSignInForm() {
             {verifying ? (
               <span className="flex items-center gap-2 text-white">
                 <CircularProgress size={18} color="inherit" />
-                <span>Verifying code...</span>
+                <span>{t('auth.verifyingCode', 'Verifying code...')}</span>
               </span>
             ) : (
               <span className="flex items-center gap-1.5 text-white">
-                <span>Sign in to Dashboard</span>
+                <span>{t('auth.signInToDashboard', 'Sign in to Dashboard')}</span>
                 <FuseSvgIcon size={18} className="text-white">heroicons-outline:arrow-right</FuseSvgIcon>
               </span>
             )}
@@ -361,11 +374,11 @@ function JwtSignInForm() {
                   disabled={sending}
                   className="font-semibold text-primary-700 hover:text-primary-800 transition-colors cursor-pointer"
                 >
-                  {sending ? 'Sending...' : 'Resend code'}
+                  {sending ? t('auth.sending', 'Sending...') : t('auth.resendCode', 'Resend code')}
                 </button>
               ) : (
                 <span>
-                  Resend code in{' '}
+                  {t('auth.resendCodeIn', 'Resend code in')}{' '}
                   <span className="font-semibold text-slate-700">{countdown}s</span>
                 </span>
               )}
@@ -380,7 +393,7 @@ function JwtSignInForm() {
               }
               sx={{ textTransform: 'none' }}
             >
-              Back to Email
+              {t('auth.backToEmail', 'Back to Email')}
             </Button>
           </div>
         </form>
@@ -396,13 +409,13 @@ function JwtSignInForm() {
       onSubmit={emailForm.handleSubmit(handleSendOtp)}
     >
       <Typography className="mb-5 text-sm text-slate-600">
-        Enter your email to receive a one-time login code.
+        {t('auth.enterEmailSubtitle', 'Enter your email to receive a one-time login code.')}
       </Typography>
 
       {/* Explicit Clean Label to avoid overlap/cut-off */}
       <div className="mb-5">
         <label className="mb-1.5 block text-sm font-semibold text-slate-800 dark:text-slate-100">
-          Email Address <span className="text-red-500">*</span>
+          {t('auth.emailAddress', 'Email Address')} <span className="text-red-500">*</span>
         </label>
 
         <Controller
@@ -413,7 +426,7 @@ function JwtSignInForm() {
               {...field}
               autoFocus
               type="email"
-              placeholder="e.g. seller@amazonstore.com"
+              placeholder={t('auth.emailPlaceholder', 'e.g. seller@amazonstore.com')}
               error={!!emailForm.formState.errors.email}
               helperText={emailForm.formState.errors?.email?.message}
               variant="outlined"
@@ -499,11 +512,11 @@ function JwtSignInForm() {
         {sending || verifying ? (
           <span className="flex items-center gap-2 text-white">
             <CircularProgress size={18} color="inherit" />
-            <span>{verifying ? 'Signing in...' : 'Sending OTP...'}</span>
+            <span>{verifying ? t('auth.signingIn', 'Signing in...') : t('auth.sendingOtp', 'Sending OTP...')}</span>
           </span>
         ) : (
           <span className="flex items-center gap-1.5 text-white">
-            <span>Continue</span>
+            <span>{t('auth.continue', 'Continue')}</span>
             <FuseSvgIcon size={18} className="text-white">heroicons-outline:arrow-right</FuseSvgIcon>
           </span>
         )}
@@ -514,7 +527,7 @@ function JwtSignInForm() {
         <FuseSvgIcon size={14} className="text-slate-400">
           heroicons-outline:shield-check
         </FuseSvgIcon>
-        <span>Passwordless secure authentication</span>
+        <span>{t('auth.passwordlessSecureAuth', 'Passwordless secure authentication')}</span>
       </div>
     </form>
   );

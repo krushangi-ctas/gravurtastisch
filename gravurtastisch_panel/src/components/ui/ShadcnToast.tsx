@@ -3,6 +3,7 @@ import { CustomContentProps, useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import { toBilingualMessage } from '@/utils/bilingualMessages';
 
 const ShadcnToast = forwardRef<HTMLDivElement, CustomContentProps>((props, ref) => {
   const { id, message, variant, action } = props;
@@ -29,11 +30,19 @@ const ShadcnToast = forwardRef<HTMLDivElement, CustomContentProps>((props, ref) 
 
     if (cleanMessage.includes('\n')) {
       const parts = cleanMessage.split('\n');
-      title = parts[0];
-      description = parts.slice(1).join('\n');
+      title = toBilingualMessage(parts[0]);
+      description = parts.slice(1).map((p) => toBilingualMessage(p)).join('\n');
     } else {
-      title = isSuccess ? 'Success' : isError ? 'Error' : isWarning ? 'Warning' : isInfo ? 'Information' : null;
-      description = cleanMessage;
+      title = isSuccess
+        ? 'Erfolg (Success)'
+        : isError
+        ? 'Fehler (Error)'
+        : isWarning
+        ? 'Warnung (Warning)'
+        : isInfo
+        ? 'Information (Information)'
+        : null;
+      description = toBilingualMessage(cleanMessage);
     }
   }
 

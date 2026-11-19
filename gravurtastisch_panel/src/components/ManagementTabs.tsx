@@ -3,6 +3,7 @@
 import { useLocation, useNavigate } from 'react-router';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import usePermissions from '@/hooks/usePermissions';
+import { useTranslation } from 'react-i18next';
 
 export interface ManagementTabsProps {
 	activeTab: 'members' | 'users' | 'roles' | 'sections';
@@ -12,6 +13,7 @@ export default function ManagementTabs({ activeTab }: ManagementTabsProps) {
 	const navigate = useNavigate();
 	const location = useLocation();
 	const { canView, scope } = usePermissions();
+	const { t } = useTranslation();
 
 	const isSeller = scope === 'seller' || location.pathname.startsWith('/team');
 
@@ -19,21 +21,21 @@ export default function ManagementTabs({ activeTab }: ManagementTabsProps) {
 		? [
 				{
 					id: 'members',
-					label: 'Team',
+					label: t('tabs.team', 'Team'),
 					icon: 'lucide:users',
 					path: '/team/members',
 					allowed: canView('/team/members')
 				},
 				{
 					id: 'sections',
-					label: 'Section',
+					label: t('tabs.section', 'Section'),
 					icon: 'lucide:layout-grid',
 					path: '/team/sections',
 					allowed: canView('/team/sections')
 				},
 				{
 					id: 'roles',
-					label: 'Role',
+					label: t('tabs.role', 'Role'),
 					icon: 'lucide:shield-check',
 					path: '/team/roles',
 					allowed: canView('/team/roles')
@@ -42,21 +44,21 @@ export default function ManagementTabs({ activeTab }: ManagementTabsProps) {
 		: [
 				{
 					id: 'users',
-					label: 'Users',
+					label: t('tabs.users', 'Users'),
 					icon: 'lucide:user-cog',
 					path: '/user-management/users',
 					allowed: canView('/user-management/users')
 				},
 				{
 					id: 'sections',
-					label: 'Section',
+					label: t('tabs.section', 'Section'),
 					icon: 'lucide:layout-grid',
 					path: '/user-management/sections',
 					allowed: canView('/user-management/sections')
 				},
 				{
 					id: 'roles',
-					label: 'Role',
+					label: t('tabs.role', 'Role'),
 					icon: 'lucide:shield-check',
 					path: '/user-management/roles',
 					allowed: canView('/user-management/roles')
