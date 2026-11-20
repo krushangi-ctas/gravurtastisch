@@ -1,4 +1,5 @@
 import React, { Suspense } from 'react';
+import { useTranslation } from 'react-i18next';
 import type {
 	DOMConversionMap,
 	DOMConversionOutput,
@@ -50,6 +51,7 @@ function ImageComponent({
 	nodeKey: NodeKey;
 	relativePath?: string;
 }) {
+	const { t } = useTranslation();
 	const [editor] = useLexicalComposerContext();
 	const [isSelected, setSelected, clearSelection] = useLexicalNodeSelection(nodeKey);
 
@@ -83,7 +85,7 @@ function ImageComponent({
 
 			{/* Delete floating button */}
 			<div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-xs rounded-full shadow-md p-0.5">
-				<Tooltip title="Remove image">
+				<Tooltip title={t('tooltips.removeImage', 'Remove image')}>
 					<IconButton
 						size="small"
 						onClick={handleDelete}

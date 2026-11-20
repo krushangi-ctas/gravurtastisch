@@ -6,10 +6,13 @@ import {
 	IconButton,
 	Button,
 	Typography,
-	Paper
+	Paper,
+	Tooltip
 } from '@mui/material';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
+import i18n from '@/i18n/config';
 import { SystemLog } from '../../api/types';
 
 interface SystemLogDetailsDialogProps {
@@ -21,7 +24,7 @@ interface SystemLogDetailsDialogProps {
 /**
  * Format system log action keys into clean, human-readable display names
  */
-export function formatActionKey(key: string): string {
+export function formatActionKey(key: string, t?: any): string {
 	if (!key) return '—';
 	const map: Record<string, string> = {
 		'update-amazon-credentials': 'Update Amazon Authorization',
@@ -51,10 +54,11 @@ export function formatActionKey(key: string): string {
 		'cancel-payment': 'Cancel Payment',
 		'assign-plan': 'Assign Plan'
 	};
-	if (map[key]) return map[key];
-	return key
-		.replace(/[-_]/g, ' ')
-		.replace(/\b\w/g, (c) => c.toUpperCase());
+	const defaultVal = map[key] || key.replace(/[-_]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+	if (t) {
+		return t(`systemLogs.actions.${key}`, defaultVal);
+	}
+	return i18n.t(`systemLogs.actions.${key}`, defaultVal);
 }
 
 /**
@@ -79,7 +83,7 @@ function isIdField(key: string): boolean {
 /**
  * Format field keys into clean, human-readable labels
  */
-function formatFieldLabel(key: string): string {
+export function formatFieldLabel(key: string, t?: any): string {
 	if (!key) return '';
 	const map: Record<string, string> = {
 		activeMarketplaces: 'Active Marketplaces',
@@ -111,23 +115,28 @@ function formatFieldLabel(key: string): string {
 		second: 'Schedule Second',
 		day: 'Schedule Day'
 	};
-	if (map[key]) return map[key];
-	return key
+	const defaultVal = map[key] || key
 		.replace(/([A-Z])/g, ' $1')
 		.replace(/[_-]/g, ' ')
 		.replace(/\b\w/g, (c) => c.toUpperCase())
 		.trim();
+	if (t) {
+		return t(`systemLogs.fields.${key}`, defaultVal);
+	}
+	return i18n.t(`systemLogs.fields.${key}`, defaultVal);
 }
 
 /**
  * Format primitive and complex values into clean, elegant UI representations
  */
-function renderFormattedValue(value: any): React.ReactNode {
+function renderFormattedValue(value: any, t?: any): React.ReactNode {
 	if (value === null || value === undefined || value === '') {
 		return <span className="text-slate-400 dark:text-slate-500 italic text-[12px]">—</span>;
 	}
 
 	if (typeof value === 'boolean') {
+		const trueLabel = t ? t('systemLogs.true', 'True') : i18n.t('systemLogs.true', 'True');
+		const falseLabel = t ? t('systemLogs.false', 'False') : i18n.t('systemLogs.false', 'False');
 		return (
 			<span
 				className={`inline-flex items-center px-2 py-0.5 rounded text-[11px] font-semibold ${
@@ -136,7 +145,7 @@ function renderFormattedValue(value: any): React.ReactNode {
 						: 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700'
 				}`}
 			>
-				{value ? 'True' : 'False'}
+				{value ? trueLabel : falseLabel}
 			</span>
 		);
 	}
@@ -168,7 +177,8 @@ function renderFormattedValue(value: any): React.ReactNode {
 
 	if (Array.isArray(value)) {
 		if (value.length === 0) {
-			return <span className="text-slate-400 dark:text-slate-500 italic text-[12px]">None</span>;
+			const noneLabel = t ? t('systemLogs.none', 'None') : i18n.t('systemLogs.none', 'None');
+			return <span className="text-slate-400 dark:text-slate-500 italic text-[12px]">{noneLabel}</span>;
 		}
 
 		// Array of strings or numbers: render as individual badge pills
@@ -195,7 +205,7 @@ function renderFormattedValue(value: any): React.ReactNode {
 						key={idx}
 						className="p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-700/60 text-[12px]"
 					>
-						{renderFormattedValue(item)}
+						{renderFormattedValue(item, t)}
 					</div>
 				))}
 			</div>
@@ -212,9 +222,9 @@ function renderFormattedValue(value: any): React.ReactNode {
 				{keys.map((k) => (
 					<div key={k} className="flex items-start gap-2 text-[12px]">
 						<span className="font-semibold text-slate-600 dark:text-slate-400 shrink-0">
-							{formatFieldLabel(k)}:
+							{formatFieldLabel(k, t)}:
 						</span>
-						<div className="flex-1 min-w-0">{renderFormattedValue(value[k])}</div>
+						<div className="flex-1 min-w-0">{renderFormattedValue(value[k], t)}</div>
 					</div>
 				))}
 			</div>
@@ -315,6 +325,7 @@ export default function SystemLogDetailsDialog({
 	onClose,
 	log
 }: SystemLogDetailsDialogProps) {
+	const { t } = useTranslation();
 	if (!log) return null;
 
 	const fullName = log.name || [log.first_name, log.last_name].filter(Boolean).join(' ') || log.email || 'System';
@@ -367,7 +378,7 @@ export default function SystemLogDetailsDialog({
 					</div>
 					<div>
 						<h2 className="text-base font-bold tracking-tight text-slate-900 dark:text-white m-0">
-							System Log Details
+							{t('systemLogs.detailsTitle', 'System Log Details')}
 						</h2>
 						<p className="text-xs text-slate-500 dark:text-slate-400 m-0">
 							{fullName} {logDate ? `• ${logDate}` : ''}
@@ -375,13 +386,16 @@ export default function SystemLogDetailsDialog({
 					</div>
 				</div>
 
-				<IconButton
-					size="small"
-					onClick={onClose}
-					className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
-				>
-					<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-				</IconButton>
+				<Tooltip title={t('tooltips.close', 'Close')} arrow>
+					<IconButton
+						size="small"
+						onClick={onClose}
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
+						aria-label={t('common.close', 'Close')}
+					>
+						<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+					</IconButton>
+				</Tooltip>
 			</div>
 
 			{/* Dialog Body */}
@@ -427,11 +441,17 @@ export default function SystemLogDetailsDialog({
 												: 'bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-300'
 								}`}
 							>
-								{log.operation}
+								{log.operation === 'CREATE'
+									? t('systemLogs.opCreate', 'CREATE')
+									: log.operation === 'UPDATE'
+										? t('systemLogs.opUpdate', 'UPDATE')
+										: log.operation === 'DELETE'
+											? t('systemLogs.opDelete', 'DELETE')
+											: log.operation}
 							</span>
 							{log.key && (
 								<span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-200/80 text-slate-800 dark:bg-slate-800 dark:text-slate-200">
-									{formatActionKey(log.key)}
+									{formatActionKey(log.key, t)}
 								</span>
 							)}
 						</div>
@@ -453,20 +473,20 @@ export default function SystemLogDetailsDialog({
 						<div>
 							{comparisonKeys.length === 0 ? (
 								<div className="p-8 text-center text-xs text-slate-400">
-									No changes recorded for this update operation.
+									{t('systemLogs.noChangesRecorded', 'No changes recorded for this update operation.')}
 								</div>
 							) : (
 								<div>
 									{/* Column Header for Update */}
 									<div className="grid grid-cols-12 bg-slate-100/80 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-700 font-semibold text-[11px] text-slate-600 dark:text-slate-300 uppercase tracking-wider">
 										<div className="col-span-12 sm:col-span-4 p-3 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
-											Field
+											{t('systemLogs.field', 'Field')}
 										</div>
 										<div className="col-span-12 sm:col-span-4 p-3 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
-											Previous Value
+											{t('systemLogs.previousValue', 'Previous Value')}
 										</div>
 										<div className="col-span-12 sm:col-span-4 p-3">
-											Updated Value
+											{t('systemLogs.updatedValue', 'Updated Value')}
 										</div>
 									</div>
 
@@ -488,17 +508,17 @@ export default function SystemLogDetailsDialog({
 												>
 													{/* Col 1: Field Name */}
 													<div className="col-span-12 sm:col-span-4 p-3 border-b sm:border-b-0 sm:border-r border-slate-200/60 dark:border-slate-800 min-w-0 font-semibold text-slate-700 dark:text-slate-300">
-														{formatFieldLabel(key)}
+														{formatFieldLabel(key, t)}
 													</div>
 
 													{/* Col 2: Previous Value */}
 													<div className="col-span-12 sm:col-span-4 p-3 border-b sm:border-b-0 sm:border-r border-slate-200/60 dark:border-slate-800 min-w-0">
-														{renderFormattedValue(oldVal)}
+														{renderFormattedValue(oldVal, t)}
 													</div>
 
 													{/* Col 3: Updated Value */}
 													<div className="col-span-12 sm:col-span-4 p-3 min-w-0">
-														{renderFormattedValue(newVal)}
+														{renderFormattedValue(newVal, t)}
 													</div>
 												</div>
 											);
@@ -512,17 +532,17 @@ export default function SystemLogDetailsDialog({
 						<div>
 							{singleKeys.length === 0 ? (
 								<div className="p-8 text-center text-xs text-slate-400">
-									No additional details recorded for this operation.
+									{t('systemLogs.noDetailsRecorded', 'No additional details recorded for this operation.')}
 								</div>
 							) : (
 								<div>
 									{/* Column Header for Single Record */}
 									<div className="grid grid-cols-12 bg-slate-100/80 dark:bg-slate-800/70 border-b border-slate-200 dark:border-slate-700 font-semibold text-[11px] text-slate-600 dark:text-slate-300 uppercase tracking-wider">
 										<div className="col-span-12 sm:col-span-4 p-3 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
-											Field
+											{t('systemLogs.field', 'Field')}
 										</div>
 										<div className="col-span-12 sm:col-span-8 p-3">
-											Value
+											{t('systemLogs.value', 'Value')}
 										</div>
 									</div>
 
@@ -533,10 +553,10 @@ export default function SystemLogDetailsDialog({
 												className="grid grid-cols-12 py-2.5 px-3 text-xs hover:bg-slate-50/60 dark:hover:bg-slate-800/30 transition-colors items-center"
 											>
 												<div className="col-span-12 sm:col-span-4 font-semibold text-slate-700 dark:text-slate-300 border-b sm:border-b-0 pb-1 sm:pb-0">
-													{formatFieldLabel(key)}
+													{formatFieldLabel(key, t)}
 												</div>
 												<div className="col-span-12 sm:col-span-8 text-slate-900 dark:text-slate-100 font-normal">
-													{renderFormattedValue(singleData[key])}
+													{renderFormattedValue(singleData[key], t)}
 												</div>
 											</div>
 										))}
@@ -560,21 +580,23 @@ export default function SystemLogDetailsDialog({
 					py: 1.5
 				}}
 			>
-				<Button
-					variant="contained"
-					onClick={onClose}
-					className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
-					sx={{
-						bgcolor: 'primary.main',
-						'&:hover': { bgcolor: 'primary.dark' },
-						borderRadius: '12px',
-						textTransform: 'capitalize',
-						px: { xs: 2.5, sm: 3.5 },
-						py: 1
-					}}
-				>
-					Close
-				</Button>
+				<Tooltip title={t('tooltips.close', 'Close')} arrow>
+					<Button
+						variant="contained"
+						onClick={onClose}
+						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
+						sx={{
+							bgcolor: 'primary.main',
+							'&:hover': { bgcolor: 'primary.dark' },
+							borderRadius: '12px',
+							textTransform: 'capitalize',
+							px: { xs: 2.5, sm: 3.5 },
+							py: 1
+						}}
+					>
+						{t('systemLogs.close', 'Close')}
+					</Button>
+				</Tooltip>
 			</DialogActions>
 		</Dialog>
 	);

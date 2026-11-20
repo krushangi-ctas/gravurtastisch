@@ -1,6 +1,7 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -101,6 +102,7 @@ function BlogsContent({
 	onAddNew: () => void;
 	canCreate: boolean;
 }) {
+	const { t } = useTranslation();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 	const updateStatusMutation = useUpdateBlogStatus();
 	const { enqueueSnackbar } = useSnackbar();
@@ -307,36 +309,38 @@ function BlogsContent({
 							return (
 								<span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs sm:text-sm font-medium">
 									<FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:funnel</FuseSvgIcon>
-									Status
+									{t('filter.status', 'Status')}
 								</span>
 							);
 						}
 						return (
 							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-semibold">
 								<FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:funnel</FuseSvgIcon>
-								{selected === 'active' ? 'Active' : selected === 'inactive' ? 'Inactive' : 'All Status'}
+								{selected === 'active' ? t('plan.active', 'Active') : selected === 'inactive' ? t('plan.inactive', 'Inactive') : t('plan.allStatus', 'All Status')}
 							</span>
 						);
 					}}
 				>
-					<MenuItem value=""><span className="text-xs sm:text-sm">All Status</span></MenuItem>
-					<MenuItem value="active"><span className="text-xs sm:text-sm">Active</span></MenuItem>
-					<MenuItem value="inactive"><span className="text-xs sm:text-sm">Inactive</span></MenuItem>
+					<MenuItem value=""><span className="text-xs sm:text-sm">{t('plan.allStatus', 'All Status')}</span></MenuItem>
+					<MenuItem value="active"><span className="text-xs sm:text-sm">{t('plan.active', 'Active')}</span></MenuItem>
+					<MenuItem value="inactive"><span className="text-xs sm:text-sm">{t('plan.inactive', 'Inactive')}</span></MenuItem>
 				</Select>
 			</FormControl>
 
 			{canCreate && (
-				<button
-					type="button"
-					onClick={onAddNew}
-					style={{ height: '38px' }}
-					className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
-				>
-					<FuseSvgIcon size={16} className="text-white">
-						heroicons-outline:plus
-					</FuseSvgIcon>
-					<span>Add Blog</span>
-				</button>
+				<Tooltip title={t('tooltips.addBlog', 'Add Blog')} arrow>
+					<button
+						type="button"
+						onClick={onAddNew}
+						style={{ height: '38px' }}
+						className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
+					>
+						<FuseSvgIcon size={16} className="text-white">
+							heroicons-outline:plus
+						</FuseSvgIcon>
+						<span>{t('blog.addBlog', 'Add Blog')}</span>
+					</button>
+				</Tooltip>
 			)}
 		</div>
 	);
@@ -438,7 +442,7 @@ function BlogsContent({
 					renderRowActions={({ row }: { row: MRT_Row<Blog> }) => (
 						<Box className="flex items-center gap-1">
 							{canUpdate && (
-								<Tooltip title={row.original.status === 1 ? 'Click to deactivate blog' : 'Click to activate blog'} arrow>
+								<Tooltip title={row.original.status === 1 ? t('tooltips.deactivateBlog', 'Click to deactivate blog') : t('tooltips.activateBlog', 'Click to activate blog')} arrow>
 									<Box
 										onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
 										className="cursor-pointer inline-flex items-center p-0.5"
@@ -453,7 +457,7 @@ function BlogsContent({
 								</Tooltip>
 							)}
 
-							<Tooltip title="Preview blog article" arrow>
+							<Tooltip title={t('tooltips.previewBlog', 'Preview blog article')} arrow>
 								<IconButton
 									size="small"
 									onClick={() => onPreviewBlog(row.original)}
@@ -464,7 +468,7 @@ function BlogsContent({
 							</Tooltip>
 
 							{canUpdate && (
-								<Tooltip title="Edit blog article" arrow>
+								<Tooltip title={t('tooltips.editBlog', 'Edit blog article')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => onEditBlog(row.original)}
@@ -476,7 +480,7 @@ function BlogsContent({
 							)}
 
 							{canDelete && (
-								<Tooltip title="Delete blog" arrow>
+								<Tooltip title={t('tooltips.deleteBlog', 'Delete blog')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => handleOpenDeleteConfirm(row.original)}
@@ -515,12 +519,27 @@ function BlogsContent({
 						</div>
 						<div className="flex flex-col">
 							<h3 className="text-base font-bold text-slate-800 m-0">
-								{confirmState.type === 'delete' ? 'Delete Blog' : 'Change Blog Status'}
+								{confirmState.type === 'delete'
+									? t('confirm.deleteBlogTitle', 'Delete Blog')
+									: t('confirm.changeBlogStatusTitle', 'Change Blog Status')}
 							</h3>
 							<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
-								{confirmState.type === 'delete'
-									? `Are you sure you want to delete "${confirmState.blog?.blog_title}"?`
-									: `Are you sure you want to change status of "${confirmState.blog?.blog_title}" to ${confirmState.targetStatus === 1 ? 'Active' : 'Inactive'}?`}
+								{confirmState.type === 'delete' ? (
+									<>
+										{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
+										<strong className="text-slate-800 font-semibold">&ldquo;{confirmState.blog?.blog_title}&rdquo;</strong>?
+									</>
+								) : (
+									<>
+										{t('confirm.changeStatusPrompt', 'Are you sure you want to change status of')}{' '}
+										<strong className="text-slate-800 font-semibold">&ldquo;{confirmState.blog?.blog_title}&rdquo;</strong>{' '}
+										{t('confirm.to', 'to')}{' '}
+										<strong className="text-slate-800 font-semibold">
+											{confirmState.targetStatus === 1 ? t('common.active', 'Active') : t('common.inactive', 'Inactive')}
+										</strong>
+										?
+									</>
+								)}
 							</p>
 						</div>
 					</div>
@@ -540,7 +559,7 @@ function BlogsContent({
 						disabled={isActionLoading}
 						className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
 					>
-						Cancel
+						{t('confirm.cancel', 'Cancel')}
 					</button>
 					<button
 						type="button"
@@ -550,7 +569,9 @@ function BlogsContent({
 					>
 						{isActionLoading && <FuseSvgIcon size={16} className="animate-spin text-white">heroicons-outline:arrow-path</FuseSvgIcon>}
 						<span>
-							{confirmState.type === 'delete' ? 'Delete' : 'Change Status'}
+							{confirmState.type === 'delete'
+								? t('confirm.delete', 'Delete')
+								: t('confirm.changeStatus', 'Change Status')}
 						</span>
 					</button>
 				</div>

@@ -7,6 +7,7 @@ import ListItemText from '@mui/material/ListItemText';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Link from '@fuse/core/Link';
 import { useNavigate } from 'react-router';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -31,6 +32,7 @@ type UserMenuProps = {
  */
 function UserMenu(props: UserMenuProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const {
     className,
     popoverProps,
@@ -177,7 +179,7 @@ function UserMenu(props: UserMenuProps) {
               <ListItemIcon>
                 <FuseSvgIcon>lucide:lock</FuseSvgIcon>
               </ListItemIcon>
-              <ListItemText primary="Sign In" />
+              <ListItemText primary={t('header.signIn', 'Sign In')} />
             </MenuItem>
           </>
         ) : (
@@ -201,7 +203,7 @@ function UserMenu(props: UserMenuProps) {
                 <FuseSvgIcon size={18}>lucide:circle-user</FuseSvgIcon>
               </ListItemIcon>
               <ListItemText
-                primary="Profile"
+                primary={t('header.profile', 'Profile')}
                 primaryTypographyProps={{ className: 'text-sm font-medium' }}
               />
             </MenuItem>
@@ -218,7 +220,7 @@ function UserMenu(props: UserMenuProps) {
                 <FuseSvgIcon size={18}>lucide:log-out</FuseSvgIcon>
               </ListItemIcon>
               <ListItemText
-                primary="Logout"
+                primary={t('header.logout', 'Sign Out')}
                 primaryTypographyProps={{
                   className: 'text-sm font-medium text-red-600 dark:text-red-400',
                 }}

@@ -555,7 +555,7 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
         </table>
 
         <p style="margin:4px 0 0; font-size:11.5px; line-height:1.4; color:#64748B; text-align:center; font-family:'Inter',Arial,sans-serif;">
-          Questions? Reply to this email or contact support at <a href="mailto:info@ctasis.com" style="color:#0032AB; font-weight:600;">info@ctasis.com</a>.
+          Questions? Reply to this email or contact support at <a href="mailto:info@gravurtastisch.de" style="color:#0032AB; font-weight:600;">info@gravurtastisch.de</a>.
         </p>
       `;
 

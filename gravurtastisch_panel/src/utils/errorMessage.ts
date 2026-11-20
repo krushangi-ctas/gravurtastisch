@@ -1,3 +1,5 @@
+import { toBilingualMessage } from '@/utils/bilingualMessages';
+
 /**
  * Converts technical permission codes (e.g. "Missing permission: user.update")
  * into user-friendly English messages.
@@ -9,18 +11,18 @@ export function formatFriendlyErrorMessage(raw: string): string {
 	const permMatch = trimmed.match(/^missing permission:\s*(.+)$/i);
 	if (permMatch) {
 		const perm = permMatch[1].trim();
-		return `You do not have permission to perform this action (${perm}).`;
+		return toBilingualMessage(`You do not have permission to perform this action (${perm}).`);
 	}
 
 	if (trimmed.toLowerCase() === 'forbidden') {
-		return 'You do not have permission to perform this action.';
+		return toBilingualMessage('You do not have permission to perform this action.');
 	}
 
 	if (trimmed.toLowerCase() === 'unauthorized' || trimmed.toLowerCase() === 'please authenticate') {
-		return 'You do not have permission to access this resource. Please log in.';
+		return toBilingualMessage('You do not have permission to access this resource. Please log in.');
 	}
 
-	return trimmed;
+	return toBilingualMessage(trimmed);
 }
 
 /**
@@ -28,7 +30,8 @@ export function formatFriendlyErrorMessage(raw: string): string {
  * Prevents displaying `[object Object]` on screen.
  */
 export function getErrorMessage(err: unknown, defaultMessage = 'An unexpected error occurred.'): string {
-	if (!err) return defaultMessage;
+	const defaultBilingual = toBilingualMessage(defaultMessage);
+	if (!err) return defaultBilingual;
 	if (typeof err === 'string' && err.trim()) return formatFriendlyErrorMessage(err);
 
 	if (typeof err === 'object') {
@@ -48,5 +51,5 @@ export function getErrorMessage(err: unknown, defaultMessage = 'An unexpected er
 	}
 
 	const str = String(err);
-	return str && str !== '[object Object]' ? formatFriendlyErrorMessage(str) : defaultMessage;
+	return str && str !== '[object Object]' ? formatFriendlyErrorMessage(str) : defaultBilingual;
 }

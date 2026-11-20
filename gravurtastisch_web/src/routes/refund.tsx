@@ -24,7 +24,7 @@ export const Route = createFileRoute("/refund")({
 function RefundPage() {
   const { t } = useTranslation();
   const { config } = useWebsiteConfiguration();
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
   const isSkeletonPreview = typeof window !== "undefined" && window.location.search.includes("skeleton=true");
 
   if (isSkeletonPreview) {

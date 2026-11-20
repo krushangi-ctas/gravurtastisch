@@ -1,0 +1,530 @@
+{
+  "modules": {
+    "6afb0a454fafc2ec57b6579a": {
+      "id": "6afb0a454fafc2ec57b6579a",
+      "title": "User Management",
+      "moduleName": "User Management",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb0a6a4fafc2ec57b657a2": {
+      "id": "6afb0a6a4fafc2ec57b657a2",
+      "title": "User Module",
+      "moduleName": "User Module",
+      "description": "",
+      "parentId": "6afb0a454fafc2ec57b6579a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb0bda4fafc2ec57b659fd": {
+      "id": "6afb0bda4fafc2ec57b659fd",
+      "title": "Section Module",
+      "moduleName": "Section Module",
+      "description": "",
+      "parentId": "6afb0a454fafc2ec57b6579a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb0bfc4fafc2ec57b65a23": {
+      "id": "6afb0bfc4fafc2ec57b65a23",
+      "title": "Role Module",
+      "moduleName": "Role Module",
+      "description": "",
+      "parentId": "6afb0a454fafc2ec57b6579a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1206b7343e00853ba37a": {
+      "id": "6afb1206b7343e00853ba37a",
+      "title": "Seller",
+      "moduleName": "Seller",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1212b7343e00853ba386": {
+      "id": "6afb1212b7343e00853ba386",
+      "title": "Seller Module",
+      "moduleName": "Seller Module",
+      "description": "",
+      "parentId": "6afb1206b7343e00853ba37a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1336b7343e00853ba4f5": {
+      "id": "6afb1336b7343e00853ba4f5",
+      "title": "Customer Support",
+      "moduleName": "Customer Support",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb134eb7343e00853ba4fd": {
+      "id": "6afb134eb7343e00853ba4fd",
+      "title": "Support Module",
+      "moduleName": "Support Module",
+      "description": "",
+      "parentId": "6afb1336b7343e00853ba4f5",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1401b7343e00853ba54a": {
+      "id": "6afb1401b7343e00853ba54a",
+      "title": "Blogs",
+      "moduleName": "Blogs",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb140eb7343e00853ba552": {
+      "id": "6afb140eb7343e00853ba552",
+      "title": "Blogs",
+      "moduleName": "Blogs",
+      "description": "",
+      "parentId": "6afb1401b7343e00853ba54a",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb153cb7343e00853ba5bb": {
+      "id": "6afb153cb7343e00853ba5bb",
+      "title": "plans",
+      "moduleName": "plans",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb1558b7343e00853ba5c7": {
+      "id": "6afb1558b7343e00853ba5c7",
+      "title": "Plans",
+      "moduleName": "Plans",
+      "description": "",
+      "parentId": "6afb153cb7343e00853ba5bb",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb164cb7343e00853ba638": {
+      "id": "6afb164cb7343e00853ba638",
+      "title": "Settings",
+      "moduleName": "Settings",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb165eb7343e00853ba644": {
+      "id": "6afb165eb7343e00853ba644",
+      "title": "Profile Account",
+      "moduleName": "Profile Account",
+      "description": "",
+      "parentId": "6afb164cb7343e00853ba638",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afb16deb7343e00853ba67d": {
+      "id": "6afb16deb7343e00853ba67d",
+      "title": "Site Configuration",
+      "moduleName": "Site Configuration",
+      "description": "",
+      "parentId": "6afb164cb7343e00853ba638",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afc2328c157f7fe3413b321": {
+      "id": "6afc2328c157f7fe3413b321",
+      "title": "System Logs",
+      "moduleName": "System Logs",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afc2350c157f7fe3413b32c": {
+      "id": "6afc2350c157f7fe3413b32c",
+      "title": "System Logs",
+      "moduleName": "System Logs",
+      "description": "",
+      "parentId": "6afc2328c157f7fe3413b321",
+      "sortOrder": 0,
+      "isAdminSection": true,
+      "isPublished": true
+    },
+    "6afc3d32c157f7fe3413b665": {
+      "id": "6afc3d32c157f7fe3413b665",
+      "title": "Team Management",
+      "moduleName": "Team Management",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc3d3ec157f7fe3413b66d": {
+      "id": "6afc3d3ec157f7fe3413b66d",
+      "title": "Teams",
+      "moduleName": "Teams",
+      "description": "",
+      "parentId": "6afc3d32c157f7fe3413b665",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4765f3debc00853645dc": {
+      "id": "6afc4765f3debc00853645dc",
+      "title": "Section List",
+      "moduleName": "Section List",
+      "description": "",
+      "parentId": "6afc3d32c157f7fe3413b665",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4812f3debc008536461d": {
+      "id": "6afc4812f3debc008536461d",
+      "title": "Roles",
+      "moduleName": "Roles",
+      "description": "",
+      "parentId": "6afc3d32c157f7fe3413b665",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4b93f3debc008536469d": {
+      "id": "6afc4b93f3debc008536469d",
+      "title": "Order Module",
+      "moduleName": "Order Module",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc4bbaf3debc00853646a9": {
+      "id": "6afc4bbaf3debc00853646a9",
+      "title": "Orders",
+      "moduleName": "Orders",
+      "description": "",
+      "parentId": "6afc4b93f3debc008536469d",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc50c5f3debc0085364704": {
+      "id": "6afc50c5f3debc0085364704",
+      "title": "Amazon Authorization",
+      "moduleName": "Amazon Authorization",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc50fbf3debc008536471a": {
+      "id": "6afc50fbf3debc008536471a",
+      "title": "Amazon Authorization",
+      "moduleName": "Amazon Authorization",
+      "description": "",
+      "parentId": "6afc50c5f3debc0085364704",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc5437f3debc00853647dd": {
+      "id": "6afc5437f3debc00853647dd",
+      "title": "Setting",
+      "moduleName": "Setting",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc5445f3debc00853647e9": {
+      "id": "6afc5445f3debc00853647e9",
+      "title": "Account Setting",
+      "moduleName": "Account Setting",
+      "description": "",
+      "parentId": "6afc5437f3debc00853647dd",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc5456f3debc00853647f5": {
+      "id": "6afc5456f3debc00853647f5",
+      "title": "General Setting",
+      "moduleName": "General Setting",
+      "description": "",
+      "parentId": "6afc5437f3debc00853647dd",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc55a0f3debc008536485e": {
+      "id": "6afc55a0f3debc008536485e",
+      "title": "System Logs",
+      "moduleName": "System Logs",
+      "description": "",
+      "parentId": null,
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    },
+    "6afc55acf3debc0085364869": {
+      "id": "6afc55acf3debc0085364869",
+      "title": "System Logs",
+      "moduleName": "System Logs",
+      "description": "",
+      "parentId": "6afc55a0f3debc008536485e",
+      "sortOrder": 0,
+      "isAdminSection": false,
+      "isPublished": true
+    }
+  },
+  "steps": {
+    "6afb0ab14fafc2ec57b657be": {
+      "id": "6afb0ab14fafc2ec57b657be",
+      "guideModuleId": "6afb0a6a4fafc2ec57b657a2",
+      "stepOrder": 1,
+      "title": "Fill in User Details and Assign Role",
+      "description": "<p>To create a new user account in the system, fill out the required details in the Create Admin User modal:</p><p>1. Full Name:</p><p>• Enter the complete name of the user.</p><p>• This is a mandatory field.</p><p>2. Email Address:</p><p>• Enter a valid corporate or personal email address.</p><p>• This email will be used as the primary login credential and to receive platform notifications.</p><p>• This is a mandatory field.</p><p>3. Phone Number (Optional):</p><p>• Enter the contact phone number including the country code.</p><p>4. Role:</p><p>• Select an appropriate role from the dropdown menu (e.g., Support, Management, Staff).</p><p>• The assigned role determines what sections and actions (View, Create, Update, Delete) the user is permitted to access.</p><p>• This is a mandatory field.</p><p>5. Save User:</p><p>• After filling in all required fields, click the \"Create User\" button to save the new user.</p><p>• Click \"Cancel\" if you wish to discard the changes without saving.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911503613-978553334.png"
+    },
+    "6afb0be44fafc2ec57b65a09": {
+      "id": "6afb0be44fafc2ec57b65a09",
+      "guideModuleId": "6afb0bda4fafc2ec57b659fd",
+      "stepOrder": 1,
+      "title": "Sections Overview & System Access Controls",
+      "description": "<p>The Sections configuration screen allows administrators to view and manage dynamic system sections, operational permissions, and platform-wide feature access. Below is a detailed explanation of the features on this page:</p><p>1. Navigation Tabs:</p><p>Switch seamlessly between \"Users\", \"Section\", and \"Role\" tabs from the top navigation bar to manage complete role-based access control (RBAC).</p><p>2. Sections List &amp; Pre-defined Modules:</p><p>View all available system sections (e.g., Site Configuration, Admin Account, Guide Document, Settings, Plans, Blog Management, Customer Support, Roles, Sellers, etc.) that represent key modules of the application.</p><p>3. Search Sections:</p><p>Use the top Search input field to quickly locate any specific system section by typing its name in real time.</p><p>4. Status Toggle (Active / Inactive):</p><p>Use the toggle switch in the Status column to enable (Active) or disable (Inactive) a section across the platform. Disabled sections will restrict access for associated roles and users.</p><p>5. Table Sorting:</p><p>Click on any table column header with sort indicators (Date, Section Name, or Status) to arrange records in ascending or descending alphabetical/chronological order.</p><p>6. Toolbar Actions (Top-Right):</p><p>- Refresh: Reload the section list with the latest data from the server.</p><p>- Filter &amp; Columns: Customize table density and show/hide specific columns according to your preference.</p><p>7. Pagination:</p><p>Choose the number of sections shown per page (e.g., 100 items per page) and navigate through pages using the pagination buttons at the bottom right.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911651616-225493214.png"
+    },
+    "6afb0c084fafc2ec57b65a2f": {
+      "id": "6afb0c084fafc2ec57b65a2f",
+      "guideModuleId": "6afb0bfc4fafc2ec57b65a23",
+      "stepOrder": 1,
+      "title": "Create New Role & Configure Section Permissions",
+      "description": "<p>The Create Role dialog allows administrators to define custom administrative roles and configure granular, section-by-section access permissions. Follow the steps below to configure a new role:</p><p>1. Role Name (Required):</p><p>Enter a clear and descriptive name for the role (e.g., \"Production Lead\", \"Support Specialist\", or \"Content Moderator\"). This field is mandatory.</p><p>2. Role Description (Optional):</p><p>Provide a brief summary explaining the scope of responsibilities, administrative authority, or department associated with this role.</p><p>3. Section Permissions Matrix:</p><p>Configure granular operational permissions for each module across the platform:</p><p>- SECTION: Lists all system areas (Sellers, Admin Users, Roles, Sections, Customer Support, Blog Management, Plans, Settings, Admin Account, Guide Document, Site Configuration).</p><p>- ALL: Check this box to grant full access (View, Create, Update, Delete) to that specific module all at once.</p><p>- VIEW: Allows users with this role to browse and view records in this section.</p><p>- CREATE: Grants permission to add new records or documents.</p><p>- UPDATE: Grants permission to edit or change existing records and statuses.</p><p>- DELETE: Grants permission to delete records permanently.</p><p>4. Submit or Cancel:</p><p>- Click the \"Create Role\" button at the bottom-right to save the new role and its permission matrix.</p><p>- Click \"Cancel\" or the close icon (X) to discard any changes.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911761342-624258960.png"
+    },
+    "6afb1281b7343e00853ba404": {
+      "id": "6afb1281b7343e00853ba404",
+      "guideModuleId": "6afb1212b7343e00853ba386",
+      "stepOrder": 1,
+      "title": "Sellers Management: Store Profiles, Subscriptions & Account Controls",
+      "description": "<p>The Sellers management table enables administrators to oversee all registered merchant accounts, review store profiles, manage subscription plans, quota limits, and perform account-level actions. Below is a detailed walkthrough of all the controls available on this page:</p><p>1. Search Details (Search Bar):</p><p>Use the search bar at the top to quickly locate sellers in real time by Name, Email, Phone Number, or Brand / Store Name.</p><p>2. Filters &amp; Toolbar Controls:</p><p>- Refresh: Reload the table data instantly from the server.</p><p>- Date Range Filter: Filter seller registrations by a specific start and end date range.</p><p>- Plan Filter: Filter sellers by their active subscription plan (e.g., Starter, Bronze, Growth, Professional, Scale, or All Plans).</p><p>- View &amp; Column Settings: Adjust column visibility and table display density on the top right.</p><p>3. Seller Information Columns:</p><p>- DATE: Registration date and time of the seller account.</p><p>- NAME: Full name of the seller or store owner.</p><p>- EMAIL &amp; MOBILE: Direct contact details with quick one-click copy buttons.</p><p>- BRAND: Registered business or brand name of the seller's storefront.</p><p>- PLAN &amp; EXPIRE DATE: Current subscription package and its expiration status (Active date, Expired, or Cancelled).</p><p>- MARKETPLACES: Number of connected e-commerce marketplaces.</p><p>- QUOTA: Monthly product or order quota allocated under their current plan.</p><p>4. Actions Column:</p><p>- Status Update (Toggle Switch): Instantly activate or suspend a seller's platform access without deleting their account. Suspended/cancelled accounts appear highlighted in light red.</p><p>- Assign Plan (Card Icon): Assign a new subscription plan or upgrade/downgrade an existing seller package.</p><p>- Cancel Plan (Target/Cancel Icon): Manually cancel or expire an active subscription.</p><p>- Edit Details (Pencil Icon): Edit store profile details, contact information, and account settings.</p><p>- Delete Record (Trash Icon): Permanently remove the seller account and associated store data from the platform.</p><p>5. Pagination Controls:</p><p>Located at the bottom right, select items displayed per page (e.g., 100) and navigate through multiple pages of seller records using the pagination buttons.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794839084629-690416300.png"
+    },
+    "6afb13a5b7343e00853ba529": {
+      "id": "6afb13a5b7343e00853ba529",
+      "guideModuleId": "6afb134eb7343e00853ba4fd",
+      "stepOrder": 1,
+      "title": "Customer Support: Inquiries, Ticket Resolution & Status Management",
+      "description": "<p>The Support management module allows administrators to view, track, prioritize, and resolve customer and seller support inquiries efficiently. Below is a detailed walkthrough of all the features available on this page:</p><p>1. Search Support Tickets:</p><p>Use the top Search bar to find tickets instantly by Customer/Seller Name, Email address, or Message keywords.</p><p>2. Status Filter &amp; Toolbar:</p><p>- Status Filter: Filter tickets by current state (e.g., \"Pending\" to see open inquiries that need attention, or \"Resolved\" for completed tickets).</p><p>- Refresh Button: Instantly reload the tickets table to fetch newly submitted inquiries in real time.</p><p>- Table Customization: Adjust row density and column visibility from the top-right toolbar.</p><p>3. Support Inquiries Table:</p><p>- NAME: Displays the sender's avatar initials and full name.</p><p>- EMAIL: Customer's email address with a quick one-click copy button for fast email replies.</p><p>- MESSAGE: The full question, issue description, or support request submitted by the customer/seller.</p><p>- STATUS: Visual indicator showing whether the ticket is:</p><p>• Pending (Orange Badge / Clock Icon): Awaiting review and response from the support team.</p><p>• Resolved (Green Badge / Checkmark Icon): Handled and closed successfully.</p><p>- SUBMITTED AT: Exact timestamp when the inquiry was created.</p><p>4. Actions Column:</p><p>- Quick Status Toggle: Click the action icon (Clock / Checkmark) to toggle the ticket status directly between \"Pending\" and \"Resolved\" once the customer's query has been answered.</p><p>5. Table Pagination:</p><p>Select how many support inquiries to view per page (e.g., 100) and navigate through multiple pages using the page buttons at the bottom right.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910396804-803355928.png"
+    },
+    "6afb143db7343e00853ba566": {
+      "id": "6afb143db7343e00853ba566",
+      "guideModuleId": "6afb140eb7343e00853ba552",
+      "stepOrder": 1,
+      "title": "Create & Publish Blog Article: Headline, Content, Cover & Status",
+      "description": "<p>The Add Blog screen allows content creators and administrators to compose, format, and publish articles for the marketplace website. Below is a detailed walkthrough of each section on this form:</p><p>1. Article Headline &amp; Overview:</p><p>- Blog Title (Required): Enter an engaging, SEO-friendly headline (up to 100 characters). E.g., \"How to Automate Amazon Product Review Requests in 2026\".</p><p>- Short Description / Teaser: Write a compelling 2-3 sentence summary (up to 250 characters). This snippet appears on social media shares and blog index preview cards.</p><p>2. Full Article Content (Rich Text Editor):</p><p>- Draft the full article body using the rich text formatting toolbar.</p><p>- Apply Headings (H1, H2, H3), Bold, Italic, Underline, Bulleted / Numbered lists, and embed inline media or images to make the guide interactive and informative.</p><p>3. Cover &amp; Media Gallery:</p><p>- Click \"+ Add Cover Image\" to upload a high-resolution banner photo (JPG, PNG, or WEBP).</p><p>- The primary image will be displayed as the main cover banner on the article card and blog listing page.</p><p>4. Publishing Status &amp; Metadata:</p><p>- Status: Indicates the editorial state of the article (defaults to \"Draft\").</p><p>- Total Character Count: Tracks real-time length and word progress of your content.</p><p>- Target Audience: Identifies the target reader segment (e.g., \"Amazon Sellers\").</p><p>5. Publish or Cancel:</p><p>- Click the \"Publish Article\" button at the bottom-right corner to save and make the post live on the website.</p><p>- Click \"Cancel\" to discard any unsaved changes and return to the blogs list.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910186446-459319173.png"
+    },
+    "6afb15b2b7343e00853ba5e1": {
+      "id": "6afb15b2b7343e00853ba5e1",
+      "guideModuleId": "6afb1558b7343e00853ba5c7",
+      "stepOrder": 1,
+      "title": "Create New Subscription Plan: Pricing, Quotas, Lifecycle & Live Preview",
+      "description": "<p>The Add Plan screen allows administrators to configure new commercial subscription packages with custom pricing, billing cycles, seller quotas, and display availability. Below is a detailed walkthrough of each section on this page:</p><p>1. Plan Identification &amp; Pricing:</p><p>- Plan Name (Required): Enter a distinctive commercial tier name (e.g., \"Starter\", \"Pro\", or \"Enterprise\") displayed to sellers during checkout.</p><p>- Price (€ EUR) (Required): Specify the recurring subscription fee charged per billing cycle.</p><p>- Billing Frequency (Required): Select the renewal period from the dropdown (e.g., \"Monthly (Every 1 Month)\" or Yearly).</p><p>2. Plan Visibility &amp; Lifecycle:</p><p>- Status Toggle (Active / Inactive): Toggle whether the plan is immediately visible to merchants for selection and upgrades.</p><p>- Plan Expiry Date (Optional): Set an optional deprecation date after which new sellers cannot subscribe to this tier.</p><p>3. Quotas &amp; Operational Limits:</p><p>- Marketplaces Allowed (Required): Specify the maximum number of Amazon marketplace stores/regions a seller on this plan can connect (e.g., 1, 3, 5).</p><p>- Request Quota (Required): Enter the maximum number of review request emails allowed per billing cycle (e.g., 500, 2000, 5000). Quotas reset automatically each month on the seller's billing anniversary.</p><p>4. Live Marketplace Preview:</p><p>- Check the real-time preview card on the right side to inspect how the plan title, price, marketplace allowance, and review quota will look to sellers in the marketplace storefront.</p><p>5. Submit or Cancel:</p><p>- Click the \"+ Create Plan\" button at the bottom-right corner to save and publish the new subscription tier.</p><p>- Click \"Cancel\" to discard changes and return to the plans list.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910619502-918296470.png"
+    },
+    "6afb168ab7343e00853ba658": {
+      "id": "6afb168ab7343e00853ba658",
+      "guideModuleId": "6afb165eb7343e00853ba644",
+      "stepOrder": 1,
+      "title": "Admin Account Settings: Profile Avatar, Personal Information & Security",
+      "description": "<p>The Account Settings section allows administrators to manage their personal profile identity, contact information, profile avatar photo, and account security preferences. Below is a detailed walkthrough of each setting on this page:</p><p>1. Navigation Tabs (Settings Menu):</p><p>- Account: Active tab to update personal administrative credentials and profile information.</p><p>- Site Configuration: Manage platform-wide operational settings, branding, and global rules.</p><p>2. Avatar &amp; Profile Picture:</p><p>- Avatar Preview: Shows your current profile image or account initials (e.g., \"G\").</p><p>- Upload Image: Click to upload a high-resolution avatar (JPG, PNG, or WEBP, max 5MB). Your avatar is displayed in top navigation, activity logs, and communications.</p><p>- Remove: Click to delete the custom avatar image and reset to default initials.</p><p>3. Personal Information Form:</p><p>- Full Name (Required): Enter the primary administrator or staff member's full display name.</p><p>- Contact Number (Required): Provide an active mobile or phone number for account notifications and security verification.</p><p>- Email Address (Primary Login): Displays the registered administrator email. This field is securely locked as it is permanently linked to your system authentication.</p><p>4. Security &amp; Privacy Protection:</p><p>- Displays confirmation that all administrative data is encrypted and stored securely according to enterprise security standards.</p><p>5. Save Changes:</p><p>- Review the status indicator at the bottom (\"All profile details are up to date\").</p><p>- Click the \"Save Changes\" button at the bottom-right corner to persist all updated profile details.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911098321-354918129.png"
+    },
+    "6afb1702b7343e00853ba690": {
+      "id": "6afb1702b7343e00853ba690",
+      "guideModuleId": "6afb16deb7343e00853ba67d",
+      "stepOrder": 1,
+      "title": "Site Configuration: Company Identity, Branding, Website URL & Copyright",
+      "description": "<p>The Site Configuration section enables administrators to customize the platform's global branding, public company identity, official website domain, meta descriptions, and legal notices. Below is a detailed walkthrough of the Company Details tab:</p><p>1. Site Configuration Navigation Tabs:</p><p>- Company Details: Configure official brand name, website URL, tagline, and about descriptions.</p><p>- Contact &amp; Location: Manage public customer support emails, contact phone numbers, and physical office addresses.</p><p>- Social Media Links: Link official profiles (e.g., LinkedIn, Twitter/X, Facebook, Instagram, YouTube) displayed in the website footer.</p><p>2. Company Details Form:</p><p>- Company Name (Required): Enter the official business or legal platform name (e.g., \"Gravurtastisch\"). This name is used across email templates, invoices, and website headers.</p><p>- Website URL: Enter the primary domain address of the live storefront .</p><p>- Tagline: A short, catchy motto summarizing your core service (e.g., \"Automated Amazon Feedback &amp; Review Management\").</p><p>- About / Description: Enter a comprehensive overview explaining the platform's value proposition and features for SEO meta tags and public \"About Us\" sections.</p><p>- Copyright Text: Specify the legal intellectual property statement appearing in the global website footer (e.g., \"© 2026 Gravurtastisch. All rights reserved.\").</p><p>3. Actions &amp; Status:</p><p>- Status Indicator: Shows whether settings are currently synchronized (\"All settings are up to date and live\").</p><p>- Discard Changes: Revert any unsaved text modifications back to the last saved configuration.</p><p>- Save Configuration: Click the \"Save Configuration\" button at the bottom right to apply the branding updates across the entire live website.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794911077435-726374906.png"
+    },
+    "6afc23a9c157f7fe3413b344": {
+      "id": "6afc23a9c157f7fe3413b344",
+      "guideModuleId": "6afc2350c157f7fe3413b32c",
+      "stepOrder": 1,
+      "title": "System Logs: Audit User Activities, Operations, IP Tracking & Event History",
+      "description": "<p>The System Logs interface provides a comprehensive audit trail of all platform activities, administrative operations, user authentication events, and data changes. Administrators can monitor real-time security events and inspect operational records.</p><p>1. Filter &amp; Search Controls:</p><p>- Search Bar: Quick lookup by user name, email, action key, or specific keywords.</p><p>- User Filter: Filter log entries by specific admin or user accounts.</p><p>- Operation Filter: Narrow down records by operation type (LOGIN, CREATE, UPDATE, DELETE).</p><p>- Date Range Picker: Select custom date ranges (e.g., 01 Nov - 10 Nov) to inspect historical activity.</p><p>- Refresh Button: Instantly reload and sync recent system events.</p><p>2. Audit Log Information Table:</p><p>- Name &amp; Email: Identity and email address of the user who initiated the action.</p><p>- Role: Role assigned to the user at the time of the event (e.g., Super Admin, Seller).</p><p>- Operation: Nature of the operation performed (e.g., LOGIN, UPDATE, CREATE).</p><p>- Action / Key: Specific system event triggered (e.g., User Login, Update Website Configuration).</p><p>- IP Address: Network IP address from which the action was dispatched for security tracing.</p><p>- Created At: Precise timestamp indicating the date and time of the logged event.</p><p>3. Log Details &amp; Inspection:</p><p>- View Action (Eye Icon): Click the eye icon in the Actions column to open the detailed log modal and inspect the full payload, previous vs. updated values, and system metadata.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794909991346-938114082.png"
+    },
+    "6afc3da9c157f7fe3413b67d": {
+      "id": "6afc3da9c157f7fe3413b67d",
+      "guideModuleId": "6afc3d3ec157f7fe3413b66d",
+      "stepOrder": 1,
+      "title": "Create Team Member: Add New Staff, Contact Information & Role Assignment",
+      "description": "<p>The Create Team Member dialog enables administrators and store managers to onboard new internal staff members, define their contact credentials, and assign departmental roles for granular access control.</p><p>1. Accessing the Form:</p><p>- Navigate to the \"Team\" section from the sidebar navigation.</p><p>- Click the \"+ Add User\" button in the top-right toolbar to open the \"Create Team Member\" modal dialog.</p><p>2. Required Credentials &amp; Information:</p><p>- Full Name (*): Enter the full name of the staff member.</p><p>- Email Address (*): Provide a valid business or personal email address. This email will be used for authentication, platform notifications, and account credentials.</p><p>- Phone Number (Optional): Add an operational contact phone number with the appropriate country code.</p><p>- Role (*): Select a predefined departmental role from the dropdown menu (e.g., Order Review, Support, Manager) to set appropriate permissions and module access.</p><p>3. Form Submission:</p><p>- Cancel: Dismiss the form and discard any unsaved inputs.</p><p>- Create User: Click the primary \"Create User\" button to save the new team member into the system and display them in the Team list.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794916538274-573377720.png"
+    },
+    "6afc4786f3debc00853645ec": {
+      "id": "6afc4786f3debc00853645ec",
+      "guideModuleId": "6afc4765f3debc00853645dc",
+      "stepOrder": 1,
+      "title": "Sections Overview: Dynamic Module Definitions, Operational Permissions & Status Controls",
+      "description": "<p>The Sections configuration interface provides a centralized overview of all operational platform modules and functional sections available across the store. These system-level sections define granular boundaries for permission assignments, navigation menus, and role-based access controls.</p><p>1. Navigation &amp; Search Toolbar:</p><p>- Tab Navigation: Switch seamlessly between \"Team\", \"Section\", and \"Role\" tabs under the Team management module.</p><p>- Search Sections: Locate specific platform modules quickly by entering keywords (e.g., Orders, Amazon Authorisation, Settings).</p><p>- Refresh Button: Reload and synchronize the latest section definitions with the database.</p><p>- View &amp; Display Toggles: Customize table column visibility and switch between compact and standard table layouts.</p><p>2. Sections Data Breakdown:</p><p>- Date: Timestamp indicating when the section module was registered into the system.</p><p>- Section Name: Canonical display name of the operational feature or module (e.g., Orders, Amazon Authorisation, Seller Roles, Guide Document).</p><p>- Status (Active / Inactive Toggle): Manage platform availability for the section in real-time. Enabling or disabling a section instantly controls whether it can be accessed or assigned within user roles.</p><p>3. Role Integration &amp; Access Control:</p><p>- The active sections listed here serve as building blocks for configuring custom departmental roles under the \"Role\" tab.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794918275559-223570812.png"
+    },
+    "6afc4836f3debc008536462d": {
+      "id": "6afc4836f3debc008536462d",
+      "guideModuleId": "6afc4812f3debc008536461d",
+      "stepOrder": 1,
+      "title": "Create Seller Role: Define Custom Roles, Descriptions & Granular Section Permissions",
+      "description": "<p>The Create Role modal allows store owners and team administrators to define custom seller-level roles and assign granular operational permissions across store sections. This ensures internal staff members have access strictly limited to their job responsibilities.</p><p>1. Role Definition &amp; Details:</p><p>- Role Name (*): Enter a clear, descriptive title for the role (e.g., Order Reviewer, Production Lead, Catalog Manager, Customer Support).</p><p>- Description (Optional): Provide a concise summary of the responsibilities, workflows, and operational scope associated with this role.</p><p>2. Granular Section Permissions Matrix:</p><p>- Available Sections: Configure individual access for platform modules, including Orders, Amazon Authorisation, Seller Users, Seller Roles, Seller Settings, Seller Sections, Seller Account, General Setting, and Guide Document.</p><p>- ALL: Select the checkbox in the ALL column to instantly grant View, Create, Update, and Delete permissions for that specific section.</p><p>- VIEW: Authorize members to view and inspect records without making modifications.</p><p>- CREATE: Allow members to onboard new records (e.g., adding users or drafting configurations).</p><p>- UPDATE: Grant permission to edit and modify existing data, settings, or operational statuses.</p><p>- DELETE: Allow members to remove or delete records from the system.</p><p>3. Role Creation:</p><p>- Cancel: Close the dialog without saving changes.</p><p>- Create Role: Click the primary \"Create Role\" button to save the new role definition. Once created, this role becomes immediately available in the Role dropdown when adding or editing team members under the Team tab.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794918450927-549142297.png"
+    },
+    "6afc4c04f3debc00853646bd": {
+      "id": "6afc4c04f3debc00853646bd",
+      "guideModuleId": "6afc4bbaf3debc00853646a9",
+      "stepOrder": 1,
+      "title": "Orders Management: Search, Filter, Multi-Item Tracking & Review Solicitation",
+      "description": "<p>The Orders Management screen allows sellers to track customer orders, monitor fulfillment timelines, view marketplace channels, and manage review request solicitations. Below is a detailed walkthrough of all the fields, columns, and controls available on this page:</p><p>1. Top Toolbar &amp; Filter Controls:</p><p>• Search Bar: Quickly search orders in real-time by Amazon Order ID, Buyer Email, ASIN, Item ID, or Product Title.</p><p>• Refresh Button: Fetch the latest order sync and updates directly from the Amazon SP-API.</p><p>• Marketplace Selector: Filter orders by active Amazon marketplace regions (e.g., Germany / <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://Amazon.de\">Amazon.de</a>).</p><p>• Date Range Filter: Filter the order list by custom date ranges or preset periods.</p><p>• Column Visibility &amp; Density Controls: Customize visible columns and adjust table row spacing.</p><p>2. Order Identification &amp; Buyer Details:</p><p>• ORDER DATE: Displays the exact timestamp when the customer placed the order on Amazon (e.g., DD-MM-YYYY HH:mm).</p><p>• ORDER ID: The official Amazon Order ID (e.g., 028-2258298-1783560). Includes a one-click copy button for quick reference. Multi-item orders are grouped cleanly under the same Order ID.</p><p>• BUYER EMAIL: The masked/encrypted Amazon buyer communication email address, complete with a quick-copy button.</p><p>3. Review Solicitation &amp; Status:</p><p>• STATUS:</p><p>  - \"Pending\" (Amber Badge): Solicitation request is queued or within the required Amazon waiting window.</p><p>  - \"Sent\" (Green Badge): Product review and seller feedback request has been successfully dispatched to the customer.</p><p>  - \"Send\" (Blue Action Button): Allows sellers to manually trigger an immediate feedback solicitation request for eligible orders.</p><p>4. Product &amp; Item Information:</p><p>• ASIN: Amazon Standard Identification Number shown in highlighted text with a quick-copy icon.</p><p>• ITEM ID: Unique Amazon Order Item identifier with a copy button.</p><p>• PRODUCT: Displays the product name. Hovering over the title opens an interactive tooltip revealing the complete product description, customization text, and special tags (e.g., Gift, Transparency).</p><p>• QTY / CONDITION: Shows the ordered quantity (e.g., Qty 1) and the item listing condition (e.g., New).</p><p>5. Fulfillment, Delivery &amp; Financials:</p><p>• CHANNEL: The fulfillment method and marketplace channel (e.g., MFN <a target=\"_blank\" rel=\"noopener noreferrer nofollow\" href=\"http://Amazon.de\">Amazon.de</a> for Merchant Fulfilled Network).</p><p>• DELIVERY (EDD): Estimated Delivery Date &amp; time accompanied by a real-time countdown badge (e.g., \"3d left\", \"2d left\") to help meet shipping service level agreements (SLAs).</p><p>• TOTAL: The total order transaction value formatted with the marketplace currency (e.g., €).</p><p>6. Pagination &amp; Display Options:</p><p>• Located at the bottom right corner, allowing you to select items per page (e.g., 10, 25, 50, 100) and navigate across multiple pages using previous/next and page number controls.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794919424253-947447358.png"
+    },
+    "6afc511cf3debc008536472d": {
+      "id": "6afc511cf3debc008536472d",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 1,
+      "title": "Amazon Authorization - Step 1: Select Connected Marketplaces & Quota Allocation",
+      "description": "<p>The first step of the Amazon authorization process allows you to select which Amazon regional marketplaces you want to link with your seller account. Below are the details of the controls on this screen:</p><p>1. Stepper Navigation:</p><p>• Highlights the current step (\"Select Marketplaces\") and indicates the upcoming stages (\"API Credentials\" and \"Review &amp; Save\").</p><p>2. Marketplace Quota Bar:</p><p>• Displays your plan's active marketplace allowance (e.g., \"Marketplace Quota: 1 / 2 Selected\").</p><p>• Indicates how many marketplace connections remain available under your active tier.</p><p>3. Regional Marketplace Grid:</p><p>• Browse and select your target regional Amazon marketplaces (e.g., Germany, France, Italy, Spain, United Kingdom, United States, Japan, etc.).</p><p>• Each card displays the country flag, regional name, country code, and official Amazon Marketplace ID (e.g., Code: DE - A1PA6795UKMFR9).</p><p>• Click any marketplace card to toggle its selection.</p><p>4. Navigation Buttons:</p><p>• Back: Return to the previous screen or cancel.</p><p>• Next Step: Proceed to Step 2 to configure your Selling Partner API credentials once at least one marketplace is chosen.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794920728599-491662043.png"
+    },
+    "6afc547bf3debc0085364805": {
+      "id": "6afc547bf3debc0085364805",
+      "guideModuleId": "6afc5445f3debc00853647e9",
+      "stepOrder": 1,
+      "title": "Account Settings: Update Profile, Business Details, Avatar & Contact Info",
+      "description": "<p>The Account Personal Information screen allows sellers and administrators to manage their personal profile, brand identity, profile picture, and verified contact details. Below is a detailed walkthrough of all the elements and controls on this page:</p><p>1. Navigation Tabs &amp; Status:</p><p>• Account Tabs: Switch between \"Personal Information\" (profile settings) and \"Subscription\" (plan and billing details).</p><p>• Status Badge (\"ACTIVE ACCOUNT\"): Indicates that your seller account is verified, active, and in good standing.</p><p>2. Profile Avatar Section:</p><p>• Avatar Preview: Displays your current profile picture or auto-generated initials badge.</p><p>• Upload Image: Click to upload a new high-resolution profile photo. Supported formats: JPG, PNG, or WEBP (Maximum size: 5MB).</p><p>• Remove: Reverts to the default initial badge by removing the uploaded avatar picture.</p><p>3. Profile &amp; Contact Information Fields:</p><p>• Full Name (Required): Enter or update your legal full name or primary contact person's name.</p><p>• Business / Brand Name (Required): Specify your marketplace trading name or registered brand name (e.g., Gruvi) used across storefront communications.</p><p>• Contact Number (Required): Enter the primary phone/mobile number for operational notifications and account verification.</p><p>• Email Address (Primary Login - Locked): Displays the verified primary email address linked to your account. This field is locked for security and cannot be directly changed here as it serves as your primary login credential.</p><p>4. Security &amp; Privacy Notice:</p><p>• Explains that your profile name and avatar will appear across reports, notifications, and customer communications. All personal data is encrypted and securely stored.</p><p>5. Save Controls:</p><p>• Status Indicator: Shows whether all profile information is up to date.</p><p>• Save Changes: Click to persist any modifications made to your name, brand, contact number, or avatar image.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921587209-463383458.png"
+    },
+    "6afc54dcf3debc0085364834": {
+      "id": "6afc54dcf3debc0085364834",
+      "guideModuleId": "6afc5456f3debc00853647f5",
+      "stepOrder": 1,
+      "title": "General Settings: Review Automation, Fulfillment Channels & Dispatch Schedule",
+      "description": "<p>The General Settings screen allows sellers to configure automated Amazon review request campaigns, specify target fulfillment channels (FBA/FBM), define delivery delay schedules, and set inventory matching rules. Below is a detailed walkthrough of each section and configuration option:</p><p>1. Overview &amp; Automation Status:</p><p>• Review Automation Settings: Displays campaign status (e.g., \"Automation Paused\" or \"Active\") indicating whether automatic feedback solicitations are currently running.</p><p>2. Target Orders &amp; Fulfillment Channel:</p><p>• Order Status: Select the qualification status required before an email request can be queued (e.g., \"Shipped Orders Only\"). Feedback requests will only trigger after Amazon confirms the order status.</p><p>• Fulfillment Channel:</p><p>  - \"FBA (Amazon)\": Check to target orders fulfilled by Amazon's fulfillment centers.</p><p>  - \"FBM (Merchant)\": Check to target merchant-fulfilled orders shipped directly from your own warehouse.</p><p>  - You can enable either or both channels based on your operational preference.</p><p>3. Automatic Dispatch Schedule &amp; Triggers:</p><p>• Auto-Send Toggle: Enable this switch to activate background automated dispatching of review request emails without manual intervention.</p><p>• Delay (Days): Choose the waiting period (e.g., 1 Day, 3 Days, 5 Days) after estimated delivery before sending the feedback email, ensuring the customer has received and experienced the product.</p><p>• Dispatch Time (Hour / Minute / Second): Set the exact preferred time of day (e.g., 00 hrs 00 min 00 sec) when the system should execute dispatch requests.</p><p>• Schedule Summary Notice: Dynamically displays the configured rule summary (e.g., \"Emails will be sent automatically 1 days after the order is confirmed as delivered (estimated)\").</p><p>4. Order Matching Rules:</p><p>• Target Inventory: Choose which inventory items qualify for review campaigns (e.g., \"All Products In Inventory\" to run across your entire active catalog, or targeted ASIN subsets).</p><p>• Rule Description: Explains the scope of inventory coverage applied to incoming Amazon orders.</p><p>5. Save Controls:</p><p>• Save Settings Button: Click at the bottom right corner to validate and save your automation rules, fulfillment channels, and dispatch schedules.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921688311-596664816.png"
+    },
+    "6afc55ccf3debc0085364881": {
+      "id": "6afc55ccf3debc0085364881",
+      "guideModuleId": "6afc55acf3debc0085364869",
+      "stepOrder": 1,
+      "title": "System Logs: Audit Trail, Activity History, Filters & Event Inspection",
+      "description": "<p>The System Logs screen provides an immutable audit trail of all administrative and team activities, database updates, Amazon authorization changes, and operational events within the seller account. Below is a detailed breakdown of all fields, filter controls, and inspection tools available on this page:</p><p>1. Top Toolbar &amp; Audit Filter Controls:</p><p>• Search Bar: Quickly search through audit logs by user name, email, specific action key, or IP address.</p><p>• Refresh Button: Fetch the latest real-time system logs and audit entries.</p><p>• User Filter (\"All Users\"): Filter audit records by specific team members or administrators.</p><p>• Operation Filter (\"All Operations\"): Filter logs by event type (e.g., CREATE, UPDATE, DELETE).</p><p>• Date Filter: Filter logs by a specific date or custom date range (e.g., 17 Nov 2026).</p><p>• View &amp; Column Density Controls: Toggle visible columns and row display spacing.</p><p>2. Audit Log Table Columns:</p><p>• NAME: Displays the profile avatar initial and the full name of the user who performed the action. Supports column sorting.</p><p>• EMAIL: The registered email address of the acting user. Supports column sorting.</p><p>• ROLE: Color-coded badge identifying the user's assigned role and access privilege level (e.g., Super Admin, Seller Admin, Order Review).</p><p>• OPERATION: The category of database/system change executed (e.g., CREATE, UPDATE, DELETE).</p><p>• ACTION / KEY: A descriptive name of the specific operational action triggered (e.g., \"Create Guide Step\", \"Update Amazon Authorisation\", \"Update Guide Module\") along with an inspection key icon.</p><p>• IP ADDRESS: The network IP address (e.g., 192.168.1.55) recorded at the moment of the request, with a one-click copy button for security investigations.</p><p>• CREATED AT: The exact timestamp (DD-MM-YYYY HH:mm) when the activity occurred. Sorted by default in descending order (latest events first).</p><p>3. Log Details &amp; Inspection Action:</p><p>• View Log (Eye Icon): Click the eye icon under the ACTIONS column to open the detailed log modal, revealing the complete audit payload, request headers, and before-and-after change diffs.</p><p>4. Pagination Controls:</p><p>• Located at the bottom right corner, allowing you to select records per page (e.g., 10, 25, 50, 100) and navigate through historical pages using the pagination buttons.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921929311-840736575.png"
+    },
+    "6afb0ba14fafc2ec57b65805": {
+      "id": "6afb0ba14fafc2ec57b65805",
+      "guideModuleId": "6afb0a6a4fafc2ec57b657a2",
+      "stepOrder": 2,
+      "title": "Users Management: Search, Sort, Actions & Pagination",
+      "description": "<p>The Users management table allows administrators to view, search, filter, and manage administrative and staff user accounts. Below is a detailed walkthrough of the key controls available on this page:</p><p>1. Add Users (+ Add User):</p><p>Click the \"+ Add User\" button at the top-right corner to open the creation modal and register a new administrative user.</p><p>2. Search Details (Search Bar):</p><p>Use the search bar at the top to quickly look up users in real-time by their Name, Email address, or Contact number.</p><p>3. Sorting Columns:</p><p>Click on column headers with sort arrows (such as Date, Name, Email, Role, or Phone) to sort the list in ascending (A to Z) or descending (Z to A) order.</p><p>4. Status Update (Toggle Switch):</p><p>Use the toggle switch under the Actions column to quickly activate or deactivate a user's account access without deleting their profile.</p><p>5. Edit Details (Pencil Icon):</p><p>Click the Pencil icon to open the edit dialog and modify the user's name, phone number, email, or assigned role.</p><p>6. Delete Record (Trash Icon):</p><p>Click the red Trash icon to permanently remove the user from the system after confirming the prompt.</p><p>7. Pagination Controls:</p><p>Located at the bottom right corner, this allows you to choose the number of records displayed per page (e.g. 10, 25, 50, 100) and navigate across multiple pages using the page numbers and arrow buttons.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794838296420-850526744.png"
+    },
+    "6afb113db7343e00853ba2d6": {
+      "id": "6afb113db7343e00853ba2d6",
+      "guideModuleId": "6afb0bfc4fafc2ec57b65a23",
+      "stepOrder": 2,
+      "title": "Roles Management: Overview, Search, Actions & Assigned Sections",
+      "description": "<p>The Roles management table allows administrators to view, search, configure, and manage administrative roles and their assigned access permissions across the system. Below is a detailed walkthrough of the controls available on this page:</p><p>1. Add New Role (+ Add Role):</p><p>Click the \"+ Add Role\" button at the top-right corner to open the Create Role modal and configure a new administrative role with custom section permissions.</p><p>2. Search Roles:</p><p>Use the top Search input field to quickly filter and find roles in real-time by their Role Name or Description.</p><p>3. Role Details &amp; Assigned Sections:</p><p>- DATE: Displays when the role was created or last updated.</p><p>- ROLE: The name assigned to the role (e.g., Settings, Support, Seller Management).</p><p>- DESCRIPTION: A summary explaining the role's purpose and responsibilities.</p><p>- SECTIONS: Visual tags/chips showing which system sections (e.g., Sellers, Admin Account, Site Configuration, Support) this role has access to.</p><p>4. Actions (Edit &amp; Delete):</p><p>- Edit (Pencil Icon): Click to open the Edit Role dialog and update the role name, description, or modify its section permission matrix.</p><p>- Delete (Trash Icon): Click to permanently remove a custom role after confirming the prompt (system default roles may be protected).</p><p>5. Table Toolbar (Top-Right):</p><p>- Refresh: Reload the roles list to fetch the latest updates from the server.</p><p>- Filter &amp; Columns: Customize column visibility and table layout density according to your preference.</p><p>6. Table Pagination:</p><p>Select the number of records displayed per page (e.g., 100) and use the pagination controls at the bottom right to navigate across pages.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794838870670-373094895.png"
+    },
+    "6afb152ab7343e00853ba5a5": {
+      "id": "6afb152ab7343e00853ba5a5",
+      "guideModuleId": "6afb140eb7343e00853ba552",
+      "stepOrder": 2,
+      "title": "Manage Blog Articles: Preview, Edit & Delete Actions",
+      "description": "<p>Each blog article in the list includes direct action controls to manage its publication lifecycle. Below is a guide explaining the three key actions indicated by the arrows:</p><p>1. Blog Preview (Eye Icon):</p><p>- Click the golden/amber Eye icon next to any article to open the live reading preview dialog.</p><p>- This modal displays the article exactly as it appears to visitors on the frontend website, including the header banner, formatted typography, short teaser, and author details, without navigating away from the dashboard.</p><p>2. Edit Article (Pencil Icon):</p><p>- Click the Pencil icon to open the full blog post editor for that article.</p><p>- You can update the article headline, revise the short teaser, edit the rich-text body content, add or replace cover images, and update publishing preferences.</p><p>- Click \"Publish Article\" or \"Save Changes\" to apply your updates.</p><p>3. Delete Article (Trash Icon):</p><p>- Click the red Trash icon to remove an outdated or unwanted blog post.</p><p>- A confirmation dialog will appear asking you to verify the deletion. Confirming will permanently delete the article and its associated media from the platform.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794839847867-768232615.png"
+    },
+    "6afb1609b7343e00853ba60e": {
+      "id": "6afb1609b7343e00853ba60e",
+      "guideModuleId": "6afb1558b7343e00853ba5c7",
+      "stepOrder": 2,
+      "title": "Plans Management: Subscription Tiers, Pricing, Quotas & Actions",
+      "description": "<p>The Plans management table allows administrators to view, filter, configure, and manage all commercial subscription tiers, feature allowances, pricing rates, and monthly limits. Below is a detailed walkthrough of all the controls on this page:</p><p>1. Add New Plan (+ Add Plan):</p><p>Click the \"+ Add Plan\" button at the top-right corner to open the tier creator and configure a new subscription package with custom quotas and pricing.</p><p>2. Search &amp; Filter Controls:</p><p>- Search Bar: Quick search by Plan Name, Price, or Billing Cycle in real time.</p><p>- Status Filter: Filter the table to display only \"Active\" (available for purchase) or \"Inactive\" (archived/deprecated) plans.</p><p>- Refresh Button: Reload plan records from the server to reflect recent updates.</p><p>- Toolbar Controls: Customize table density and show/hide specific columns.</p><p>3. Subscription Plan Columns:</p><p>- PLAN NAME: The commercial package title (e.g., Bronze Plan, Starter, Growth, Professional, Scale, Enterprise Plus).</p><p>- PRICE (€): The recurring cost and billing rate (e.g., €49 / mo, €29 / qtr, €799 / yr).</p><p>- BILLING CYCLE: Renewal interval badge (Monthly, Quarterly, or Yearly).</p><p>- MARKETPLACES: Maximum number of Amazon regional marketplace channels a seller can connect under this plan.</p><p>- MONTHLY QUOTA: Maximum review feedback request allowance permitted per billing cycle (e.g., 1,000 req / mo, 10,000 req / mo).</p><p>- EXPIRES AT: Deprecation or lifecycle expiration date badge for the tier.</p><p>- CREATED AT: Exact timestamp when the plan was registered into the system.</p><p>4. Actions Column:</p><p>- Status Update (Toggle Switch): Instantly activate or deactivate a subscription plan. Inactive plans are hidden from new seller registrations and plan upgrade screens.</p><p>- Edit Plan (Pencil Icon): Open the plan editor to adjust pricing, increase quotas, change allowed marketplaces, or update lifecycle dates.</p><p>- Delete Plan (Trash Icon): Permanently delete a subscription tier after confirmation (tiers currently assigned to active sellers cannot be deleted without reassigning).</p><p>5. Table Pagination:</p><p>Select items shown per page (e.g., 100) and navigate between pages using the pagination bar at the bottom right.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794910742731-763018018.png"
+    },
+    "6afc41adf3debc008536451a": {
+      "id": "6afc41adf3debc008536451a",
+      "guideModuleId": "6afc3d3ec157f7fe3413b66d",
+      "stepOrder": 2,
+      "title": "Team Management: Overview, Search, Sorting, Status Control, Edit & Delete Operations",
+      "description": "<p>The Team Management table serves as the primary dashboard for viewing, organizing, and maintaining internal team members and store staff. It provides full control over user profiles, search, filtering, and real-time operational status.</p><p>1. Top Action Toolbar:</p><p>- Search Details: Quickly locate staff members by name, email, or operational keywords with real-time filtering.</p><p>- Refresh: Reload the latest team roster and sync changes from the database.</p><p>- Add Record (+ Add User): Launch the onboarding modal to register a new team member and assign access credentials.</p><p>- View &amp; Column Toggles: Adjust visible table columns, dense layout mode, and fullscreen display.</p><p>2. Column Sorting &amp; Record Breakdown:</p><p>- Sorting: Click any column header with sorting arrows (Date, Name, Email, Role, Phone) to sort records ascending or descending.</p><p>- Date: Onboarding timestamp when the member profile was added.</p><p>- Name &amp; Email: Staff member's identity and direct communication email address (includes copy-to-clipboard shortcut).</p><p>- Role: Departmental permission badge (e.g., Order Review, Support, Store Manager).</p><p>- Phone: Associated contact telephone number.</p><p>3. Actions &amp; Record Management:</p><p>- Status Update (Toggle Switch): Instantly activate or suspend a team member's platform access without deleting their account.</p><p>- Update Record (Pencil Icon): Open the edit dialog to modify staff information, phone numbers, or role assignments.</p><p>- Delete Record (Trash Icon): Open a confirmation dialog to permanently remove a member from the team.</p><p>4. Table Pagination:</p><p>- Items Per Page: Adjust row display density (e.g., 10, 25, 50, 100 entries per page).</p><p>- Navigation Arrows: Jump to the first page, previous page, next page, or specific page number.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794916778637-144641376.png"
+    },
+    "6afc49e2f3debc0085364665": {
+      "id": "6afc49e2f3debc0085364665",
+      "guideModuleId": "6afc4812f3debc008536461d",
+      "stepOrder": 2,
+      "title": "Roles Management: Overview, Search, Sorting, Assigned Sections, Edit & Delete Operations",
+      "description": "<p>The Roles management table provides an administrative summary of all custom roles configured within the store. Store managers can inspect permission allocations, search specific role profiles, and update or delete access policies.</p><p>1. Toolbar &amp; Search Controls:</p><p>- Search Details: Quickly filter roles by name, description keyword, or specific section modules.</p><p>- Add Record (+ Add Role): Open the \"Create Role\" dialog to define a new departmental role with customized section permissions.</p><p>- Refresh Button: Synchronize and reload the latest roles list directly from the database.</p><p>- View &amp; Display Toggles: Adjust table density, column configurations, or enter fullscreen view.</p><p>2. Table Columns &amp; Data Breakdown:</p><p>- Sorting: Click column headers (Date, Role, Description, Sections) to sort records ascending or descending.</p><p>- Date: Creation timestamp when the role was registered into the system.</p><p>- Role: Name and badge representation of the role (e.g., Order Review, Support, Store Manager).</p><p>- Description: Functional overview describing the role's scope and responsibilities.</p><p>- Sections: Interactive chips displaying all store modules and platform sections assigned to this role (e.g., Orders, Amazon Authorisation, Seller Users, Seller Settings).</p><p>3. Role Actions &amp; Record Operations:</p><p>- Update (Pencil Icon): Open the role configuration modal to modify the role's title, description, or update its granular View/Create/Update/Delete section permissions.</p><p>- Delete (Trash Icon): Open a confirmation prompt to permanently remove a role. (Note: Ensure no active team members are assigned to this role before deletion).</p><p>4. Pagination Controls:</p><p>- Items Per Page: Adjust table display limit (e.g., 10, 25, 50, 100 records per page).</p><p>- Navigation Arrows: Browse across multiple pages using previous/next arrows or direct page buttons.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794918876825-141859445.png"
+    },
+    "6afc5271f3debc008536475c": {
+      "id": "6afc5271f3debc008536475c",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 2,
+      "title": "Amazon Authorization - Step 2: Configure SP-API Developer Credentials",
+      "description": "<p>In the second step, enter your official Amazon Selling Partner API (SP-API) developer credentials to authorize secure communication between the platform and Amazon Seller Central:</p><p>1. Credentials Input Fields:</p><p>• Client ID (Required): Enter your LWA (Login with Amazon) application client identifier (e.g., amzn1.application-oa2-client.xxxx).</p><p>• Client Secret (Required): Enter your confidential LWA client secret key. Use the eye icon toggle on the right to reveal or mask the characters.</p><p>• Seller ID / Merchant Token (Required): Provide your Amazon Merchant Token found under your Seller Central Account Info (e.g., A39Q604UXIR8Y9).</p><p>• Refresh Token / LWA (Required): Paste your full long-lived Login with Amazon authorization refresh token (starting with \"Atzr|...\").</p><p>2. Security Notice:</p><p>• Highlights that all credentials and keys are safeguarded using industry-standard AES-256 encryption and are exclusively utilized for authorized Selling Partner API data synchronization.</p><p>3. Navigation:</p><p>• Back: Return to Step 1 to modify your selected marketplaces.</p><p>• Next Step: Proceed to Step 3 for final review and activation.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921068990-156370368.png"
+    },
+    "6afc5649f3debc00853648b0": {
+      "id": "6afc5649f3debc00853648b0",
+      "guideModuleId": "6afc55acf3debc0085364869",
+      "stepOrder": 2,
+      "title": "System Log Details: Inspecting Audit Payloads, Field Modifications & User Actions",
+      "description": "<p>Clicking the eye icon on any system log entry opens the System Log Details modal dialog. This view provides a deep, transparent breakdown of the exact database state, user metadata, and field modifications recorded for that specific event. Below is a detailed walkthrough of this dialog:</p><p>1. Modal Header &amp; Event Metadata:</p><p>• Displays the actor's profile name along with the exact date and time the system event took place (e.g., \"Gravurtastisch • 17 Nov 2026, 06:34 PM\").</p><p>• Close Button (X): Located at the top right to quickly dismiss the modal.</p><p>2. User &amp; Operation Summary Card:</p><p>• Actor Profile: Shows the user's avatar initial, full name, registered email address, and assigned role badge (e.g., \"Super Admin\" or \"Seller Admin\").</p><p>• Operation Type Badge: Highlights the action category (e.g., \"CREATE\" in green, \"UPDATE\", or \"DELETE\").</p><p>• Action Key Badge: Displays the specific action executed (e.g., \"Create Guide Module\").</p><p>3. Field &amp; Value Audit Table:</p><p>Presents an organized, key-value table mapping every attribute recorded during the event:</p><p>• Description: Any textual description or note associated with the record (shows \"—\" if empty).</p><p>4. Modal Actions:</p><p>• Close Button: Click the purple \"Close\" button at the bottom right (or press Esc) to exit the inspection dialog and return to the System Logs list.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794922054249-127607717.png"
+    },
+    "6afc52c3f3debc0085364784": {
+      "id": "6afc52c3f3debc0085364784",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 3,
+      "title": "Amazon Authorization - Step 3: Review Configuration & Store Activation",
+      "description": "<p>The final step allows you to review your configured connection details and select which connected stores will participate in live data synchronization and automated review solicitations:</p><p>1. SP-API Account Details Card:</p><p>• Displays your verified Seller ID, masked Client ID, and encryption status confirmation badge (\"Configured\").</p><p>2. Linked Marketplaces Summary:</p><p>• Shows a summary count and tags of all linked regional marketplaces (e.g., \"1 Total - Germany DE\") ready for data exchange.</p><p>3. Activate Stores for Automated Sync &amp; Actions:</p><p>• Displays your active store quota (e.g., \"Active Marketplaces: 1 / 2 Activated\").</p><p>• Checkbox List: Check the specific stores you want the system to actively poll for new orders, tracking fulfillment status, and executing automated review request actions.</p><p>• Displays real-time status badges (e.g., \"ACTIVE\").</p><p>4. Actions:</p><p>• Back: Return to Step 2 to update credentials if needed.</p><p>• Save Changes: Initiates the activation confirmation modal.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921152246-474832149.png"
+    },
+    "6afc5325f3debc00853647ac": {
+      "id": "6afc5325f3debc00853647ac",
+      "guideModuleId": "6afc50fbf3debc008536471a",
+      "stepOrder": 4,
+      "title": "Amazon Authorization - Step 4: Confirm & Save Marketplace Activation",
+      "description": "<p>When clicking \"Save Changes\", a confirmation dialog appears to ensure you verify your active store selection before finalizing:</p><p>1. Confirmation Prompt:</p><p>• Warns and prompts the seller to review the chosen active marketplaces before committing changes to the database.</p><p>2. New Active Stores Banner:</p><p>• Highlights the exact marketplaces that will immediately become active for background synchronization and review triggers (e.g., \"NEW ACTIVE STORES: Germany\").</p><p>3. Modal Actions:</p><p>• Cancel: Closes the confirmation modal without saving, allowing you to re-adjust settings.</p><p>• Confirm &amp; Save: Securely persists the encrypted API credentials and activates live SP-API background synchronization for the selected stores.</p><p></p>",
+      "screenshotUrl": "/uploads/guide-documents/1794921250607-369739454.png"
+    }
+  }
+}

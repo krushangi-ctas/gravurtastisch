@@ -6,8 +6,10 @@ import {
 } from 'material-react-table';
 import _ from 'lodash';
 import { useMemo, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { Theme } from '@mui/material/styles';
+import { Typography, Button } from '@mui/material';
 import DataTableTopToolbar from './DataTableTopToolbar';
 
 const tableIcons: Partial<MRT_Icons> = {
@@ -90,6 +92,23 @@ function DataTable<TData>({
   tabs,
   ...rest
 }: any) {
+  const { t } = useTranslation();
+
+  const translatedColumns = useMemo(() => {
+    if (!Array.isArray(columns)) return columns;
+    return columns.map((col: any) => {
+      let header = col.header;
+      if (typeof header === 'string' && header.trim()) {
+        const headerKey = header.trim().toLowerCase().replace(/[^a-z0-9]/g, '_');
+        header = t(`th.${headerKey}`, header);
+      }
+      return {
+        ...col,
+        header,
+      };
+    });
+  }, [columns, t]);
+
   const getColumnOrderFromLocalStorage = (id: string) => {
     const storedOrder = localStorage.getItem(`columnOrder_${id}`);
     return storedOrder && storedOrder !== 'undefined'
@@ -345,7 +364,12 @@ function DataTable<TData>({
         paginationDisplayMode: 'pages',
         positionToolbarAlertBanner: 'top',
         localization: {
-          rowsPerPage: 'Items per page',
+          rowsPerPage: t('user.itemsPerPage', 'Items per page'),
+          search: t('common.search', 'Search...'),
+          searchPlaceholder: t('common.search', 'Search...'),
+          noRecordsToDisplay: t('table.noRecordsToDisplay', 'No records to display'),
+          noResultsFound: t('table.noResultsFound', 'No results found'),
+          actions: t('th.actions', 'ACTIONS'),
         },
         muiPaginationProps: {
           color: 'secondary',
@@ -357,7 +381,7 @@ function DataTable<TData>({
           showLastButton: true,
         },
         muiTablePaginationProps: {
-          labelRowsPerPage: 'Items per page',
+          labelRowsPerPage: t('user.itemsPerPage', 'Items per page'),
           sx: {
             backgroundColor: 'transparent !important',
             border: 'none !important',
@@ -366,7 +390,7 @@ function DataTable<TData>({
           },
         },
         muiSearchTextFieldProps: {
-          placeholder: 'Search...',
+          placeholder: t('common.search', 'Search...'),
           sx: {
             minWidth: { xs: '160px', sm: '220px', md: '280px' },
             minHeight: '32px !important',
@@ -438,6 +462,7 @@ function DataTable<TData>({
         },
         displayColumnDefOptions: {
           'mrt-row-actions': {
+            header: t('th.actions', 'ACTIONS'),
             muiTableHeadCellProps: {
               className:
                 'bg-slate-50 dark:bg-slate-800/60 border-t border-b border-slate-200/80 dark:border-slate-700/80 text-slate-700 dark:text-slate-200',
@@ -550,17 +575,74 @@ function DataTable<TData>({
             tabs={tabs}
           />
         ),
+        renderEmptyRowsFallback: ({ table }: any) => {
+          const globalFilter = table.getState().globalFilter;
+          const columnFilters = table.getState().columnFilters;
+          const isFiltered = Boolean(globalFilter || (columnFilters && columnFilters.length > 0));
+
+          return (
+            <div className="w-full flex flex-col items-center justify-center py-10 sm:py-12 px-4 select-none">
+              <div
+                className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center mb-2.5 shadow-xs transition-all ${
+                  isFiltered
+                    ? 'bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/50 text-amber-500'
+                    : 'bg-slate-100 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700/80 text-slate-400'
+                }`}
+              >
+                <FuseSvgIcon size={20} className="text-current">
+                  {isFiltered ? 'heroicons-outline:magnifying-glass' : 'heroicons-outline:inbox'}
+                </FuseSvgIcon>
+              </div>
+
+              <Typography className="text-sm sm:text-base font-bold text-slate-800 dark:text-slate-100 mb-1 text-center">
+                {isFiltered
+                  ? t('table.noResultsFound', 'No results found')
+                  : t('table.noRecordsToDisplay', 'No records to display')}
+              </Typography>
+
+              <Typography className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-sm text-center leading-relaxed">
+                {isFiltered
+                  ? t(
+                      'table.noResultsSubtitle',
+                      'No matching records found for your search query. Try adjusting your search keywords.'
+                    )
+                  : t(
+                      'table.noRecordsSubtitle',
+                      'There are currently no items available in this table.'
+                    )}
+              </Typography>
+
+              {isFiltered && (
+                <Button
+                  size="small"
+                  variant="outlined"
+                  onClick={() => {
+                    try {
+                      table.setGlobalFilter('');
+                      table.resetGlobalFilter?.();
+                      table.resetColumnFilters?.();
+                    } catch (_) {}
+                  }}
+                  className="mt-3.5 capitalize text-xs font-semibold rounded-lg px-3.5 py-1.5 border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                  startIcon={<FuseSvgIcon size={14}>heroicons-outline:x-mark</FuseSvgIcon>}
+                >
+                  {t('table.clearSearch', 'Clear search')}
+                </Button>
+              )}
+            </div>
+          );
+        },
         icons: tableIcons,
       } as Partial<MaterialReactTableProps<TData>>),
-    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh, tabs]
+    [rest, columnOrder, density, title, subtitle, icon, actionButtons, onRefresh, tabs, t]
   );
 
   const tableOptions = useMemo(
     () => ({
-      columns,
-      data,
       ...defaults,
       ...rest,
+      columns: translatedColumns,
+      data,
       muiTableProps: {
         ...(defaults.muiTableProps || {}),
         ...(rest.muiTableProps || {}),
@@ -697,6 +779,7 @@ function DataTable<TData>({
         ...(defaults.displayColumnDefOptions || {}),
         ...(rest.displayColumnDefOptions || {}),
         'mrt-row-actions': {
+          header: t('th.actions', 'ACTIONS'),
           ...(defaults.displayColumnDefOptions?.['mrt-row-actions'] || {}),
           ...(rest.displayColumnDefOptions?.['mrt-row-actions'] || {}),
           muiTableHeadCellProps: {
@@ -749,8 +832,15 @@ function DataTable<TData>({
       ...(rest.onGlobalFilterChange && {
         onGlobalFilterChange: rest.onGlobalFilterChange,
       }),
+      localization: {
+        ...(defaults.localization || {}),
+        ...(rest.localization || {}),
+        noRecordsToDisplay: t('table.noRecordsToDisplay', 'No records to display'),
+        noResultsFound: t('table.noResultsFound', 'No results found'),
+      },
+      renderEmptyRowsFallback: rest.renderEmptyRowsFallback || defaults.renderEmptyRowsFallback,
     }),
-    [columns, data, defaults, rest, columnOrder, tableId, density]
+    [translatedColumns, data, defaults, rest, columnOrder, tableId, density, t]
   );
 
 

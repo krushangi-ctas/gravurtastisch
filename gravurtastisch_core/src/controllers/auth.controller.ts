@@ -12,7 +12,8 @@ const register = catchAsync(async (req, res) => {
 });
 
 const sendOtp = catchAsync(async (req, res) => {
-  const { message, status } = await authService.sendOtp(req.body);
+  const lang = req.headers['accept-language'] || req.body?.lang || req.query?.lang || 'de';
+  const { message, status } = await authService.sendOtp(req.body, lang);
   res.status(status).send({ status, message });
 });
 

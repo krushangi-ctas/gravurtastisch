@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import {
 	Dialog,
 	DialogContent,
@@ -10,7 +11,8 @@ import {
 	IconButton,
 	MenuItem,
 	FormControlLabel,
-	Switch
+	Switch,
+	Tooltip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -25,6 +27,7 @@ interface PlanFormDialogProps {
 }
 
 export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogProps) {
+	const { t } = useTranslation();
 	const { enqueueSnackbar } = useSnackbar();
 	const createMutation = useCreatePlan();
 	const updateMutation = useUpdatePlan();
@@ -204,15 +207,17 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 						</h2>
 					</div>
 
-					<IconButton
-						size="small"
-						onClick={onClose}
-						disabled={isPending}
-						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-						aria-label="Close"
-					>
-						<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.close', 'Close')} arrow>
+						<IconButton
+							size="small"
+							onClick={onClose}
+							disabled={isPending}
+							className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+							aria-label={t('common.close', 'Close')}
+						>
+							<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 				</div>
 
 				<DialogContent
@@ -543,36 +548,44 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 						py: 1.5
 					}}
 				>
-					<Button
-						onClick={onClose}
-						disabled={isPending}
-						className="capitalize text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
-						sx={{
-							borderRadius: '12px',
-							textTransform: 'capitalize'
-						}}
-					>
-						Cancel
-					</Button>
-					<Button
-						type="submit"
-						variant="contained"
-						disabled={isPending}
-						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm hover:shadow-md transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
-						startIcon={
-							<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
-								{isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
-							</FuseSvgIcon>
-						}
-						sx={{
-							borderRadius: '12px',
-							textTransform: 'capitalize',
-							px: { xs: 2.5, sm: 3.5 },
-							py: 1
-						}}
-					>
-						{isPending ? 'Saving...' : isEdit ? 'Update Plan' : 'Create Plan'}
-					</Button>
+					<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+						<span>
+							<Button
+								onClick={onClose}
+								disabled={isPending}
+								className="capitalize text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
+								sx={{
+									borderRadius: '12px',
+									textTransform: 'capitalize'
+								}}
+							>
+								{t('confirm.cancel', 'Cancel')}
+							</Button>
+						</span>
+					</Tooltip>
+					<Tooltip title={isEdit ? t('tooltips.editPlanDetails', 'Edit plan details') : t('tooltips.addPlan', 'Add Plan')} arrow>
+						<span>
+							<Button
+								type="submit"
+								variant="contained"
+								disabled={isPending}
+								className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm hover:shadow-md transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+								startIcon={
+									<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+										{isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+									</FuseSvgIcon>
+								}
+								sx={{
+									borderRadius: '12px',
+									textTransform: 'capitalize',
+									px: { xs: 2.5, sm: 3.5 },
+									py: 1
+								}}
+							>
+								{isPending ? t('common.saving', 'Saving...') : isEdit ? t('plan.updatePlan', 'Update Plan') : t('plan.createPlan', 'Create Plan')}
+							</Button>
+						</span>
+					</Tooltip>
 				</DialogActions>
 			</form>
 		</Dialog>

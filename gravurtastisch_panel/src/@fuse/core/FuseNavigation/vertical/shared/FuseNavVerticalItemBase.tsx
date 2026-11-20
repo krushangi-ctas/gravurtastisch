@@ -1,6 +1,7 @@
 import NavLinkAdapter from '@fuse/core/NavLinkAdapter';
 import clsx from 'clsx';
 import { useMemo, ReactNode, useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   Button,
   Collapse,
@@ -54,6 +55,12 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
   } = props;
 
   const pathname = usePathname();
+  const { t } = useTranslation();
+  const itemTitle = item.translate
+    ? t(`nav.${item.translate}`, t(item.translate, item.title))
+    : item.id
+    ? t(`nav.${item.id}`, item.title)
+    : item.title;
 
   const isGroup = useMemo(() => item.type === 'group', [item.type]);
   const isCollapsable = useMemo(() => item.type === 'collapse', [item.type]);
@@ -258,7 +265,7 @@ function FuseNavVerticalItemBase(props: FuseNavVerticalBaseProps) {
                   }),
                 }}
               >
-                {item.title}
+                {itemTitle}
               </Typography>
             )}
             {item.subtitle && (

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import IconButton from '@mui/material/IconButton';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import usePathname from '@fuse/hooks/usePathname';
@@ -12,6 +13,7 @@ type SettingsAppHeaderProps = {
 };
 
 function SettingsAppHeader(props: SettingsAppHeaderProps) {
+	const { t } = useTranslation();
 	const { className, onSetSidebarOpen } = props;
 	const pathname = usePathname();
 	const currentNavigation = _.find(SettingsAppNavigation.children, {
@@ -52,14 +54,16 @@ function SettingsAppHeader(props: SettingsAppHeaderProps) {
 					</div>
 					<div className="flex flex-col min-w-0">
 						<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight">
-							{currentNavigation?.title || 'Settings'}
+							{currentNavigation?.translate
+								? t(`nav.${currentNavigation.translate}`, currentNavigation.title)
+								: currentNavigation?.title || t('nav.settings', 'Settings')}
 						</h1>
 						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1">
 							{currentNavigation?.id === 'settings.siteConfiguration'
-								? 'Configure website contact details, company profile, and social media links.'
+								? t('siteConfig.subtitle', 'Configure website contact details, company profile, and social media links.')
 								: currentNavigation?.id === 'settings.generalSetting'
-									? 'Manage default marketplace rules, order matching, and automated requests.'
-									: 'Manage your account settings, security preferences, and profile details.'}
+									? t('siteConfig.generalSettingsSubtitle', 'Manage default marketplace rules, order matching, and automated requests.')
+									: t('account.accountSubtitle', 'Manage your account settings, security preferences, and profile details.')}
 						</p>
 					</div>
 				</div>

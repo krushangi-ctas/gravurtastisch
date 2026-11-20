@@ -1,43 +1,46 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
-
-const FEATURES = [
-	{
-		icon: 'heroicons-solid:photo',
-		label: 'Photo Cups & Mugs',
-		description: 'Full-wrap prints and heat-changing cups',
-		accentColor: '#0032ab',
-		badgeBg: 'rgba(0, 50, 171, 0.08)',
-		borderColor: 'rgba(0, 50, 171, 0.22)'
-	},
-	{
-		icon: 'heroicons-solid:sparkles',
-		label: 'Laser Engraving',
-		description: 'Boards, coasters, wallets & keepsakes',
-		accentColor: '#7c3aed',
-		badgeBg: 'rgba(124, 58, 237, 0.08)',
-		borderColor: 'rgba(124, 58, 237, 0.22)'
-	},
-	{
-		icon: 'heroicons-solid:shopping-bag',
-		label: 'Custom Apparel',
-		description: 'DTG prints, embroidery & tote bags',
-		accentColor: '#059669',
-		badgeBg: 'rgba(5, 150, 105, 0.08)',
-		borderColor: 'rgba(5, 150, 105, 0.22)'
-	},
-	{
-		icon: 'heroicons-solid:clipboard-document-check',
-		label: 'Order Desk',
-		description: 'Proofs, production & delivery in one place',
-		accentColor: '#2563eb',
-		badgeBg: 'rgba(37, 99, 235, 0.08)',
-		borderColor: 'rgba(37, 99, 235, 0.22)'
-	}
-];
+import { useTranslation } from 'react-i18next';
 
 function AuthPagesMessageSection() {
+	const { t } = useTranslation();
+
+	const features = [
+		{
+			icon: 'heroicons-solid:photo',
+			label: t('auth.featPhotoCups', 'Photo Cups & Mugs'),
+			description: t('auth.featPhotoCupsDesc', 'Full-wrap prints and heat-changing cups'),
+			accentColor: '#0032ab',
+			badgeBg: 'rgba(0, 50, 171, 0.08)',
+			borderColor: 'rgba(0, 50, 171, 0.22)'
+		},
+		{
+			icon: 'heroicons-solid:sparkles',
+			label: t('auth.featLaserEngraving', 'Laser Engraving'),
+			description: t('auth.featLaserEngravingDesc', 'Boards, coasters, wallets & keepsakes'),
+			accentColor: '#7c3aed',
+			badgeBg: 'rgba(124, 58, 237, 0.08)',
+			borderColor: 'rgba(124, 58, 237, 0.22)'
+		},
+		{
+			icon: 'heroicons-solid:shopping-bag',
+			label: t('auth.featCustomApparel', 'Custom Apparel'),
+			description: t('auth.featCustomApparelDesc', 'DTG prints, embroidery & tote bags'),
+			accentColor: '#059669',
+			badgeBg: 'rgba(5, 150, 105, 0.08)',
+			borderColor: 'rgba(5, 150, 105, 0.22)'
+		},
+		{
+			icon: 'heroicons-solid:clipboard-document-check',
+			label: t('auth.featOrderDesk', 'Order Desk'),
+			description: t('auth.featOrderDeskDesc', 'Proofs, production & delivery in one place'),
+			accentColor: '#2563eb',
+			badgeBg: 'rgba(37, 99, 235, 0.08)',
+			borderColor: 'rgba(37, 99, 235, 0.22)'
+		}
+	];
+
 	return (
 		<Box
 			className="relative hidden min-h-screen w-full flex-col justify-center overflow-hidden p-8 md:flex md:w-1/2 lg:px-16 lg:py-12 select-none"
@@ -81,7 +84,7 @@ function AuthPagesMessageSection() {
 						<span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
 					</span>
 					<span className="text-[11px] font-bold tracking-widest text-[#0032ab] uppercase">
-						Custom Engraving Studio
+						{t('auth.customEngravingStudio', 'Custom Engraving Studio')}
 					</span>
 				</div>
 
@@ -94,9 +97,9 @@ function AuthPagesMessageSection() {
 						color: '#00227a'
 					}}
 				>
-					Photo cups, kitchenware &amp;{' '}
+					{t('auth.heroTitle1', 'Photo cups, kitchenware &')}{' '}
 					<span className="bg-gradient-to-r from-[#0032ab] via-[#4f6ef7] to-[#155dfc] bg-clip-text text-transparent">
-						engraved keepsakes
+						{t('auth.heroTitle2', 'engraved keepsakes')}
 					</span>
 				</Typography>
 
@@ -110,12 +113,11 @@ function AuthPagesMessageSection() {
 						maxWidth: 520
 					}}
 				>
-					Manage customisation orders, digital proofs, and production from one Gravurtastisch
-					desk — built for personalised gifts and engraved goods.
+					{t('auth.heroSubtitle', 'Manage customisation orders, digital proofs, and production from one Gravurtastisch desk — built for personalised gifts and engraved goods.')}
 				</Typography>
 
 				<div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-					{FEATURES.map((feature) => (
+					{features.map((feature) => (
 						<div
 							key={feature.label}
 							className="group flex items-start gap-3.5 p-4 rounded-2xl bg-white/80 hover:bg-white border border-[#0032ab]/15 hover:border-[#0032ab]/40 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 shadow-[0_8px_24px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_36px_rgba(0,50,171,0.14)]"
@@ -162,12 +164,12 @@ function AuthPagesMessageSection() {
 					<div className="flex items-center gap-2">
 						<span className="flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
 						<span className="text-xs font-bold text-slate-700">
-							Free digital proof on custom orders
+							{t('auth.freeDigitalProof', 'Free digital proof on custom orders')}
 						</span>
 					</div>
 					<div className="flex items-center gap-1.5 text-xs font-bold text-[#0032ab]">
-						<span>Handcrafted</span>
-						<span className="text-slate-500 ml-1">with precision</span>
+						<span>{t('auth.handcrafted', 'Handcrafted')}</span>
+						<span className="text-slate-500 ml-1">{t('auth.withPrecision', 'with precision')}</span>
 					</div>
 				</div>
 			</div>

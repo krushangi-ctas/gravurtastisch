@@ -15,7 +15,7 @@ const { createResponse } = require('../services/common.service');
 const errorHandler = require('../utils/error.handler');
 const universalOtpService = require('./universal-otp.service');
 
-const sendOtp = async (bodyData) => {
+const sendOtp = async (bodyData, preferredLang?: string) => {
   const { email } = bodyData;
   const normalizedEmail = String(email || '').trim().toLowerCase();
   const bypassEmail = (config.bypass && config.bypass.email || '').trim().toLowerCase();
@@ -74,7 +74,8 @@ const sendOtp = async (bodyData) => {
   console.log(` [LOGIN OTP CODE] Email: ${normalizedEmail} | OTP: ${otp}`);
 
   try {
-    await emailService.sendOtpEmail(normalizedEmail, otp);
+    const lang = preferredLang || bodyData?.lang || 'de';
+    await emailService.sendOtpEmail(normalizedEmail, otp, lang);
   } catch (emailErr) {
     console.error(`Failed to send OTP email to ${normalizedEmail}:`, emailErr);
   }

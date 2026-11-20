@@ -723,7 +723,8 @@ const checkAndSendPlanExpiryReminders = async () => {
       if (!expiringPlan) continue;
 
       try {
-        await sendPlanExpiryReminderEmail(user, expiringPlan);
+        // Plan expiration reminder is always and only sent in Dutch ('de')
+        await sendPlanExpiryReminderEmail(user, expiringPlan, 'de');
 
         // Mark expirationReminderSentAt on this subdocument
         await User.updateOne(

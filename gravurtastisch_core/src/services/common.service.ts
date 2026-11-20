@@ -4,6 +4,7 @@ const httpStatus = require('http-status');
 const errorHandler = require('../utils/error.handler');
 const { systemLog } = require('../utils/system-log');
 const { escapeRegex, orderItemStatus } = require('../config/constants');
+const { toBilingualMessage } = require('../utils/bilingual-messages');
 const AmzInInventoriesModel = require('../models/amz-in-inventories.model');
 const db = mongoose.connection;
 
@@ -530,16 +531,17 @@ const createResponse = (
   data = {}, // Optional data (data or other fields)
   extraFields = {} // Additional dynamic fields
 ) => {
+  const formattedMessage = toBilingualMessage(message);
   if (status && Array.isArray(status) && status.length === 0) {
     return {
       status: httpStatus.INTERNAL_SERVER_ERROR,
-      message,
+      message: formattedMessage,
       ...(data && { data: [] }), // Include `payload` only if it's provided
     };
   }
   return {
     status,
-    message,
+    message: formattedMessage,
     ...(data && { data }), // Include `payload` only if it's provided
     ...extraFields, // Spread any additional fields dynamically
   };

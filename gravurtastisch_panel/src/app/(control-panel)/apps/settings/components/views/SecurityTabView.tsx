@@ -8,12 +8,20 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import IconButton from '@mui/material/IconButton';
-import { useState } from 'react';
+import Tooltip from '@mui/material/Tooltip';
+import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useUpdatePassword } from '../../api/hooks/security/useUpdateSecuritySettings';
 import FormControl from '@mui/material/FormControl';
 import type { UpdatePasswordData } from '../../api/types';
 import { useSnackbar } from 'notistack';
 import _ from 'lodash';
+
+type FormType = {
+  currentPassword: string;
+  password: string;
+  passwordConfirm: string;
+};
 
 const defaultValues: FormType = {
   currentPassword: '',
@@ -24,30 +32,30 @@ const defaultValues: FormType = {
 /**
  * Form Validation Schema
  */
-const schema = z
-  .object({
-    currentPassword: z
-      .string({ required_error: 'Current password is required!' })
-      .min(1, 'Current password is required!')
-      .max(40, 'Current password must be at most 40 characters'),
-    password: z
-      .string({ required_error: 'New password is required!' })
-      .min(8, 'New password must be at least 8 characters')
-      .max(40, 'New password must be at most 40 characters')
-      .regex(/[a-zA-Z]/, 'New password must contain at least one letter')
-      .regex(/\d/, 'New password must contain at least one number'),
-    passwordConfirm: z
-      .string({ required_error: 'Confirm password is required!' })
-      .min(1, 'Confirm password is required!'),
-  })
-  .refine((data) => data.password === data.passwordConfirm, {
-    message: 'New password and confirm password must match',
-    path: ['passwordConfirm'],
-  });
-
-type FormType = z.infer<typeof schema>;
+const getSecuritySchema = (t: any) =>
+  z
+    .object({
+      currentPassword: z
+        .string({ required_error: t('validation.currentPasswordRequired', 'Current password is required!') })
+        .min(1, t('validation.currentPasswordRequired', 'Current password is required!'))
+        .max(40, t('validation.currentPasswordMax', 'Current password must be at most 40 characters')),
+      password: z
+        .string({ required_error: t('validation.newPasswordRequired', 'New password is required!') })
+        .min(8, t('validation.newPasswordMin', 'New password must be at least 8 characters'))
+        .max(40, t('validation.newPasswordMax', 'New password must be at most 40 characters'))
+        .regex(/[a-zA-Z]/, t('validation.newPasswordLetter', 'New password must contain at least one letter'))
+        .regex(/\d/, t('validation.newPasswordNumber', 'New password must contain at least one number')),
+      passwordConfirm: z
+        .string({ required_error: t('validation.confirmPasswordRequired', 'Confirm password is required!') })
+        .min(1, t('validation.confirmPasswordRequired', 'Confirm password is required!')),
+    })
+    .refine((data) => data.password === data.passwordConfirm, {
+      message: t('validation.passwordsMustMatch', 'New password and confirm password must match'),
+      path: ['passwordConfirm'],
+    });
 
 function SecurityTabView() {
+  const { t } = useTranslation();
   const { enqueueSnackbar } = useSnackbar();
   const { mutate: updatePassword, isPending } = useUpdatePassword();
 
@@ -55,10 +63,12 @@ function SecurityTabView() {
   const [showPassword, setShowPassword] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
 
+  const validationSchema = useMemo(() => getSecuritySchema(t), [t]);
+
   const { control, reset, handleSubmit, formState } = useForm<FormType>({
     defaultValues,
     mode: 'onChange',
-    resolver: zodResolver(schema as any),
+    resolver: zodResolver(validationSchema as any),
   });
 
   const { isValid, dirtyFields, errors } = formState;
@@ -159,15 +169,17 @@ function SecurityTabView() {
                               </div>
                             ),
                             endAdornment: (
-                              <IconButton
-                                size="small"
-                                onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                              >
-                                <FuseSvgIcon size={18}>
-                                  {showCurrentPassword ? 'lucide:eye-off' : 'lucide:eye'}
-                                </FuseSvgIcon>
-                              </IconButton>
+                              <Tooltip title={showCurrentPassword ? t('tooltips.hidePassword', 'Hide password') : t('tooltips.showPassword', 'Show password')}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                >
+                                  <FuseSvgIcon size={18}>
+                                    {showCurrentPassword ? 'lucide:eye-off' : 'lucide:eye'}
+                                  </FuseSvgIcon>
+                                </IconButton>
+                              </Tooltip>
                             ),
                           },
                         }}
@@ -210,15 +222,17 @@ function SecurityTabView() {
                                 </div>
                               ),
                               endAdornment: (
-                                <IconButton
-                                  size="small"
-                                  onClick={() => setShowPassword(!showPassword)}
-                                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                                >
-                                  <FuseSvgIcon size={18}>
-                                    {showPassword ? 'lucide:eye-off' : 'lucide:eye'}
-                                  </FuseSvgIcon>
-                                </IconButton>
+                                <Tooltip title={showPassword ? t('tooltips.hidePassword', 'Hide password') : t('tooltips.showPassword', 'Show password')}>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                  >
+                                    <FuseSvgIcon size={18}>
+                                      {showPassword ? 'lucide:eye-off' : 'lucide:eye'}
+                                    </FuseSvgIcon>
+                                  </IconButton>
+                                </Tooltip>
                               ),
                             },
                           }}
@@ -262,15 +276,17 @@ function SecurityTabView() {
                                 </div>
                               ),
                               endAdornment: (
-                                <IconButton
-                                  size="small"
-                                  onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
-                                  className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
-                                >
-                                  <FuseSvgIcon size={18}>
-                                    {showPasswordConfirm ? 'lucide:eye-off' : 'lucide:eye'}
-                                  </FuseSvgIcon>
-                                </IconButton>
+                                <Tooltip title={showPasswordConfirm ? t('tooltips.hidePassword', 'Hide password') : t('tooltips.showPassword', 'Show password')}>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => setShowPasswordConfirm(!showPasswordConfirm)}
+                                    className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                                  >
+                                    <FuseSvgIcon size={18}>
+                                      {showPasswordConfirm ? 'lucide:eye-off' : 'lucide:eye'}
+                                    </FuseSvgIcon>
+                                  </IconButton>
+                                </Tooltip>
                               ),
                             },
                           }}
@@ -304,15 +320,19 @@ function SecurityTabView() {
               {_.isEmpty(dirtyFields) ? 'No changes to save' : 'Unsaved changes detected'}
             </Typography>
 
-            <Button
-              variant="contained"
-              disabled={_.isEmpty(dirtyFields) || !isValid || isPending}
-              type="submit"
-              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
-              startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
-            >
-              {isPending ? 'Updating...' : 'Update Password'}
-            </Button>
+            <Tooltip title={t('tooltips.save', 'Update Password')}>
+              <span>
+                <Button
+                  variant="contained"
+                  disabled={_.isEmpty(dirtyFields) || !isValid || isPending}
+                  type="submit"
+                  className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-50 disabled:bg-slate-300 dark:disabled:bg-slate-800"
+                  startIcon={<FuseSvgIcon size={18}>lucide:save</FuseSvgIcon>}
+                >
+                  {isPending ? 'Updating...' : 'Update Password'}
+                </Button>
+              </span>
+            </Tooltip>
           </div>
         </form>
       </Paper>

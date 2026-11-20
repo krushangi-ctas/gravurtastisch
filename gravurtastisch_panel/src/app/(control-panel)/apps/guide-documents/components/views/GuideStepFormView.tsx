@@ -2,14 +2,15 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
 	TextField,
 	Button,
 	IconButton,
 	CircularProgress,
-	Tooltip,
 	Paper,
-	Chip
+	Chip,
+	Tooltip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -27,6 +28,7 @@ import usePermissions from '@/hooks/usePermissions';
 import AccessDeniedView from '@/components/AccessDeniedView';
 
 export default function GuideStepFormView() {
+	const { t } = useTranslation();
 	const { moduleId, stepId } = useParams<{ moduleId: string; stepId?: string }>();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -156,8 +158,8 @@ export default function GuideStepFormView() {
 		}
 
 		if (!title.trim()) {
-			setTitleError('Title is required.');
-			enqueueSnackbar('Title is required.', { variant: 'warning' });
+			setTitleError(t('validation.titleRequired', 'Title is required.'));
+			enqueueSnackbar(t('validation.titleRequired', 'Title is required.'), { variant: 'warning' });
 			return;
 		}
 
@@ -218,15 +220,16 @@ export default function GuideStepFormView() {
 			{/* Sticky Top Header */}
 			<div className="sticky top-12 z-20 w-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white px-4 sm:px-5 py-2.5 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shadow-2xs backdrop-blur-md">
 				<div className="flex items-center gap-3">
-					<IconButton
-						onClick={() => navigate(moduleId ? `/guide-document?child=${moduleId}` : '/guide-document')}
-						className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 shrink-0 rounded-lg"
-						size="small"
-						title="Back to Guides"
-						aria-label="Back to Guides"
-					>
-						<FuseSvgIcon size={18}>lucide:arrow-left</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.back', 'Back')} arrow>
+						<IconButton
+							onClick={() => navigate(moduleId ? `/guide-document?child=${moduleId}` : '/guide-document')}
+							className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1.5 shrink-0 rounded-lg"
+							size="small"
+							aria-label={t('tooltips.back', 'Back')}
+						>
+							<FuseSvgIcon size={18}>lucide:arrow-left</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 
 					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary-100 text-primary-600 dark:bg-primary-950/60 dark:text-primary-300 shrink-0 shadow-2xs">
 						<FuseSvgIcon size={18}>lucide:list-ordered</FuseSvgIcon>
@@ -249,30 +252,38 @@ export default function GuideStepFormView() {
 				</div>
 
 				<div className="flex items-center gap-2">
-					<Button
-						variant="outlined"
-						size="small"
-						onClick={() => navigate(moduleId ? `/guide-document?child=${moduleId}` : '/guide-document')}
-						className="text-xs border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 normal-case"
-					>
-						Cancel
-					</Button>
-					<Button
-						variant="contained"
-						size="small"
-						onClick={() => handleSubmit()}
-						disabled={isSubmitting || isUploadingImage || !hasActionPermission}
-						startIcon={
-							isSubmitting ? (
-								<CircularProgress size={14} color="inherit" />
-							) : (
-								<FuseSvgIcon size={16}>lucide:check</FuseSvgIcon>
-							)
-						}
-						className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs normal-case"
-					>
-						{isEdit ? 'Update Step' : 'Save Step'}
-					</Button>
+					<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+						<span>
+							<Button
+								variant="outlined"
+								size="small"
+								onClick={() => navigate(moduleId ? `/guide-document?child=${moduleId}` : '/guide-document')}
+								className="text-xs border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 normal-case"
+							>
+								{t('confirm.cancel', 'Cancel')}
+							</Button>
+						</span>
+					</Tooltip>
+					<Tooltip title={isEdit ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.addStep', 'Add Step')} arrow>
+						<span>
+							<Button
+								variant="contained"
+								size="small"
+								onClick={() => handleSubmit()}
+								disabled={isSubmitting || isUploadingImage || !hasActionPermission}
+								startIcon={
+									isSubmitting ? (
+										<CircularProgress size={14} color="inherit" />
+									) : (
+										<FuseSvgIcon size={16}>lucide:check</FuseSvgIcon>
+									)
+								}
+								className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs normal-case"
+							>
+								{isEdit ? 'Update Step' : 'Save Step'}
+							</Button>
+						</span>
+					</Tooltip>
 				</div>
 			</div>
 
@@ -310,7 +321,7 @@ export default function GuideStepFormView() {
 									}}
 									onBlur={() => {
 										if (!title.trim()) {
-											setTitleError('Title is required.');
+											setTitleError(t('validation.titleRequired', 'Title is required.'));
 										}
 									}}
 									error={Boolean(titleError)}
@@ -416,26 +427,34 @@ export default function GuideStepFormView() {
 										)}
 
 										<div className="flex items-center justify-between gap-2">
-											<Button
-												size="small"
-												variant="outlined"
-												onClick={() => fileInputRef.current?.click()}
-												disabled={isUploadingImage}
-												startIcon={<FuseSvgIcon size={14}>lucide:refresh-cw</FuseSvgIcon>}
-												className="text-xs normal-case"
-											>
-												Replace
-											</Button>
-											<Button
-												size="small"
-												color="error"
-												variant="outlined"
-												onClick={() => setScreenshotUrl('')}
-												startIcon={<FuseSvgIcon size={14}>lucide:trash-2</FuseSvgIcon>}
-												className="text-xs normal-case"
-											>
-												Remove
-											</Button>
+											<Tooltip title={t('tooltips.replaceImage', 'Replace image')} arrow>
+												<span>
+													<Button
+														size="small"
+														variant="outlined"
+														onClick={() => fileInputRef.current?.click()}
+														disabled={isUploadingImage}
+														startIcon={<FuseSvgIcon size={14}>lucide:refresh-cw</FuseSvgIcon>}
+														className="text-xs normal-case"
+													>
+														Replace
+													</Button>
+												</span>
+											</Tooltip>
+											<Tooltip title={t('tooltips.removeImage', 'Remove image')} arrow>
+												<span>
+													<Button
+														size="small"
+														color="error"
+														variant="outlined"
+														onClick={() => setScreenshotUrl('')}
+														startIcon={<FuseSvgIcon size={14}>lucide:trash-2</FuseSvgIcon>}
+														className="text-xs normal-case"
+													>
+														Remove
+													</Button>
+												</span>
+											</Tooltip>
 										</div>
 									</div>
 								) : (
@@ -533,22 +552,26 @@ export default function GuideStepFormView() {
 
 								{/* Primary Submit */}
 								<div className="pt-2">
-									<Button
-										variant="contained"
-										fullWidth
-										onClick={() => handleSubmit()}
-										disabled={isSubmitting || isUploadingImage || !hasActionPermission}
-										startIcon={
-											isSubmitting ? (
-												<CircularProgress size={16} color="inherit" />
-											) : (
-												<FuseSvgIcon size={16}>lucide:save</FuseSvgIcon>
-											)
-										}
-										className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-xl py-2.5 text-xs font-semibold normal-case"
-									>
-										{isEdit ? 'Update Step' : 'Save Step'}
-									</Button>
+									<Tooltip title={isEdit ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.addStep', 'Add Step')} arrow>
+										<span>
+											<Button
+												variant="contained"
+												fullWidth
+												onClick={() => handleSubmit()}
+												disabled={isSubmitting || isUploadingImage || !hasActionPermission}
+												startIcon={
+													isSubmitting ? (
+														<CircularProgress size={16} color="inherit" />
+													) : (
+														<FuseSvgIcon size={16}>lucide:save</FuseSvgIcon>
+													)
+												}
+												className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-xl py-2.5 text-xs font-semibold normal-case"
+											>
+												{isEdit ? 'Update Step' : 'Save Step'}
+											</Button>
+										</span>
+									</Tooltip>
 								</div>
 							</Paper>
 						</div>

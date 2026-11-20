@@ -10,6 +10,7 @@ import NavigationShortcuts from '../../components/navigation/NavigationShortcuts
 import NavigationSearch from '../../components/navigation/NavigationSearch';
 import UserMenu from '../../components/UserMenu';
 import QuickPanelToggleButton from '../../components/quickPanel/QuickPanelToggleButton';
+import LanguageSwitcher from '../../components/LanguageSwitcher';
 import useThemeMediaQuery from '../../../../@fuse/hooks/useThemeMediaQuery';
 import ToolbarTheme from '@/contexts/ToolbarTheme';
 
@@ -42,7 +43,8 @@ function ToolbarLayout2(props: ToolbarLayout2Props) {
 						{!isMobile && <NavigationShortcuts />}
 					</div>
 
-					<div className="flex items-center overflow-x-auto px-2 py-2 md:px-4">
+					<div className="flex items-center overflow-x-auto px-2 py-2 md:px-4 gap-1.5">
+						<LanguageSwitcher />
 						<AdjustFontSize />
 						<FullScreenToggle />
 						<NavigationSearch />

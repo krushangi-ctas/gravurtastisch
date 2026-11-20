@@ -2,6 +2,7 @@
 
 import { useState, useMemo, useEffect, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -71,6 +72,7 @@ function GuideStepScreenshot({
 	title: string;
 	onZoom: () => void;
 }) {
+	const { t } = useTranslation();
 	const [hasError, setHasError] = useState(false);
 
 	if (!url || hasError) return null;
@@ -92,7 +94,7 @@ function GuideStepScreenshot({
 				/>
 				<div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 text-white text-xs font-semibold backdrop-blur-2xs rounded-xl">
 					<FuseSvgIcon size={18}>lucide:maximize-2</FuseSvgIcon>
-					<span>Click to view full screen</span>
+					<span>{t('guide.clickToViewFullScreen', 'Click to view full screen')}</span>
 				</div>
 			</div>
 		</div>
@@ -100,6 +102,49 @@ function GuideStepScreenshot({
 }
 
 export default function GuideDocumentsView() {
+	const { t, i18n } = useTranslation();
+	const isDe = i18n.language === 'de';
+	const [localizedGuideDocs, setLocalizedGuideDocs] = useState<{
+		modules: Record<string, any>;
+		steps: Record<string, any>;
+	} | null>(null);
+
+	useEffect(() => {
+		if (!isDe) {
+			setLocalizedGuideDocs(null);
+			return;
+		}
+		fetch('/guide-documents/guide-documents-de.json')
+			.then((res) => (res.ok ? res.json() : null))
+			.then((data) => {
+				if (data) setLocalizedGuideDocs(data);
+			})
+			.catch((err) => console.error('Failed to load German guide documents', err));
+	}, [isDe]);
+
+	const getLocalizedModule = (m: any) => {
+		if (!m || !isDe || !localizedGuideDocs?.modules) return m;
+		const loc = localizedGuideDocs.modules[m._id || m.id];
+		if (!loc) return m;
+		return {
+			...m,
+			title: loc.title || m.title,
+			moduleName: loc.moduleName || m.moduleName || loc.title || m.title,
+			description: loc.description ?? m.description
+		};
+	};
+
+	const getLocalizedStep = (s: any) => {
+		if (!s || !isDe || !localizedGuideDocs?.steps) return s;
+		const loc = localizedGuideDocs.steps[s._id || s.id];
+		if (!loc) return s;
+		return {
+			...s,
+			title: loc.title || s.title,
+			description: loc.description ?? s.description
+		};
+	};
+
 	const navigate = useNavigate();
 	const { enqueueSnackbar } = useSnackbar();
 	const {
@@ -188,12 +233,20 @@ export default function GuideDocumentsView() {
 		Boolean(hasAccess && (!isManageMode || !userCanManage))
 	);
 
-	const activeTree = useMemo(() => {
+	const rawTree = useMemo(() => {
 		if (isManageMode && userCanManage) {
 			return modulesTreeQuery.data?.data || [];
 		}
 		return publishedTreeQuery.data?.data || [];
 	}, [isManageMode, userCanManage, modulesTreeQuery.data, publishedTreeQuery.data]);
+
+	const activeTree = useMemo(() => {
+		if (!isDe || !localizedGuideDocs) return rawTree;
+		return rawTree.map((parent) => ({
+			...getLocalizedModule(parent),
+			children: (parent.children || []).map((c: any) => getLocalizedModule(c))
+		}));
+	}, [rawTree, isDe, localizedGuideDocs]);
 
 	const isLoadingTree =
 		(isManageMode && userCanManage ? modulesTreeQuery.isLoading : publishedTreeQuery.isLoading);
@@ -329,14 +382,18 @@ export default function GuideDocumentsView() {
 		if (!selectedChildId) {
 			return { module: null, steps: [] };
 		}
+		let mod: any = null;
+		let steps: any[] = [];
 		if (isManageMode && isAdmin) {
-			const mod = adminModuleDetailsQuery.data?.data?.module;
-			const steps = adminModuleDetailsQuery.data?.data?.steps || [];
-			return { module: mod || selectedChild, steps };
+			mod = adminModuleDetailsQuery.data?.data?.module || selectedChild;
+			steps = adminModuleDetailsQuery.data?.data?.steps || [];
+		} else {
+			mod = publishedChildQuery.data?.data?.module || selectedChild;
+			steps = publishedChildQuery.data?.data?.steps || [];
 		}
 		return {
-			module: publishedChildQuery.data?.data?.module || selectedChild,
-			steps: publishedChildQuery.data?.data?.steps || []
+			module: getLocalizedModule(mod),
+			steps: (steps || []).map(getLocalizedStep)
 		};
 	}, [
 		selectedChildId,
@@ -344,7 +401,9 @@ export default function GuideDocumentsView() {
 		isManageMode,
 		isAdmin,
 		adminModuleDetailsQuery.data,
-		publishedChildQuery.data
+		publishedChildQuery.data,
+		isDe,
+		localizedGuideDocs
 	]);
 
 	// Update default active step when steps load
@@ -445,8 +504,8 @@ export default function GuideDocumentsView() {
 		const nextPublished = !m.isPublished;
 		const itemLabel = isParent ? 'parent module' : 'child guide';
 		const title = nextPublished
-			? `Publish ${isParent ? 'Parent Module' : 'Child Guide'}`
-			: `Unpublish ${isParent ? 'Parent Module' : 'Child Guide'}`;
+			? (isParent ? `${t('confirm.publish', 'Publish')} ${t('guide.parentCategory', 'Parent Module')}` : `${t('confirm.publish', 'Publish')} ${t('guide.childGuide', 'Child Guide')}`)
+			: (isParent ? `${t('confirm.unpublish', 'Unpublish')} ${t('guide.parentCategory', 'Parent Module')}` : `${t('confirm.unpublish', 'Unpublish')} ${t('guide.childGuide', 'Child Guide')}`);
 
 		setConfirmState({
 			open: true,
@@ -459,17 +518,18 @@ export default function GuideDocumentsView() {
 			itemName: m.title || m.moduleName || 'this module',
 			description: (
 				<>
-					Are you sure you want to change status of{' '}
+					{t('confirm.changeStatusPrompt', 'Are you sure you want to change status of')}{' '}
 					<strong className="text-slate-800 dark:text-slate-200 font-semibold">
 						{m.title || m.moduleName}
 					</strong>{' '}
-					to{' '}
+					{t('confirm.to', 'to')}{' '}
 					<strong className="text-slate-800 dark:text-slate-200 font-semibold">
-						{nextPublished ? 'Published' : 'Draft / Unpublished'}
+						{nextPublished ? t('confirm.published', 'Published') : t('confirm.draftUnpublished', 'Draft / Unpublished')}
 					</strong>
-					? {nextPublished
-						? `This ${itemLabel} will become visible to users in Viewer mode.`
-						: `This ${itemLabel} will be hidden from users in Viewer mode.`}
+					?{' '}
+					{nextPublished
+						? (isParent ? t('confirm.parentWillBecomeVisible', 'This category will become visible to users in Viewer mode.') : t('confirm.childWillBecomeVisible', 'This guide will become visible to users in Viewer mode.'))
+						: (isParent ? t('confirm.parentWillBeHidden', 'This category will be hidden from users in Viewer mode.') : t('confirm.childWillBeHidden', 'This guide will be hidden from users in Viewer mode.'))}
 				</>
 			)
 		});
@@ -491,18 +551,18 @@ export default function GuideDocumentsView() {
 			module: m,
 			step: null,
 			targetPublished: false,
-			title: isParent ? 'Delete Parent Module' : 'Delete Child Guide',
+			title: isParent ? t('confirm.deleteParentModuleTitle', 'Delete Parent Module') : t('confirm.deleteChildGuideTitle', 'Delete Child Guide'),
 			itemName: m.title || m.moduleName || 'this item',
 			description: (
 				<>
-					Are you sure you want to delete{' '}
+					{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
 					<strong className="text-slate-800 dark:text-slate-200 font-semibold">
 						{m.title || m.moduleName}
 					</strong>
 					?{' '}
 					{isParent
-						? 'All child guides and steps inside this category will also be permanently deleted. This action cannot be undone.'
-						: 'All steps inside this guide will also be permanently deleted. This action cannot be undone.'}
+						? t('confirm.deleteParentCategoryWarning', 'All child guides and steps inside this category will also be permanently deleted. This action cannot be undone.')
+						: t('confirm.deleteChildGuideWarning', 'All steps inside this guide will also be permanently deleted. This action cannot be undone.')}
 				</>
 			)
 		});
@@ -557,15 +617,15 @@ export default function GuideDocumentsView() {
 			module: null,
 			step,
 			targetPublished: false,
-			title: 'Delete Step',
+			title: t('confirm.deleteStepTitle', 'Delete Step'),
 			itemName: `Step #${step.stepOrder || ''}${step.title ? `: ${step.title}` : ''}`,
 			description: (
 				<>
-					Are you sure you want to delete{' '}
+					{t('confirm.deleteUserPrompt', 'Are you sure you want to delete')}{' '}
 					<strong className="text-slate-800 dark:text-slate-200 font-semibold">
-						Step #{step.stepOrder || ''}{step.title ? ` (${step.title})` : ''}
+						{t('guide.step', 'Step')} #{step.stepOrder || ''}{step.title ? ` (${step.title})` : ''}
 					</strong>
-					? This step and its instructions will be permanently removed. This action cannot be undone.
+					? {t('confirm.deleteStepWarning', 'This step and its instructions will be permanently removed. This action cannot be undone.')}
 				</>
 			)
 		});
@@ -665,12 +725,12 @@ export default function GuideDocumentsView() {
 								</div>
 								<div>
 									<h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-										Guide Documents
+										{t('guide.title', 'Guide Documents')}
 									</h1>
 									<p className="text-xs text-slate-500 dark:text-slate-400">
 										{isAdmin
-											? 'Manage and view comprehensive step-by-step guides for Admin and Sellers'
-											: 'Interactive step-by-step documentation and platform guides'}
+											? t('guide.subtitleAdmin', 'Manage and view comprehensive step-by-step guides for Admin and Sellers')
+											: t('guide.subtitleSeller', 'Interactive step-by-step documentation and platform guides')}
 									</p>
 								</div>
 							</div>
@@ -693,7 +753,7 @@ export default function GuideDocumentsView() {
 											}`}
 										>
 											<FuseSvgIcon size={14}>lucide:shield</FuseSvgIcon>
-											Admin Guides
+											{t('guide.adminGuides', 'Admin Guides')}
 										</button>
 										<button
 											type="button"
@@ -709,7 +769,7 @@ export default function GuideDocumentsView() {
 											}`}
 										>
 											<FuseSvgIcon size={14}>lucide:store</FuseSvgIcon>
-											Seller Guides
+											{t('guide.sellerGuides', 'Seller Guides')}
 										</button>
 									</div>
 								)}
@@ -727,7 +787,7 @@ export default function GuideDocumentsView() {
 													}`}
 											>
 												<FuseSvgIcon size={14}>lucide:eye</FuseSvgIcon>
-												Viewer
+												{t('guide.viewer', 'Viewer')}
 											</button>
 											<button
 												type="button"
@@ -738,7 +798,7 @@ export default function GuideDocumentsView() {
 													}`}
 											>
 												<FuseSvgIcon size={14}>lucide:pencil</FuseSvgIcon>
-												Manage
+												{t('guide.manage', 'Manage')}
 											</button>
 										</div>
 
@@ -754,7 +814,7 @@ export default function GuideDocumentsView() {
 												startIcon={<FuseSvgIcon size={16}>lucide:plus</FuseSvgIcon>}
 												className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs py-1.5"
 											>
-												Add Parent
+												{t('guide.addParent', 'Add Parent')}
 											</Button>
 										)}
 									</>
@@ -773,14 +833,14 @@ export default function GuideDocumentsView() {
 											type="text"
 											value={searchQuery}
 											onChange={(e) => setSearchQuery(e.target.value)}
-											placeholder="Search guides or categories..."
+											placeholder={t('guide.searchPlaceholder', 'Search guides or categories...')}
 											className="w-full h-[38px] pl-9 pr-3 text-xs rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/60 text-slate-900 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none focus:border-primary-500 focus:ring-1 focus:ring-primary-500/20 font-medium transition-all"
 										/>
 										<div className="absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 flex items-center justify-center">
 											<FuseSvgIcon size={16}>lucide:search</FuseSvgIcon>
 										</div>
 									</div>
-									<Tooltip title="Refresh" arrow>
+									<Tooltip title={t('common.refresh', 'Refresh')} arrow>
 										<button
 											type="button"
 											onClick={handleRefresh}
@@ -798,14 +858,14 @@ export default function GuideDocumentsView() {
 									{isLoadingTree ? (
 										<div className="flex flex-col items-center justify-center p-8 text-slate-400 gap-2">
 											<CircularProgress size={24} className="text-primary-500" />
-											<span className="text-xs">Loading categories...</span>
+											<span className="text-xs">{t('guide.loadingCategories', 'Loading categories...')}</span>
 										</div>
 									) : filteredTree.length === 0 ? (
 										<div className="text-center p-8 text-slate-400 space-y-3">
 											<div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
 												<FuseSvgIcon size={22}>lucide:book-x</FuseSvgIcon>
 											</div>
-											<p className="text-xs font-medium">No guide categories found</p>
+											<p className="text-xs font-medium">{t('guide.noCategoriesFound', 'No guide categories found')}</p>
 											{isManageMode && userCanCreate && (
 												<Button
 													size="small"
@@ -817,7 +877,7 @@ export default function GuideDocumentsView() {
 													}}
 													className="text-xs border-primary-200 text-primary-600"
 												>
-													Create First Parent
+													{t('guide.createFirstParent', 'Create First Parent')}
 												</Button>
 											)}
 										</div>
@@ -871,7 +931,7 @@ export default function GuideDocumentsView() {
 																onClick={(e) => e.stopPropagation()}
 															>
 																{userCanCreate && (
-																	<Tooltip title="Add Child Guide">
+																	<Tooltip title={t('guide.addChildGuide', 'Add Child Guide')}>
 																		<IconButton
 																			size="small"
 																			onClick={() => {
@@ -890,8 +950,8 @@ export default function GuideDocumentsView() {
 																		<Tooltip
 																			title={
 																				parent.isPublished
-																					? 'Published (click to unpublish)'
-																					: 'Draft (click to publish)'
+																					? t('guide.publishedTooltip', 'Published (click to unpublish)')
+																					: t('guide.draftTooltip', 'Draft (click to publish)')
 																			}
 																		>
 																			<Switch
@@ -901,7 +961,7 @@ export default function GuideDocumentsView() {
 																				color="primary"
 																			/>
 																		</Tooltip>
-																		<Tooltip title="Edit Category">
+																		<Tooltip title={t('guide.editCategory', 'Edit Category')}>
 																			<IconButton
 																				size="small"
 																				onClick={() => {
@@ -917,7 +977,7 @@ export default function GuideDocumentsView() {
 																	</>
 																)}
 																{userCanDelete && (
-																	<Tooltip title="Delete Category">
+																	<Tooltip title={t('guide.deleteCategory', 'Delete Category')}>
 																		<IconButton
 																			size="small"
 																			onClick={(e) => handleDeleteModule(parent, e)}
@@ -936,7 +996,7 @@ export default function GuideDocumentsView() {
 														<div className="p-1.5 space-y-1 bg-white dark:bg-slate-900/60 border-t border-slate-100 dark:border-slate-800">
 															{children.length === 0 ? (
 																<div className="py-2 px-3 text-[11px] text-slate-400 italic flex items-center justify-between">
-																	<span>No child guides in this category</span>
+																	<span>{t('guide.noChildGuides', 'No child guides in this category')}</span>
 																	{isManageMode && userCanCreate && (
 																		<button
 																			type="button"
@@ -947,7 +1007,7 @@ export default function GuideDocumentsView() {
 																			}}
 																			className="text-[10px] text-primary-600 font-medium hover:underline"
 																		>
-																			+ Add Child
+																			{t('guide.addChild', '+ Add Child')}
 																		</button>
 																	)}
 																</div>
@@ -991,8 +1051,8 @@ export default function GuideDocumentsView() {
 																						<Tooltip
 																							title={
 																								child.isPublished
-																									? 'Published'
-																									: 'Draft'
+																									? t('guide.live', 'Live')
+																									: t('guide.draft', 'Draft')
 																							}
 																						>
 																							<span
@@ -1004,7 +1064,7 @@ export default function GuideDocumentsView() {
 																										: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
 																									}`}
 																							>
-																								{child.isPublished ? 'Live' : 'Draft'}
+																								{child.isPublished ? t('guide.live', 'Live') : t('guide.draft', 'Draft')}
 																							</span>
 																						</Tooltip>
 																					) : (
@@ -1014,7 +1074,7 @@ export default function GuideDocumentsView() {
 																									: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
 																								}`}
 																						>
-																							{child.isPublished ? 'Live' : 'Draft'}
+																							{child.isPublished ? t('guide.live', 'Live') : t('guide.draft', 'Draft')}
 																						</span>
 																					)}
 																					{userCanUpdate && (
@@ -1049,7 +1109,7 @@ export default function GuideDocumentsView() {
 																			) : (
 																				!child.isPublished && (
 																					<span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-50 text-amber-700">
-																						Draft
+																						{t('guide.draft', 'Draft')}
 																					</span>
 																				)
 																			)}
@@ -1075,7 +1135,7 @@ export default function GuideDocumentsView() {
 								{isLoadingDetails ? (
 									<div className="flex-1 flex flex-col items-center justify-center p-12 text-slate-400 gap-3">
 										<CircularProgress size={32} className="text-primary-500" />
-										<p className="text-xs">Loading guide content...</p>
+										<p className="text-xs">{t('guide.loadingContent', 'Loading guide content...')}</p>
 									</div>
 								) : selectedChild ? (
 									/* Child Guide View with Step-by-Step Walkthrough */
@@ -1095,11 +1155,11 @@ export default function GuideDocumentsView() {
 																<span>
 																	{selectedParent?.title ||
 																		selectedParent?.moduleName ||
-																		'Documentation'}
+																		t('guide.documentation', 'Documentation')}
 																</span>
 															</span>
 															<span>/</span>
-															<span>Guide Document</span>
+															<span>{t('guide.guideDocument', 'Guide Document')}</span>
 														</div>
 														<h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
 															{selectedData.module?.title ||
@@ -1132,15 +1192,15 @@ export default function GuideDocumentsView() {
 																startIcon={<FuseSvgIcon size={16}>lucide:plus</FuseSvgIcon>}
 																className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs"
 															>
-																Add Step
+																{t('guide.addStep', 'Add Step')}
 															</Button>
 														)}
 														<Tooltip
 															title={
 																isManageMode && userCanUpdate
 																	? (selectedData.module?.isPublished ?? selectedChild.isPublished)
-																		? 'Click to unpublish'
-																		: 'Click to publish'
+																		? t('guide.publishedTooltip', 'Click to unpublish')
+																		: t('guide.draftTooltip', 'Click to publish')
 																	: ''
 															}
 														>
@@ -1156,8 +1216,8 @@ export default function GuideDocumentsView() {
 																}}
 																label={
 																	(selectedData.module?.isPublished ?? selectedChild.isPublished)
-																		? 'Live'
-																		: 'Draft'
+																		? t('guide.live', 'Live')
+																		: t('guide.draft', 'Draft')
 																}
 																className={`text-xs font-semibold ${isManageMode && userCanUpdate
 																		? 'cursor-pointer hover:opacity-85'
@@ -1170,7 +1230,7 @@ export default function GuideDocumentsView() {
 														</Tooltip>
 														<Chip
 															size="small"
-															label={`${selectedData.steps.length} Steps`}
+															label={`${selectedData.steps.length} ${t('guide.steps', 'Steps')}`}
 															className="bg-primary-50 text-primary-700 dark:bg-primary-950/60 dark:text-primary-300 font-semibold text-xs"
 														/>
 													</div>
@@ -1185,12 +1245,12 @@ export default function GuideDocumentsView() {
 															<FuseSvgIcon size={24}>lucide:list-plus</FuseSvgIcon>
 														</div>
 														<h3 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-															No steps added yet
+															{t('guide.noStepsAdded', 'No steps added yet')}
 														</h3>
 														<p className="text-xs text-slate-500 max-w-sm mx-auto">
 															{isManageMode && userCanCreate
-																? 'Start building this guide by adding the first step with instructions and screenshot.'
-																: 'This guide document does not have any steps yet.'}
+																? t('guide.noStepsAddedManage', 'Start building this guide by adding the first step with instructions and screenshot.')
+																: t('guide.noStepsAddedViewer', 'This guide document does not have any steps yet.')}
 														</p>
 														{isManageMode && userCanCreate && (
 															<Button
@@ -1206,7 +1266,7 @@ export default function GuideDocumentsView() {
 																}}
 																className="bg-primary-500 text-white text-xs"
 															>
-																Add First Step
+																{t('guide.addFirstStep', 'Add First Step')}
 															</Button>
 														)}
 													</div>
@@ -1228,7 +1288,7 @@ export default function GuideDocumentsView() {
 																			{stepNum}
 																		</div>
 																		<h3 className="text-base font-bold text-slate-900 dark:text-white">
-																			{step.title || `Step ${stepNum}`}
+																			{step.title || `${t('guide.step', 'Step')} ${stepNum}`}
 																		</h3>
 																	</div>
 
@@ -1237,7 +1297,7 @@ export default function GuideDocumentsView() {
 																		<div className="flex items-center gap-1 shrink-0">
 																			{userCanUpdate && (
 																				<>
-																					<Tooltip title="Move Up">
+																					<Tooltip title={t('guide.moveUp', 'Move Up')}>
 																						<span>
 																							<IconButton
 																								size="small"
@@ -1251,7 +1311,7 @@ export default function GuideDocumentsView() {
 																							</IconButton>
 																						</span>
 																					</Tooltip>
-																					<Tooltip title="Move Down">
+																					<Tooltip title={t('guide.moveDown', 'Move Down')}>
 																						<span>
 																							<IconButton
 																								size="small"
@@ -1267,7 +1327,7 @@ export default function GuideDocumentsView() {
 																							</IconButton>
 																						</span>
 																					</Tooltip>
-																					<Tooltip title="Edit Step">
+																					<Tooltip title={t('guide.editStep', 'Edit Step')}>
 																						<IconButton
 																							size="small"
 																							onClick={() => {
@@ -1292,7 +1352,7 @@ export default function GuideDocumentsView() {
 																				</>
 																			)}
 																			{userCanDelete && (
-																				<Tooltip title="Delete Step">
+																				<Tooltip title={t('guide.deleteStep', 'Delete Step')}>
 																					<IconButton
 																						size="small"
 																						onClick={() => handleDeleteStep(step)}
@@ -1313,11 +1373,11 @@ export default function GuideDocumentsView() {
 																	{/* Uploaded Screenshot Box (Only renders if image exists and loads successfully) */}
 																	<GuideStepScreenshot
 																		url={step.screenshotUrl}
-																		title={step.title || `Step ${stepNum}`}
+																		title={step.title || `${t('guide.step', 'Step')} ${stepNum}`}
 																		onZoom={() =>
 																			setLightboxImage({
 																				url: getImageUrl(step.screenshotUrl)!,
-																				title: step.title || `Step ${stepNum}`
+																				title: step.title || `${t('guide.step', 'Step')} ${stepNum}`
 																			})
 																		}
 																	/>
@@ -1341,7 +1401,7 @@ export default function GuideDocumentsView() {
 										{selectedData.steps.length > 0 && (
 											<aside className="hidden xl:block w-60 shrink-0 sticky top-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5 shadow-xs">
 												<div className="text-[11px] font-bold tracking-wider uppercase text-slate-400 dark:text-slate-500 mb-2.5 px-2">
-													ON THIS PAGE
+													{t('guide.onThisPage', 'ON THIS PAGE')}
 												</div>
 												<div className="space-y-1 max-h-[calc(100vh-220px)] overflow-y-auto pr-1">
 													{selectedData.steps.map((step, idx) => {
@@ -1360,9 +1420,9 @@ export default function GuideDocumentsView() {
 																		? 'bg-primary-50 dark:bg-primary-950/60 text-primary-700 dark:text-primary-300 font-semibold shadow-2xs'
 																		: 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800/60'
 																	}`}
-																title={step.title || `Step ${stepNum}`}
+																title={step.title || `${t('guide.step', 'Step')} ${stepNum}`}
 															>
-																{step.title || `Step ${stepNum}`}
+																{step.title || `${t('guide.step', 'Step')} ${stepNum}`}
 															</button>
 														);
 													})}
@@ -1378,7 +1438,7 @@ export default function GuideDocumentsView() {
 												<div className="space-y-1.5">
 													<div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary-600 dark:text-primary-400">
 														<FuseSvgIcon size={14}>lucide:folder</FuseSvgIcon>
-														<span>Parent Category</span>
+														<span>{t('guide.parentCategory', 'Parent Category')}</span>
 													</div>
 													<h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
 														{selectedParent.title || selectedParent.moduleName}
@@ -1394,8 +1454,8 @@ export default function GuideDocumentsView() {
 															title={
 																isManageMode && userCanUpdate
 																	? selectedParent.isPublished
-																		? 'Click to unpublish'
-																		: 'Click to publish'
+																		? t('guide.publishedTooltip', 'Click to unpublish')
+																		: t('guide.draftTooltip', 'Click to publish')
 																	: ''
 															}
 														>
@@ -1408,8 +1468,8 @@ export default function GuideDocumentsView() {
 																}}
 																label={
 																	selectedParent.isPublished
-																		? 'Published / Live'
-																		: 'Draft Mode'
+																		? `${t('guide.live', 'Published')} / ${t('guide.live', 'Live')}`
+																		: t('guide.draft', 'Draft Mode')
 																}
 																className={`text-xs font-medium ${isManageMode && userCanUpdate
 																		? 'cursor-pointer hover:opacity-85'
@@ -1422,7 +1482,7 @@ export default function GuideDocumentsView() {
 														</Tooltip>
 														<Chip
 															size="small"
-															label={`${selectedParent.children?.length || 0} Child Guides`}
+															label={`${selectedParent.children?.length || 0} ${t('guide.childGuides', 'Child Guides')}`}
 															className="text-xs font-medium bg-primary-50 text-primary-700 dark:bg-primary-950 dark:text-primary-300"
 														/>
 													</div>
@@ -1442,7 +1502,7 @@ export default function GuideDocumentsView() {
 																startIcon={<FuseSvgIcon size={16}>lucide:plus</FuseSvgIcon>}
 																className="bg-primary-500 hover:bg-primary-600 text-white shadow-xs rounded-lg text-xs"
 															>
-																Add Child Guide
+																{t('guide.addChildGuide', 'Add Child Guide')}
 															</Button>
 														)}
 														{userCanUpdate && (
@@ -1456,7 +1516,7 @@ export default function GuideDocumentsView() {
 																}}
 																className="text-xs border-slate-300 text-slate-700 hover:bg-slate-100"
 															>
-																Edit
+																{t('common.edit', 'Edit')}
 															</Button>
 														)}
 													</div>
@@ -1468,11 +1528,11 @@ export default function GuideDocumentsView() {
 										<div className="space-y-3">
 											<div className="flex items-center justify-between">
 												<h3 className="text-base font-bold text-slate-900 dark:text-white">
-													Guides in this Category
+													{t('guide.guidesInCategory', 'Guides in this Category')}
 												</h3>
 												{selectedParent.children && selectedParent.children.length > 0 && (
 													<span className="text-xs text-slate-400">
-														Click any guide to view its instructions
+														{t('guide.clickGuideToView', 'Click any guide to view its instructions')}
 													</span>
 												)}
 											</div>
@@ -1484,11 +1544,10 @@ export default function GuideDocumentsView() {
 														<FuseSvgIcon size={24}>lucide:folder-plus</FuseSvgIcon>
 													</div>
 													<h4 className="text-sm font-bold text-slate-800 dark:text-slate-200">
-														No child guides added under &ldquo;{selectedParent.title}&rdquo; yet
+														{t('guide.noChildGuidesInCategory', 'No child guides added under this category yet')}
 													</h4>
 													<p className="text-xs text-slate-500 max-w-md mx-auto">
-														Parent categories group together child guide documents. Add a child guide
-														to begin writing step-by-step instructions.
+														{t('guide.parentCategoryDescription', 'Parent categories group together child guide documents. Add a child guide to begin writing step-by-step instructions.')}
 													</p>
 													{isManageMode && userCanCreate && (
 														<Button
@@ -1501,7 +1560,7 @@ export default function GuideDocumentsView() {
 															}}
 															className="bg-primary-500 text-white text-xs mt-2"
 														>
-															+ Add First Child Guide to &ldquo;{selectedParent.title}&rdquo;
+															{t('guide.addChildGuide', 'Add Child Guide')}
 														</Button>
 													)}
 												</div>
@@ -1524,7 +1583,7 @@ export default function GuideDocumentsView() {
 																				: 'bg-amber-50 text-amber-700'
 																			}`}
 																	>
-																		{child.isPublished ? 'Live' : 'Draft'}
+																		{child.isPublished ? t('guide.live', 'Live') : t('guide.draft', 'Draft')}
 																	</span>
 																</div>
 																<h4 className="text-sm font-bold text-slate-900 dark:text-white group-hover:text-primary-600 transition-colors">
@@ -1538,7 +1597,7 @@ export default function GuideDocumentsView() {
 															</div>
 
 															<div className="pt-4 mt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-primary-600 font-medium">
-																<span>Open Guide</span>
+																<span>{t('guide.openGuide', 'Open Guide')}</span>
 																<FuseSvgIcon
 																	size={14}
 																	className="group-hover:translate-x-1 transition-transform"
@@ -1559,12 +1618,12 @@ export default function GuideDocumentsView() {
 											<FuseSvgIcon size={32}>lucide:book-open</FuseSvgIcon>
 										</div>
 										<h2 className="text-base font-bold text-slate-800 dark:text-slate-200">
-											No Guides Available
+											{t('guide.noGuidesAvailable', 'No Guides Available')}
 										</h2>
 										<p className="text-xs text-slate-500 max-w-sm">
 											{isManageMode && userCanCreate
-												? 'Create your first parent category to start documenting workflows.'
-												: 'There are no published guide documents available at this time.'}
+												? t('guide.createFirstCategoryTip', 'Create your first parent category to start documenting workflows.')
+												: t('guide.noPublishedGuidesTip', 'There are no published guide documents available at this time.')}
 										</p>
 										{isManageMode && userCanCreate && (
 											<Button
@@ -1577,7 +1636,7 @@ export default function GuideDocumentsView() {
 												}}
 												className="bg-primary-500 text-white text-xs"
 											>
-												Add Parent Category
+												{t('guide.addParentCategory', 'Add Parent Category')}
 											</Button>
 										)}
 									</div>
@@ -1681,7 +1740,7 @@ export default function GuideDocumentsView() {
 						disabled={isActionLoading}
 						className="h-9 px-5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs disabled:opacity-50"
 					>
-						Cancel
+						{t('confirm.cancel', 'Cancel')}
 					</button>
 					<button
 						type="button"
@@ -1697,10 +1756,10 @@ export default function GuideDocumentsView() {
 						{isActionLoading && <CircularProgress size={14} color="inherit" />}
 						<span>
 							{confirmState.actionType === 'delete'
-								? 'Delete'
+								? t('confirm.delete', 'Delete')
 								: confirmState.targetPublished
-									? 'Publish'
-									: 'Unpublish'}
+									? t('confirm.publish', 'Publish')
+									: t('confirm.unpublish', 'Unpublish')}
 						</span>
 					</button>
 				</div>

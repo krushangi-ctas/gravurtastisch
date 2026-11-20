@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router';
+import { useTranslation } from 'react-i18next';
 import {
 	TextField,
 	Button,
@@ -30,6 +31,7 @@ interface ImageItem {
 }
 
 export default function BlogFormView() {
+	const { t } = useTranslation();
 	const { blogId } = useParams<{ blogId?: string }>();
 	const navigate = useNavigate();
 	const location = useLocation();
@@ -155,16 +157,16 @@ export default function BlogFormView() {
 
 		const trimmedTitle = blogTitle.trim();
 		if (!trimmedTitle) {
-			newErrors.blogTitle = 'Blog Title is required!';
+			newErrors.blogTitle = t('validation.blogTitleRequired', 'Blog Title is required!');
 		} else if (trimmedTitle.length < 3) {
-			newErrors.blogTitle = 'Title must be at least 3 characters long';
+			newErrors.blogTitle = t('validation.blogTitleMin', 'Title must be at least 3 characters long');
 		} else if (trimmedTitle.length > 100) {
-			newErrors.blogTitle = 'Blog Title must not exceed 100 characters';
+			newErrors.blogTitle = t('validation.blogTitleMax', 'Blog Title must not exceed 100 characters');
 		}
 
 		const trimmedShortDesc = shortDescription.trim();
 		if (trimmedShortDesc && trimmedShortDesc.length > 200) {
-			newErrors.shortDescription = 'Short Description must not exceed 200 characters';
+			newErrors.shortDescription = t('validation.blogShortDescMax', 'Short Description must not exceed 200 characters');
 		}
 
 		setErrors(newErrors);
@@ -241,15 +243,16 @@ export default function BlogFormView() {
 			{/* Consistent Sticky Top Header (offset by top-12 to stick directly below the 48px top toolbar) */}
 			<div className="sticky top-12 z-20 w-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white px-4 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
 				<div className="flex items-center gap-2.5 sm:gap-3">
-					<IconButton
-						onClick={() => navigate('/blogs')}
-						className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0"
-						size="small"
-						title="Back to Blogs"
-						aria-label="Back to Blogs"
-					>
-						<FuseSvgIcon size={20}>heroicons-outline:arrow-left</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.back', 'Back')} arrow>
+						<IconButton
+							onClick={() => navigate('/blogs')}
+							className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0"
+							size="small"
+							aria-label={t('tooltips.back', 'Back')}
+						>
+							<FuseSvgIcon size={20}>heroicons-outline:arrow-left</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 
 					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
 						<FuseSvgIcon size={20} className="text-primary">
@@ -259,7 +262,7 @@ export default function BlogFormView() {
 
 					<div className="flex flex-col min-w-0">
 						<h1 className="text-lg sm:text-xl font-bold tracking-tight text-slate-900 dark:text-white m-0 leading-tight flex items-center gap-2 truncate">
-							<span>{isEdit ? 'Edit Blog' : 'Add Blog'}</span>
+							<span>{isEdit ? t('blog.editBlog', 'Edit Blog') : t('blog.addBlog', 'Add Blog')}</span>
 							{isEdit && blogTitle && (
 								<span className="hidden sm:inline-block text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 truncate max-w-xs">
 									{blogTitle}
@@ -268,8 +271,8 @@ export default function BlogFormView() {
 						</h1>
 						<p className="text-xs sm:text-[13px] text-slate-500 dark:text-slate-400 m-0 font-medium leading-tight mt-1 truncate">
 							{isEdit
-								? 'Manage blog article content, rich formatting, images, and publish settings.'
-								: 'Write and publish a new blog post for the marketplace website.'}
+								? t('blog.manageBlogSubtitle', 'Manage blog article content, rich formatting, images, and publish settings.')
+								: t('blog.headerSubtitle', 'Write and publish a new blog post for the marketplace website.')}
 						</p>
 					</div>
 				</div>
@@ -277,7 +280,7 @@ export default function BlogFormView() {
 				{isEdit && (
 					<div className="hidden sm:flex items-center">
 						<Chip
-							label="Published Article"
+							label={t('blog.publishedArticle', 'Published Article')}
 							color="success"
 							size="small"
 							className="font-semibold text-xs"
@@ -300,10 +303,10 @@ export default function BlogFormView() {
 									</div>
 									<div>
 										<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0">
-											Article Headline & Overview
+											{t('blog.articleHeadlineOverview', 'Article Headline & Overview')}
 										</h2>
 										<p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 m-0 mt-0.5">
-											Catchy headline and brief synopsis displayed on the blog card and search results.
+											{t('blog.articleHeadlineSubtitle', 'Catchy headline and brief synopsis displayed on the blog card and search results.')}
 										</p>
 									</div>
 								</div>
@@ -312,13 +315,13 @@ export default function BlogFormView() {
 									<div>
 										<div className="flex items-center justify-between mb-1.5">
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-												Blog Title <span className="text-red-500 font-bold ml-0.5">*</span>
+												{t('blog.blogTitle', 'Blog Title')} <span className="text-red-500 font-bold ml-0.5">*</span>
 											</label>
 											<span className="text-xs text-slate-400 font-mono">{blogTitle.length}/100</span>
 										</div>
 										<TextField
 											fullWidth
-											placeholder="e.g. How to Automate Amazon Product Review Requests in 2026"
+											placeholder={t('blog.blogTitlePlaceholder', 'e.g. How to Automate Amazon Product Review Requests in 2026')}
 											value={blogTitle}
 											inputProps={{ maxLength: 100 }}
 											onChange={(e) => {
@@ -333,7 +336,7 @@ export default function BlogFormView() {
 									<div>
 										<div className="flex items-center justify-between mb-1.5">
 											<label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-												Short Description / Teaser
+												{t('blog.shortDescription', 'Short Description / Teaser')}
 											</label>
 											<span className="text-xs text-slate-400 font-mono">{shortDescription.length}/200</span>
 										</div>
@@ -341,7 +344,7 @@ export default function BlogFormView() {
 											fullWidth
 											multiline
 											rows={3}
-											placeholder="A compelling 2-3 sentence overview of this article..."
+											placeholder={t('blog.shortDescriptionPlaceholder', 'A compelling 2-3 sentence overview of this article...')}
 											value={shortDescription}
 											inputProps={{ maxLength: 200 }}
 											onChange={(e) => {
@@ -351,7 +354,7 @@ export default function BlogFormView() {
 												}
 											}}
 											error={Boolean(errors.shortDescription)}
-											helperText={errors.shortDescription || 'Shown as snippet preview on social media and blog index'}
+											helperText={errors.shortDescription || t('blog.shortDescriptionHelp', 'Shown as snippet preview on social media and blog index')}
 										/>
 									</div>
 								</div>
@@ -366,17 +369,17 @@ export default function BlogFormView() {
 										</div>
 										<div>
 											<h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white m-0">
-												Full Article Content
+												{t('blog.fullArticleContent', 'Full Article Content')}
 											</h2>
 											<p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 m-0 mt-0.5">
-												Use rich typography, formatting, quotes, code, and inline illustrations.
+												{t('blog.fullArticleSubtitle', 'Use rich typography, formatting, quotes, code, and inline illustrations.')}
 											</p>
 										</div>
 									</div>
 									<Tooltip title="Supports headings, lists, links, inline pictures, and rich formatting">
 										<span className="text-xs font-medium text-slate-400 hover:text-slate-600 cursor-help flex items-center gap-1">
 											<FuseSvgIcon size={16}>heroicons-outline:information-circle</FuseSvgIcon>
-											Editor Guide
+											{t('blog.editorGuide', 'Editor Guide')}
 										</span>
 									</Tooltip>
 								</div>
@@ -389,7 +392,7 @@ export default function BlogFormView() {
 											setDescriptionJson(json);
 										}}
 										onUploadImage={handleEditorUploadImage}
-										placeholder="Start drafting your article here... Type headings, bullet points, or paste text and images freely."
+										placeholder={t('blog.editorPlaceholder', 'Start drafting your article here... Type headings, bullet points, or paste text and images freely.')}
 										minHeight={360}
 									/>
 								</div>
@@ -407,20 +410,20 @@ export default function BlogFormView() {
 										</div>
 										<div>
 											<h3 className="text-base font-bold text-slate-900 dark:text-white m-0">
-												Cover & Media
+												{t('blog.coverMedia', 'Cover & Media')}
 											</h3>
 											<p className="text-xs text-slate-500 dark:text-slate-400 m-0 mt-0.5">
-												Primary banner and article gallery
+												{t('blog.coverMediaSubtitle', 'Primary banner and article gallery')}
 											</p>
 										</div>
 									</div>
 									<span className="text-xs font-semibold text-slate-500 bg-slate-100 dark:bg-slate-800 px-2.5 py-1 rounded-full">
-										{images.length} {images.length === 1 ? 'image' : 'images'}
+										{t('blog.imagesCount', { count: images.length, defaultValue: `${images.length} images` })}
 									</span>
 								</div>
 
 								<p className="text-xs text-slate-500 dark:text-slate-400 mb-4 leading-relaxed">
-									The first image serves as the primary article card cover banner on the website.
+									{t('blog.primaryCoverNote', 'The first image serves as the primary article card cover banner on the website.')}
 								</p>
 
 								{/* Images List */}
@@ -431,10 +434,10 @@ export default function BlogFormView() {
 												heroicons-outline:photo
 											</FuseSvgIcon>
 											<p className="text-xs font-medium text-slate-600 dark:text-slate-400 m-0">
-												No cover images added yet
+												{t('blog.noImagesAdded', 'No cover images added yet')}
 											</p>
 											<p className="text-[11px] text-slate-400 mt-1 mb-3">
-												Upload an image to make this post visually striking
+												{t('blog.uploadImagePrompt', 'Upload an image to make this post visually striking')}
 											</p>
 											<Button
 												size="small"
@@ -444,7 +447,7 @@ export default function BlogFormView() {
 												onClick={handleAddImageRow}
 												className="normal-case text-xs"
 											>
-												Add Cover Image
+												{t('blog.addCoverImage', 'Add Cover Image')}
 											</Button>
 										</div>
 									) : (
@@ -502,7 +505,7 @@ export default function BlogFormView() {
 															)}
 														</div>
 														<p className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5 mb-1.5">
-															{item.relativePath ? item.relativePath.split('/').pop() : 'No file selected yet'}
+															{item.relativePath ? item.relativePath.split('/').pop() : t('blog.noFileSelected', 'No file selected yet')}
 														</p>
 
 														<Button
@@ -513,7 +516,7 @@ export default function BlogFormView() {
 															disabled={item.isUploading}
 															className="normal-case text-[11px] p-0 h-auto min-h-0 font-semibold"
 														>
-															{item.previewUrl ? 'Replace Image' : 'Select File'}
+															{item.previewUrl ? t('blog.replaceImage', 'Replace Image') : t('blog.selectFile', 'Select File')}
 														</Button>
 													</div>
 
@@ -547,7 +550,7 @@ export default function BlogFormView() {
 												onClick={handleAddImageRow}
 												className="mt-2 normal-case text-xs border-dashed border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300"
 											>
-												Add Another Image
+												{t('blog.addAnotherImage', 'Add Another Image')}
 											</Button>
 										</>
 									)}
@@ -562,33 +565,35 @@ export default function BlogFormView() {
 									</div>
 									<div>
 										<h3 className="text-base font-bold text-slate-900 dark:text-white m-0">
-											Publishing Status
+											{t('blog.publishingStatus', 'Publishing Status')}
 										</h3>
 										<p className="text-xs text-slate-500 dark:text-slate-400 m-0 mt-0.5">
-											Live visibility and editorial stats
+											{t('blog.publishingStatusSubtitle', 'Live visibility and editorial stats')}
 										</p>
 									</div>
 								</div>
 
 								<div className="flex flex-col gap-3 text-xs text-slate-600 dark:text-slate-400">
 									<div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-										<span>Status:</span>
+										<span>{t('blog.status', 'Status:')}</span>
 										<Chip
 											size="small"
-											label={isEdit ? 'PUBLISHED' : 'DRAFT'}
+											label={isEdit ? t('blog.published', 'PUBLISHED') : t('blog.draft', 'DRAFT')}
 											color={isEdit ? 'success' : 'default'}
 											className="text-[10px] font-bold h-5"
 										/>
 									</div>
 									<div className="flex items-center justify-between py-2 border-b border-slate-100 dark:border-slate-800">
-										<span>Total Character Count:</span>
+										<span>{t('blog.totalCharacterCount', 'Total Character Count:')}</span>
 										<span className="font-semibold text-slate-800 dark:text-slate-200">
 											{blogTitle.length + shortDescription.length}
 										</span>
 									</div>
 									<div className="flex items-center justify-between py-2">
-										<span>Target Audience:</span>
-										<span className="font-semibold text-slate-800 dark:text-slate-200">Amazon Sellers</span>
+										<span>{t('blog.targetAudience', 'Target Audience:')}</span>
+										<span className="font-semibold text-slate-800 dark:text-slate-200">
+											{t('blog.amazonSellers', 'Amazon Sellers')}
+										</span>
 									</div>
 								</div>
 							</Paper>
@@ -605,38 +610,52 @@ export default function BlogFormView() {
 							heroicons-outline:information-circle
 						</FuseSvgIcon>
 						<span>
-							{isEdit ? 'Published updates will instantly reflect on the public website.' : 'Your article will be published to the blog marketplace index.'}
+							{isEdit
+								? t('blog.publishedNoteEdit', 'Published updates will instantly reflect on the public website.')
+								: t('blog.publishNote', 'Your article will be published to the blog marketplace index.')}
 						</span>
 					</div>
 
 					<div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-						<Button
-							variant="outlined"
-							color="inherit"
-							onClick={() => navigate('/blogs')}
-							disabled={isPending}
-							className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
-						>
-							Cancel
-						</Button>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() => handleSubmit()}
-							disabled={isPending}
-							startIcon={
-								<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+						<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+							<span>
+								<Button
+									variant="outlined"
+									color="inherit"
+									onClick={() => navigate('/blogs')}
+									disabled={isPending}
+									className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
+								>
+									{t('blog.cancel', 'Cancel')}
+								</Button>
+							</span>
+						</Tooltip>
+						<Tooltip title={isEdit ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.addBlog', 'Add Blog')} arrow>
+							<span>
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() => handleSubmit()}
+									disabled={isPending}
+									startIcon={
+										<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+											{isPending
+												? 'heroicons-outline:arrow-path'
+												: isEdit
+													? 'heroicons-outline:check'
+													: 'heroicons-outline:arrow-up-tray'}
+										</FuseSvgIcon>
+									}
+									className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
+								>
 									{isPending
-										? 'heroicons-outline:arrow-path'
+										? (isEdit ? t('blog.updating', 'Updating Article...') : t('blog.publishing', 'Publishing Article...'))
 										: isEdit
-											? 'heroicons-outline:check'
-											: 'heroicons-outline:arrow-up-tray'}
-								</FuseSvgIcon>
-							}
-							className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
-						>
-							{isPending ? (isEdit ? 'Updating Article...' : 'Publishing Article...') : isEdit ? 'Update Article' : 'Publish Article'}
-						</Button>
+											? t('blog.updateArticle', 'Update Article')
+											: t('blog.publishArticle', 'Publish Article')}
+								</Button>
+							</span>
+						</Tooltip>
 					</div>
 				</div>
 			</div>

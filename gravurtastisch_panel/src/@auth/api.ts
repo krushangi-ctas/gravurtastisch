@@ -7,11 +7,21 @@ import {
 import { fetchWithAuth } from '@/utils/fetchWithAuth';
 
 export const sendOtp = async (payload: any) => {
+  const currentLang =
+    typeof window !== 'undefined'
+      ? localStorage.getItem('panel_lng') || localStorage.getItem('i18nextLng') || 'de'
+      : 'de';
+  // Strip lang from body payload so deployed backend Joi schema won't fail with "'lang' is not allowed"
+  // Instead, send the language in the Accept-Language header
+  const { lang, ...bodyData } = payload || {};
   const response = await fetch(`${sendOtpUrl}`, {
     method: 'POST',
     credentials: 'include',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept-Language': currentLang,
+    },
+    body: JSON.stringify(bodyData),
   });
   const data = await response.json();
   if (!response.ok) {

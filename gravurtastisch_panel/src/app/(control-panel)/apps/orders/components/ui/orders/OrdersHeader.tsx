@@ -1,5 +1,6 @@
 import Typography from '@mui/material/Typography';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
+import { useTranslation } from 'react-i18next';
 import {
   Box,
   Button,
@@ -45,6 +46,7 @@ function CustomDateRangePicker({
   onChange,
   onClose,
 }: DateRangePickerProps) {
+  const { t } = useTranslation();
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
   const [tempRange, setTempRange] =
@@ -238,17 +240,30 @@ function CustomDateRangePicker({
       </Box>
 
       {/* Actions */}
-      <Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'flex-end' }}>
-        <Button onClick={handleCancel} color="inherit">
-          Cancel
-        </Button>
+      <Box sx={{ display: 'flex', gap: 1, mt: 2, justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
-          onClick={handleApply}
-          variant="contained"
-          disabled={!tempRange.from}
+          size="small"
+          color="inherit"
+          onClick={() => {
+            onChange({ from: null, to: null });
+            onClose();
+          }}
+          sx={{ textTransform: 'none', fontSize: '12px', color: 'text.secondary' }}
         >
-          Apply
+          {t('filter.allDates', 'All Dates')}
         </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button onClick={handleCancel} color="inherit">
+            {t('common.cancel', 'Cancel')}
+          </Button>
+          <Button
+            onClick={handleApply}
+            variant="contained"
+            disabled={!tempRange.from}
+          >
+            {t('common.apply', 'Apply')}
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );
@@ -272,10 +287,17 @@ function OrdersHeader({
   selectedMarketplace: string[];
   setSelectedMarketplace: Dispatch<SetStateAction<string[]>>;
 }) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const { data: marketplaces } = useMarketplace();
   const [dateAnchorEl, setDateAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const translateCountry = (country?: string) => {
+    if (!country) return '';
+    const key = country.toLowerCase().trim();
+    return t(`countries.${key}`, country);
+  };
 
   const allMarketplaceIds =
     marketplaces?.map((item: any) => item.marketplace_id) || [];
@@ -307,7 +329,7 @@ function OrdersHeader({
 
 
   const formatDateRange = () => {
-    if (!searchDate.from && !searchDate.to) return 'Date Range';
+    if (!searchDate.from && !searchDate.to) return t('filter.dateRange', 'Date Range');
     if (searchDate.from && searchDate.to) {
       if (isSameDay(searchDate.from, searchDate.to)) {
         return format(searchDate.from, 'dd MMM yyyy');
@@ -316,7 +338,7 @@ function OrdersHeader({
     }
     if (searchDate.from) return format(searchDate.from, 'dd MMM yyyy');
     if (searchDate.to) return format(searchDate.to, 'dd MMM yyyy');
-    return 'Date Range';
+    return t('filter.dateRange', 'Date Range');
   };
 
   const hasValidDateRange =
@@ -350,7 +372,7 @@ function OrdersHeader({
       (item: any) => item.marketplace_id === id || item._id === id || item.id === id
     );
     if (marketplace) {
-      const country = marketplace.country || marketplace.country_code;
+      const country = translateCountry(marketplace.country || marketplace.country_code);
       const code = marketplace.country_code ? ` (${marketplace.country_code})` : '';
       return `${country}${code}`;
     }
@@ -362,7 +384,8 @@ function OrdersHeader({
       (item: any) =>
         item.marketplace_id === id || item._id === id || item.id === id
     );
-    return marketplace?.country || marketplace?.country_code || id;
+    const country = marketplace?.country || marketplace?.country_code || id;
+    return translateCountry(country);
   };
 
   // Generate tooltip text and chip label
@@ -650,7 +673,7 @@ function OrdersHeader({
                     <FuseSvgIcon size={15} className="text-slate-500">
                       heroicons-outline:building-storefront
                     </FuseSvgIcon>
-                    All Shops
+                    {t('orders.allShops', 'All Shops')}
                   </span>
                 );
               }
@@ -661,11 +684,11 @@ function OrdersHeader({
                   </FuseSvgIcon>
                   {Array.isArray(selected)
                     ? selected.length > 2
-                      ? `${selected.length} Shops`
+                      ? t('orders.shopsCount', { count: selected.length, defaultValue: `${selected.length} Shops` })
                       : selected
                         .map((id) => getMarketplaceCountryName(id))
                         .join(', ')
-                    : 'All Shops'}
+                    : t('orders.allShops', 'All Shops')}
                 </span>
               );
             }}
@@ -762,7 +785,7 @@ function OrdersHeader({
         </div>
 
         {/* Reset / Reload Button */}
-        <Tooltip title="Reset & Refresh" arrow>
+        <Tooltip title={t('tooltips.resetRefresh', 'Reset & Refresh')} arrow>
           <button
             type="button"
             onClick={resetbtn}
@@ -790,8 +813,15 @@ export function OrdersFilters({
   selectedMarketplace: string[];
   setSelectedMarketplace: Dispatch<SetStateAction<string[]>>;
 }) {
+  const { t } = useTranslation();
   const { data: marketplaces } = useMarketplace();
   const [dateAnchorEl, setDateAnchorEl] = useState<null | HTMLElement>(null);
+
+  const translateCountry = (country?: string) => {
+    if (!country) return '';
+    const key = country.toLowerCase().trim();
+    return t(`countries.${key}`, country);
+  };
 
   const allMarketplaceIds =
     marketplaces?.map((item: any) => item.marketplace_id) || [];
@@ -817,7 +847,7 @@ export function OrdersFilters({
   };
 
   const formatDateRange = () => {
-    if (!searchDate.from && !searchDate.to) return 'Date Range';
+    if (!searchDate.from && !searchDate.to) return t('filter.dateRange', 'Date Range');
     if (searchDate.from && searchDate.to) {
       if (isSameDay(searchDate.from, searchDate.to)) {
         return format(searchDate.from, 'dd MMM yyyy');
@@ -826,7 +856,7 @@ export function OrdersFilters({
     }
     if (searchDate.from) return format(searchDate.from, 'dd MMM yyyy');
     if (searchDate.to) return format(searchDate.to, 'dd MMM yyyy');
-    return 'Date Range';
+    return t('filter.dateRange', 'Date Range');
   };
 
   const getMarketplaceCountryName = (id: string) => {
@@ -834,7 +864,8 @@ export function OrdersFilters({
       (item: any) =>
         item.marketplace_id === id || item._id === id || item.id === id
     );
-    return marketplace?.country || marketplace?.country_code || id;
+    const country = marketplace?.country || marketplace?.country_code || id;
+    return translateCountry(country);
   };
 
   return (
@@ -907,7 +938,7 @@ export function OrdersFilters({
               return (
                 <span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs font-medium">
                   <FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:building-storefront</FuseSvgIcon>
-                  All Shops
+                  {t('orders.allShops', 'All Shops')}
                 </span>
               );
             }
@@ -916,9 +947,9 @@ export function OrdersFilters({
                 <FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:building-storefront</FuseSvgIcon>
                 {Array.isArray(selected)
                   ? selected.length > 2
-                    ? `${selected.length} Shops`
+                    ? t('orders.shopsCount', { count: selected.length, defaultValue: `${selected.length} Shops` })
                     : selected.map((id) => getMarketplaceCountryName(id)).join(', ')
-                  : 'All Shops'}
+                  : t('orders.allShops', 'All Shops')}
               </span>
             );
           }}
@@ -952,7 +983,7 @@ export function OrdersFilters({
               }}
             />
             <em className="text-sm font-semibold not-italic text-slate-800 dark:text-slate-100">
-              ALL SHOPS
+              {t('orders.allShopsUpper', 'ALL SHOPS')}
             </em>
           </MenuItem>
           {marketplaces?.map((item: any) => (
@@ -988,7 +1019,7 @@ export function OrdersFilters({
                   country={item?.country}
                   className="w-5 h-3.5 rounded-xs shrink-0 shadow-2xs"
                 />
-                <span>{item?.country} ({item?.country_code})</span>
+                <span>{translateCountry(item?.country)} ({item?.country_code})</span>
               </span>
             </MenuItem>
           ))}

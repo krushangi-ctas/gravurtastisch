@@ -1,6 +1,7 @@
 'use client';
 import { useState, useMemo, useCallback } from 'react';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 import FusePageCarded from '@fuse/core/FusePageCarded';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { styled } from '@mui/material/styles';
@@ -88,6 +89,7 @@ function SupportContent({
 	statusFilter: string;
 	onStatusChange: (val: string) => void;
 }) {
+	const { t } = useTranslation();
 	const autoScrollRef = useAutoScrollRef<HTMLDivElement>();
 	const updateMutation = useUpdateSupportStatus();
 	const { enqueueSnackbar } = useSnackbar();
@@ -195,7 +197,7 @@ function SupportContent({
 									{val}
 								</Typography>
 							</Tooltip>
-							<Tooltip title="Copy Email" arrow>
+							<Tooltip title={t('tooltips.copyEmail', 'Copy Email')} arrow>
 								<button
 									type="button"
 									onClick={(e) => {
@@ -253,7 +255,7 @@ function SupportContent({
 				Cell: ({ row }) => {
 					const isResolved = row.original.status === 'resolved';
 					return (
-						<Tooltip title={isResolved ? 'Status: Resolved' : 'Status: Pending'} arrow>
+						<Tooltip title={isResolved ? t('support.statusResolvedTooltip', 'Status: Resolved') : t('support.statusPendingTooltip', 'Status: Pending')} arrow>
 							<div
 								className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium border ${
 									isResolved
@@ -264,7 +266,7 @@ function SupportContent({
 								<FuseSvgIcon size={13}>
 									{isResolved ? 'heroicons-outline:check-circle' : 'lucide:clock'}
 								</FuseSvgIcon>
-								<span>{isResolved ? 'Resolved' : 'Pending'}</span>
+								<span>{isResolved ? t('support.resolved', 'Resolved') : t('support.pending', 'Pending')}</span>
 							</div>
 						</Tooltip>
 					);
@@ -364,21 +366,21 @@ function SupportContent({
 							return (
 								<span className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400 text-xs sm:text-sm font-medium">
 									<FuseSvgIcon size={15} className="text-slate-500">heroicons-outline:funnel</FuseSvgIcon>
-									Status
+									{t('filter.status', 'Status')}
 								</span>
 							);
 						}
 						return (
 							<span className="flex items-center gap-1.5 text-slate-800 dark:text-slate-100 text-xs sm:text-sm font-semibold">
 								<FuseSvgIcon size={15} className="text-slate-600">heroicons-outline:funnel</FuseSvgIcon>
-								{selected === 'resolved' ? 'Resolved' : selected === 'pending' ? 'Pending' : 'All Status'}
+								{selected === 'resolved' ? t('support.resolved', 'Resolved') : selected === 'pending' ? t('support.pending', 'Pending') : t('support.allStatus', 'All Status')}
 							</span>
 						);
 					}}
 				>
-					<MenuItem value=""><span className="text-xs sm:text-sm">All Status</span></MenuItem>
-					<MenuItem value="pending"><span className="text-xs sm:text-sm">Pending</span></MenuItem>
-					<MenuItem value="resolved"><span className="text-xs sm:text-sm">Resolved</span></MenuItem>
+					<MenuItem value=""><span className="text-xs sm:text-sm">{t('support.allStatus', 'All Status')}</span></MenuItem>
+					<MenuItem value="pending"><span className="text-xs sm:text-sm">{t('support.pending', 'Pending')}</span></MenuItem>
+					<MenuItem value="resolved"><span className="text-xs sm:text-sm">{t('support.resolved', 'Resolved')}</span></MenuItem>
 				</Select>
 			</FormControl>
 		</div>
@@ -487,7 +489,7 @@ function SupportContent({
 						const request = row.original;
 						const isResolved = request.status === 'resolved';
 						return (
-							<Tooltip title={isResolved ? 'Mark as pending' : 'Mark as resolved'} arrow>
+							<Tooltip title={isResolved ? t('tooltips.markPending', 'Mark as pending') : t('tooltips.markResolved', 'Mark as resolved')} arrow>
 								<IconButton
 									size="small"
 									onClick={() =>
@@ -532,43 +534,50 @@ function SupportContent({
 							</FuseSvgIcon>
 						</div>
 						<div className="flex flex-col">
-							<h3 className="text-base font-bold text-slate-800 m-0">Change Request Status</h3>
+							<h3 className="text-base font-bold text-slate-800 m-0">{t('confirm.changeRequestStatusTitle', 'Change Request Status')}</h3>
 							<p className="text-xs sm:text-sm text-slate-500 mt-1.5 leading-relaxed m-0">
-								Are you sure you want to change status of this support request to{' '}
+								{t('confirm.changeSupportStatusPrompt', 'Are you sure you want to change status of this support request to')}{' '}
 								<strong className="text-slate-800 font-semibold">
-									{confirmState.targetStatus === 'resolved' ? 'Resolved' : 'Pending'}
+									{confirmState.targetStatus === 'resolved' ? t('support.resolved', 'Resolved') : t('support.pending', 'Pending')}
 								</strong>
 								?
 							</p>
 						</div>
 					</div>
-					<IconButton
-						size="small"
-						onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
-						className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
-					>
-						<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.close', 'Close')} arrow>
+						<IconButton
+							size="small"
+							onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
+							className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
+							aria-label={t('common.close', 'Close')}
+						>
+							<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 				</div>
 
 				<div className="bg-slate-50/70 px-6 py-3.5 flex items-center justify-end gap-3 border-t border-slate-100">
-					<button
-						type="button"
-						onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
-						disabled={isActionLoading}
-						className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
-					>
-						Cancel
-					</button>
-					<button
-						type="button"
-						onClick={handleConfirmAction}
-						disabled={isActionLoading}
-						className="h-9 px-5 rounded-lg bg-primary-800 hover:bg-primary-900 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5"
-					>
-						{isActionLoading && <CircularProgress size={14} color="inherit" />}
-						<span>Change Status</span>
-					</button>
+					<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+						<button
+							type="button"
+							onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
+							disabled={isActionLoading}
+							className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+						>
+							{t('confirm.cancel', 'Cancel')}
+						</button>
+					</Tooltip>
+					<Tooltip title={t('tooltips.confirm', 'Confirm')} arrow>
+						<button
+							type="button"
+							onClick={handleConfirmAction}
+							disabled={isActionLoading}
+							className="h-9 px-5 rounded-lg bg-primary-800 hover:bg-primary-900 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 disabled:opacity-50"
+						>
+							{isActionLoading && <CircularProgress size={14} color="inherit" />}
+							<span>{t('confirm.changeStatus', 'Change Status')}</span>
+						</button>
+					</Tooltip>
 				</div>
 			</Dialog>
 		</>

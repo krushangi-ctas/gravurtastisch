@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { LexicalComposer, InitialConfigType } from '@lexical/react/LexicalComposer';
 import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
 import { ContentEditable } from '@lexical/react/LexicalContentEditable';
@@ -65,6 +66,7 @@ function ToolbarPlugin({
 }: {
 	onUploadImage?: (file: File) => Promise<{ relativePath: string; url: string }>;
 }) {
+	const { t } = useTranslation();
 	const [editor] = useLexicalComposerContext();
 	const [canUndo, setCanUndo] = useState(false);
 	const [canRedo, setCanRedo] = useState(false);
@@ -208,7 +210,7 @@ function ToolbarPlugin({
 
 	return (
 		<Box className="flex flex-wrap items-center gap-1 border-b border-gray-200 bg-gray-50/80 p-1.5 rounded-t-lg">
-			<Tooltip title="Undo">
+			<Tooltip title={t('tooltips.undo', 'Undo')}>
 				<span>
 					<IconButton
 						size="small"
@@ -220,7 +222,7 @@ function ToolbarPlugin({
 					</IconButton>
 				</span>
 			</Tooltip>
-			<Tooltip title="Redo">
+			<Tooltip title={t('tooltips.redo', 'Redo')}>
 				<span>
 					<IconButton
 						size="small"
@@ -264,7 +266,7 @@ function ToolbarPlugin({
 
 			<Divider orientation="vertical" flexItem className="mx-1 h-5 my-auto" />
 
-			<Tooltip title="Bold (Ctrl+B)">
+			<Tooltip title={t('tooltips.bold', 'Bold (Ctrl+B)')}>
 				<IconButton
 					size="small"
 					onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold')}
@@ -274,7 +276,7 @@ function ToolbarPlugin({
 				</IconButton>
 			</Tooltip>
 
-			<Tooltip title="Italic (Ctrl+I)">
+			<Tooltip title={t('tooltips.italic', 'Italic (Ctrl+I)')}>
 				<IconButton
 					size="small"
 					onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'italic')}
@@ -284,7 +286,7 @@ function ToolbarPlugin({
 				</IconButton>
 			</Tooltip>
 
-			<Tooltip title="Underline (Ctrl+U)">
+			<Tooltip title={t('tooltips.underline', 'Underline (Ctrl+U)')}>
 				<IconButton
 					size="small"
 					onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'underline')}
@@ -294,7 +296,7 @@ function ToolbarPlugin({
 				</IconButton>
 			</Tooltip>
 
-			<Tooltip title="Strikethrough">
+			<Tooltip title={t('tooltips.strikethrough', 'Strikethrough')}>
 				<IconButton
 					size="small"
 					onClick={() => editor.dispatchCommand(FORMAT_TEXT_COMMAND, 'strikethrough')}
@@ -306,7 +308,7 @@ function ToolbarPlugin({
 
 			<Divider orientation="vertical" flexItem className="mx-1 h-5 my-auto" />
 
-			<Tooltip title="Bullet List">
+			<Tooltip title={t('tooltips.bulletList', 'Bullet List')}>
 				<IconButton
 					size="small"
 					onClick={formatBulletList}
@@ -316,7 +318,7 @@ function ToolbarPlugin({
 				</IconButton>
 			</Tooltip>
 
-			<Tooltip title="Numbered List">
+			<Tooltip title={t('tooltips.numberedList', 'Numbered List')}>
 				<IconButton
 					size="small"
 					onClick={formatNumberedList}
@@ -337,7 +339,7 @@ function ToolbarPlugin({
 				className="hidden"
 				id="lexical-toolbar-image-upload"
 			/>
-			<Tooltip title="Insert Image (or paste with Ctrl+V)">
+			<Tooltip title={t('tooltips.insertImage', 'Insert Image (or paste with Ctrl+V)')}>
 				<span>
 					<IconButton
 						size="small"

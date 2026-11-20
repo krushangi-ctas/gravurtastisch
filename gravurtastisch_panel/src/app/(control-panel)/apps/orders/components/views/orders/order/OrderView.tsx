@@ -11,12 +11,14 @@ import FuseLoading from '@fuse/core/FuseLoading';
 import PageBreadcrumb from 'src/components/PageBreadcrumb';
 import AccessDeniedView from '@/components/AccessDeniedView';
 import usePermissions from '@/hooks/usePermissions';
+import { useTranslation } from 'react-i18next';
 import { useOrder } from '../../../../api/hooks/orders/useOrder';
 
 /**
  * The order.
  */
 function Order() {
+  const { t } = useTranslation();
   const { canView } = usePermissions();
   const hasAccess = canView('orders');
   const routeParams = useParams();
@@ -28,7 +30,7 @@ function Order() {
   );
 
   if (!hasAccess) {
-    return <AccessDeniedView sectionTitle="Orders" />;
+    return <AccessDeniedView sectionTitle={t('nav.orders', 'Orders')} />;
   }
 
   if (isLoading) {
@@ -43,7 +45,7 @@ function Order() {
         className="flex h-full flex-1 flex-col items-center justify-center"
       >
         <Typography color="text.secondary" variant="h5">
-          There is no such order!
+          {t('orders.noSuchOrder', 'There is no such order!')}
         </Typography>
         <Button
           className="mt-6"
@@ -52,7 +54,7 @@ function Order() {
           to="/orders"
           color="inherit"
         >
-          Go to Orders Page
+          {t('orders.goToOrdersPage', 'Go to Orders Page')}
         </Button>
       </motion.div>
     );
@@ -76,10 +78,10 @@ function Order() {
               className="flex min-w-0 flex-col"
             >
               <Typography className="truncate text-2xl font-semibold">
-                {`Order ${order.reference}`}
+                {`${t('orders.order', 'Order')} ${order.reference}`}
               </Typography>
               <Typography variant="caption" className="font-medium">
-                {`From ${order.customer.firstName} ${order.customer.lastName}`}
+                {`${t('orders.from', 'From')} ${order.customer.firstName} ${order.customer.lastName}`}
               </Typography>
             </motion.div>
           </div>

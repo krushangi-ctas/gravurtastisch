@@ -16,6 +16,7 @@ const sendOtp = {
     email: Joi.string()
       .email({ tlds: { allow: false } })
       .required(),
+    lang: Joi.string().optional().allow('', null),
   }),
 };
 

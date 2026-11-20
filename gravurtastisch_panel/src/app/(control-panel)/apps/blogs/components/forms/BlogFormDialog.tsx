@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
 	Dialog,
 	DialogContent,
@@ -33,6 +34,7 @@ interface BlogFormDialogProps {
 }
 
 export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogProps) {
+	const { t } = useTranslation();
 	const { enqueueSnackbar } = useSnackbar();
 	const createMutation = useCreateBlog();
 	const updateMutation = useUpdateBlog();
@@ -422,7 +424,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 										</span>
 
 										{item.previewUrl ? (
-											<Tooltip title="Click to view large preview" arrow>
+											<Tooltip title={t('tooltips.viewLargePreview', 'Click to view large preview')} arrow>
 												<div
 													onClick={() => {
 														setPreviewModalUrl(item.previewUrl);
@@ -499,7 +501,7 @@ export default function BlogFormDialog({ open, onClose, blog }: BlogFormDialogPr
 											)}
 										</div>
 
-										<Tooltip title="Remove image">
+										<Tooltip title={t('tooltips.removeImage', 'Remove image')}>
 											<IconButton
 												size="small"
 												onClick={() => handleRemoveImageRow(item.id)}

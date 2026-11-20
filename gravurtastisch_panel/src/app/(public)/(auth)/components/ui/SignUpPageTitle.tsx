@@ -1,22 +1,38 @@
 import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import Link from '@fuse/core/Link';
+import { useTranslation } from 'react-i18next';
+import LanguageSwitcher from '@/components/theme-layouts/components/LanguageSwitcher';
+
+const headlineSx = {
+	fontFamily: "'Montserrat', sans-serif",
+	fontWeight: 700
+} as const;
 
 function SignUpPageTitle() {
+	const { t } = useTranslation();
+
 	return (
 		<div className="w-full">
-			<img
-				className="w-12 h-12"
-				src="/assets/images/logo/gravurstastich-mark.svg"
-				alt="Gravurtastisch"
-			/>
+			<Box className="flex items-center justify-between gap-3">
+				<img
+					className="h-10 sm:h-12 w-auto object-contain"
+					src="/gravurtastich.png"
+					alt="Gravurtastisch"
+				/>
+				<LanguageSwitcher />
+			</Box>
 
-			<Typography className="mt-8 text-4xl leading-[1.25] font-extrabold tracking-tight">
-				Sign up
+			<Typography
+				className="mt-6 text-3xl font-extrabold leading-tight tracking-tight text-slate-900"
+				sx={headlineSx}
+			>
+				{t('auth.signUp', 'Sign up')}
 			</Typography>
-			<div className="mt-0.5 flex items-baseline font-medium">
-				<Typography>Already have an account?</Typography>
-				<Link className="ml-1" to="/sign-in">
-					Sign in
+			<div className="mt-1 flex items-baseline font-medium text-sm text-slate-600">
+				<Typography variant="body2">{t('auth.alreadyHaveAccount', 'Already have an account?')}</Typography>
+				<Link className="ml-1 font-semibold text-primary" to="/sign-in">
+					{t('auth.signIn', 'Sign in')}
 				</Link>
 			</div>
 		</div>
