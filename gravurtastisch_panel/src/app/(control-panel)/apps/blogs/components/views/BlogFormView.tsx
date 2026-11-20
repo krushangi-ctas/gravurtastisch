@@ -157,16 +157,16 @@ export default function BlogFormView() {
 
 		const trimmedTitle = blogTitle.trim();
 		if (!trimmedTitle) {
-			newErrors.blogTitle = 'Blog Title is required!';
+			newErrors.blogTitle = t('validation.blogTitleRequired', 'Blog Title is required!');
 		} else if (trimmedTitle.length < 3) {
-			newErrors.blogTitle = 'Title must be at least 3 characters long';
+			newErrors.blogTitle = t('validation.blogTitleMin', 'Title must be at least 3 characters long');
 		} else if (trimmedTitle.length > 100) {
-			newErrors.blogTitle = 'Blog Title must not exceed 100 characters';
+			newErrors.blogTitle = t('validation.blogTitleMax', 'Blog Title must not exceed 100 characters');
 		}
 
 		const trimmedShortDesc = shortDescription.trim();
 		if (trimmedShortDesc && trimmedShortDesc.length > 200) {
-			newErrors.shortDescription = 'Short Description must not exceed 200 characters';
+			newErrors.shortDescription = t('validation.blogShortDescMax', 'Short Description must not exceed 200 characters');
 		}
 
 		setErrors(newErrors);
@@ -243,15 +243,16 @@ export default function BlogFormView() {
 			{/* Consistent Sticky Top Header (offset by top-12 to stick directly below the 48px top toolbar) */}
 			<div className="sticky top-12 z-20 w-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white px-4 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
 				<div className="flex items-center gap-2.5 sm:gap-3">
-					<IconButton
-						onClick={() => navigate('/blogs')}
-						className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0"
-						size="small"
-						title="Back to Blogs"
-						aria-label="Back to Blogs"
-					>
-						<FuseSvgIcon size={20}>heroicons-outline:arrow-left</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.back', 'Back')} arrow>
+						<IconButton
+							onClick={() => navigate('/blogs')}
+							className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0"
+							size="small"
+							aria-label={t('tooltips.back', 'Back')}
+						>
+							<FuseSvgIcon size={20}>heroicons-outline:arrow-left</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 
 					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
 						<FuseSvgIcon size={20} className="text-primary">
@@ -616,37 +617,45 @@ export default function BlogFormView() {
 					</div>
 
 					<div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-						<Button
-							variant="outlined"
-							color="inherit"
-							onClick={() => navigate('/blogs')}
-							disabled={isPending}
-							className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
-						>
-							{t('blog.cancel', 'Cancel')}
-						</Button>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() => handleSubmit()}
-							disabled={isPending}
-							startIcon={
-								<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+						<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+							<span>
+								<Button
+									variant="outlined"
+									color="inherit"
+									onClick={() => navigate('/blogs')}
+									disabled={isPending}
+									className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
+								>
+									{t('blog.cancel', 'Cancel')}
+								</Button>
+							</span>
+						</Tooltip>
+						<Tooltip title={isEdit ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.addBlog', 'Add Blog')} arrow>
+							<span>
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() => handleSubmit()}
+									disabled={isPending}
+									startIcon={
+										<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+											{isPending
+												? 'heroicons-outline:arrow-path'
+												: isEdit
+													? 'heroicons-outline:check'
+													: 'heroicons-outline:arrow-up-tray'}
+										</FuseSvgIcon>
+									}
+									className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
+								>
 									{isPending
-										? 'heroicons-outline:arrow-path'
+										? (isEdit ? t('blog.updating', 'Updating Article...') : t('blog.publishing', 'Publishing Article...'))
 										: isEdit
-											? 'heroicons-outline:check'
-											: 'heroicons-outline:arrow-up-tray'}
-								</FuseSvgIcon>
-							}
-							className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
-						>
-							{isPending
-								? (isEdit ? t('blog.updating', 'Updating Article...') : t('blog.publishing', 'Publishing Article...'))
-								: isEdit
-									? t('blog.updateArticle', 'Update Article')
-									: t('blog.publishArticle', 'Publish Article')}
-						</Button>
+											? t('blog.updateArticle', 'Update Article')
+											: t('blog.publishArticle', 'Publish Article')}
+								</Button>
+							</span>
+						</Tooltip>
 					</div>
 				</div>
 			</div>

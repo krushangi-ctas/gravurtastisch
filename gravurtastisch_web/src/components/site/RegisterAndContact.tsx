@@ -764,8 +764,8 @@ function ContactSection() {
     }
   };
 
-  const supportEmail = config?.contact?.email || "info@gravurtastisch.com";
-  const contactPhone = config?.contact?.phone || "+91 79489 93409";
+  const supportEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const contactPhone = config?.contact?.phone || "017661055576";
   const workingHours =
     config?.contact?.working_hours ||
     (currentLang === "en"

@@ -414,17 +414,19 @@ function PlansContent({
 			</FormControl>
 
 			{canCreate && (
-				<button
-					type="button"
-					onClick={onAddNew}
-					style={{ height: '38px' }}
-					className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
-				>
-					<FuseSvgIcon size={16} className="text-white">
-						heroicons-outline:plus
-					</FuseSvgIcon>
-					<span>{t('plan.addPlan', 'Add Plan')}</span>
-				</button>
+				<Tooltip title={t('tooltips.addPlan', 'Add Plan')} arrow>
+					<button
+						type="button"
+						onClick={onAddNew}
+						style={{ height: '38px' }}
+						className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
+					>
+						<FuseSvgIcon size={16} className="text-white">
+							heroicons-outline:plus
+						</FuseSvgIcon>
+						<span>{t('plan.addPlan', 'Add Plan')}</span>
+					</button>
+				</Tooltip>
 			)}
 		</div>
 	);
@@ -529,7 +531,7 @@ function PlansContent({
 					renderRowActions={({ row }: { row: MRT_Row<Plan> }) => (
 						<Box className="flex items-center gap-1">
 							{canUpdate && (
-								<Tooltip title={row.original.status === 1 ? 'Click to deactivate plan' : 'Click to activate plan'} arrow>
+								<Tooltip title={row.original.status === 1 ? t('tooltips.deactivatePlan', 'Click to deactivate plan') : t('tooltips.activatePlan', 'Click to activate plan')} arrow>
 									<Box
 										onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
 										className="cursor-pointer inline-flex items-center p-0.5"
@@ -545,7 +547,7 @@ function PlansContent({
 							)}
 
 							{canUpdate && (
-								<Tooltip title="Edit plan details" arrow>
+								<Tooltip title={t('tooltips.editPlanDetails', 'Edit plan details')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => onEditPlan(row.original)}
@@ -557,7 +559,7 @@ function PlansContent({
 							)}
 
 							{canDelete && (
-								<Tooltip title="Delete plan" arrow>
+								<Tooltip title={t('tooltips.deletePlan', 'Delete plan')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => handleOpenDeleteConfirm(row.original)}

@@ -7,6 +7,7 @@ import {
   Checkbox,
   Typography,
   Chip,
+  Tooltip,
 } from '@mui/material';
 import CustomStatusSwitch from '@/components/CustomSwitch';
 import { useEffect } from 'react';
@@ -530,19 +531,23 @@ function GeneralSetting({
                 : t('generalSetting.configureAndSaveHint', 'Configure settings and click Save Settings to apply.')}
             </Typography>
 
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={!canEdit || isPending}
-              className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-8 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700"
-              startIcon={
-                <FuseSvgIcon size={18}>
-                  {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
-                </FuseSvgIcon>
-              }
-            >
-              {!canEdit ? t('generalSetting.saveDisabled', 'Save Disabled') : isPending ? t('account.savingChanges', 'Saving changes...') : t('generalSetting.saveSettings', 'Save Settings')}
-            </Button>
+            <Tooltip title={t('tooltips.saveChanges', 'Save changes')} arrow>
+              <span>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  disabled={!canEdit || isPending}
+                  className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-8 py-2.5 shadow-xs transition-all capitalize text-sm disabled:opacity-70 disabled:bg-slate-200 dark:disabled:bg-slate-800 disabled:text-slate-500 dark:disabled:text-slate-400 border border-transparent disabled:border-slate-200 dark:disabled:border-slate-700"
+                  startIcon={
+                    <FuseSvgIcon size={18}>
+                      {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+                    </FuseSvgIcon>
+                  }
+                >
+                  {!canEdit ? t('generalSetting.saveDisabled', 'Save Disabled') : isPending ? t('account.savingChanges', 'Saving changes...') : t('generalSetting.saveSettings', 'Save Settings')}
+                </Button>
+              </span>
+            </Tooltip>
           </div>
         </form>
       </Paper>

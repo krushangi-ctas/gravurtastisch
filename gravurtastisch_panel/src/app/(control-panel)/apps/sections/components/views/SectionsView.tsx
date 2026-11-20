@@ -160,15 +160,15 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 		const trimmedName = name.trim().toLowerCase();
 
 		if (!trimmedTitle) {
-			nextErrors.title = 'Section name is required!';
+			nextErrors.title = t('validation.sectionNameRequired', 'Section name is required!');
 		} else if (trimmedTitle.length < 2) {
-			nextErrors.title = 'Section name must be at least 2 characters.';
+			nextErrors.title = t('validation.sectionNameMin', 'Section name must be at least 2 characters.');
 		}
 
 		if (!trimmedName) {
-			nextErrors.name = 'Section path is required!';
+			nextErrors.name = t('validation.sectionPathRequired', 'Section path is required!');
 		} else if (!/^[a-z0-9_/.-]+$/.test(trimmedName)) {
-			nextErrors.name = 'Section path can only contain lowercase alphanumeric characters, slashes, dashes, or underscores.';
+			nextErrors.name = t('validation.sectionPathPattern', 'Section path can only contain lowercase alphanumeric characters, slashes, dashes, or underscores.');
 		}
 
 		setErrors(nextErrors);
@@ -571,7 +571,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 					/* renderRowActions={({ row }) => (
 						<Box className="flex items-center gap-1">
 							{canUpdate('sections') && (
-								<Tooltip title="Edit section" arrow>
+								<Tooltip title={t('tooltips.editSection', 'Edit section')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => openEdit(row.original)}
@@ -582,7 +582,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 								</Tooltip>
 							)}
 							{canDelete('sections') && (
-								<Tooltip title="Delete section" arrow>
+								<Tooltip title={t('tooltips.deleteSection', 'Delete section')} arrow>
 									<IconButton
 										size="small"
 										className="text-red-500 hover:text-red-700 p-1.5"
@@ -626,15 +626,17 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 										{editingSection ? 'Edit Section' : 'Add New Section'}
 									</h2>
 								</div>
-								<IconButton
-									size="small"
-									onClick={() => setDialogOpen(false)}
-									disabled={isActionLoading}
-									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-									aria-label="Close"
-								>
-									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
-								</IconButton>
+								<Tooltip title={t('tooltips.close', 'Close')} arrow>
+									<IconButton
+										size="small"
+										onClick={() => setDialogOpen(false)}
+										disabled={isActionLoading}
+										className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+										aria-label={t('common.close', 'Close')}
+									>
+										<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
+									</IconButton>
+								</Tooltip>
 							</div>
 
 							<DialogContent
@@ -741,40 +743,48 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 									py: 1.5
 								}}
 							>
-								<Button
-									onClick={() => setDialogOpen(false)}
-									disabled={isActionLoading}
-									className="capitalize text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
-									sx={{
-										borderRadius: '12px',
-										textTransform: 'capitalize'
-									}}
-								>
-									Cancel
-								</Button>
-								<Button
-									variant="contained"
-									onClick={handleSave}
-									disabled={isActionLoading}
-									startIcon={
-										isActionLoading ? (
-											<CircularProgress size={16} color="inherit" />
-										) : (
-											<FuseSvgIcon size={18}>heroicons-outline:check</FuseSvgIcon>
-										)
-									}
-									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
-									sx={{
-										bgcolor: 'primary.main',
-										'&:hover': { bgcolor: 'primary.dark' },
-										borderRadius: '12px',
-										textTransform: 'capitalize',
-										px: { xs: 2.5, sm: 3.5 },
-										py: 1
-									}}
-								>
-									{editingSection ? 'Save Changes' : 'Create Section'}
-								</Button>
+								<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+									<span>
+										<Button
+											onClick={() => setDialogOpen(false)}
+											disabled={isActionLoading}
+											className="capitalize text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
+											sx={{
+												borderRadius: '12px',
+												textTransform: 'capitalize'
+											}}
+										>
+											{t('confirm.cancel', 'Cancel')}
+										</Button>
+									</span>
+								</Tooltip>
+								<Tooltip title={editingSection ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.save', 'Save')} arrow>
+									<span>
+										<Button
+											variant="contained"
+											onClick={handleSave}
+											disabled={isActionLoading}
+											startIcon={
+												isActionLoading ? (
+													<CircularProgress size={16} color="inherit" />
+												) : (
+													<FuseSvgIcon size={18}>heroicons-outline:check</FuseSvgIcon>
+												)
+											}
+											className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
+											sx={{
+												bgcolor: 'primary.main',
+												'&:hover': { bgcolor: 'primary.dark' },
+												borderRadius: '12px',
+												textTransform: 'capitalize',
+												px: { xs: 2.5, sm: 3.5 },
+												py: 1
+											}}
+										>
+											{editingSection ? 'Save Changes' : 'Create Section'}
+										</Button>
+									</span>
+								</Tooltip>
 							</DialogActions>
 						</div>
 					</Dialog>
@@ -843,40 +853,54 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 									</p>
 								</div>
 							</div>
-							<IconButton
-								size="small"
-								onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
-								className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
-							>
-								<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-							</IconButton>
+							<Tooltip title={t('tooltips.close', 'Close')} arrow>
+								<IconButton
+									size="small"
+									onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
+									className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
+									aria-label={t('common.close', 'Close')}
+								>
+									<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+								</IconButton>
+							</Tooltip>
 						</div>
 
 						<div className="bg-slate-50/70 dark:bg-slate-800/50 px-6 py-3.5 flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800">
-							<button
-								type="button"
-								onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
-								disabled={isActionLoading}
-								className="h-9 px-5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs"
+							<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+								<button
+									type="button"
+									onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
+									disabled={isActionLoading}
+									className="h-9 px-5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-semibold text-xs sm:text-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+								>
+									{t('confirm.cancel', 'Cancel')}
+								</button>
+							</Tooltip>
+							<Tooltip
+								title={
+									confirmState.type === 'delete'
+										? t('tooltips.deleteSection', 'Delete section')
+										: t('tooltips.confirm', 'Confirm')
+								}
+								arrow
 							>
-								{t('confirm.cancel', 'Cancel')}
-							</button>
-							<button
-								type="button"
-								onClick={handleConfirmAction}
-								disabled={isActionLoading}
-								className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white ${confirmState.type === 'delete'
-									? 'bg-red-600 hover:bg-red-700'
-									: 'bg-primary hover:bg-primary-dark'
-									}`}
-							>
-								{isActionLoading && <CircularProgress size={14} color="inherit" />}
-								<span>
-									{confirmState.type === 'delete'
-										? t('confirm.delete', 'Delete')
-										: t('confirm.changeStatus', 'Change Status')}
-								</span>
-							</button>
+								<button
+									type="button"
+									onClick={handleConfirmAction}
+									disabled={isActionLoading}
+									className={`h-9 px-5 rounded-lg font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 text-white disabled:opacity-50 ${confirmState.type === 'delete'
+										? 'bg-red-600 hover:bg-red-700'
+										: 'bg-primary hover:bg-primary-dark'
+										}`}
+								>
+									{isActionLoading && <CircularProgress size={14} color="inherit" />}
+									<span>
+										{confirmState.type === 'delete'
+											? t('confirm.delete', 'Delete')
+											: t('confirm.changeStatus', 'Change Status')}
+									</span>
+								</button>
+							</Tooltip>
 						</div>
 					</Dialog>
 				</Paper>

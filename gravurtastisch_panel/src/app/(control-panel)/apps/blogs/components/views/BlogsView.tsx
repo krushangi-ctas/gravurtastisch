@@ -328,17 +328,19 @@ function BlogsContent({
 			</FormControl>
 
 			{canCreate && (
-				<button
-					type="button"
-					onClick={onAddNew}
-					style={{ height: '38px' }}
-					className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
-				>
-					<FuseSvgIcon size={16} className="text-white">
-						heroicons-outline:plus
-					</FuseSvgIcon>
-					<span>{t('blog.addBlog', 'Add Blog')}</span>
-				</button>
+				<Tooltip title={t('tooltips.addBlog', 'Add Blog')} arrow>
+					<button
+						type="button"
+						onClick={onAddNew}
+						style={{ height: '38px' }}
+						className="h-[38px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
+					>
+						<FuseSvgIcon size={16} className="text-white">
+							heroicons-outline:plus
+						</FuseSvgIcon>
+						<span>{t('blog.addBlog', 'Add Blog')}</span>
+					</button>
+				</Tooltip>
 			)}
 		</div>
 	);
@@ -440,7 +442,7 @@ function BlogsContent({
 					renderRowActions={({ row }: { row: MRT_Row<Blog> }) => (
 						<Box className="flex items-center gap-1">
 							{canUpdate && (
-								<Tooltip title={row.original.status === 1 ? 'Click to deactivate blog' : 'Click to activate blog'} arrow>
+								<Tooltip title={row.original.status === 1 ? t('tooltips.deactivateBlog', 'Click to deactivate blog') : t('tooltips.activateBlog', 'Click to activate blog')} arrow>
 									<Box
 										onClick={() => handleOpenStatusConfirm(row.original, row.original.status)}
 										className="cursor-pointer inline-flex items-center p-0.5"
@@ -455,7 +457,7 @@ function BlogsContent({
 								</Tooltip>
 							)}
 
-							<Tooltip title="Preview blog article" arrow>
+							<Tooltip title={t('tooltips.previewBlog', 'Preview blog article')} arrow>
 								<IconButton
 									size="small"
 									onClick={() => onPreviewBlog(row.original)}
@@ -466,7 +468,7 @@ function BlogsContent({
 							</Tooltip>
 
 							{canUpdate && (
-								<Tooltip title="Edit blog article" arrow>
+								<Tooltip title={t('tooltips.editBlog', 'Edit blog article')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => onEditBlog(row.original)}
@@ -478,7 +480,7 @@ function BlogsContent({
 							)}
 
 							{canDelete && (
-								<Tooltip title="Delete blog" arrow>
+								<Tooltip title={t('tooltips.deleteBlog', 'Delete blog')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => handleOpenDeleteConfirm(row.original)}

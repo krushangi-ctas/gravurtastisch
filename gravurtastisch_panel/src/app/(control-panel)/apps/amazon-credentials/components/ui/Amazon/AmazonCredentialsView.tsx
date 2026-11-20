@@ -21,6 +21,7 @@ import {
   DialogContentText,
   DialogActions,
   IconButton,
+  Tooltip,
 } from '@mui/material';
 import {
   Controller as HookFormController,
@@ -32,7 +33,7 @@ import {
 const Controller = HookFormController as React.ComponentType<any>;
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import FlagIcon from '@/components/ui/FlagIcon';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useSnackbar } from 'notistack';
@@ -49,50 +50,57 @@ import {
 import { useGeneralSettingMutation } from '@/app/(control-panel)/apps/settings/api/hooks/generalDetailsSetting/useUpdateGeneralSettings';
 
 // Validation schema for Amazon Credentials
-const amazonCredentialsSchema = z.object({
-  client_id: z
-    .string()
-    .trim()
-    .min(1, 'Client ID is required!')
-    .min(50, 'Client ID must be at least 50 characters (typically 60-75 characters)')
-    .max(90, 'Client ID cannot exceed 90 characters')
-    .regex(
-      /^amzn1\.[a-zA-Z0-9.\-_]+$/,
-      "Client ID must start with 'amzn1.' (e.g. amzn1.application-oa2-client...)"
-    ),
-  client_secret: z
-    .string()
-    .trim()
-    .min(1, 'Client Secret is required!')
-    .min(64, 'Client Secret must be at least 64 characters (standard is 78 characters)')
-    .max(85, 'Client Secret cannot exceed 85 characters')
-    .regex(/^\S+$/, 'Client Secret cannot contain spaces'),
-  refresh_token: z
-    .string()
-    .trim()
-    .min(1, 'Refresh Token is required!')
-    .min(250, 'Refresh Token must be at least 250 characters')
-    .max(1200, 'Refresh Token cannot exceed 1200 characters')
-    .regex(
-      /^At[zn]r\|\S+$/,
-      "Refresh Token must start with 'Atzr|' without spaces"
-    ),
-  seller_id: z
-    .string()
-    .trim()
-    .min(1, 'Seller ID is required!')
-    .min(13, 'Seller ID is typically 14 characters (13-18 characters)')
-    .max(18, 'Seller ID cannot exceed 18 characters')
-    .regex(
-      /^[a-zA-Z0-9]+$/,
-      'Seller ID must only contain alphanumeric characters (e.g. A39Q604UXIR8Y9)'
-    ),
-  marketplace_ids: z
-    .array(z.string().nonempty())
-    .min(1, 'Marketplaces is required!'),
-});
+const getAmazonCredentialsSchema = (t: any) =>
+  z.object({
+    client_id: z
+      .string()
+      .trim()
+      .min(1, t('validation.clientIdRequired', 'Client ID is required!'))
+      .min(50, t('validation.clientIdMin', 'Client ID must be at least 50 characters (typically 60-75 characters)'))
+      .max(90, t('validation.clientIdMax', 'Client ID cannot exceed 90 characters'))
+      .regex(
+        /^amzn1\.[a-zA-Z0-9.\-_]+$/,
+        t('validation.clientIdPattern', "Client ID must start with 'amzn1.' (e.g. amzn1.application-oa2-client...)")
+      ),
+    client_secret: z
+      .string()
+      .trim()
+      .min(1, t('validation.clientSecretRequired', 'Client Secret is required!'))
+      .min(64, t('validation.clientSecretMin', 'Client Secret must be at least 64 characters (standard is 78 characters)'))
+      .max(85, t('validation.clientSecretMax', 'Client Secret cannot exceed 85 characters'))
+      .regex(/^\S+$/, t('validation.clientSecretNoSpaces', 'Client Secret cannot contain spaces')),
+    refresh_token: z
+      .string()
+      .trim()
+      .min(1, t('validation.refreshTokenRequired', 'Refresh Token is required!'))
+      .min(250, t('validation.refreshTokenMin', 'Refresh Token must be at least 250 characters'))
+      .max(1200, t('validation.refreshTokenMax', 'Refresh Token cannot exceed 1200 characters'))
+      .regex(
+        /^At[zn]r\|\S+$/,
+        t('validation.refreshTokenPattern', "Refresh Token must start with 'Atzr|' without spaces")
+      ),
+    seller_id: z
+      .string()
+      .trim()
+      .min(1, t('validation.sellerIdRequired', 'Seller ID is required!'))
+      .min(13, t('validation.sellerIdMin', 'Seller ID is typically 14 characters (13-18 characters)'))
+      .max(18, t('validation.sellerIdMax', 'Seller ID cannot exceed 18 characters'))
+      .regex(
+        /^[a-zA-Z0-9]+$/,
+        t('validation.sellerIdPattern', 'Seller ID must only contain alphanumeric characters (e.g. A39Q604UXIR8Y9)')
+      ),
+    marketplace_ids: z
+      .array(z.string().nonempty())
+      .min(1, t('validation.marketplacesRequired', 'Marketplaces is required!')),
+  });
 
-type AmazonCredentialsFormType = z.infer<typeof amazonCredentialsSchema>;
+type AmazonCredentialsFormType = {
+  client_id: string;
+  client_secret: string;
+  refresh_token: string;
+  seller_id: string;
+  marketplace_ids: string[];
+};
 
 const Root = styled(FusePageSimple)(({ theme }) => ({
   '& .FusePageSimple-header': {
@@ -722,15 +730,17 @@ function AmazonCredentialsFormContent({
                                 </div>
                               ),
                               endAdornment: (
-                                <IconButton
-                                  size="small"
-                                  onClick={() => setShowSecret(!showSecret)}
-                                  className="text-slate-400 hover:text-slate-600"
-                                >
-                                  <FuseSvgIcon size={18}>
-                                    {showSecret ? 'lucide:eye-off' : 'lucide:eye'}
-                                  </FuseSvgIcon>
-                                </IconButton>
+                                <Tooltip title={showSecret ? t('tooltips.hideSecret', 'Hide secret') : t('tooltips.showSecret', 'Show secret')}>
+                                  <IconButton
+                                    size="small"
+                                    onClick={() => setShowSecret(!showSecret)}
+                                    className="text-slate-400 hover:text-slate-600"
+                                  >
+                                    <FuseSvgIcon size={18}>
+                                      {showSecret ? 'lucide:eye-off' : 'lucide:eye'}
+                                    </FuseSvgIcon>
+                                  </IconButton>
+                                </Tooltip>
                               ),
                             },
                           }}
@@ -1256,11 +1266,14 @@ function AmazonCredentialsFormContent({
 }
 
 function AmazonCredentialsView() {
+  const { t } = useTranslation();
   const { canView, canUpdate } = usePermissions();
   const canMutate = canUpdate('amazon-credentials');
   const { data: credentials, isLoading: isCredentialsLoading } = useAmazon();
   const { isLoading: isMarketplacesLoading } = useMarketplace();
   const updateCredentialsMutation = useUpsertAmazonCredentials();
+
+  const amazonCredentialsSchema = useMemo(() => getAmazonCredentialsSchema(t), [t]);
 
   const amazonCredentialsMethods = useForm<AmazonCredentialsFormType>({
     mode: 'onChange',

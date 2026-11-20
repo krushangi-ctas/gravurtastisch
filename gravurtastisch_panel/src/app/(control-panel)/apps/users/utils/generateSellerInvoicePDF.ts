@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import moment from 'moment';
+import i18n from '@/i18n/config';
 import { User } from '../api/services/usersApiService';
 
 function loadLogoImage(): Promise<string | null> {
@@ -37,7 +38,16 @@ function loadLogoImage(): Promise<string | null> {
 	});
 }
 
-export async function generateSellerInvoicePDF(user: User): Promise<void> {
+export async function generateSellerInvoicePDF(user: User, lang?: string): Promise<void> {
+	const resolvedLang =
+		lang ||
+		i18n.language ||
+		(typeof window !== 'undefined'
+			? localStorage.getItem('panel_lng') || localStorage.getItem('i18nextLng')
+			: null) ||
+		'de';
+	const isDe = resolvedLang.toLowerCase().startsWith('de');
+
 	const doc = new jsPDF({
 		orientation: 'portrait',
 		unit: 'mm',
@@ -50,16 +60,25 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 			(user.plans.find((p: any) => p.paymentStatus === 1 || p.status === 1) || user.plans[0])) ||
 		(typeof user.currentPlanId === 'object' && user.currentPlanId ? user.currentPlanId : null);
 
-	const planName = paidPlan?.name || 'Seller Subscription';
+	const planName = paidPlan?.name || (isDe ? 'Verkäufer-Abonnement' : 'Seller Subscription');
 	const price = Number(paidPlan?.price) || 0;
 	const cycleNum = Number(paidPlan?.billingCycle) || 1;
-	const cycleText =
-		cycleNum === 3 ? 'Annual (Billed Yearly)' : cycleNum === 2 ? 'Quarterly (Billed 3-Monthly)' : 'Monthly';
+	const cycleText = isDe
+		? cycleNum === 3
+			? 'Jährlich (Jährliche Abrechnung)'
+			: cycleNum === 2
+			? 'Vierteljährlich (Alle 3 Monate)'
+			: 'Monatlich'
+		: cycleNum === 3
+		? 'Annual (Billed Yearly)'
+		: cycleNum === 2
+		? 'Quarterly (Billed 3-Monthly)'
+		: 'Monthly';
 	const quota = Number(paidPlan?.request_quota) || Number(user.planLimits?.maxReviewRequestsPerMonth) || 1000;
 	const marketplaces = Number(paidPlan?.marketplace) || Number(user.planLimits?.maxMarketplaces) || 1;
 
 	const invoiceDate = paidPlan?.startsAt || paidPlan?.selectedAt || user.createdAt || new Date();
-	const formattedDate = moment(invoiceDate).format('MMMM DD, YYYY');
+	const formattedDate = isDe ? moment(invoiceDate).format('DD.MM.YYYY') : moment(invoiceDate).format('MMMM DD, YYYY');
 	const invoiceNumber = `INV-${moment(invoiceDate).format('YYYYMMDD')}-${user._id ? user._id.slice(-6).toUpperCase() : '000000'}`;
 	const paymentRef =
 		paidPlan?.stripePaymentIntentId ||
@@ -74,6 +93,9 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 
 	// === 1. TOP HEADER ===
 	const logoDataUrl = await loadLogoImage();
+	const taglineText = isDe
+		? 'Personalisierte Produktprüfungs- und Fulfillment-Plattform'
+		: 'Personalized Product Proofing & Fulfillment Platform';
 
 	if (logoDataUrl) {
 		// 420x139 aspect ratio is ~ 3.02:1
@@ -84,7 +106,7 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 		doc.setFont('helvetica', 'normal');
 		doc.setFontSize(8.5);
 		doc.setTextColor(80, 80, 80);
-		doc.text('Personalized Product Proofing & Fulfillment Platform', leftMargin, 39);
+		doc.text(taglineText, leftMargin, 39);
 	} else {
 		// Fallback to text brand title
 		doc.setFont('helvetica', 'bold');
@@ -96,39 +118,41 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 		doc.setFont('helvetica', 'normal');
 		doc.setFontSize(8.5);
 		doc.setTextColor(80, 80, 80);
-		doc.text('Personalized Product Proofing & Fulfillment Platform', leftMargin, 28);
+		doc.text(taglineText, leftMargin, 28);
 	}
 
 	// Top Right - INVOICE title
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(20);
 	doc.setTextColor(15, 23, 42);
-	doc.text('INVOICE', rightMargin, 22, { align: 'right' });
+	doc.text(isDe ? 'RECHNUNG' : 'INVOICE', rightMargin, 22, { align: 'right' });
 
 	// Invoice metadata top-right
+	const metaLabelX = rightMargin - (isDe ? 38 : 35);
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9);
 	doc.setTextColor(50, 50, 50);
-	doc.text(`Invoice No:`, rightMargin - 35, 28, { align: 'right' });
+	doc.text(isDe ? 'Rechnungsnr.:' : 'Invoice No:', metaLabelX, 28, { align: 'right' });
 	doc.setFont('helvetica', 'normal');
 	doc.setTextColor(15, 23, 42);
 	doc.text(invoiceNumber, rightMargin, 28, { align: 'right' });
 
 	doc.setFont('helvetica', 'bold');
 	doc.setTextColor(50, 50, 50);
-	doc.text(`Issue Date:`, rightMargin - 35, 33, { align: 'right' });
+	doc.text(isDe ? 'Ausstellungsdatum:' : 'Issue Date:', metaLabelX, 33, { align: 'right' });
 	doc.setFont('helvetica', 'normal');
 	doc.setTextColor(15, 23, 42);
 	doc.text(formattedDate, rightMargin, 33, { align: 'right' });
 
 	// Status badge: PAID (clean black outline box)
+	const badgeWidth = isDe ? 35 : 28;
 	doc.setDrawColor(20, 20, 20);
 	doc.setLineWidth(0.4);
-	doc.roundedRect(rightMargin - 28, 36.5, 28, 7, 1.5, 1.5, 'S');
+	doc.roundedRect(rightMargin - badgeWidth, 36.5, badgeWidth, 7, 1.5, 1.5, 'S');
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9.5);
 	doc.setTextColor(20, 20, 20);
-	doc.text('STATUS: PAID', rightMargin - 14, 41.5, { align: 'center' });
+	doc.text(isDe ? 'STATUS: BEZAHLT' : 'STATUS: PAID', rightMargin - (badgeWidth / 2), 41.5, { align: 'center' });
 
 	// Main Divider Line
 	doc.setDrawColor(30, 30, 30);
@@ -142,58 +166,59 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9);
 	doc.setTextColor(100, 100, 100);
-	doc.text('BILLED TO (SELLER DETAILS)', leftMargin, sectionTop);
+	doc.text(isDe ? 'RECHNUNGSEMPFÄNGER (VERKÄUFER)' : 'BILLED TO (SELLER DETAILS)', leftMargin, sectionTop);
 
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(11);
 	doc.setTextColor(15, 23, 42);
-	doc.text(user.name || 'Seller Account', leftMargin, sectionTop + 6);
+	doc.text(user.name || (isDe ? 'Verkäuferkonto' : 'Seller Account'), leftMargin, sectionTop + 6);
 
 	doc.setFont('helvetica', 'normal');
 	doc.setFontSize(9);
 	doc.setTextColor(60, 60, 60);
 	let currentY = sectionTop + 11;
 	if (user.businessName && user.businessName !== user.name) {
-		doc.text(`Brand / Business: ${user.businessName}`, leftMargin, currentY);
+		doc.text(`${isDe ? 'Marke / Unternehmen:' : 'Brand / Business:'} ${user.businessName}`, leftMargin, currentY);
 		currentY += 5;
 	}
-	doc.text(`Email: ${user.email}`, leftMargin, currentY);
+	doc.text(`${isDe ? 'E-Mail:' : 'Email:'} ${user.email}`, leftMargin, currentY);
 	currentY += 5;
 	if (user.contact_no) {
-		doc.text(`Contact: ${user.contact_no}`, leftMargin, currentY);
+		doc.text(`${isDe ? 'Kontakt:' : 'Contact:'} ${user.contact_no}`, leftMargin, currentY);
 		currentY += 5;
 	}
-	doc.text(`Account ID: ${user._id ? user._id : 'N/A'}`, leftMargin, currentY);
+	doc.text(`${isDe ? 'Konto-ID:' : 'Account ID:'} ${user._id ? user._id : 'N/A'}`, leftMargin, currentY);
 
-	// Column 2: Payment Details (at X = 118mm)
-	const col2X = 118;
+	// Column 2: Payment Details (at X = 114mm)
+	const col2X = 114;
+	const col2ValX = col2X + 40;
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9);
 	doc.setTextColor(100, 100, 100);
-	doc.text('PAYMENT SPECIFICATIONS', col2X, sectionTop);
+	doc.text(isDe ? 'ZAHLUNGSDETAILS' : 'PAYMENT SPECIFICATIONS', col2X, sectionTop);
 
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9);
 	doc.setTextColor(15, 23, 42);
-	doc.text('Payment Gateway:', col2X, sectionTop + 6);
+	doc.text(isDe ? 'Zahlungsmethode:' : 'Payment Gateway:', col2X, sectionTop + 6);
 	doc.setFont('helvetica', 'normal');
-	doc.text('Stripe Checkout (Card / Online)', col2X + 38, sectionTop + 6);
+	doc.text(isDe ? 'Stripe Checkout (Karte / Online)' : 'Stripe Checkout (Card / Online)', col2ValX, sectionTop + 6);
 
 	doc.setFont('helvetica', 'bold');
-	doc.text('Billing Frequency:', col2X, sectionTop + 11);
+	doc.text(isDe ? 'Abrechnungsintervall:' : 'Billing Frequency:', col2X, sectionTop + 11);
 	doc.setFont('helvetica', 'normal');
-	doc.text(cycleText, col2X + 38, sectionTop + 11);
+	doc.text(cycleText, col2ValX, sectionTop + 11);
 
 	doc.setFont('helvetica', 'bold');
-	doc.text('Payment Status:', col2X, sectionTop + 16);
+	doc.text(isDe ? 'Zahlungsstatus:' : 'Payment Status:', col2X, sectionTop + 16);
 	doc.setFont('helvetica', 'normal');
-	doc.text('Completed & Verified', col2X + 38, sectionTop + 16);
+	doc.text(isDe ? 'Abgeschlossen & Verifiziert' : 'Completed & Verified', col2ValX, sectionTop + 16);
 
 	doc.setFont('helvetica', 'bold');
-	doc.text('Transaction Ref:', col2X, sectionTop + 21);
+	doc.text(isDe ? 'Transaktions-Ref.:' : 'Transaction Ref:', col2X, sectionTop + 21);
 	doc.setFont('helvetica', 'normal');
 	const truncatedRef = paymentRef.length > 22 ? `${paymentRef.slice(0, 20)}...` : paymentRef;
-	doc.text(truncatedRef, col2X + 38, sectionTop + 21);
+	doc.text(truncatedRef, col2ValX, sectionTop + 21);
 
 	// Thin Divider Line
 	const tableTop = Math.max(currentY + 8, sectionTop + 30);
@@ -204,9 +229,9 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	// === 3. ITEMS TABLE (BLACK & WHITE DESIGN) ===
 	const thHeight = 8.5;
 	const colNoX = leftMargin + 3;
-	const colPlanX = leftMargin + 16;
-	const colAllowanceX = leftMargin + 75;
-	const colPeriodX = leftMargin + 132;
+	const colPlanX = leftMargin + 14;
+	const colAllowanceX = leftMargin + 64;
+	const colPeriodX = leftMargin + 120;
 	const colAmountX = rightMargin - 3;
 
 	// Header bar: Solid dark background
@@ -214,13 +239,13 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.rect(leftMargin, tableTop, pageWidth, thHeight, 'F');
 
 	doc.setFont('helvetica', 'bold');
-	doc.setFontSize(8.5);
+	doc.setFontSize(8);
 	doc.setTextColor(255, 255, 255);
-	doc.text('NO.', colNoX, tableTop + 5.8);
-	doc.text('SUBSCRIPTION PLAN', colPlanX, tableTop + 5.8);
-	doc.text('CHANNELS & QUOTA', colAllowanceX, tableTop + 5.8);
-	doc.text('BILLING PERIOD', colPeriodX, tableTop + 5.8);
-	doc.text('TOTAL (EUR)', colAmountX, tableTop + 5.8, { align: 'right' });
+	doc.text(isDe ? 'NR.' : 'NO.', colNoX, tableTop + 5.6);
+	doc.text(isDe ? 'ABONNEMENTPLAN' : 'SUBSCRIPTION PLAN', colPlanX, tableTop + 5.6);
+	doc.text(isDe ? 'KANÄLE & KONTINGENT' : 'CHANNELS & QUOTA', colAllowanceX, tableTop + 5.6);
+	doc.text(isDe ? 'ZEITRAUM' : 'BILLING PERIOD', colPeriodX, tableTop + 5.6);
+	doc.text(isDe ? 'GESAMT (EUR)' : 'TOTAL (EUR)', colAmountX, tableTop + 5.6, { align: 'right' });
 
 	// Item Row
 	const rowHeight = 10;
@@ -240,13 +265,24 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFont('helvetica', 'normal');
 	doc.setFontSize(8.5);
 	doc.setTextColor(40, 40, 40);
-	doc.text(`${marketplaces} ${marketplaces === 1 ? 'Market' : 'Markets'} · ${quota.toLocaleString()} req/mo`, colAllowanceX, textY);
-	doc.text(cycleText.split(' ')[0], colPeriodX, textY);
+	const marketplacesLabel = marketplaces === 1 ? (isDe ? 'Marktplatz' : 'Market') : (isDe ? 'Marktplätze' : 'Markets');
+	const quotaLabel = isDe ? `${quota.toLocaleString('de-DE')} Anfr./Mo.` : `${quota.toLocaleString()} req/mo`;
+	doc.text(`${marketplaces} ${marketplacesLabel} - ${quotaLabel}`, colAllowanceX, textY);
+
+	const cycleShort = isDe
+		? cycleNum === 3
+			? 'Jährlich'
+			: cycleNum === 2
+			? 'Vierteljährlich'
+			: 'Monatlich'
+		: cycleText.split(' ')[0];
+	doc.text(cycleShort, colPeriodX, textY);
 
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(9.5);
 	doc.setTextColor(15, 23, 42);
-	doc.text(`€${price.toFixed(2)}`, colAmountX, textY, { align: 'right' });
+	const formattedPrice = isDe ? `€ ${price.toFixed(2).replace('.', ',')}` : `€${price.toFixed(2)}`;
+	doc.text(formattedPrice, colAmountX, textY, { align: 'right' });
 
 	// Row bottom line
 	const rowBottomY = rowY + rowHeight;
@@ -262,14 +298,14 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFont('helvetica', 'normal');
 	doc.setFontSize(9);
 	doc.setTextColor(80, 80, 80);
-	doc.text('Subtotal:', sumColLabel, summaryY);
+	doc.text(isDe ? 'Zwischensumme:' : 'Subtotal:', sumColLabel, summaryY);
 	doc.setTextColor(20, 20, 20);
-	doc.text(`€${price.toFixed(2)} EUR`, sumColVal, summaryY, { align: 'right' });
+	doc.text(`${formattedPrice} EUR`, sumColVal, summaryY, { align: 'right' });
 
 	doc.setTextColor(80, 80, 80);
-	doc.text('Tax / VAT (0%):', sumColLabel, summaryY + 5.5);
+	doc.text(isDe ? 'MwSt. (0%):' : 'Tax / VAT (0%):', sumColLabel, summaryY + 5.5);
 	doc.setTextColor(20, 20, 20);
-	doc.text('€0.00 EUR', sumColVal, summaryY + 5.5, { align: 'right' });
+	doc.text(isDe ? '€ 0,00 EUR' : '€0.00 EUR', sumColVal, summaryY + 5.5, { align: 'right' });
 
 	// Total Box
 	const totalBoxY = summaryY + 10;
@@ -281,22 +317,40 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(10);
 	doc.setTextColor(15, 23, 42);
-	doc.text('TOTAL PAID:', sumColLabel, totalBoxY + 6.5);
-	doc.text(`€${price.toFixed(2)} EUR`, sumColVal, totalBoxY + 6.5, { align: 'right' });
+	doc.text(isDe ? 'GESAMT BEZAHLT:' : 'TOTAL PAID:', sumColLabel, totalBoxY + 6.5);
+	doc.text(`${formattedPrice} EUR`, sumColVal, totalBoxY + 6.5, { align: 'right' });
 
 	// === 5. NOTES & TERMS ===
-	const notesY = rowBottomY + 12;
+	const notesY = rowBottomY + 8;
+	const maxNotesWidth = sumColLabel - leftMargin - 10; // 129 - 16 - 10 = 103mm
+
 	doc.setFont('helvetica', 'bold');
 	doc.setFontSize(8.5);
 	doc.setTextColor(70, 70, 70);
-	doc.text('NOTES & TERMS:', leftMargin, notesY);
+	doc.text(isDe ? 'HINWEISE & BEDINGUNGEN:' : 'NOTES & TERMS:', leftMargin, notesY);
 
 	doc.setFont('helvetica', 'normal');
-	doc.setFontSize(8);
+	doc.setFontSize(7.8);
 	doc.setTextColor(100, 100, 100);
-	doc.text('• This electronic receipt confirms full payment for the selected subscription period.', leftMargin, notesY + 5);
-	doc.text('• Review quota and marketplace limits renew automatically per your plan schedule.', leftMargin, notesY + 9.5);
-	doc.text('• For assistance, invoices or account inquiries, contact support@gravurtastisch.com.', leftMargin, notesY + 14);
+
+	const noteItems = [
+		isDe
+			? '- Dieser elektronische Beleg bestätigt die vollständige Zahlung für den ausgewählten Abonnementzeitraum.'
+			: '- This electronic receipt confirms full payment for the selected subscription period.',
+		isDe
+			? '- Das Bewertungskontingent und die Marktplatzlimits verlängern sich automatisch gemäß Ihrem Plan.'
+			: '- Review quota and marketplace limits renew automatically per your plan schedule.',
+		isDe
+			? '- Bei Fragen, Rechnungs- oder Kontonanliegen wenden Sie sich bitte an info@gravurtastisch.de.'
+			: '- For assistance, invoices or account inquiries, contact info@gravurtastisch.de.'
+	];
+
+	let currentNoteY = notesY + 4.8;
+	for (const note of noteItems) {
+		const lines = doc.splitTextToSize(note, maxNotesWidth);
+		doc.text(lines, leftMargin, currentNoteY);
+		currentNoteY += lines.length * 3.8 + 1.8;
+	}
 
 	// === 6. FOOTER ===
 	const footerY = 275;
@@ -307,11 +361,20 @@ export async function generateSellerInvoicePDF(user: User): Promise<void> {
 	doc.setFont('helvetica', 'normal');
 	doc.setFontSize(7.5);
 	doc.setTextColor(120, 120, 120);
-	doc.text('Gravurtastisch Platform · Automated Billing System', leftMargin, footerY + 5);
-	doc.text(`Generated on ${moment().format('DD MMM YYYY, HH:mm')}`, rightMargin, footerY + 5, { align: 'right' });
+	doc.text(
+		isDe ? 'Gravurtastisch-Plattform - Automatisiertes Abrechnungssystem' : 'Gravurtastisch Platform - Automated Billing System',
+		leftMargin,
+		footerY + 5
+	);
+	doc.text(
+		isDe ? `Erstellt am ${moment().format('DD.MM.YYYY, HH:mm')}` : `Generated on ${moment().format('DD MMM YYYY, HH:mm')}`,
+		rightMargin,
+		footerY + 5,
+		{ align: 'right' }
+	);
 
 	// Trigger download
 	const safeName = (user.name || 'seller').replace(/[^a-zA-Z0-9]/g, '_');
 	const safePlan = planName.replace(/[^a-zA-Z0-9]/g, '_');
-	doc.save(`Invoice_${safeName}_${safePlan}.pdf`);
+	doc.save(`${isDe ? 'Rechnung' : 'Invoice'}_${safeName}_${safePlan}.pdf`);
 }

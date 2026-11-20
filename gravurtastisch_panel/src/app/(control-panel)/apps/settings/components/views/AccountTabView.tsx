@@ -12,7 +12,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import TextField from '@mui/material/TextField';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import _ from 'lodash';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useMemo } from 'react';
 import { useProfile } from '../../api/hooks/account/useAccountSettings';
 import {
   useUpdateUser,
@@ -25,7 +25,7 @@ import { useSnackbar } from 'notistack';
 import { AccountSettingsSkeleton } from '@/components/skeletons/SettingsFormSkeleton';
 import useUser from '@auth/useUser';
 import usePermissions from '@/hooks/usePermissions';
-import { Paper, Chip, LinearProgress } from '@mui/material';
+import { Paper, Chip, LinearProgress, Tooltip } from '@mui/material';
 import moment from 'moment';
 import { generateSellerInvoicePDF } from '../../../users/utils/generateSellerInvoicePDF';
 import { getImageUrl } from '@/configs/env';
@@ -43,59 +43,65 @@ const PHONE_CHARS_REGEX = /^[+0-9\s()]+$/;
 /**
  * Form Validation Schema
  */
-const accountSchema = z.object({
-  name: z
-    .string({ required_error: 'Full name is required!' })
-    .trim()
-    .min(1, 'Full name is required!')
-    .min(2, 'Name must be at least 2 characters')
-    .max(60, 'Name must be at most 60 characters')
-    .regex(
-      NAME_REGEX,
-      'Name can only contain letters, spaces, hyphens, and apostrophes'
-    ),
-  businessName: z.string().optional().or(z.literal('')),
-  contact_no: z
-    .string({ required_error: 'Contact number is required!' })
-    .trim()
-    .min(1, 'Contact number is required!')
-    .max(20, 'Contact number cannot exceed 20 characters')
-    .regex(
-      PHONE_CHARS_REGEX,
-      'Contact number can only contain numbers, +, spaces, and parentheses'
-    )
-    .refine((val) => !val.includes('-'), {
-      message: 'Contact number cannot contain hyphens (-)',
-    })
-    .refine(
-      (val) => {
-        const digits = val.replace(/\D/g, '');
-        return digits.length >= 10;
-      },
-      {
-        message: 'Contact number must be at least 10 digits',
-      }
-    )
-    .refine(
-      (val) => {
-        const digits = val.replace(/\D/g, '');
-        return digits.length <= 20;
-      },
-      {
-        message: 'Contact number cannot exceed 20 digits',
-      }
-    ),
-  email: z
-    .string({ required_error: 'Email is required!' })
-    .trim()
-    .email('You must enter a valid email address')
-    .min(1, 'Email is required!'),
-});
+const getAccountSchema = (t: any) =>
+  z.object({
+    name: z
+      .string({ required_error: t('validation.fullNameRequired', 'Full name is required!') })
+      .trim()
+      .min(1, t('validation.fullNameRequired', 'Full name is required!'))
+      .min(2, t('validation.fullNameMin', 'Name must be at least 2 characters'))
+      .max(60, t('validation.fullNameMax', 'Name must be at most 60 characters'))
+      .regex(
+        NAME_REGEX,
+        t('validation.fullNamePattern', 'Name can only contain letters, spaces, hyphens, and apostrophes')
+      ),
+    businessName: z.string().optional().or(z.literal('')),
+    contact_no: z
+      .string({ required_error: t('validation.phoneRequired', 'Contact number is required!') })
+      .trim()
+      .min(1, t('validation.phoneRequired', 'Contact number is required!'))
+      .max(20, t('validation.phoneMax', 'Contact number cannot exceed 20 characters'))
+      .regex(
+        PHONE_CHARS_REGEX,
+        t('validation.phonePattern', 'Contact number can only contain numbers, +, spaces, and parentheses')
+      )
+      .refine((val) => !val.includes('-'), {
+        message: t('validation.phoneNoHyphens', 'Contact number cannot contain hyphens (-)'),
+      })
+      .refine(
+        (val) => {
+          const digits = val.replace(/\D/g, '');
+          return digits.length >= 10;
+        },
+        {
+          message: t('validation.phoneInvalid', 'Contact number must be at least 10 digits'),
+        }
+      )
+      .refine(
+        (val) => {
+          const digits = val.replace(/\D/g, '');
+          return digits.length <= 20;
+        },
+        {
+          message: t('validation.phoneMax', 'Contact number cannot exceed 20 digits'),
+        }
+      ),
+    email: z
+      .string({ required_error: t('validation.emailRequired', 'Email is required!') })
+      .trim()
+      .email(t('validation.emailInvalid', 'You must enter a valid email address'))
+      .min(1, t('validation.emailRequired', 'Email is required!')),
+  });
 
-type FormType = z.infer<typeof accountSchema>;
+type FormType = {
+  name: string;
+  businessName?: string;
+  contact_no: string;
+  email: string;
+};
 
 function AccountTabView() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [activeTab, setActiveTab] = useState(0);
   const { data: authUser } = useUser();
   const { canUpdate, scope } = usePermissions();
@@ -114,10 +120,12 @@ function AccountTabView() {
     !user?.isSuperAdmin &&
     user?.userType !== 'admin';
 
+  const schema = useMemo(() => getAccountSchema(t), [t]);
+
   const { control, handleSubmit, formState, reset, setError } = useForm<FormType>({
     defaultValues,
     mode: 'onChange',
-    resolver: zodResolver(accountSchema as any),
+    resolver: zodResolver(schema as any),
   });
 
   const { isValid, dirtyFields, errors } = formState;
@@ -361,13 +369,19 @@ function AccountTabView() {
       return;
     }
     try {
-      await generateSellerInvoicePDF(accountSettings.data);
-      enqueueSnackbar('Invoice PDF downloaded successfully!', {
+      const activeLang =
+        i18n.language ||
+        (typeof window !== 'undefined'
+          ? localStorage.getItem('panel_lng') || localStorage.getItem('i18nextLng')
+          : null) ||
+        'de';
+      await generateSellerInvoicePDF(accountSettings.data, activeLang);
+      enqueueSnackbar(t('account.invoiceDownloadedSuccess', 'Invoice PDF downloaded successfully!'), {
         variant: 'success',
         autoHideDuration: 2500,
       });
     } catch (err: any) {
-      enqueueSnackbar(err?.message || 'Failed to generate invoice PDF', {
+      enqueueSnackbar(err?.message || t('account.invoiceDownloadFailed', 'Failed to generate invoice PDF'), {
         variant: 'error',
         autoHideDuration: 2500,
       });
@@ -493,38 +507,46 @@ function AccountTabView() {
                       accept="image/png,image/jpeg,image/jpg,image/webp"
                       className="hidden"
                     />
-                    <Button
-                      type="button"
-                      variant="contained"
-                      color="primary"
-                      size="small"
-                      disabled={!canEdit || isUploadingAvatar || isDeletingAvatar}
-                      onClick={() => fileInputRef.current?.click()}
-                      className="normal-case font-semibold text-xs px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all"
-                      startIcon={
-                        <FuseSvgIcon size={16}>
-                          {isUploadingAvatar ? 'heroicons-outline:arrow-path' : 'lucide:upload'}
-                        </FuseSvgIcon>
-                      }
-                    >
-                      {isUploadingAvatar ? t('account.uploading', 'Uploading...') : t('account.uploadImage', 'Upload Image')}
-                    </Button>
+                    <Tooltip title={t('tooltips.uploadAvatar', 'Upload avatar image')} arrow>
+                      <span>
+                        <Button
+                          type="button"
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          disabled={!canEdit || isUploadingAvatar || isDeletingAvatar}
+                          onClick={() => fileInputRef.current?.click()}
+                          className="normal-case font-semibold text-xs px-4 py-2 rounded-lg shadow-sm hover:shadow-md transition-all"
+                          startIcon={
+                            <FuseSvgIcon size={16}>
+                              {isUploadingAvatar ? 'heroicons-outline:arrow-path' : 'lucide:upload'}
+                            </FuseSvgIcon>
+                          }
+                        >
+                          {isUploadingAvatar ? t('account.uploading', 'Uploading...') : t('account.uploadImage', 'Upload Image')}
+                        </Button>
+                      </span>
+                    </Tooltip>
 
-                    <Button
-                      type="button"
-                      variant="outlined"
-                      size="small"
-                      disabled={!canEdit || !userAvatar || isUploadingAvatar || isDeletingAvatar}
-                      onClick={handleDeleteAvatar}
-                      className="normal-case font-semibold text-xs px-3.5 py-2 rounded-lg border-red-200 dark:border-red-900/60 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 shadow-2xs transition-all disabled:opacity-50"
-                      startIcon={
-                        <FuseSvgIcon size={16} className="text-red-600 dark:text-red-400">
-                          lucide:trash-2
-                        </FuseSvgIcon>
-                      }
-                    >
-                      {isDeletingAvatar ? t('account.removing', 'Removing...') : t('account.remove', 'Remove')}
-                    </Button>
+                    <Tooltip title={t('tooltips.deleteAvatar', 'Delete avatar image')} arrow>
+                      <span>
+                        <Button
+                          type="button"
+                          variant="outlined"
+                          size="small"
+                          disabled={!canEdit || !userAvatar || isUploadingAvatar || isDeletingAvatar}
+                          onClick={handleDeleteAvatar}
+                          className="normal-case font-semibold text-xs px-3.5 py-2 rounded-lg border-red-200 dark:border-red-900/60 bg-white dark:bg-slate-900 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 shadow-2xs transition-all disabled:opacity-50"
+                          startIcon={
+                            <FuseSvgIcon size={16} className="text-red-600 dark:text-red-400">
+                              lucide:trash-2
+                            </FuseSvgIcon>
+                          }
+                        >
+                          {isDeletingAvatar ? t('account.removing', 'Removing...') : t('account.remove', 'Remove')}
+                        </Button>
+                      </span>
+                    </Tooltip>
                   </div>
                 </div>
               </div>
@@ -749,19 +771,23 @@ function AccountTabView() {
                 )}
               </div>
 
-              <Button
-                variant="contained"
-                disabled={!canEdit || _.isEmpty(dirtyFields) || !isValid || isPending}
-                type="submit"
-                className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all capitalize text-sm disabled:opacity-50 disabled:shadow-none"
-                startIcon={
-                  <FuseSvgIcon size={18}>
-                    {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
-                  </FuseSvgIcon>
-                }
-              >
-                {!canEdit ? 'Save Disabled' : isPending ? t('account.savingChanges', 'Saving changes...') : t('account.saveChanges', 'Save Changes')}
-              </Button>
+              <Tooltip title={t('tooltips.saveChanges', 'Save changes')} arrow>
+                <span>
+                  <Button
+                    variant="contained"
+                    disabled={!canEdit || _.isEmpty(dirtyFields) || !isValid || isPending}
+                    type="submit"
+                    className="w-full sm:w-auto bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-7 py-2.5 shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all capitalize text-sm disabled:opacity-50 disabled:shadow-none"
+                    startIcon={
+                      <FuseSvgIcon size={18}>
+                        {isPending ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+                      </FuseSvgIcon>
+                    }
+                  >
+                    {!canEdit ? 'Save Disabled' : isPending ? t('account.savingChanges', 'Saving changes...') : t('account.saveChanges', 'Save Changes')}
+                  </Button>
+                </span>
+              </Tooltip>
             </div>
           </form>
         </Paper>
@@ -951,14 +977,16 @@ function AccountTabView() {
                 </div>
               </div>
 
-              <Button
-                variant="outlined"
-                onClick={handleDownloadInvoice}
-                className="shrink-0 font-semibold rounded-xl px-5 py-2.5 text-xs sm:text-sm border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:bg-white dark:hover:bg-slate-800 shadow-2xs capitalize"
-                startIcon={<FuseSvgIcon size={18}>lucide:download</FuseSvgIcon>}
-              >
-                {t('account.downloadInvoicePdf', 'Download Invoice (PDF)')}
-              </Button>
+              <Tooltip title={t('tooltips.downloadInvoice', 'Download invoice PDF')} arrow>
+                <Button
+                  variant="outlined"
+                  onClick={handleDownloadInvoice}
+                  className="shrink-0 font-semibold rounded-xl px-5 py-2.5 text-xs sm:text-sm border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-100 hover:bg-white dark:hover:bg-slate-800 shadow-2xs capitalize"
+                  startIcon={<FuseSvgIcon size={18}>lucide:download</FuseSvgIcon>}
+                >
+                  {t('account.downloadInvoicePdf', 'Download Invoice (PDF)')}
+                </Button>
+              </Tooltip>
             </div>
           </div>
         </Paper>

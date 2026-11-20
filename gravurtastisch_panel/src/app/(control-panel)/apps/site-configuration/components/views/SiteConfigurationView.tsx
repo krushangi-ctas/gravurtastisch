@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useForm, Controller as HookFormController } from 'react-hook-form';
 
@@ -54,130 +54,156 @@ const isValidPostalCode = (val?: string) => {
 	return /^[A-Za-z0-9\s-]{3,20}$/.test(val.trim());
 };
 
-const siteConfigSchema = z.object({
-	company: z.object({
-		name: z
-			.string({ required_error: 'Company name is required!' })
-			.trim()
-			.min(2, 'Company name must be at least 2 characters')
-			.max(100, 'Company name must not exceed 100 characters'),
-		website: z
-			.string()
-			.max(150, 'Website URL must not exceed 150 characters')
-			.refine(isValidUrl, {
-				message: 'Please enter a valid website URL (e.g. https://example.com)'
-			})
-			.optional()
-			.or(z.literal('')),
-		tagline: z
-			.string()
-			.max(150, 'Tagline must not exceed 150 characters')
-			.optional()
-			.or(z.literal('')),
-		about: z
-			.string()
-			.max(1000, 'About description must not exceed 1000 characters')
-			.optional()
-			.or(z.literal('')),
-		copyright_text: z
-			.string()
-			.max(150, 'Copyright text must not exceed 150 characters')
-			.optional()
-			.or(z.literal(''))
-	}),
-	contact: z.object({
-		email: z
-			.string()
-			.max(100, 'Email address must not exceed 100 characters')
-			.refine(isValidEmail, {
-				message: 'Please enter a valid email address (e.g. info@example.com)'
-			})
-			.optional()
-			.or(z.literal('')),
-		phone: z
-			.string()
-			.max(20, 'Phone number must not exceed 20 characters')
-			.refine(isValidPhone, {
-				message: 'Please enter a valid phone number (10 to 20 digits, +, spaces, hyphens only)'
-			})
-			.optional()
-			.or(z.literal('')),
-		address: z
-			.string()
-			.max(255, 'Street address must not exceed 255 characters')
-			.optional()
-			.or(z.literal('')),
-		city: z
-			.string()
-			.max(100, 'City must not exceed 100 characters')
-			.optional()
-			.or(z.literal('')),
-		state: z
-			.string()
-			.max(100, 'State/Province must not exceed 100 characters')
-			.optional()
-			.or(z.literal('')),
-		country: z
-			.string()
-			.max(100, 'Country must not exceed 100 characters')
-			.optional()
-			.or(z.literal('')),
-		postal_code: z
-			.string()
-			.max(20, 'Postal code must not exceed 20 characters')
-			.refine(isValidPostalCode, {
-				message: 'Please enter a valid postal/ZIP code (3-20 letters/numbers)'
-			})
-			.optional()
-			.or(z.literal('')),
-		working_hours: z
-			.string()
-			.max(100, 'Working hours must not exceed 100 characters')
-			.optional()
-			.or(z.literal('')),
-		timezone: z
-			.string()
-			.max(60, 'Timezone must not exceed 60 characters')
-			.optional()
-			.or(z.literal(''))
-	}),
-	social_links: z.object({
-		facebook: z
-			.string()
-			.max(200, 'Facebook URL must not exceed 200 characters')
-			.refine(isValidUrl, {
-				message: 'Please enter a valid Facebook URL (e.g. https://facebook.com/page)'
-			})
-			.optional()
-			.or(z.literal('')),
-		instagram: z
-			.string()
-			.max(200, 'Instagram URL must not exceed 200 characters')
-			.refine(isValidUrl, {
-				message: 'Please enter a valid Instagram URL (e.g. https://instagram.com/profile)'
-			})
-			.optional()
-			.or(z.literal('')),
-		linkedin: z
-			.string()
-			.max(200, 'LinkedIn URL must not exceed 200 characters')
-			.refine(isValidUrl, {
-				message: 'Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/profile)'
-			})
-			.optional()
-			.or(z.literal('')),
-		youtube: z
-			.string()
-			.max(200, 'YouTube URL must not exceed 200 characters')
-			.refine(isValidUrl, {
-				message: 'Please enter a valid YouTube URL (e.g. https://youtube.com/@channel)'
-			})
-			.optional()
-			.or(z.literal(''))
-	})
-});
+const getSiteConfigSchema = (t: any) =>
+	z.object({
+		company: z.object({
+			name: z
+				.string({ required_error: t('validation.companyNameRequired', 'Company name is required!') })
+				.trim()
+				.min(2, t('validation.companyNameMin', 'Company name must be at least 2 characters'))
+				.max(100, t('validation.companyNameMax', 'Company name must not exceed 100 characters')),
+			website: z
+				.string()
+				.max(150, 'Website URL must not exceed 150 characters')
+				.refine(isValidUrl, {
+					message: t('validation.urlInvalid', 'Please enter a valid website URL (e.g. https://example.com)')
+				})
+				.optional()
+				.or(z.literal('')),
+			tagline: z
+				.string()
+				.max(150, 'Tagline must not exceed 150 characters')
+				.optional()
+				.or(z.literal('')),
+			about: z
+				.string()
+				.max(1000, 'About description must not exceed 1000 characters')
+				.optional()
+				.or(z.literal('')),
+			copyright_text: z
+				.string()
+				.max(150, 'Copyright text must not exceed 150 characters')
+				.optional()
+				.or(z.literal(''))
+		}),
+		contact: z.object({
+			email: z
+				.string()
+				.max(100, 'Email address must not exceed 100 characters')
+				.refine(isValidEmail, {
+					message: t('validation.emailInvalid', 'Please enter a valid email address (e.g. info@example.com)')
+				})
+				.optional()
+				.or(z.literal('')),
+			phone: z
+				.string()
+				.max(20, 'Phone number must not exceed 20 characters')
+				.refine(isValidPhone, {
+					message: t('validation.phoneInvalid', 'Please enter a valid phone number (10 to 20 digits, +, spaces, hyphens)')
+				})
+				.optional()
+				.or(z.literal('')),
+			address: z
+				.string()
+				.max(255, 'Street address must not exceed 255 characters')
+				.optional()
+				.or(z.literal('')),
+			city: z
+				.string()
+				.max(100, 'City must not exceed 100 characters')
+				.optional()
+				.or(z.literal('')),
+			state: z
+				.string()
+				.max(100, 'State/Province must not exceed 100 characters')
+				.optional()
+				.or(z.literal('')),
+			country: z
+				.string()
+				.max(100, 'Country must not exceed 100 characters')
+				.optional()
+				.or(z.literal('')),
+			postal_code: z
+				.string()
+				.max(20, 'Postal code must not exceed 20 characters')
+				.refine(isValidPostalCode, {
+					message: 'Please enter a valid postal/ZIP code (3-20 letters/numbers)'
+				})
+				.optional()
+				.or(z.literal('')),
+			working_hours: z
+				.string()
+				.max(100, 'Working hours must not exceed 100 characters')
+				.optional()
+				.or(z.literal('')),
+			timezone: z
+				.string()
+				.max(60, 'Timezone must not exceed 60 characters')
+				.optional()
+				.or(z.literal(''))
+		}),
+		social_links: z.object({
+			facebook: z
+				.string()
+				.max(200, 'Facebook URL must not exceed 200 characters')
+				.refine(isValidUrl, {
+					message: t('validation.urlInvalid', 'Please enter a valid Facebook URL (e.g. https://facebook.com/page)')
+				})
+				.optional()
+				.or(z.literal('')),
+			instagram: z
+				.string()
+				.max(200, 'Instagram URL must not exceed 200 characters')
+				.refine(isValidUrl, {
+					message: t('validation.urlInvalid', 'Please enter a valid Instagram URL (e.g. https://instagram.com/profile)')
+				})
+				.optional()
+				.or(z.literal('')),
+			linkedin: z
+				.string()
+				.max(200, 'LinkedIn URL must not exceed 200 characters')
+				.refine(isValidUrl, {
+					message: t('validation.urlInvalid', 'Please enter a valid LinkedIn URL (e.g. https://linkedin.com/in/profile)')
+				})
+				.optional()
+				.or(z.literal('')),
+			youtube: z
+				.string()
+				.max(200, 'YouTube URL must not exceed 200 characters')
+				.refine(isValidUrl, {
+					message: t('validation.urlInvalid', 'Please enter a valid YouTube URL (e.g. https://youtube.com/@channel)')
+				})
+				.optional()
+				.or(z.literal(''))
+		})
+	});
 
-export type SiteConfigFormType = z.infer<typeof siteConfigSchema>;
+export type SiteConfigFormType = {
+	company: {
+		name: string;
+		website?: string;
+		tagline?: string;
+		about?: string;
+		copyright_text?: string;
+	};
+	contact: {
+		email?: string;
+		phone?: string;
+		address?: string;
+		city?: string;
+		state?: string;
+		country?: string;
+		postal_code?: string;
+		working_hours?: string;
+		timezone?: string;
+	};
+	social_links: {
+		facebook?: string;
+		instagram?: string;
+		linkedin?: string;
+		youtube?: string;
+	};
+};
 
 const defaultValues: SiteConfigFormType = {
 	company: {
@@ -230,6 +256,8 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 		isRefetching
 	} = useWebsiteConfiguration(hasAccess);
 	const updateMutation = useUpdateWebsiteConfiguration();
+
+	const siteConfigSchema = useMemo(() => getSiteConfigSchema(t), [t]);
 
 	const {
 		control,
@@ -331,7 +359,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 
 	const actionButtons = (
 		<div className="flex items-center gap-2 shrink-0">
-			<Tooltip title="Reload configuration" arrow>
+			<Tooltip title={t('tooltips.reloadConfig', 'Reload configuration')} arrow>
 				<button
 					type="button"
 					onClick={() => refetch()}
@@ -627,7 +655,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. info@gravurtastisch.com"
+												placeholder="e.g. info@gravurtastisch.de"
 												inputProps={{ maxLength: 100 }}
 												error={Boolean(errors.contact?.email)}
 												helperText={errors.contact?.email?.message}
@@ -660,7 +688,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. +91 79487893409"
+												placeholder="e.g. 017661055576"
 												inputProps={{ maxLength: 20 }}
 												error={Boolean(errors.contact?.phone)}
 												helperText={errors.contact?.phone?.message}
@@ -1054,34 +1082,42 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 						</Typography>
 
 						<div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
-							<button
-								type="button"
-								onClick={handleReset}
-								disabled={!canMutate || !isDirty || updateMutation.isPending}
-								style={{ height: '34px' }}
-								className="w-full sm:w-auto px-4 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
-							>
-								{t('siteConfig.discardChanges', 'Discard Changes')}
-							</button>
-							<button
-								type="submit"
-								disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
-								style={{ height: '34px' }}
-								className="w-full sm:w-auto px-5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border-0"
-							>
-								{updateMutation.isPending ? (
-									<CircularProgress size={14} color="inherit" />
-								) : (
-									<FuseSvgIcon size={15} className="text-white">
-										lucide:save
-									</FuseSvgIcon>
-								)}
+							<Tooltip title={t('tooltips.discardChanges', 'Discard all changes')} arrow>
 								<span>
-									{updateMutation.isPending
-										? t('siteConfig.saving', 'Saving...')
-										: t('siteConfig.saveConfiguration', 'Save Configuration')}
+									<button
+										type="button"
+										onClick={handleReset}
+										disabled={!canMutate || !isDirty || updateMutation.isPending}
+										style={{ height: '34px' }}
+										className="w-full sm:w-auto px-4 bg-transparent hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs sm:text-sm font-semibold rounded-lg border border-slate-300 dark:border-slate-700 transition-all cursor-pointer flex items-center justify-center gap-1.5 disabled:opacity-40 disabled:cursor-not-allowed"
+									>
+										{t('siteConfig.discardChanges', 'Discard Changes')}
+									</button>
 								</span>
-							</button>
+							</Tooltip>
+							<Tooltip title={t('tooltips.saveChanges', 'Save changes')} arrow>
+								<span>
+									<button
+										type="submit"
+										disabled={!canMutate || !isDirty || !isValid || updateMutation.isPending}
+										style={{ height: '34px' }}
+										className="w-full sm:w-auto px-5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed border-0"
+									>
+										{updateMutation.isPending ? (
+											<CircularProgress size={14} color="inherit" />
+										) : (
+											<FuseSvgIcon size={15} className="text-white">
+												lucide:save
+											</FuseSvgIcon>
+										)}
+										<span>
+											{updateMutation.isPending
+												? t('siteConfig.saving', 'Saving...')
+												: t('siteConfig.saveConfiguration', 'Save Configuration')}
+										</span>
+									</button>
+								</span>
+							</Tooltip>
 						</div>
 					</Paper>
 				</form>

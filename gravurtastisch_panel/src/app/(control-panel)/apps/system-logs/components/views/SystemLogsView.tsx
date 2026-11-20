@@ -69,6 +69,7 @@ const Root = styled(FusePageCarded)(() => ({
 }));
 
 function TableCopyButton({ text, tooltip = 'Copy' }: { text: string; tooltip?: string }) {
+	const { t } = useTranslation();
 	const [copied, setCopied] = useState(false);
 
 	const handleCopy = (e: React.MouseEvent) => {
@@ -80,7 +81,7 @@ function TableCopyButton({ text, tooltip = 'Copy' }: { text: string; tooltip?: s
 	};
 
 	return (
-		<Tooltip title={copied ? 'Copied!' : tooltip} arrow>
+		<Tooltip title={copied ? t('tooltips.copied', 'Copied!') : (tooltip === 'Copy' ? t('tooltips.copy', 'Copy') : tooltip)} arrow>
 			<button
 				type="button"
 				onClick={handleCopy}
@@ -976,7 +977,7 @@ export default function SystemLogsView() {
 						pageCount={totalPages}
 						renderRowActions={({ row }: { row: MRT_Row<SystemLog> }) => (
 							<div className="flex items-center justify-center">
-								<Tooltip title="View Log Details" arrow>
+								<Tooltip title={t('tooltips.viewLogDetails', 'View Log Details')} arrow>
 									<IconButton
 										size="small"
 										onClick={() => handleViewDetails(row.original)}

@@ -6,7 +6,8 @@ import {
 	IconButton,
 	Button,
 	Typography,
-	Paper
+	Paper,
+	Tooltip
 } from '@mui/material';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import moment from 'moment';
@@ -385,13 +386,16 @@ export default function SystemLogDetailsDialog({
 					</div>
 				</div>
 
-				<IconButton
-					size="small"
-					onClick={onClose}
-					className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
-				>
-					<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-				</IconButton>
+				<Tooltip title={t('tooltips.close', 'Close')} arrow>
+					<IconButton
+						size="small"
+						onClick={onClose}
+						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
+						aria-label={t('common.close', 'Close')}
+					>
+						<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+					</IconButton>
+				</Tooltip>
 			</div>
 
 			{/* Dialog Body */}
@@ -576,21 +580,23 @@ export default function SystemLogDetailsDialog({
 					py: 1.5
 				}}
 			>
-				<Button
-					variant="contained"
-					onClick={onClose}
-					className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
-					sx={{
-						bgcolor: 'primary.main',
-						'&:hover': { bgcolor: 'primary.dark' },
-						borderRadius: '12px',
-						textTransform: 'capitalize',
-						px: { xs: 2.5, sm: 3.5 },
-						py: 1
-					}}
-				>
-					{t('systemLogs.close', 'Close')}
-				</Button>
+				<Tooltip title={t('tooltips.close', 'Close')} arrow>
+					<Button
+						variant="contained"
+						onClick={onClose}
+						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm"
+						sx={{
+							bgcolor: 'primary.main',
+							'&:hover': { bgcolor: 'primary.dark' },
+							borderRadius: '12px',
+							textTransform: 'capitalize',
+							px: { xs: 2.5, sm: 3.5 },
+							py: 1
+						}}
+					>
+						{t('systemLogs.close', 'Close')}
+					</Button>
+				</Tooltip>
 			</DialogActions>
 		</Dialog>
 	);

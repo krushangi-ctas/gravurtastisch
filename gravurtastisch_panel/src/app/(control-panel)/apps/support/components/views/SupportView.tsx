@@ -197,7 +197,7 @@ function SupportContent({
 									{val}
 								</Typography>
 							</Tooltip>
-							<Tooltip title="Copy Email" arrow>
+							<Tooltip title={t('tooltips.copyEmail', 'Copy Email')} arrow>
 								<button
 									type="button"
 									onClick={(e) => {
@@ -489,7 +489,7 @@ function SupportContent({
 						const request = row.original;
 						const isResolved = request.status === 'resolved';
 						return (
-							<Tooltip title={isResolved ? 'Mark as pending' : 'Mark as resolved'} arrow>
+							<Tooltip title={isResolved ? t('tooltips.markPending', 'Mark as pending') : t('tooltips.markResolved', 'Mark as resolved')} arrow>
 								<IconButton
 									size="small"
 									onClick={() =>
@@ -544,33 +544,40 @@ function SupportContent({
 							</p>
 						</div>
 					</div>
-					<IconButton
-						size="small"
-						onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
-						className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
-					>
-						<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.close', 'Close')} arrow>
+						<IconButton
+							size="small"
+							onClick={() => !isActionLoading && setConfirmState((prev) => ({ ...prev, open: false }))}
+							className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
+							aria-label={t('common.close', 'Close')}
+						>
+							<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 				</div>
 
 				<div className="bg-slate-50/70 px-6 py-3.5 flex items-center justify-end gap-3 border-t border-slate-100">
-					<button
-						type="button"
-						onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
-						disabled={isActionLoading}
-						className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
-					>
-						{t('confirm.cancel', 'Cancel')}
-					</button>
-					<button
-						type="button"
-						onClick={handleConfirmAction}
-						disabled={isActionLoading}
-						className="h-9 px-5 rounded-lg bg-primary-800 hover:bg-primary-900 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5"
-					>
-						{isActionLoading && <CircularProgress size={14} color="inherit" />}
-						<span>{t('confirm.changeStatus', 'Change Status')}</span>
-					</button>
+					<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+						<button
+							type="button"
+							onClick={() => setConfirmState((prev) => ({ ...prev, open: false }))}
+							disabled={isActionLoading}
+							className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+						>
+							{t('confirm.cancel', 'Cancel')}
+						</button>
+					</Tooltip>
+					<Tooltip title={t('tooltips.confirm', 'Confirm')} arrow>
+						<button
+							type="button"
+							onClick={handleConfirmAction}
+							disabled={isActionLoading}
+							className="h-9 px-5 rounded-lg bg-primary-800 hover:bg-primary-900 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 disabled:opacity-50"
+						>
+							{isActionLoading && <CircularProgress size={14} color="inherit" />}
+							<span>{t('confirm.changeStatus', 'Change Status')}</span>
+						</button>
+					</Tooltip>
 				</div>
 			</Dialog>
 		</>

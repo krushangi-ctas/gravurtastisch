@@ -13,7 +13,8 @@ import {
 	Switch,
 	FormControlLabel,
 	CircularProgress,
-	Chip
+	Chip,
+	Tooltip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -182,13 +183,16 @@ export default function ModuleDialog({
 							</h3>
 						</div>
 					</div>
-					<button
-						type="button"
-						onClick={onClose}
-						className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-					>
-						<FuseSvgIcon size={16}>lucide:x</FuseSvgIcon>
-					</button>
+					<Tooltip title={t('tooltips.close', 'Close')} arrow>
+						<button
+							type="button"
+							onClick={onClose}
+							className="p-1 rounded-md text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+							aria-label={t('common.close', 'Close')}
+						>
+							<FuseSvgIcon size={16}>lucide:x</FuseSvgIcon>
+						</button>
+					</Tooltip>
 				</DialogTitle>
 
 				<DialogContent className="pt-5 space-y-4">
@@ -196,9 +200,9 @@ export default function ModuleDialog({
 						name="title"
 						control={control}
 						rules={{
-							required: 'Title is required.',
+							required: t('validation.titleRequired', 'Title is required.'),
 							validate: (val) =>
-								Boolean(val && val.trim().length > 0) || 'Title is required.'
+								Boolean(val && val.trim().length > 0) || t('validation.titleRequired', 'Title is required.')
 						}}
 						render={({ field }) => (
 							<TextField
@@ -327,27 +331,35 @@ export default function ModuleDialog({
 				</DialogContent>
 
 				<DialogActions className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
-					<Button
-						onClick={onClose}
-						disabled={isPending}
-						className="text-slate-600 hover:bg-slate-100"
-					>
-						{t('confirm.cancel', 'Cancel')}
-					</Button>
-					<Button
-						type="submit"
-						variant="contained"
-						disabled={isPending || !userCanSave}
-						className="bg-primary-500 hover:bg-primary-600 text-white px-5 shadow-sm"
-					>
-						{isPending ? (
-							<CircularProgress size={18} className="text-white" />
-						) : isEditing ? (
-							t('confirm.saveChanges', 'Save Changes')
-						) : (
-							t('confirm.createModule', 'Create Module')
-						)}
-					</Button>
+					<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+						<span>
+							<Button
+								onClick={onClose}
+								disabled={isPending}
+								className="text-slate-600 hover:bg-slate-100"
+							>
+								{t('confirm.cancel', 'Cancel')}
+							</Button>
+						</span>
+					</Tooltip>
+					<Tooltip title={isEditing ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.save', 'Save')} arrow>
+						<span>
+							<Button
+								type="submit"
+								variant="contained"
+								disabled={isPending || !userCanSave}
+								className="bg-primary-500 hover:bg-primary-600 text-white px-5 shadow-sm"
+							>
+								{isPending ? (
+									<CircularProgress size={18} className="text-white" />
+								) : isEditing ? (
+									t('confirm.saveChanges', 'Save Changes')
+								) : (
+									t('confirm.createModule', 'Create Module')
+								)}
+							</Button>
+						</span>
+					</Tooltip>
 				</DialogActions>
 			</form>
 		</Dialog>

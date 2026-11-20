@@ -12,7 +12,8 @@ import {
 	MenuItem,
 	Switch,
 	Paper,
-	Chip
+	Chip,
+	Tooltip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -86,45 +87,45 @@ export default function PlanFormView() {
 
 		const trimmedName = name.trim();
 		if (!trimmedName) {
-			newErrors.name = 'Plan Name is required!';
+			newErrors.name = t('validation.planNameRequired', 'Plan Name is required!');
 		} else if (trimmedName.length < 2) {
-			newErrors.name = 'Plan Name must be at least 2 characters';
+			newErrors.name = t('validation.planNameMin', 'Plan Name must be at least 2 characters');
 		} else if (trimmedName.length > 100) {
-			newErrors.name = 'Plan Name must not exceed 100 characters';
+			newErrors.name = t('validation.planNameMax', 'Plan Name must not exceed 100 characters');
 		}
 
 		if (price === '' || price === null || price === undefined) {
-			newErrors.price = 'Price is required!';
+			newErrors.price = t('validation.priceRequired', 'Price is required!');
 		} else if (isNaN(Number(price)) || Number(price) <= 0) {
-			newErrors.price = 'Price must be greater than 0!';
+			newErrors.price = t('validation.pricePositive', 'Price must be greater than 0!');
 		} else if (Number(price) > 9999999) {
-			newErrors.price = 'Price cannot exceed 9,999,999';
+			newErrors.price = t('validation.priceMax', 'Price cannot exceed 9,999,999');
 		}
 
 		if (marketplace === '' || marketplace === null || marketplace === undefined) {
-			newErrors.marketplace = 'Marketplaces is required!';
+			newErrors.marketplace = t('validation.marketplacesRequired', 'Marketplaces is required!');
 		} else if (isNaN(Number(marketplace)) || Number(marketplace) <= 0) {
-			newErrors.marketplace = 'Marketplaces must be greater than 0!';
+			newErrors.marketplace = t('validation.marketplacesPositive', 'Marketplaces must be greater than 0!');
 		} else if (!Number.isInteger(Number(marketplace))) {
-			newErrors.marketplace = 'Please enter a valid whole number';
+			newErrors.marketplace = t('validation.marketplacesInteger', 'Please enter a valid whole number');
 		} else if (Number(marketplace) > 999) {
-			newErrors.marketplace = 'Marketplaces cannot exceed 999';
+			newErrors.marketplace = t('validation.marketplacesMax', 'Marketplaces cannot exceed 999');
 		}
 
 		if (requestQuota === '' || requestQuota === null || requestQuota === undefined) {
-			newErrors.requestQuota = 'Request Quota is required!';
+			newErrors.requestQuota = t('validation.quotaRequired', 'Request Quota is required!');
 		} else if (isNaN(Number(requestQuota)) || Number(requestQuota) <= 0) {
-			newErrors.requestQuota = 'Request Quota must be greater than 0!';
+			newErrors.requestQuota = t('validation.quotaPositive', 'Request Quota must be greater than 0!');
 		} else if (!Number.isInteger(Number(requestQuota))) {
-			newErrors.requestQuota = 'Please enter a valid whole number';
+			newErrors.requestQuota = t('validation.quotaInteger', 'Please enter a valid whole number');
 		} else if (Number(requestQuota) > 9999999) {
-			newErrors.requestQuota = 'Request Quota cannot exceed 9,999,999';
+			newErrors.requestQuota = t('validation.quotaMax', 'Request Quota cannot exceed 9,999,999');
 		}
 
 		if (expireAt) {
 			const todayStr = moment().format('YYYY-MM-DD');
 			if (expireAt < todayStr) {
-				newErrors.expireAt = 'Expiry date must be a future date';
+				newErrors.expireAt = t('validation.expiryFuture', 'Expiry date must be a future date');
 			}
 		}
 
@@ -196,15 +197,16 @@ export default function PlanFormView() {
 			{/* Consistent Sticky Top Header (offset by top-12 to stick directly below the 48px top toolbar) */}
 			<div className="sticky top-12 z-20 w-full bg-white/95 dark:bg-slate-900/95 text-slate-900 dark:text-white px-4 sm:px-6 md:px-8 lg:px-10 py-2.5 sm:py-3 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-md">
 				<div className="flex items-center gap-2.5 sm:gap-3">
-					<IconButton
-						onClick={() => navigate('/plans')}
-						className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0"
-						size="small"
-						title="Back to Plans"
-						aria-label="Back to Plans"
-					>
-						<FuseSvgIcon size={20}>heroicons-outline:arrow-left</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.back', 'Back')} arrow>
+						<IconButton
+							onClick={() => navigate('/plans')}
+							className="text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 p-1 shrink-0"
+							size="small"
+							aria-label={t('tooltips.back', 'Back')}
+						>
+							<FuseSvgIcon size={20}>heroicons-outline:arrow-left</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 
 					<div className="flex items-center justify-center w-9 h-9 rounded-xl bg-primary/10 text-primary shrink-0">
 						<FuseSvgIcon size={20} className="text-primary">
@@ -579,37 +581,45 @@ export default function PlanFormView() {
 					</div>
 
 					<div className="flex items-center gap-3 w-full sm:w-auto justify-end">
-						<Button
-							variant="outlined"
-							color="inherit"
-							onClick={() => navigate('/plans')}
-							disabled={isPending}
-							className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
-						>
-							{t('plan.cancel', 'Cancel')}
-						</Button>
-						<Button
-							variant="contained"
-							color="primary"
-							onClick={() => handleSubmit()}
-							disabled={isPending}
-							startIcon={
-								<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+						<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+							<span>
+								<Button
+									variant="outlined"
+									color="inherit"
+									onClick={() => navigate('/plans')}
+									disabled={isPending}
+									className="text-slate-700 dark:text-slate-300 border-slate-300 dark:border-slate-700 normal-case px-5 py-2 font-medium"
+								>
+									{t('plan.cancel', 'Cancel')}
+								</Button>
+							</span>
+						</Tooltip>
+						<Tooltip title={isEdit ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.addPlan', 'Add Plan')} arrow>
+							<span>
+								<Button
+									variant="contained"
+									color="primary"
+									onClick={() => handleSubmit()}
+									disabled={isPending}
+									startIcon={
+										<FuseSvgIcon size={18} className={isPending ? 'animate-spin' : ''}>
+											{isPending
+												? 'heroicons-outline:arrow-path'
+												: isEdit
+													? 'heroicons-outline:check'
+													: 'heroicons-outline:plus'}
+										</FuseSvgIcon>
+									}
+									className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
+								>
 									{isPending
-										? 'heroicons-outline:arrow-path'
+										? (isEdit ? t('plan.updatingPlan', 'Updating Plan...') : t('plan.creatingPlan', 'Creating Plan...'))
 										: isEdit
-											? 'heroicons-outline:check'
-											: 'heroicons-outline:plus'}
-								</FuseSvgIcon>
-							}
-							className="normal-case px-6 py-2 font-semibold shadow-md shadow-primary/20 hover:shadow-primary/30"
-						>
-							{isPending
-								? (isEdit ? t('plan.updatingPlan', 'Updating Plan...') : t('plan.creatingPlan', 'Creating Plan...'))
-								: isEdit
-									? t('plan.saveChanges', 'Save Changes')
-									: t('plan.createPlan', 'Create Plan')}
-						</Button>
+											? t('plan.saveChanges', 'Save Changes')
+											: t('plan.createPlan', 'Create Plan')}
+								</Button>
+							</span>
+						</Tooltip>
 					</div>
 				</div>
 			</div>

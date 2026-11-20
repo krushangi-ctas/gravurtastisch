@@ -421,7 +421,7 @@ function OrdersTable({
 
           if (isSent) {
             return (
-              <Tooltip title="Solicitation request sent successfully" arrow>
+              <Tooltip title={t('tooltips.solicitationSent', 'Solicitation request sent successfully')} arrow>
                 <Box
                   sx={{
                     display: 'inline-flex',
@@ -450,7 +450,7 @@ function OrdersTable({
 
           if (isNeedToSend && !isSent) {
             return (
-              <Tooltip title={comment ? comment : 'Waiting while order is processed'} arrow>
+              <Tooltip title={comment ? comment : t('tooltips.waitingProcessed', 'Waiting while order is processed')} arrow>
                 <Box
                   sx={{
                     display: 'inline-flex',
@@ -484,7 +484,7 @@ function OrdersTable({
           }
 
           return (
-            <Tooltip title="Send Solicitation Request" arrow>
+            <Tooltip title={t('tooltips.sendSolicitation', 'Send Solicitation Request')} arrow>
               <Button
                 key="feedback"
                 size="small"
@@ -648,7 +648,7 @@ function OrdersTable({
               {(isGift || isTransparency) && (
                 <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3, flexShrink: 0 }}>
                   {isGift && (
-                    <Tooltip title="Gift order" arrow>
+                    <Tooltip title={t('tooltips.giftOrder', 'Gift order')} arrow>
                       <Chip
                         icon={<FuseSvgIcon size={11}>heroicons-outline:gift</FuseSvgIcon>}
                         label="Gift"
@@ -666,7 +666,7 @@ function OrdersTable({
                     </Tooltip>
                   )}
                   {isTransparency && (
-                    <Tooltip title="Amazon Transparency protected" arrow>
+                    <Tooltip title={t('tooltips.transparencyProtected', 'Amazon Transparency protected')} arrow>
                       <Chip
                         icon={<FuseSvgIcon size={11}>heroicons-outline:shield-check</FuseSvgIcon>}
                         label="Transparency"

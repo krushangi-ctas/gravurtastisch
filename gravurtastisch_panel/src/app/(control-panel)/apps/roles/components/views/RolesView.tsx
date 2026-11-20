@@ -138,22 +138,22 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 
 		const trimmedName = nameVal.trim();
 		if (!trimmedName) {
-			errs.roleName = 'Role name is required!';
+			errs.roleName = t('validation.roleNameRequired', 'Role name is required!');
 		} else if (trimmedName.length < 2) {
-			errs.roleName = 'Role name must be at least 2 characters.';
+			errs.roleName = t('validation.roleNameMin', 'Role name must be at least 2 characters.');
 		} else if (trimmedName.length > 60) {
-			errs.roleName = 'Role name cannot exceed 60 characters.';
+			errs.roleName = t('validation.roleNameMax', 'Role name cannot exceed 60 characters.');
 		}
 
 		if (descVal.length > 255) {
-			errs.description = 'Description cannot exceed 255 characters.';
+			errs.description = t('validation.roleDescMax', 'Description cannot exceed 255 characters.');
 		}
 
 		const hasAnyPermission = Object.values(matrixVal).some(
 			(flags) => flags.canView || flags.canCreate || flags.canUpdate || flags.canDelete
 		);
 		if (!hasAnyPermission) {
-			errs.permissions = 'Please select at least one permission for this role.';
+			errs.permissions = t('validation.rolePermsRequired', 'Please select at least one permission for this role.');
 		}
 
 		return errs;
@@ -540,17 +540,19 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 
 	const canCreateRole = canCreate('roles');
 	const actionButtons = canCreateRole ? (
-		<button
-			type="button"
-			onClick={openCreate}
-			style={{ height: '36px' }}
-			className="h-[36px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
-		>
-			<FuseSvgIcon size={16} className="text-white">
-				heroicons-outline:plus
-			</FuseSvgIcon>
-			<span>{t('role.addRole', 'Add Role')}</span>
-		</button>
+		<Tooltip title={t('tooltips.addRole', 'Add Role')} arrow>
+			<button
+				type="button"
+				onClick={openCreate}
+				style={{ height: '36px' }}
+				className="h-[36px] flex-1 sm:flex-initial px-3.5 bg-primary hover:bg-primary-dark text-white text-xs sm:text-sm font-semibold rounded-lg transition-all shadow-xs cursor-pointer flex items-center justify-center gap-1.5 shrink-0 border-0"
+			>
+				<FuseSvgIcon size={16} className="text-white">
+					heroicons-outline:plus
+				</FuseSvgIcon>
+				<span>{t('role.addRole', 'Add Role')}</span>
+			</button>
+		</Tooltip>
 	) : null;
 
 	return (
@@ -645,7 +647,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 						renderRowActions={({ row }) => (
 							<Box className="flex items-center gap-1">
 								{canUpdate('roles') && (
-									<Tooltip title="Edit role" arrow>
+									<Tooltip title={t('tooltips.editRole', 'Edit role')} arrow>
 										<IconButton
 											size="small"
 											onClick={() => openEdit(row.original)}
@@ -656,7 +658,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 									</Tooltip>
 								)}
 								{canDelete('roles') && !row.original.isSystem && (
-									<Tooltip title="Delete role" arrow>
+									<Tooltip title={t('tooltips.deleteRole', 'Delete role')} arrow>
 										<IconButton
 											size="small"
 											className="text-red-500 hover:text-red-700 p-1.5"
@@ -701,15 +703,17 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 									</h2>
 								</div>
 
-								<IconButton
-									size="small"
-									onClick={() => setDialogOpen(false)}
-									disabled={isSavingRole}
-									className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-									aria-label="Close"
-								>
-									<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
-								</IconButton>
+								<Tooltip title={t('tooltips.close', 'Close')} arrow>
+									<IconButton
+										size="small"
+										onClick={() => setDialogOpen(false)}
+										disabled={isSavingRole}
+										className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+										aria-label={t('common.close', 'Close')}
+									>
+										<FuseSvgIcon size={20}>heroicons-outline:x-mark</FuseSvgIcon>
+									</IconButton>
+								</Tooltip>
 							</div>
 
 							<DialogContent
@@ -904,42 +908,50 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 									py: 1.5
 								}}
 							>
-								<Button
-									onClick={() => setDialogOpen(false)}
-									disabled={isSavingRole}
-									className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
-									sx={{
-										borderRadius: '12px',
-										textTransform: 'capitalize'
-									}}
-								>
-									{t('role.cancel', 'Cancel')}
-								</Button>
-								<Button
-									variant="contained"
-									onClick={handleSave}
-									disabled={isSavingRole}
-									className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
-									startIcon={
-										<FuseSvgIcon size={18} className={isSavingRole ? 'animate-spin' : ''}>
-											{isSavingRole ? 'heroicons-outline:arrow-path' : 'lucide:save'}
-										</FuseSvgIcon>
-									}
-									sx={{
-										bgcolor: 'primary.main',
-										'&:hover': { bgcolor: 'primary.dark' },
-										borderRadius: '12px',
-										textTransform: 'capitalize',
-										px: { xs: 2.5, sm: 3.5 },
-										py: 1
-									}}
-								>
-									{isSavingRole
-										? t('role.saving', 'Saving...')
-										: editing
-										? t('role.saveChanges', 'Save Changes')
-										: t('role.createRole', 'Create Role')}
-								</Button>
+								<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+									<span>
+										<Button
+											onClick={() => setDialogOpen(false)}
+											disabled={isSavingRole}
+											className="capitalize text-slate-700 hover:bg-slate-100 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 font-semibold text-xs sm:text-sm"
+											sx={{
+												borderRadius: '12px',
+												textTransform: 'capitalize'
+											}}
+										>
+											{t('role.cancel', 'Cancel')}
+										</Button>
+									</span>
+								</Tooltip>
+								<Tooltip title={editing ? t('tooltips.saveChanges', 'Save changes') : t('tooltips.addRole', 'Add Role')} arrow>
+									<span>
+										<Button
+											variant="contained"
+											onClick={handleSave}
+											disabled={isSavingRole}
+											className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-xs transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+											startIcon={
+												<FuseSvgIcon size={18} className={isSavingRole ? 'animate-spin' : ''}>
+													{isSavingRole ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+												</FuseSvgIcon>
+											}
+											sx={{
+												bgcolor: 'primary.main',
+												'&:hover': { bgcolor: 'primary.dark' },
+												borderRadius: '12px',
+												textTransform: 'capitalize',
+												px: { xs: 2.5, sm: 3.5 },
+												py: 1
+											}}
+										>
+											{isSavingRole
+												? t('role.saving', 'Saving...')
+												: editing
+												? t('role.saveChanges', 'Save Changes')
+												: t('role.createRole', 'Create Role')}
+										</Button>
+									</span>
+								</Tooltip>
 							</DialogActions>
 						</div>
 					</Dialog>
@@ -974,33 +986,40 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 									</p>
 								</div>
 							</div>
-							<IconButton
-								size="small"
-								onClick={() => !isActionLoading && setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
-								className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
-							>
-								<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-							</IconButton>
+							<Tooltip title={t('tooltips.close', 'Close')} arrow>
+								<IconButton
+									size="small"
+									onClick={() => !isActionLoading && setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
+									className="text-slate-400 hover:text-slate-600 -mt-1 -mr-1"
+									aria-label={t('common.close', 'Close')}
+								>
+									<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+								</IconButton>
+							</Tooltip>
 						</div>
 
 						<div className="bg-slate-50/70 px-6 py-3.5 flex items-center justify-end gap-3 border-t border-slate-100">
-							<button
-								type="button"
-								onClick={() => setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
-								disabled={isActionLoading}
-								className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs"
-							>
-								{t('role.cancel', 'Cancel')}
-							</button>
-							<button
-								type="button"
-								onClick={handleConfirmDelete}
-								disabled={isActionLoading}
-								className="h-9 px-5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5"
-							>
-								{isActionLoading && <CircularProgress size={14} color="inherit" />}
-								<span>{t('role.delete', 'Delete')}</span>
-							</button>
+							<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+								<button
+									type="button"
+									onClick={() => setConfirmDeleteState((prev) => ({ ...prev, open: false }))}
+									disabled={isActionLoading}
+									className="h-9 px-5 rounded-lg border border-slate-300 bg-white text-slate-700 font-semibold text-xs sm:text-sm hover:bg-slate-50 transition-all cursor-pointer shadow-xs disabled:opacity-50"
+								>
+									{t('role.cancel', 'Cancel')}
+								</button>
+							</Tooltip>
+							<Tooltip title={t('tooltips.deleteRole', 'Delete Role')} arrow>
+								<button
+									type="button"
+									onClick={handleConfirmDelete}
+									disabled={isActionLoading}
+									className="h-9 px-5 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold text-xs sm:text-sm transition-all cursor-pointer shadow-xs border-0 flex items-center gap-1.5 disabled:opacity-50"
+								>
+									{isActionLoading && <CircularProgress size={14} color="inherit" />}
+									<span>{t('role.delete', 'Delete')}</span>
+								</button>
+							</Tooltip>
 						</div>
 					</Dialog>
 				</Paper>

@@ -179,7 +179,7 @@ function UserMenu(props: UserMenuProps) {
               <ListItemIcon>
                 <FuseSvgIcon>lucide:lock</FuseSvgIcon>
               </ListItemIcon>
-              <ListItemText primary="Sign In" />
+              <ListItemText primary={t('header.signIn', 'Sign In')} />
             </MenuItem>
           </>
         ) : (

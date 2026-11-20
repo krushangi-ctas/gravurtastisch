@@ -34,6 +34,7 @@ export default function LanguageSwitcher(props: LanguageSwitcherProps) {
     i18n.changeLanguage(code);
     try {
       localStorage.setItem('panel_lng', code);
+      localStorage.setItem('i18nextLng', code);
       localStorage.setItem('panel_default_de_v2', 'true');
     } catch {
       // ignore storage access errors

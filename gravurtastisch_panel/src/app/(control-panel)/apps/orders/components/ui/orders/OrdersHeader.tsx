@@ -785,7 +785,7 @@ function OrdersHeader({
         </div>
 
         {/* Reset / Reload Button */}
-        <Tooltip title="Reset & Refresh" arrow>
+        <Tooltip title={t('tooltips.resetRefresh', 'Reset & Refresh')} arrow>
           <button
             type="button"
             onClick={resetbtn}

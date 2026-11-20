@@ -1,5 +1,7 @@
 'use client';
 import { Controller, useForm } from 'react-hook-form';
+import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
@@ -11,20 +13,26 @@ import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import FormLabel from '@mui/material/FormLabel';
+import Tooltip from '@mui/material/Tooltip';
 
 /**
  * Form Validation Schema
  */
-const schema = z.object({
-	email: z.string().email('You must enter a valid email').nonempty('Email is required!'),
-	password: z
-		.string()
-		.min(8, 'Password is too short - must be at least 8 chars.')
-		.nonempty('Password is required!'),
-	remember: z.boolean().optional()
-});
+const getSignInSchema = (t: any) =>
+	z.object({
+		email: z.string().email(t('auth.emailInvalid', 'You must enter a valid email')).nonempty(t('auth.emailRequired', 'Email is required!')),
+		password: z
+			.string()
+			.min(8, t('auth.passwordTooShort', 'Password is too short - must be at least 8 chars.'))
+			.nonempty(t('auth.passwordRequired', 'Password is required!')),
+		remember: z.boolean().optional()
+	});
 
-type FormType = z.infer<typeof schema>;
+type FormType = {
+	email: string;
+	password: string;
+	remember?: boolean;
+};
 
 const defaultValues = {
 	email: '',
@@ -33,6 +41,8 @@ const defaultValues = {
 };
 
 function SignInPageForm() {
+	const { t } = useTranslation();
+	const schema = useMemo(() => getSignInSchema(t), [t]);
 	const { control, formState, handleSubmit, reset } = useForm<FormType>({
 		mode: 'onChange',
 		defaultValues,
@@ -109,22 +119,26 @@ function SignInPageForm() {
 				/>
 			</div>
 
-			<Button
-				variant="contained"
-				color="primary"
-				className="w-full bg-primary-700 hover:bg-primary-800 text-white font-semibold"
-				aria-label="Sign in"
-				disabled={_.isEmpty(dirtyFields) || !isValid}
-				type="submit"
-				size="medium"
-				sx={{
-					bgcolor: 'primary.main',
-					color: '#ffffff !important',
-					'&:hover': { bgcolor: 'primary.dark' }
-				}}
-			>
-				Sign in
-			</Button>
+			<Tooltip title={t('header.signIn', 'Sign In')} arrow>
+				<span>
+					<Button
+						variant="contained"
+						color="primary"
+						className="w-full bg-primary-700 hover:bg-primary-800 text-white font-semibold"
+						aria-label={t('header.signIn', 'Sign In')}
+						disabled={_.isEmpty(dirtyFields) || !isValid}
+						type="submit"
+						size="medium"
+						sx={{
+							bgcolor: 'primary.main',
+							color: '#ffffff !important',
+							'&:hover': { bgcolor: 'primary.dark' }
+						}}
+					>
+						{t('header.signIn', 'Sign in')}
+					</Button>
+				</span>
+			</Tooltip>
 
 			<div className="flex items-center py-4">
 				<div className="mt-px flex-auto border-t" />

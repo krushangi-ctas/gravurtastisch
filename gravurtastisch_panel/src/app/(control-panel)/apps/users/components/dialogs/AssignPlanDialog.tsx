@@ -15,7 +15,8 @@ import {
 	Checkbox,
 	FormControlLabel,
 	Paper,
-	Skeleton
+	Skeleton,
+	Tooltip
 } from '@mui/material';
 import { useSnackbar } from 'notistack';
 import FuseSvgIcon from '@fuse/core/FuseSvgIcon';
@@ -152,12 +153,12 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 		e.preventDefault();
 
 		if (!user) {
-			enqueueSnackbar('No seller selected', { variant: 'error' });
+			enqueueSnackbar(t('validation.noSellerSelected', 'No seller selected'), { variant: 'error' });
 			return;
 		}
 
 		if (!selectedPlanId) {
-			enqueueSnackbar('Please select a plan to assign', { variant: 'warning' });
+			enqueueSnackbar(t('validation.selectPlanToAssign', 'Please select a plan to assign'), { variant: 'warning' });
 			return;
 		}
 
@@ -223,14 +224,17 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 						</div>
 					</div>
 
-					<IconButton
-						size="small"
-						onClick={onClose}
-						disabled={isSubmitting}
-						className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
-					>
-						<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
-					</IconButton>
+					<Tooltip title={t('tooltips.close', 'Close')} arrow>
+						<IconButton
+							size="small"
+							onClick={onClose}
+							disabled={isSubmitting}
+							className="text-slate-500 hover:text-slate-800 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors p-1"
+							aria-label={t('common.close', 'Close')}
+						>
+							<FuseSvgIcon size={18}>heroicons-outline:x-mark</FuseSvgIcon>
+						</IconButton>
+					</Tooltip>
 				</div>
 
 				<DialogContent dividers sx={{ p: { xs: 2, sm: 2.5 } }} className="space-y-4">
@@ -530,36 +534,44 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 						py: 1.5
 					}}
 				>
-					<Button
-						onClick={onClose}
-						disabled={isSubmitting}
-						className="capitalize text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
-						sx={{
-							borderRadius: '12px',
-							textTransform: 'capitalize'
-						}}
-					>
-						{t('confirm.cancel', 'Cancel')}
-					</Button>
-					<Button
-						type="submit"
-						variant="contained"
-						disabled={isSubmitting || isLoadingPlans || plans.length === 0}
-						className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm hover:shadow-md transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
-						startIcon={
-							<FuseSvgIcon size={18} className={isSubmitting ? 'animate-spin' : ''}>
-								{isSubmitting ? 'heroicons-outline:arrow-path' : 'lucide:save'}
-							</FuseSvgIcon>
-						}
-						sx={{
-							borderRadius: '12px',
-							textTransform: 'capitalize',
-							px: { xs: 2.5, sm: 3.5 },
-							py: 1
-						}}
-					>
-						{isSubmitting ? t('confirm.assigningPlan', 'Assigning Plan...') : t('confirm.assignPlan', 'Assign Plan')}
-					</Button>
+					<Tooltip title={t('tooltips.cancel', 'Cancel')} arrow>
+						<span>
+							<Button
+								onClick={onClose}
+								disabled={isSubmitting}
+								className="capitalize text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl px-4 sm:px-5 py-2 border border-slate-300 dark:border-slate-700 font-semibold text-xs sm:text-sm"
+								sx={{
+									borderRadius: '12px',
+									textTransform: 'capitalize'
+								}}
+							>
+								{t('confirm.cancel', 'Cancel')}
+							</Button>
+						</span>
+					</Tooltip>
+					<Tooltip title={t('tooltips.assignPlan', 'Assign Plan')} arrow>
+						<span>
+							<Button
+								type="submit"
+								variant="contained"
+								disabled={isSubmitting || isLoadingPlans || plans.length === 0}
+								className="bg-primary hover:bg-primary-dark text-white font-semibold rounded-xl px-5 sm:px-7 py-2 shadow-sm hover:shadow-md transition-all capitalize text-xs sm:text-sm disabled:opacity-50"
+								startIcon={
+									<FuseSvgIcon size={18} className={isSubmitting ? 'animate-spin' : ''}>
+										{isSubmitting ? 'heroicons-outline:arrow-path' : 'lucide:save'}
+									</FuseSvgIcon>
+								}
+								sx={{
+									borderRadius: '12px',
+									textTransform: 'capitalize',
+									px: { xs: 2.5, sm: 3.5 },
+									py: 1
+								}}
+							>
+								{isSubmitting ? t('confirm.assigningPlan', 'Assigning Plan...') : t('confirm.assignPlan', 'Assign Plan')}
+							</Button>
+						</span>
+					</Tooltip>
 				</DialogActions>
 			</form>
 		</Dialog>

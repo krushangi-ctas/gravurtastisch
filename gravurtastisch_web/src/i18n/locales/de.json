@@ -241,7 +241,7 @@
     "liveStudioEngine": "Live-Studiomaschine",
     "avgProofSpeed": "Durchschn. Freigabezeit:",
     "qcMatchRate": "Qualitäts-Übereinstimmung:",
-    "interactiveTip": "Klicken Sie oben auf „Proof“, um die interaktive Freigabe-Simulation zu testen!",
+    "interactiveTip": "Klicken Sie oben auf \"Proof\", um die interaktive Freigabe-Simulation zu testen!",
     "sampleJobsCount": "4 Beispielaufträge aus 142 Tageschargen"
   },
   "stackDiagram": {
@@ -340,7 +340,7 @@
       }
     },
     "continueToStripe": "Weiter zu Stripe",
-    "openingStripe": "Stripe wird geöffnet…",
+    "openingStripe": "Stripe wird geöffnet...",
     "optional": "(optional)",
     "namePlaceholder": "Studio- / Kontaktname",
     "nameLabel": "Name"
@@ -600,7 +600,7 @@
   "privacy": {
     "title": "Datenschutzrichtlinie",
     "updated": "24. Juli 2026",
-    "para1": "Gravurtastisch („wir“, „uns“ oder „unser“) respektiert Ihre Privatsphäre. Diese Richtlinie erklärt, welche Informationen wir erfassen, wenn Sie unsere Website und unsere Dienstleistungen für personalisierte Bestellungen nutzen, und wie wir diese verwenden.",
+    "para1": "Gravurtastisch (\"wir\", \"uns\" oder \"unser\") respektiert Ihre Privatsphäre. Diese Richtlinie erklärt, welche Informationen wir erfassen, wenn Sie unsere Website und unsere Dienstleistungen für personalisierte Bestellungen nutzen, und wie wir diese verwenden.",
     "heading1": "Informationen, die wir erfassen",
     "list1Item1": "Kontakt- und Kontodaten, die Sie übermitteln (Name, E-Mail-Adresse, Telefonnummer, Firmen- oder Veranstaltungsname).",
     "list1Item2": "Bestelldetails, Produktauswahl und Designdateien, die zur Ausführung individueller Gravur- und Druckarbeiten erforderlich sind.",
@@ -1116,7 +1116,7 @@
     "cta": "4-Schritte-Ablauf ansehen →"
   },
   "payment": {
-    "confirmingTitle": "Zahlung wird bestätigt…",
+    "confirmingTitle": "Zahlung wird bestätigt...",
     "confirmingDesc": "Prüfe Stripe und unsere Webhook-Bestätigung.",
     "paidTitle": "Zahlung erhalten",
     "paidThanks": "Vielen Dank",

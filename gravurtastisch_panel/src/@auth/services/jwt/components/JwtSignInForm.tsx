@@ -36,7 +36,7 @@ type EmailFormType = {
 };
 
 function JwtSignInForm() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { signIn } = useJwtAuth();
   const { enqueueSnackbar } = useSnackbar();

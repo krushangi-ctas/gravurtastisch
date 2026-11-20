@@ -229,9 +229,65 @@ If you did not create an account, then ignore this email.`;
   await sendEmail(to, subject, text);
 };
 
-const sendOtpEmail = async (to, otp) => {
-  const subject = 'Your Gravurtastisch Login Code';
-  const content = `
+const sendOtpEmail = async (to, otp, lang = 'de') => {
+  const isDe = !lang || String(lang).toLowerCase().startsWith('de');
+  const expiryMinutes = config.otp?.expiryMinutes || 10;
+
+  const subject = isDe
+    ? 'Ihr Gravurtastisch Anmeldecode'
+    : 'Your Gravurtastisch Login Code';
+
+  const preheader = isDe
+    ? `Ihr Gravurtastisch Bestätigungscode lautet ${otp}`
+    : `Your Gravurtastisch verification code is ${otp}`;
+
+  const content = isDe
+    ? `
+    <div style="text-align:center;">
+      <h1 style="margin:0 0 6px; font-family:'Montserrat', Arial, sans-serif; font-size:22px; font-weight:800; color:#0B132B; text-align:center;">Ihr Anmeldecode</h1>
+      <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:13.5px; line-height:1.45; color:#64748B; text-align:center;">Geben Sie diesen Einmalcode ein, um sich bei Ihrem Gravurtastisch-Konto anzumelden.</p>
+
+      <!-- Code Box (Royal Blue Branding) -->
+      <div style="background-color:#F0F5FF; border:2px dashed #0032AB; border-radius:12px; padding:14px 22px; text-align:center; margin:0 auto 16px; max-width:280px; box-shadow:0 2px 10px rgba(0,50,171,0.06);">
+        <span style="font-family:'Courier New', Courier, monospace; font-size:32px; font-weight:800; letter-spacing:8px; color:#0032AB; white-space:nowrap; display:inline-block; user-select:all; -webkit-user-select:all;">
+          ${otp}
+        </span>
+      </div>
+
+      <!-- Point-wise Details -->
+      <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:12px 16px; margin:0 0 16px; text-align:left;">
+        <p style="margin:0 0 8px; font-family:'Inter', Arial, sans-serif; font-size:11px; font-weight:700; color:#0B132B; text-transform:uppercase; letter-spacing:0.5px;">
+          Sicherheit &amp; Hinweise:
+        </p>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+          <tr>
+            <td style="vertical-align:top; width:14px; font-size:15px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2022;</td>
+            <td style="font-family:'Inter', Arial, sans-serif; font-size:12.5px; line-height:1.5; color:#334155; padding-bottom:5px;">
+              <strong>Gültigkeit:</strong> Dieser Code läuft in <strong>${expiryMinutes} Minuten</strong> ab.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align:top; width:14px; font-size:15px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2022;</td>
+            <td style="font-family:'Inter', Arial, sans-serif; font-size:12.5px; line-height:1.5; color:#334155; padding-bottom:5px;">
+              <strong>Vertraulich:</strong> Teilen Sie diesen Code niemals mit anderen. Unser Team wird Sie niemals danach fragen.
+            </td>
+          </tr>
+          <tr>
+            <td style="vertical-align:top; width:14px; font-size:15px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2022;</td>
+            <td style="font-family:'Inter', Arial, sans-serif; font-size:12.5px; line-height:1.5; color:#334155;">
+              <strong>Nicht angefordert?</strong> Wenn Sie diesen Anmeldecode nicht angefordert haben, ignorieren Sie diese E-Mail bitte.
+            </td>
+          </tr>
+        </table>
+      </div>
+
+      <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:12.5px; line-height:1.45; color:#64748B; text-align:center;">
+        Vielen Dank,<br/>
+        <strong style="color:#0032AB;">Ihr Gravurtastisch-Team</strong>
+      </p>
+    </div>
+  `
+    : `
     <div style="text-align:center;">
       <h1 style="margin:0 0 6px; font-family:'Montserrat', Arial, sans-serif; font-size:22px; font-weight:800; color:#0B132B; text-align:center;">Your login code</h1>
       <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:13.5px; line-height:1.45; color:#64748B; text-align:center;">Enter this one-time code to sign in to your Gravurtastisch account.</p>
@@ -252,7 +308,7 @@ const sendOtpEmail = async (to, otp) => {
           <tr>
             <td style="vertical-align:top; width:14px; font-size:15px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2022;</td>
             <td style="font-family:'Inter', Arial, sans-serif; font-size:12.5px; line-height:1.5; color:#334155; padding-bottom:5px;">
-              <strong>Validity:</strong> This code expires in <strong>${config.otp.expiryMinutes || 10} minutes</strong>.
+              <strong>Validity:</strong> This code expires in <strong>${expiryMinutes} minutes</strong>.
             </td>
           </tr>
           <tr>
@@ -276,10 +332,7 @@ const sendOtpEmail = async (to, otp) => {
       </p>
     </div>
   `;
-  const html = await getMailBody(
-    content,
-    `Your Gravurtastisch verification code is ${otp}`
-  );
+  const html = await getMailBody(content, preheader, isDe ? 'de' : 'en');
   await sendEmail(to, subject, '', html);
 };
 
@@ -287,38 +340,173 @@ const sendOtpEmail = async (to, otp) => {
  * Send subscription plan expiring tomorrow reminder email
  * @param {Object} user User object with email, first_name, last_name
  * @param {Object} plan Active plan subdocument
+ * @param {string} [lang] Language code ('de' | 'en')
  */
-const sendPlanExpiryReminderEmail = async (user, plan) => {
+const sendPlanExpiryReminderEmail = async (user, plan, lang = 'de') => {
+  // Plan expiry reminder email is always and only sent in Dutch ('de')
+  const isDe = true;
+
   const sellerName =
     `${user.first_name || ''} ${user.last_name || ''}`.trim() ||
     user.email?.split('@')[0] ||
-    'Valued Seller';
-  const planName = plan.name || 'Subscription Plan';
-  const expireDateFormatted = plan.expireAt
-    ? moment(plan.expireAt).format('MMMM DD, YYYY')
-    : moment().add(1, 'day').format('MMMM DD, YYYY');
+    (isDe ? 'Geschätzter Verkäufer' : 'Valued Seller');
 
-  const billingCycleLabels = {
+  const planName = plan.name || (isDe ? 'Abonnementplan' : 'Subscription Plan');
+
+  const expireDateFormatted = plan.expireAt
+    ? (isDe ? moment(plan.expireAt).format('DD.MM.YYYY') : moment(plan.expireAt).format('MMMM DD, YYYY'))
+    : (isDe ? moment().add(1, 'day').format('DD.MM.YYYY') : moment().add(1, 'day').format('MMMM DD, YYYY'));
+
+  const billingCycleLabelsEn = {
     1: 'Monthly',
     2: 'Quarterly',
     3: 'Yearly',
   };
-  const billingCycleText = billingCycleLabels[plan.billingCycle] || 'Monthly';
+  const billingCycleLabelsDe = {
+    1: 'Monatlich',
+    2: 'Vierteljährlich (Alle 3 Monate)',
+    3: 'Jährlich',
+  };
+
+  const billingCycleText = isDe
+    ? (billingCycleLabelsDe[plan.billingCycle] || 'Monatlich')
+    : (billingCycleLabelsEn[plan.billingCycle] || 'Monthly');
+
   const requestQuotaText = plan.request_quota
-    ? `${plan.request_quota.toLocaleString()} requests / month`
+    ? (isDe ? `${plan.request_quota.toLocaleString('de-DE')} Anfragen / Monat` : `${plan.request_quota.toLocaleString()} requests / month`)
     : 'Standard';
+
   const marketplaceText = plan.marketplace
-    ? `${plan.marketplace} marketplace(s)`
-    : '1 marketplace';
+    ? (isDe ? `${plan.marketplace} Marktplatz${plan.marketplace > 1 ? 'e' : ''}` : `${plan.marketplace} marketplace(s)`)
+    : (isDe ? '1 Marktplatz' : '1 marketplace');
 
-  const subject = `Urgent: Your Gravurtastisch Plan Expires Tomorrow (${expireDateFormatted})`;
-  const preheader = `Your ${planName} plan expires tomorrow. Renew today to avoid interruption in Amazon reviews and solicitations.`;
+  const subject = isDe
+    ? `Dringend: Ihr Gravurtastisch-Plan läuft morgen ab (${expireDateFormatted})`
+    : `Urgent: Your Gravurtastisch Plan Expires Tomorrow (${expireDateFormatted})`;
 
-  const content = `
+  const preheader = isDe
+    ? `Ihr ${planName}-Plan läuft morgen ab. Erneuern Sie noch heute, um Unterbrechungen bei Amazon-Bewertungen zu vermeiden.`
+    : `Your ${planName} plan expires tomorrow. Renew today to avoid interruption in Amazon reviews and solicitations.`;
+
+  const content = isDe
+    ? `
     <!-- Expiry Notice Badge -->
     <div style="margin-bottom:16px;">
       <span style="display:inline-block; font-family:'Inter', Arial, sans-serif; font-size:11px; font-weight:700; color:#B45309; background-color:#FEF3C7; border:1px solid #FCD34D; padding:4px 12px; border-radius:999px; letter-spacing:0.4px; text-transform:uppercase;">
-        &#9888; Action Required &middot; Plan Expiring Tomorrow
+        WICHTIG: Plan läuft morgen ab
+      </span>
+    </div>
+
+    <!-- Heading -->
+    <h1 style="margin:0 0 10px; font-family:'Montserrat', Arial, sans-serif; font-size:23px; font-weight:800; color:#0B132B; line-height:1.3;">
+      Ihr Abonnement läuft morgen ab
+    </h1>
+
+    <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:14.5px; line-height:1.6; color:#334155;">
+      Hallo <strong>${sellerName}</strong>,
+    </p>
+
+    <p style="margin:0 0 18px; font-family:'Inter', Arial, sans-serif; font-size:14px; line-height:1.6; color:#334155;">
+      Dies ist eine freundliche Erinnerung daran, dass Ihr <strong>${planName}</strong>-Abonnement bei <strong>Gravurtastisch</strong> morgen, am <strong style="color:#0B132B;">${expireDateFormatted}</strong>, planmäßig abläuft.
+    </p>
+
+    <!-- Plan Summary Box -->
+    <div style="background-color:#F8FAFC; border:1px solid #E2E8F0; border-radius:12px; padding:18px 20px; margin:0 0 22px; box-shadow:0 1px 3px rgba(0,0,0,0.03);">
+      <p style="margin:0 0 12px; font-family:'Montserrat', Arial, sans-serif; font-size:12px; font-weight:700; color:#0032AB; text-transform:uppercase; letter-spacing:0.6px;">
+        Abonnement-Details
+      </p>
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;">
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B; width:45%;">
+            Planname:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:700; color:#0B132B;">
+            ${planName}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Ablaufdatum:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:700; color:#DC2626;">
+            ${expireDateFormatted} (Morgen)
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Abrechnungszyklus:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:600; color:#334155;">
+            ${billingCycleText}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Bewertungskontingent:
+          </td>
+          <td style="padding:7px 0; border-bottom:1px solid #F1F5F9; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:600; color:#334155;">
+            ${requestQuotaText}
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:7px 0; font-family:'Inter', Arial, sans-serif; font-size:13px; color:#64748B;">
+            Verbundene Marktplätze:
+          </td>
+          <td style="padding:7px 0; font-family:'Inter', Arial, sans-serif; font-size:13.5px; font-weight:600; color:#334155;">
+            ${marketplaceText}
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <!-- Callout Box -->
+    <div style="background-color:#EFF6FF; border-left:4px solid #0032AB; border-radius:0 8px 8px 0; padding:12px 16px; margin:0 0 22px;">
+      <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.55; color:#1E3A8A;">
+        <strong>Wichtig:</strong> Wenn Ihr Plan abläuft, werden automatisierte Bewertungsanfragen und Kundenanschreiben für Ihren Amazon-Shop pausiert, bis Ihr Abonnement erneuert wird.
+      </p>
+    </div>
+
+    <!-- Point-wise instructions -->
+    <div style="margin:0 0 20px;">
+      <p style="margin:0 0 8px; font-family:'Inter', Arial, sans-serif; font-size:12px; font-weight:700; color:#0B132B; text-transform:uppercase; letter-spacing:0.5px;">
+        Warum vor dem Ablauf erneuern?
+      </p>
+      <table role="presentation" cellpadding="0" cellspacing="0" width="100%">
+        <tr>
+          <td style="vertical-align:top; width:16px; font-size:14px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2713;</td>
+          <td style="font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#475569; padding-bottom:6px;">
+            <strong>Keine Unterbrechung:</strong> Ihre automatisierten Amazon-Feedback-Anfragen laufen nahtlos ohne Unterbrechung weiter.
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top; width:16px; font-size:14px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2713;</td>
+          <td style="font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#475569; padding-bottom:6px;">
+            <strong>Kontingent sichern:</strong> Ihr monatliches Kontingent bleibt auf allen angebundenen Marktplätzen aktiv.
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align:top; width:16px; font-size:14px; color:#0032AB; line-height:1.4; font-weight:bold;">&#x2713;</td>
+          <td style="font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#475569;">
+            <strong>Nahtlose Verwaltung:</strong> Wählen Sie flexibel Ihren gewünschten Abrechnungszyklus (Monatlich, Vierteljährlich oder Jährlich).
+          </td>
+        </tr>
+      </table>
+    </div>
+
+    <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.55; color:#64748B;">
+      Falls Sie Ihren Plan bereits erneuert oder aktualisiert haben, ignorieren Sie diese E-Mail bitte. Wenn Sie Unterstützung benötigen, antworten Sie einfach direkt auf diese E-Mail oder kontaktieren Sie uns unter <a href="mailto:info@gravurtastisch.de" style="color:#0032AB; font-weight:600; text-decoration:none;">info@gravurtastisch.de</a>.
+    </p>
+
+    <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#64748B;">
+      Herzliche Grüße,<br/>
+      <strong style="color:#0032AB;">Ihr Gravurtastisch-Team</strong>
+    </p>
+  `
+    : `
+    <!-- Expiry Notice Badge -->
+    <div style="margin-bottom:16px;">
+      <span style="display:inline-block; font-family:'Inter', Arial, sans-serif; font-size:11px; font-weight:700; color:#B45309; background-color:#FEF3C7; border:1px solid #FCD34D; padding:4px 12px; border-radius:999px; letter-spacing:0.4px; text-transform:uppercase;">
+        IMPORTANT: Plan Expiring Tomorrow
       </span>
     </div>
 
@@ -419,7 +607,7 @@ const sendPlanExpiryReminderEmail = async (user, plan) => {
     </div>
 
     <p style="margin:0 0 16px; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.55; color:#64748B;">
-      If you have already renewed or updated your plan, please disregard this email. If you need any assistance, feel free to reply directly to this email or reach us at <a href="mailto:info@ctasis.com" style="color:#0032AB; font-weight:600; text-decoration:none;">info@ctasis.com</a>.
+      If you have already renewed or updated your plan, please disregard this email. If you need any assistance, feel free to reply directly to this email or reach us at <a href="mailto:info@gravurtastisch.de" style="color:#0032AB; font-weight:600; text-decoration:none;">info@gravurtastisch.de</a>.
     </p>
 
     <p style="margin:0; font-family:'Inter', Arial, sans-serif; font-size:13px; line-height:1.5; color:#64748B;">
@@ -428,7 +616,7 @@ const sendPlanExpiryReminderEmail = async (user, plan) => {
     </p>
   `;
 
-  const html = await getMailBody(content, preheader);
+  const html = await getMailBody(content, preheader, isDe ? 'de' : 'en');
   return sendEmail(user.email, subject, '', html);
 };
 
@@ -480,7 +668,7 @@ const replaceContents = async (content, data) => {
   return { content, data };
 };
 
-const getMailBody = async (content, preheader = '') => {
+const getMailBody = async (content, preheader = '', lang = 'de') => {
   const candidatePaths = [
     path.join(__dirname, '../templates/email-template.html'),
     path.join(__dirname, '../../src/templates/email-template.html'),
@@ -497,6 +685,23 @@ const getMailBody = async (content, preheader = '') => {
 
   const baseUrl = (config.site_url || '').replace(/\/+$/, '');
   const logoUrl = 'cid:white_gravurtastisch_logo';
+  const isDe = !lang || String(lang).toLowerCase().startsWith('de');
+
+  const badgeText = isDe
+    ? 'Personalisierte Gravur- &amp; Studio-Plattform'
+    : 'Custom Craft &amp; Studio Hub';
+
+  const footerDesc = isDe
+    ? 'Personalisierte Fototassen, Schneidebretter, laser-gravierte Erinnerungsstücke und individuelle Studio-Bestellungen.'
+    : 'Custom photo cups, cutting boards, laser-engraved keepsakes, and personalized studio orders.';
+
+  const copyrightText = isDe
+    ? '&copy; 2026 Gravurtastisch Studio. Alle Rechte vorbehalten. Ahmedabad, Gujarat - Indien'
+    : '&copy; 2026 Gravurtastisch Studio. All rights reserved. Ahmedabad, Gujarat - India';
+
+  const subfooterText = isDe
+    ? 'Sie erhalten diese sichere Transaktions-E-Mail, da Sie ein Konto bei Gravurtastisch besitzen.'
+    : "You're receiving this secure transactional email because you have an account with Gravurtastisch.";
 
   html = html.replaceAll('{{CONTENT_PLACED_HERE}}', content);
   html = html.replaceAll('{{PREHEADER_TEXT}}', preheader);
@@ -506,6 +711,23 @@ const getMailBody = async (content, preheader = '') => {
     '{{UNSUBSCRIBE_URL}}',
     `${baseUrl}/unsubscribe`
   );
+  html = html.replaceAll('{{BADGE_TEXT}}', badgeText);
+  html = html.replaceAll('{{FOOTER_DESC}}', footerDesc);
+  html = html.replaceAll('{{COPYRIGHT_TEXT}}', copyrightText);
+  html = html.replaceAll('{{SUBFOOTER_TEXT}}', subfooterText);
+
+  // If old template without placeholders was loaded from disk, replace static English if German is selected
+  if (isDe) {
+    html = html.replace('Custom Craft & Studio Hub', badgeText);
+    html = html.replace(
+      'Custom photo cups, cutting boards, laser-engraved keepsakes, and personalized studio orders.',
+      footerDesc
+    );
+    html = html.replace(
+      "You're receiving this secure transactional email because you have an account with Gravurtastisch.",
+      subfooterText
+    );
+  }
 
   return html;
 };
