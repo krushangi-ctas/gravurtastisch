@@ -39,26 +39,30 @@ export const Route = createFileRoute("/register")({
     const { meta, links } = seo({
       title: i18n.exists("register.pageTitle")
         ? i18n.t("register.pageTitle")
-        : "Custom Order & Registration - Gravurtastisch",
+        : "Register Seller Account - Printomation",
       description: i18n.exists("register.pageDesc")
         ? i18n.t("register.pageDesc")
-        : "Submit your custom order or register your seller account for automated studio fulfillment, digital proofs, and laser engraving.",
+        : "Create your Printomation account to automate Amazon Custom orders into ready-to-run print and laser engraving files.",
       url: "/register",
-      keywords: ["custom order registration", "lasergravur auftrag", "amazon seller intake", "gravurtastisch registration"],
+      keywords: ["amazon custom automation", "sp-api order sync", "amazon seller registration", "printomation"],
     });
 
     const faqs = [
       {
-        q: "Is there any setup fee or long-term commitment required to register?",
-        a: "No. Account registration and initial intake consultations are 100% free of charge with zero setup fees.",
+        q: "What does Printomation do?",
+        a: "Printomation is a B2B SaaS platform for Amazon sellers who offer personalised products. Our software automates the conversion of Amazon Custom orders and personalisation data into ready-to-use print or engraving files. We do not manufacture, print, ship or sell any physical products ourselves.",
       },
       {
-        q: "How does Gravurtastisch connect to my Amazon Seller Central account safely?",
-        a: "We connect via Amazon's official Selling Partner API (SP-API) using OAuth 2.0 authorization.",
+        q: "How does Printomation connect to my Amazon Seller account?",
+        a: "We connect via Amazon's official Selling Partner API (SP-API) using secure OAuth 2.0 authorization without ever seeing or storing your password.",
       },
       {
-        q: "What vector formats should I submit for custom laser engraving?",
-        a: "We recommend vector formats such as SVG, AI (Adobe Illustrator), EPS, and vector PDF.",
+        q: "What file formats does Printomation generate?",
+        a: "Printomation outputs production-ready vector files (SVG, DXF, AI, EZCad) for laser engravers and CNCs, as well as high-resolution CMYK PDFs with bleed for UV and sublimation printers.",
+      },
+      {
+        q: "Can I cancel my subscription anytime?",
+        a: "Yes, you can upgrade, downgrade, or cancel your subscription at any time through the seller dashboard with zero cancellation fees.",
       },
     ];
 
@@ -82,94 +86,94 @@ function RegisterPage() {
   const onboardingSteps = [
     {
       step: "01",
-      title: t("register.step1Title", "Instant Intake & File Pre-Flight"),
-      desc: t("register.step1Desc", "Our technical team reviews your submitted requirements, Amazon SP-API scopes, or vector art within 2 business hours."),
-      pill: t("register.step1Pill", "Response < 2 Hours"),
+      title: t("register.step1Title", "Account & Plan Selection"),
+      desc: t("register.step1Desc", "Create your seller account in under two minutes and choose a plan that matches your monthly order volume."),
+      pill: t("register.step1Pill", "Step 01"),
       icon: FileCheck2,
     },
     {
       step: "02",
-      title: t("register.step2Title", "Photorealistic Digital Proof"),
-      desc: t("register.step2Desc", "Receive an interactive 3D rendering with micron-accurate laser coordinates and depth simulation before physical processing."),
-      pill: t("register.step2Pill", "Proof-Gated Manufacturing"),
+      title: t("register.step2Title", "Connect Amazon SP-API"),
+      desc: t("register.step2Desc", "Authorize your Amazon Seller Central store via official OAuth 2.0 for automated order ingestion."),
+      pill: t("register.step2Pill", "Step 02"),
       icon: Layers,
     },
     {
       step: "03",
-      title: t("register.step3Title", "Production Lock & Machining"),
-      desc: t("register.step3Desc", "Your Amazon review automation triggers immediately, or custom hardware enters our automated laser line with certified repeatability."),
-      pill: t("register.step3Pill", "Micron-Precision Laser"),
-      icon: Zap,
+      title: t("register.step3Title", "Map ASIN Templates"),
+      desc: t("register.step3Desc", "Configure your ASIN layout rules: text zones, fonts, 360° rotary wrap offsets, and print bleeds."),
+      pill: t("register.step3Pill", "Step 03"),
+      icon: Sliders,
     },
     {
       step: "04",
-      title: t("register.step4Title", "Real-Time Tracking & Delivery"),
-      desc: t("register.step4Desc", "Monitor live campaign metrics on your portal or track DHL Express delivery directly to Amazon FBA or European studio hubs."),
-      pill: t("register.step4Pill", "Insured Tracked Courier"),
-      icon: Truck,
+      title: t("register.step4Title", "Automate & Download Files"),
+      desc: t("register.step4Desc", "Orders are automatically parsed and converted into ready-to-run files. Download individually or batch export in bulk."),
+      pill: t("register.step4Pill", "Step 04"),
+      icon: Zap,
     },
   ];
 
   const studioPerks = [
     {
       icon: ShieldCheck,
-      badge: t("register.perk1Badge", "100% Quality Safeguard"),
-      title: t("register.perk1Title", "Zero-Misprint Guarantee"),
-      desc: t("register.perk1Desc", "We strictly gate production behind your explicit digital sign-off. If the finished product deviates from your approved proof, we re-machine and re-dispatch at zero extra charge."),
+      badge: t("register.perk1Badge", "100% Text Accuracy"),
+      title: t("register.perk1Title", "Zero-Typo Guarantee"),
+      desc: t("register.perk1Desc", "Customer names, quotes, and customization options are extracted directly from Amazon Custom data. No manual retyping, zero misprints, and 85% less pre-press labor."),
       highlights: [
-        t("register.perk1Highlight1", "Zero-tolerance vector calibration"),
-        t("register.perk1Highlight2", "Automated edge and curve pre-flight"),
-        t("register.perk1Highlight3", "Complimentary re-run warranty"),
+        t("register.perk1Highlight1", "Direct SP-API data extraction"),
+        t("register.perk1Highlight2", "Automated edge, bleed and curve pre-flight"),
+        t("register.perk1Highlight3", "Eliminates human copy-paste errors"),
       ],
     },
     {
       icon: Zap,
-      badge: t("register.perk2Badge", "Seasonal Capacity"),
-      title: t("register.perk2Title", "Priority Holiday & Peak Quota"),
-      desc: t("register.perk2Desc", "Avoid peak-season manufacturing bottlenecks. Registered sellers receive reserved laser bed capacity and fast-tracked dispatch during Black Friday, Cyber Monday, and Prime Days."),
+      badge: t("register.perk2Badge", "High-Volume Scaling"),
+      title: t("register.perk2Title", "Peak Holiday Season Ready"),
+      desc: t("register.perk2Desc", "Process hundreds or thousands of custom orders effortlessly during Q4, Black Friday, and Mother's Day without hiring extra graphic designers."),
       highlights: [
-        t("register.perk2Highlight1", "Guaranteed 48h dispatch slots"),
-        t("register.perk2Highlight2", "Reserved machine cycles during Q4"),
-        t("register.perk2Highlight3", "Locked transparent wholesale pricing"),
+        t("register.perk2Highlight1", "Automated batch file generation"),
+        t("register.perk2Highlight2", "One-click ZIP bulk downloads"),
+        t("register.perk2Highlight3", "Multi-marketplace EU & US synchronization"),
       ],
     },
     {
       icon: Headphones,
-      badge: t("register.perk3Badge", "Direct Communication"),
-      title: t("register.perk3Title", "Dedicated 1-on-1 Studio Lead"),
-      desc: t("register.perk3Desc", "Skip generic help desk tickets. You are paired with a dedicated laser engineer and account manager reachable via WhatsApp, email, or telephone for agile changes."),
+      badge: t("register.perk3Badge", "Dedicated Support"),
+      title: t("register.perk3Title", "Expert Technical Support"),
+      desc: t("register.perk3Desc", "Our technical team helps you map ASIN templates, optimize vector curves, and connect Amazon SP-API seamlessly."),
       highlights: [
-        t("register.perk3Highlight1", "Direct WhatsApp and phone line"),
-        t("register.perk3Highlight2", "Expert material selection guidance"),
-        t("register.perk3Highlight3", "Fast turnaround on bespoke prototypes"),
+        t("register.perk3Highlight1", "Fast response on template configuration"),
+        t("register.perk3Highlight2", "Assistance with laser & printer formats"),
+        t("register.perk3Highlight3", "Dedicated seller success onboarding"),
       ],
     },
   ];
 
   const registerFaqs = [
     {
-      q: t("register.faq1Q", "Is there any setup fee or long-term commitment required to register?"),
-      a: t("register.faq1A", "No. Account registration and initial intake consultations are 100% free of charge with zero setup fees. You only pay when you choose to activate a paid Amazon review quota plan or approve a physical laser engraving production run."),
+      q: t("register.faq1Q", "What does Printomation do?"),
+      a: t("register.faq1A", "Printomation is a B2B SaaS platform for Amazon sellers who offer personalised products. Our software automates the conversion of Amazon Custom orders and personalisation data into ready-to-use print and laser engraving files. We do not manufacture, print, ship or sell any physical products ourselves."),
     },
     {
-      q: t("register.faq2Q", "How does Gravurtastisch connect to my Amazon Seller Central account safely?"),
-      a: t("register.faq2A", "We connect via Amazon's official Selling Partner API (SP-API) using OAuth 2.0 authorization. We never see or store your Seller Central master password. All communications are protected by 256-bit TLS encryption in strict adherence to Amazon's Data Protection Policy."),
+      q: t("register.faq2Q", "How does Printomation connect to my Amazon Seller Central account?"),
+      a: t("register.faq2A", "We connect via Amazon's official Selling Partner API (SP-API) using secure OAuth 2.0 authorization. We never see or store your Seller Central password, and access is strictly scoped to order customisation data."),
     },
     {
-      q: t("register.faq3Q", "Can I register both for Amazon software automation and physical laser engraving?"),
-      a: t("register.faq3A", "Yes! Our unified client platform allows you to manage automated customer review solicitation workflows while simultaneously placing and tracking bespoke physical laser engraving batches under one consolidated dashboard."),
+      q: t("register.faq3Q", "What file formats does Printomation generate for my machines?"),
+      a: t("register.faq3A", "Printomation outputs production-ready vector files (SVG, DXF, AI, EZCad) for laser engravers and CNCs, as well as high-resolution CMYK PDFs with bleed for UV and sublimation printers."),
     },
     {
-      q: t("register.faq4Q", "What vector formats should I submit for custom laser engraving?"),
-      a: t("register.faq4A", "We recommend vector formats such as SVG, AI (Adobe Illustrator), EPS, and vector PDF for maximum edge sharpness. If you only possess high-resolution bitmap files (PNG, JPG), our in-house vector studio can digitize and optimize your artwork at no extra charge."),
+      q: t("register.faq4Q", "How do ASIN templates work?"),
+      a: t("register.faq4A", "You configure a template once per ASIN—specifying text boundaries, font rules, 360° rotary wrap offsets, and print bleed. When an order arrives, Printomation automatically places the buyer's text and photos into that template and compiles the file."),
     },
     {
-      q: t("register.faq5Q", "Can multi-brand aggregators register multiple seller storefronts?"),
-      a: t("register.faq5A", "Yes. Our platform natively supports multi-brand management. You can connect and manage multiple Amazon marketplace storefronts (e.g. Amazon DE, FR, IT, ES, UK, US) within a single Gravurtastisch master account with separate billing and campaign permissions."),
+      q: t("register.faq5Q", "Can multi-brand sellers register multiple storefronts?"),
+      a: t("register.faq5A", "Yes. Our platform natively supports multi-store management. You can connect and manage multiple Amazon marketplace storefronts (e.g. Amazon DE, FR, IT, ES, UK, US) within a single Printomation account."),
     },
     {
-      q: t("register.faq6Q", "What if I need a physical sample before committing to a larger production run?"),
-      a: t("register.faq6A", "You can easily request a physical prototype sample through your registered account dashboard. We will engrave your exact vector design on the target material and courier it to your address for final physical touch-and-feel verification."),
+      q: t("register.faq6Q", "Can I cancel or change my subscription plan at any time?"),
+      a: t("register.faq6A", "Yes. You can upgrade, downgrade, or cancel your subscription anytime with zero cancellation fees directly inside your seller dashboard."),
     },
   ];
 

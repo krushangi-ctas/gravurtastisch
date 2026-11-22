@@ -87,41 +87,41 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts" },
+      { title: "Printomation - Automate Amazon Custom into Production-Ready Files" },
       {
         name: "description",
         content:
-          "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery.",
+          "Printomation is the B2B SaaS platform for Amazon sellers offering personalised products. Automate conversion of Amazon Custom orders into ready-to-use print and laser engraving files.",
       },
-      { name: "author", content: "Gravurtastisch" },
+      { name: "author", content: "Printomation" },
       { name: "robots", content: "index, follow" },
       {
         name: "googlebot",
         content: "index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1",
       },
-      { property: "og:site_name", content: "Gravurtastisch" },
+      { property: "og:site_name", content: "Printomation" },
       { property: "og:type", content: "website" },
-      { property: "og:title", content: "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts" },
+      { property: "og:title", content: "Printomation - Automate Amazon Custom into Production-Ready Files" },
       {
         property: "og:description",
         content:
-          "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery.",
+          "Printomation is the B2B SaaS platform for Amazon sellers offering personalised products. Automate conversion of Amazon Custom orders into ready-to-use print and laser engraving files.",
       },
       { property: "og:url", content: DEFAULT_SITE_URL },
       { property: "og:image", content: DEFAULT_OG_IMAGE },
       { property: "og:image:width", content: "1200" },
       { property: "og:image:height", content: "630" },
-      { property: "og:image:alt", content: "Gravurtastisch Studio" },
+      { property: "og:image:alt", content: "Printomation Automation Platform" },
       { property: "og:locale", content: "de_DE" },
       { property: "og:locale:alternate", content: "en_US" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@gravurtastisch" },
-      { name: "twitter:creator", content: "@gravurtastisch" },
-      { name: "twitter:title", content: "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts" },
+      { name: "twitter:site", content: "@printomation" },
+      { name: "twitter:creator", content: "@printomation" },
+      { name: "twitter:title", content: "Printomation - Automate Amazon Custom into Production-Ready Files" },
       {
         name: "twitter:description",
         content:
-          "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery.",
+          "Printomation is the B2B SaaS platform for Amazon sellers offering personalised products. Automate conversion of Amazon Custom orders into ready-to-use print and laser engraving files.",
       },
       { name: "twitter:image", content: DEFAULT_OG_IMAGE },
     ],
@@ -150,11 +150,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          "name": "Gravurtastisch",
+          "name": "Printomation",
           "url": DEFAULT_SITE_URL,
           "logo": `${DEFAULT_SITE_URL}/g.svg`,
           "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
-          "email": "info@gravurtastisch.de",
+          "email": "support@printomation.com",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "Gertrudstr. 2",
@@ -164,9 +164,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "addressCountry": "DE"
           },
           "sameAs": [
-            "https://www.linkedin.com/company/gravurtastisch",
-            "https://www.facebook.com/gravurtastisch",
-            "https://www.instagram.com/gravurtastisch"
+            "https://www.linkedin.com/company/printomation",
+            "https://www.facebook.com/printomation",
+            "https://www.instagram.com/printomation"
           ]
         }),
       },
@@ -175,7 +175,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "WebSite",
-          "name": "Gravurtastisch",
+          "name": "Printomation",
           "url": DEFAULT_SITE_URL
         }),
       },

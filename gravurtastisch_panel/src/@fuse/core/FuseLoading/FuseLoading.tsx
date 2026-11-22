@@ -8,7 +8,7 @@ export type FuseLoadingProps = {
 };
 
 /**
- * FuseLoading displays a branded loading state with Gravurtastisch logo and progress bar.
+ * FuseLoading displays a branded loading state with Printomation logo and progress bar.
  */
 function FuseLoading(props: FuseLoadingProps) {
 	const { delay = 0, className } = props;
@@ -32,7 +32,7 @@ function FuseLoading(props: FuseLoadingProps) {
 					<img
 						className="splash-logo w-48 sm:w-56 h-auto object-contain"
 						src="/gravurtastich.png"
-						alt="Gravurtastisch"
+						alt="Printomation"
 					/>
 				</div>
 				<div className="splash-progress-track">

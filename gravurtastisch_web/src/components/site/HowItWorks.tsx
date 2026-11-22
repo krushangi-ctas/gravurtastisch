@@ -45,195 +45,197 @@ export function HowItWorks() {
           </div>
         </Reveal>
 
-        {/* 1. Panoramic 4-Stage Visual Runway (Connected Process Runway with embedded interactive artifacts) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 relative mb-12">
-          {/* Stage 1: Send Your Design */}
-          <Reveal delay={60}>
-            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-6 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
+        {/* 1. Panoramic 5-Stage Visual Runway (The 5-Step Customer Process) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 relative mb-12">
+          {/* Stage 1: Learn About the Software */}
+          <Reveal delay={40}>
+            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-5 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
               <div>
-                {/* Stage Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="h-9 w-9 rounded-xl bg-[#0032ab]/10 border border-[#0032ab]/20 text-[#0032ab] dark:text-brand-bright font-mono font-bold text-xs grid place-items-center">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="h-8 w-8 rounded-xl bg-[#0032ab]/10 border border-[#0032ab]/20 text-[#0032ab] dark:text-brand-bright font-mono font-bold text-xs grid place-items-center">
                     01
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
-                    Intake & Brief
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
+                    Overview
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-navy-deep dark:text-white leading-snug">
-                  {t("howItWorks.step1Title", "Send your design")}
+                <h3 className="text-base font-bold text-navy-deep dark:text-white leading-snug">
+                  {t("howItWorks.step1Title", "Learn about the software")}
                 </h3>
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   {t(
                     "howItWorks.step1Desc",
-                    "Upload photos, logos, or text. Tell us the product, quantity, and any placement notes."
+                    "Explore our automation features, supported file outputs (PDF, SVG, DXF, EZCad), and how ASIN templates map your Amazon Custom products."
                   )}
                 </p>
               </div>
 
-              {/* Embedded Visual Artifact: File Dropzone & Supported Formats */}
-              <div className="mt-5 p-3.5 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs">
-                <div className="flex items-center gap-2 mb-2 text-xs font-bold text-[#0032ab] dark:text-brand-bright">
-                  <UploadCloud className="w-4 h-4" />
-                  <span>{t("howItWorks.artifactIngestion", "Artwork Ingestion")}</span>
+              <div className="mt-4 p-3 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs">
+                <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-[#0032ab] dark:text-brand-bright">
+                  <FileCode className="w-3.5 h-3.5" />
+                  <span>Output Formats</span>
                 </div>
-                <div className="flex flex-wrap gap-1 text-[10px] font-mono font-semibold text-slate-500 dark:text-slate-400">
+                <div className="flex flex-wrap gap-1 text-[9px] font-mono font-semibold text-slate-500 dark:text-slate-400">
                   <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.SVG</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.AI</span>
-                  <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.PNG</span>
                   <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.PDF</span>
                   <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.DXF</span>
+                  <span className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-white/06">.EZD</span>
                 </div>
-                <span className="mt-2 block text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ✓ {t("howItWorks.skuClassification", "Automatic SKU Classification")}
-                </span>
               </div>
             </div>
           </Reveal>
 
-          {/* Stage 2: Free Digital Proof (THE SAFETY GATE - Featured Glowing Border) */}
-          <Reveal delay={100}>
-            <div className="h-full rounded-3xl bg-white dark:bg-navy/90 border-2 border-[#0032ab] p-6 flex flex-col justify-between shadow-xl shadow-[#0032ab]/12 relative overflow-hidden">
-              <div className="absolute top-0 right-0 px-3 py-1 bg-[#0032ab] text-white text-[10px] font-mono font-bold uppercase rounded-bl-xl shadow-xs">
-                {t("howItWorks.safetyGate", "Safety Gate")}
-              </div>
-
+          {/* Stage 2: Register Your Account */}
+          <Reveal delay={70}>
+            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-5 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
               <div>
-                {/* Stage Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="h-9 w-9 rounded-xl bg-[#0032ab] text-white font-mono font-bold text-xs grid place-items-center shadow-xs">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="h-8 w-8 rounded-xl bg-[#0032ab]/10 border border-[#0032ab]/20 text-[#0032ab] dark:text-brand-bright font-mono font-bold text-xs grid place-items-center">
                     02
                   </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    100% Free Proof
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
+                    Free Signup
                   </span>
                 </div>
 
-                <h3 className="text-lg font-bold text-[#0032ab] dark:text-brand-bright leading-snug">
-                  {t("howItWorks.step2Title", "Free digital proof")}
+                <h3 className="text-base font-bold text-navy-deep dark:text-white leading-snug">
+                  {t("howItWorks.step2Title", "Register your account")}
                 </h3>
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   {t(
                     "howItWorks.step2Desc",
-                    "We mock up layout on the real product shape. You approve - or request tweaks - before production."
+                    "Create your seller account in less than two minutes. No complex software installations—everything runs securely in the cloud."
                   )}
                 </p>
               </div>
 
-              {/* Embedded Visual Artifact: Interactive Proof Approval Simulation */}
-              <div className="mt-5 p-3.5 rounded-2xl bg-slate-50 dark:bg-white/05 border border-[#0032ab]/20 shadow-2xs">
-                <div className="flex items-center justify-between mb-2 text-xs">
-                  <span className="font-bold text-navy-deep dark:text-white font-mono text-[11px]">
-                    Mockup Preview
+              <div className="mt-4 p-3 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs">
+                <div className="flex items-center gap-1.5 mb-1.5 text-[11px] font-bold text-emerald-600">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>Instant Activation</span>
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono">
+                  Cloud Portal · Browser Access
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Stage 3: Choose a Subscription */}
+          <Reveal delay={100}>
+            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-5 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="h-8 w-8 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 font-mono font-bold text-xs grid place-items-center">
+                    03
                   </span>
-                  <span
-                    className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                      proofApproved
-                        ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                        : "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-300"
-                    }`}
-                  >
-                    {proofApproved ? "APPROVED" : "AWAITING OK"}
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
+                    Flexible Plans
                   </span>
                 </div>
 
+                <h3 className="text-base font-bold text-navy-deep dark:text-white leading-snug">
+                  {t("howItWorks.step3Title", "Choose a subscription")}
+                </h3>
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {t(
+                    "howItWorks.step3Desc",
+                    "Select a flexible plan based on your monthly custom order volume and marketplaces. Cancel or upgrade anytime with zero hidden fees."
+                  )}
+                </p>
+              </div>
+
+              <div className="mt-4 p-3 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs">
+                <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold text-amber-600">
+                  <Zap className="w-3.5 h-3.5" />
+                  <span>Order Quota Tiers</span>
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono">
+                  Starter · Growth · Scale
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Stage 4: Connect Amazon Account */}
+          <Reveal delay={130}>
+            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-5 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="h-8 w-8 rounded-xl bg-sky-500/10 border border-sky-500/20 text-sky-600 font-mono font-bold text-xs grid place-items-center">
+                    04
+                  </span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
+                    SP-API OAuth
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-navy-deep dark:text-white leading-snug">
+                  {t("howItWorks.step4Title", "Connect Amazon account")}
+                </h3>
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                  {t(
+                    "howItWorks.step4Desc",
+                    "Link your Amazon Seller Central account securely via Amazon's official Selling Partner API (SP-API) using OAuth 2.0 authorization."
+                  )}
+                </p>
+              </div>
+
+              <div className="mt-4 p-3 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs">
+                <div className="flex items-center gap-1.5 mb-1 text-[11px] font-bold text-sky-600">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>Official Amazon API</span>
+                </div>
+                <p className="text-[10px] text-slate-500 font-mono">
+                  DE · FR · IT · ES · UK · US
+                </p>
+              </div>
+            </div>
+          </Reveal>
+
+          {/* Stage 5: Automate & Download Files (Featured Border & Simulation) */}
+          <Reveal delay={160}>
+            <div className="h-full rounded-3xl bg-white dark:bg-navy/90 border-2 border-[#0032ab] p-5 flex flex-col justify-between shadow-xl shadow-[#0032ab]/12 relative overflow-hidden">
+              <div className="absolute top-0 right-0 px-2.5 py-0.5 bg-[#0032ab] text-white text-[9px] font-mono font-bold uppercase rounded-bl-xl shadow-xs">
+                {t("howItWorks.safetyGate", "Machine Ready")}
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="h-8 w-8 rounded-xl bg-[#0032ab] text-white font-mono font-bold text-xs grid place-items-center shadow-xs">
+                    05
+                  </span>
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Instant
+                  </span>
+                </div>
+
+                <h3 className="text-base font-bold text-[#0032ab] dark:text-brand-bright leading-snug">
+                  {t("howItWorks.step5Title", "Automate & download files")}
+                </h3>
+                <p className="mt-2 text-xs text-slate-600 dark:text-slate-300 leading-relaxed">
+                  {t(
+                    "howItWorks.step5Desc",
+                    "Sit back as Amazon Custom orders are automatically pulled and converted into ready-to-run print and engraving files for one-click downloading."
+                  )}
+                </p>
+              </div>
+
+              <div className="mt-4 p-2.5 rounded-2xl bg-slate-50 dark:bg-white/05 border border-[#0032ab]/20 shadow-2xs">
                 <button
                   type="button"
                   onClick={() => setProofApproved(!proofApproved)}
-                  className={`w-full py-2 px-3 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center justify-center gap-1.5 ${
+                  className={`w-full py-1.5 px-2.5 rounded-xl text-xs font-bold transition-all cursor-pointer shadow-xs flex items-center justify-center gap-1.5 ${
                     proofApproved
                       ? "bg-emerald-600 text-white shadow-emerald-500/20"
                       : "bg-[#0032ab] text-white hover:bg-[#00227a]"
                   }`}
                 >
                   <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>{proofApproved ? "Proof OK · Unlocked!" : "Simulate Approval"}</span>
+                  <span>{proofApproved ? "File Download Ready!" : "Simulate File Gen"}</span>
                 </button>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Stage 3: Craft & Engrave */}
-          <Reveal delay={140}>
-            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-6 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
-              <div>
-                {/* Stage Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="h-9 w-9 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 font-mono font-bold text-xs grid place-items-center">
-                    03
-                  </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
-                    {t("howItWorks.studioProduction", "Studio Production")}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-navy-deep dark:text-white leading-snug">
-                  {t("howItWorks.step3Title", "Craft & engrave")}
-                </h3>
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {t(
-                    "howItWorks.step3Desc",
-                    "Laser engraving, printing, or stitching runs on studio-calibrated equipment with a quality check."
-                  )}
-                </p>
-              </div>
-
-              {/* Embedded Visual Artifact: Machine Calibration Telemetry */}
-              <div className="mt-5 p-3.5 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-amber-600">
-                  <Flame className="w-4 h-4" />
-                  <span>{t("howItWorks.laserCalibration", "Laser Cell Calibration")}</span>
-                </div>
-                <div className="grid grid-cols-2 gap-1.5 text-[10px] font-mono text-slate-600 dark:text-slate-300">
-                  <div className="px-2 py-1 rounded bg-slate-100 dark:bg-white/06">Beam: 0.05mm</div>
-                  <div className="px-2 py-1 rounded bg-slate-100 dark:bg-white/06">Laser: 120W Peak</div>
-                </div>
-                <span className="block text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ✓ {t("howItWorks.opticalInspection", "Optical Quality Inspection")}
-                </span>
-              </div>
-            </div>
-          </Reveal>
-
-          {/* Stage 4: Pack & Deliver */}
-          <Reveal delay={180}>
-            <div className="h-full rounded-3xl liquid-glass border border-slate-200/90 dark:border-white/10 p-6 flex flex-col justify-between hover:border-[#0032ab]/30 transition-all duration-300 shadow-sm hover:shadow-md">
-              <div>
-                {/* Stage Header */}
-                <div className="flex items-center justify-between mb-4">
-                  <span className="h-9 w-9 rounded-xl bg-purple-500/10 border border-purple-500/20 text-purple-600 font-mono font-bold text-xs grid place-items-center">
-                    04
-                  </span>
-                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold px-2.5 py-1 rounded-full bg-slate-100 dark:bg-white/06 text-slate-600 dark:text-slate-300">
-                    {t("howItWorks.doorstepDelivery", "Doorstep Delivery")}
-                  </span>
-                </div>
-
-                <h3 className="text-lg font-bold text-navy-deep dark:text-white leading-snug">
-                  {t("howItWorks.step4Title", "Pack & deliver")}
-                </h3>
-                <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-                  {t(
-                    "howItWorks.step4Desc",
-                    "Finished pieces are packed with care and shipped with tracking straight to you or your customer."
-                  )}
-                </p>
-              </div>
-
-              {/* Embedded Visual Artifact: Carrier Dispatch & Tracking */}
-              <div className="mt-5 p-3.5 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/80 dark:border-white/08 shadow-2xs space-y-1.5">
-                <div className="flex items-center gap-2 text-xs font-bold text-purple-600">
-                  <PackageCheck className="w-4 h-4" />
-                  <span>{t("howItWorks.carrierDispatch", "Direct Carrier Dispatch")}</span>
-                </div>
-                <div className="px-2 py-1 rounded bg-slate-100 dark:bg-white/06 font-mono text-[10px] text-slate-600 dark:text-slate-300 truncate">
-                  DHL / DPD: #GT-24018-EU
-                </div>
-                <span className="block text-[10px] font-mono text-emerald-600 dark:text-emerald-400 font-semibold">
-                  ✓ {t("howItWorks.ecoWrap", "Individual Eco Cushion Wrap")}
-                </span>
               </div>
             </div>
           </Reveal>
@@ -256,7 +258,7 @@ function GanttChart() {
   const ganttRows = [
     { laneKey: "ganttLaneOrder", left: "8%", width: "42%", tone: "bg-slate-200/90 text-slate-700", labelKey: "ganttLabelFulfilled" },
     { laneKey: "ganttLaneDelivery", left: "42%", width: "18%", tone: "bg-[#0032ab] text-white font-semibold shadow-xs", labelKey: "ganttLabelMarked" },
-    { laneKey: "ganttLaneGravurtastisch", left: "58%", width: "22%", tone: "bg-gradient-to-r from-[#0032ab] to-[#4f6ef7] text-white font-bold ring-2 ring-[#4f6ef7]/50 shadow-md", labelKey: "ganttLabelRequestSent", pulse: true },
+    { laneKey: "ganttLanePrintomation", left: "58%", width: "22%", tone: "bg-gradient-to-r from-[#0032ab] to-[#4f6ef7] text-white font-bold ring-2 ring-[#4f6ef7]/50 shadow-md", labelKey: "ganttLabelRequestSent", pulse: true },
     { laneKey: "ganttLaneBuyer", left: "78%", width: "18%", tone: "bg-slate-100 border border-dashed border-slate-300 text-slate-500", labelKey: "ganttLabelMayLeave", muted: true },
   ];
 
@@ -329,7 +331,7 @@ function GanttChart() {
               >
                 <span
                   className={`text-[10px] sm:text-[11px] truncate ${
-                    row.laneKey === "ganttLaneGravurtastisch" || row.laneKey === "ganttLaneDelivery"
+                    row.laneKey === "ganttLanePrintomation" || row.laneKey === "ganttLaneDelivery"
                       ? "!text-white font-bold"
                       : row.muted
                         ? "text-slate-500"

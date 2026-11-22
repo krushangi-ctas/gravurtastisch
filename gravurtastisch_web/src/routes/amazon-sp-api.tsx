@@ -42,22 +42,22 @@ export const Route = createFileRoute("/amazon-sp-api")({
   pendingComponent: ServicePageSkeleton,
   head: () => {
     const { meta, links } = seo({
-      title: "Amazon SP-API Integration - Gravurtastisch Studio",
+      title: "Amazon SP-API Integration - Printomation SaaS",
       description: i18n.exists("amazonSpApi.heroDesc")
         ? i18n.t("amazonSpApi.heroDesc")
-        : "Connect your Amazon storefront via official Selling Partner API (SP-API) for automated review requests and custom order fulfillment.",
+        : "Connect your Amazon Seller Central store via official Selling Partner API (SP-API) for automated custom order ingestion and ready-to-run file generation.",
       url: "/amazon-sp-api",
-      keywords: ["amazon sp-api", "selling partner api", "fba automation", "amazon review solicitation"],
+      keywords: ["amazon sp-api", "selling partner api", "amazon custom automation", "printomation"],
     });
 
     const faqs = [
       {
-        q: "How does Gravurtastisch connect to my shop?",
-        a: "Where your platform supports OAuth or API tokens, you authorize Gravurtastisch with scoped permissions. We never see your shop password.",
+        q: "How does Printomation connect to my Amazon Seller account?",
+        a: "We connect via Amazon's official Selling Partner API (SP-API) using OAuth 2.0 authorization tokens. We never see or store your Seller Central password.",
       },
       {
-        q: "Can Gravurtastisch misproduce my order?",
-        a: "No. Every order requires explicit digital mockup approval before physical engraving commences.",
+        q: "How does Printomation prevent errors in custom files?",
+        a: "Printomation extracts buyer text, font choices, and uploaded photos directly from Amazon Custom data, validating resolution and boundaries automatically before compiling production files.",
       },
     ];
 
@@ -207,31 +207,31 @@ function AmazonSpApiPage() {
   const comparisonRows = [
     {
       feature: t('amazonSpApi.compRow1Feature', 'Proof before production'),
-      gravurtastisch: t('amazonSpApi.compRow1RS', 'Always - digital mockup required'),
+      printomation: t('amazonSpApi.compRow1RS', 'Always - digital mockup required'),
       scraping: t('amazonSpApi.compRow1Scraping', 'Often skipped or inconsistent'),
       smtp: t('amazonSpApi.compRow1Smtp', 'Template-only, no true product mockup'),
     },
     {
       feature: t('amazonSpApi.compRow2Feature', 'Artwork security'),
-      gravurtastisch: t('amazonSpApi.compRow2RS', 'Encrypted vault, scoped access'),
+      printomation: t('amazonSpApi.compRow2RS', 'Encrypted vault, scoped access'),
       scraping: t('amazonSpApi.compRow2Scraping', 'Files in inboxes and chat apps'),
       smtp: t('amazonSpApi.compRow2Smtp', 'Unknown retention policies'),
     },
     {
       feature: t('amazonSpApi.compRow3Feature', 'Brand consistency'),
-      gravurtastisch: t('amazonSpApi.compRow3RS', 'Saved presets per SKU and color'),
+      printomation: t('amazonSpApi.compRow3RS', 'Saved presets per SKU and color'),
       scraping: t('amazonSpApi.compRow3Scraping', 'Drifts between reorder batches'),
       smtp: t('amazonSpApi.compRow3Smtp', 'Stock designs, limited customization'),
     },
     {
       feature: t('amazonSpApi.compRow4Feature', 'Order visibility'),
-      gravurtastisch: t('amazonSpApi.compRow4RS', 'Single dashboard: proof → ship'),
+      printomation: t('amazonSpApi.compRow4RS', 'Single dashboard: proof → ship'),
       scraping: t('amazonSpApi.compRow4Scraping', 'Spreadsheets and threads'),
       smtp: t('amazonSpApi.compRow4Smtp', 'Opaque third-party status'),
     },
     {
       feature: t('amazonSpApi.compRow5Feature', 'Material expertise'),
-      gravurtastisch: t('amazonSpApi.compRow5RS', 'Laser-tuned profiles per material'),
+      printomation: t('amazonSpApi.compRow5RS', 'Laser-tuned profiles per material'),
       scraping: t('amazonSpApi.compRow5Scraping', 'Varies by whoever is available'),
       smtp: t('amazonSpApi.compRow5Smtp', 'One-size-fits-all printing'),
     },
@@ -239,15 +239,15 @@ function AmazonSpApiPage() {
 
   const faqs = [
     {
-      q: t('amazonSpApi.faq1Q', 'How does Gravurtastisch connect to my shop?'),
-      a: t('amazonSpApi.faq1A', 'Where your platform supports OAuth or API tokens, you authorize Gravurtastisch with scoped permissions. We never see your shop password.'),
+      q: t('amazonSpApi.faq1Q', 'How does Printomation connect to my shop?'),
+      a: t('amazonSpApi.faq1A', 'Where your platform supports OAuth or API tokens, you authorize Printomation with scoped permissions. We never see your shop password.'),
     },
     {
-      q: t('amazonSpApi.faq2Q', 'Can Gravurtastisch misproduce my order?'),
+      q: t('amazonSpApi.faq2Q', 'Can Printomation misproduce my order?'),
       a: t('amazonSpApi.faq2A', 'Production unlocks only after you approve the digital proof. That gate is our primary guard against wrong placement, crops, or colors.'),
     },
     {
-      q: t('amazonSpApi.faq3Q', 'What data does Gravurtastisch need?'),
+      q: t('amazonSpApi.faq3Q', 'What data does Printomation need?'),
       a: t('amazonSpApi.faq3A', 'Order references, SKU mappings, shipping addresses, and artwork files required to fulfill - not your unrelated financial or customer marketing lists.'),
     },
     {
@@ -519,7 +519,7 @@ function AmazonSpApiPage() {
                   {t('amazonSpApi.endpointsHeading', 'Connections we support')}
                 </h2>
                 <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl text-left">
-                  {t('amazonSpApi.endpointsDesc', 'Gravurtastisch integrates with common commerce APIs and webhooks - we do not scrape private admin panels.')}
+                  {t('amazonSpApi.endpointsDesc', 'Printomation integrates with common commerce APIs and webhooks - we do not scrape private admin panels.')}
                 </p>
               </div>
             </Reveal>
@@ -607,7 +607,7 @@ function AmazonSpApiPage() {
                   {t('amazonSpApi.comparisonHeading', 'Why a unified studio hub beats DIY vendors')}
                 </h2>
                 <p className="mt-4 text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
-                  {t('amazonSpApi.comparisonDesc', 'Compare Gravurtastisch integrations with risky manual workflows.')}
+                  {t('amazonSpApi.comparisonDesc', 'Compare Printomation integrations with risky manual workflows.')}
                 </p>
               </div>
             </Reveal>
@@ -661,7 +661,7 @@ function AmazonSpApiPage() {
                           {t('amazonSpApi.compColFeature', 'Quality feature')}
                         </th>
                         <th className="p-4 sm:p-5 text-[#0032ab] dark:text-[#4f6ef7] font-black bg-[#0032ab]/06 dark:bg-[#4f6ef7]/10 border-x border-[#0032ab]/15 min-w-[210px]">
-                          {t('amazonSpApi.compColGravurtastisch', 'Gravurtastisch hub')}
+                          {t('amazonSpApi.compColPrintomation', 'Printomation hub')}
                         </th>
                         <th className="p-4 sm:p-5 text-slate-500 dark:text-slate-400 font-bold min-w-[170px]">
                           {t('amazonSpApi.compColScraping', 'Manual email / freelancers')}
@@ -684,7 +684,7 @@ function AmazonSpApiPage() {
                           <td className="p-4 sm:p-5 font-bold text-[#0032ab] dark:text-[#4f6ef7] bg-[#0032ab]/[0.03] dark:bg-[#4f6ef7]/[0.05] border-x border-[#0032ab]/12 text-xs sm:text-sm">
                             <div className="flex items-center gap-2">
                               <CheckCircle2 className="h-4 w-4 text-[#0032ab] dark:text-[#4f6ef7] shrink-0" />
-                              <span>{row.gravurtastisch}</span>
+                              <span>{row.printomation}</span>
                             </div>
                           </td>
                           <td className="p-4 sm:p-5 text-slate-500 dark:text-slate-400 font-medium text-xs">
@@ -845,7 +845,7 @@ function SpApiFaqSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Studio SP-API Trust Passport and Security Enclave"
+      aria-label="Printomation Studio SP-API Trust Passport and Security Enclave"
     >
       <defs>
         {/* Soft Drop Shadows */}
@@ -913,16 +913,16 @@ function SpApiFaqSvg() {
 
       {/* Title */}
       <text x="68" y="34" fill="#0032ab" fontFamily="monospace" fontSize="9.5" fontWeight="800" letterSpacing="0.8">
-        GRAVURTASTISCH // SP-API TRUST PASSPORT
+        PRINTOMATION // SP-API TRUST PASSPORT
       </text>
 
       {/* Right Verified Pill Badge */}
-      <g transform="translate(382, 18)">
-        <rect width="134" height="24" rx="12" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
+      <g transform="translate(366, 18)">
+        <rect width="126" height="24" rx="12" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
         <circle cx="12" cy="12" r="3" fill="#10b981">
           <animate attributeName="opacity" values="1;0.4;1" dur="2s" repeatCount="indefinite" />
         </circle>
-        <text x="22" y="15.5" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">
+        <text x="21" y="15.5" fill="#059669" fontFamily="monospace" fontSize="7.8" fontWeight="800" letterSpacing="0.2">
           TLS 1.3 · ZERO RETENTION
         </text>
       </g>
@@ -1208,7 +1208,7 @@ function AmazonSpApiHeroSvg() {
             <span className="w-3 h-3 rounded-full bg-emerald-400" />
           </div>
           <span className="text-slate-500 font-bold ml-2 hidden sm:inline">
-            gravurtastisch-studio-hub // pipeline.ts
+            printomation-automation-hub // pipeline.ts
           </span>
         </div>
         <div className="flex items-center gap-2">
@@ -1252,7 +1252,7 @@ function AmazonSpApiHeroSvg() {
           </div>
         </div>
 
-        {/* Node 2: Gravurtastisch Studio Core (Elevated Center) */}
+        {/* Node 2: Printomation Studio Core (Elevated Center) */}
         <div className="p-4 rounded-2xl bg-gradient-to-b from-[#0032ab]/06 via-white to-blue-50/20 dark:from-[#4f6ef7]/15 dark:to-navy/80 border-2 border-[#0032ab]/30 dark:border-[#4f6ef7]/40 space-y-3 shadow-md shadow-[#0032ab]/06">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -1260,7 +1260,7 @@ function AmazonSpApiHeroSvg() {
                 <Sparkles className="w-4 h-4" />
               </div>
               <span className="text-xs font-bold text-navy-deep dark:text-white">
-                Gravurtastisch Core
+                Printomation Core
               </span>
             </div>
             <span className="h-2 w-2 rounded-full bg-cyan-400 animate-pulse" />

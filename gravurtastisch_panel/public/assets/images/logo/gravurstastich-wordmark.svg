@@ -1,6 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" fill="none" role="img" aria-label="Gravurtastisch">
-  <rect x="0" y="8" width="48" height="48" rx="12" fill="#282828"/>
-  <path d="M14 38.5V25.5h9.2c3.55 0 5.85 1.95 5.85 4.85 0 1.95-1.05 3.45-2.85 4.2L30.5 38.5h-4.35l-3.7-3.55H18.1V38.5H14zm4.1-7.05h5c1.55 0 2.5-.85 2.5-2.1s-.95-2.1-2.5-2.1h-5v4.2z" fill="#FFFFFF"/>
-  <path d="M33.2 25.2l1.35 3.55 3.75.15-2.95 2.35.95 3.65-3.1-1.95-3.1 1.95.95-3.65-2.95-2.35 3.75-.15 1.35-3.55z" fill="#D2B48C"/>
-  <text x="62" y="40" fill="#282828" font-family="Montserrat, Geist, system-ui, sans-serif" font-size="28" font-weight="700" letter-spacing="-0.5">Gravurtastisch</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 64" fill="none" role="img" aria-label="Printomation">
+  <defs>
+    <linearGradient id="pw-bg-grad" x1="6" y1="8" x2="54" y2="56" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0032ab"/>
+      <stop offset="0.5" stop-color="#2032b5"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="pw-stem-grad" x1="18" y1="14" x2="44" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#93c5fd"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+    <linearGradient id="pw-text-grad" x1="160" y1="20" x2="320" y2="50" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2563eb"/>
+      <stop offset="0.5" stop-color="#4f6ef7"/>
+      <stop offset="1" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <!-- Mark -->
+  <rect x="6" y="8" width="48" height="48" rx="12" fill="url(#pw-bg-grad)"/>
+  <rect x="8" y="10" width="44" height="44" rx="10" fill="#001858"/>
+  <circle cx="44" cy="20" r="5" fill="#38bdf8" opacity="0.4"/>
+  <path d="M20 18C20 16.9 20.9 16 22 16H33C39.08 16 44 20.92 44 27C44 33.08 39.08 38 33 38H26V46C26 47.1 25.1 48 24 48C22.9 48 22 47.1 22 46V20C22 18.9 21.1 18 20 18Z" fill="url(#pw-stem-grad)"/>
+  <path d="M28 22H33C35.76 22 38 24.24 38 27C38 29.76 35.76 32 33 32H28V22Z" fill="#001858"/>
+  <circle cx="28" cy="27" r="2.5" fill="#38bdf8"/>
+  <!-- Typography -->
+  <text x="68" y="42" fill="#0f172a" font-family="Montserrat, Geist, system-ui, sans-serif" font-size="28" font-weight="800" letter-spacing="-0.5">Print</text>
+  <text x="142" y="42" fill="url(#pw-text-grad)" font-family="Montserrat, Geist, system-ui, sans-serif" font-size="28" font-weight="800" letter-spacing="-0.5">omation</text>
 </svg>

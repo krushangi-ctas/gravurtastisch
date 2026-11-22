@@ -1,5 +1,21 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="Gravurtastisch">
-  <rect width="48" height="48" rx="12" fill="#282828"/>
-  <text x="24" y="32" text-anchor="middle" fill="#FFFFFF" font-family="Montserrat, Geist, system-ui, sans-serif" font-size="22" font-weight="800" letter-spacing="-1">G</text>
-  <circle cx="36" cy="14" r="3.5" fill="#D2B48C"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" role="img" aria-label="Printomation">
+  <defs>
+    <linearGradient id="p-bg-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0032ab"/>
+      <stop offset="0.5" stop-color="#2032b5"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="p-stem-grad" x1="12" y1="6" x2="38" y2="42" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ffffff"/>
+      <stop offset="0.45" stop-color="#93c5fd"/>
+      <stop offset="1" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="url(#p-bg-grad)"/>
+  <rect x="2" y="2" width="44" height="44" rx="10" fill="#001858"/>
+  <circle cx="36" cy="12" r="5" fill="#38bdf8" opacity="0.4"/>
+  <path d="M14 10C14 8.9 14.9 8 16 8H27C33.08 8 38 12.92 38 19C38 25.08 33.08 30 27 30H20V38C20 39.1 19.1 40 18 40C16.9 40 16 39.1 16 38V12C16 10.9 15.1 10 14 10Z" fill="url(#p-stem-grad)"/>
+  <path d="M22 14H27C29.76 14 32 16.24 32 19C32 21.76 29.76 24 27 24H22V14Z" fill="#001858"/>
+  <circle cx="22" cy="19" r="3" fill="#38bdf8"/>
+  <path d="M22 19L36 19" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 2"/>
 </svg>

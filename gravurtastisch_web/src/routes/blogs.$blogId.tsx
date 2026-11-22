@@ -43,8 +43,8 @@ export const Route = createFileRoute("/blogs/$blogId")({
   head: ({ loaderData, params }) => {
     const blog = loaderData?.blog;
     const title = blog?.blog_title
-      ? `${blog.blog_title} - Gravurtastisch Journal`
-      : "Gravurtastisch Journal - Studio Insights";
+      ? `${blog.blog_title} - Printomation Journal`
+      : "Printomation Journal - Studio Insights";
     const description =
       blog?.short_description ||
       "Deep dives on custom engraving workflows, proofing, production scheduling, and gift fulfillment.";
@@ -60,7 +60,7 @@ export const Route = createFileRoute("/blogs/$blogId")({
       type: "article",
       publishedTime: blog?.createdAt,
       modifiedTime: blog?.updatedAt || blog?.createdAt,
-      author: "Gravurtastisch Studio",
+      author: "Printomation Studio",
     });
 
     return {
@@ -116,7 +116,7 @@ function BlogDetailPage() {
       });
     }
     if (blog?.description_images && Array.isArray(blog.description_images)) {
-      const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://api.gravurtastisch.com").replace(/\/+$/, "");
+      const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://gravurtastisch-api.onrender.com").replace(/\/+$/, "");
       blog.description_images.forEach((img) => {
         if (img) {
           const cleanPath = img.replace(/^\/+/, "");
@@ -146,7 +146,7 @@ function BlogDetailPage() {
           if (res?.data) {
             setBlog(res.data);
             // Update document title dynamically
-            document.title = `${res.data.blog_title} | Gravurtastisch Blog`;
+            document.title = `${res.data.blog_title} | Printomation Blog`;
 
             // If accessed via raw Mongo ID, transparently redirect to clean SEO slug URL
             if (res.data.slug && blogId !== res.data.slug) {
@@ -222,7 +222,7 @@ function BlogDetailPage() {
           </div>
           <h1 className="text-3xl font-extrabold font-display mb-3">{t("blogs.articleNotFound", "Article Not Found")}</h1>
           <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-            {t("blogs.articleNotFoundDesc", "The article you are looking for might have been updated or moved. Check out our latest Gravurtastisch studio guides in our journal.")}
+            {t("blogs.articleNotFoundDesc", "The article you are looking for might have been updated or moved. Check out our latest Printomation studio guides in our journal.")}
           </p>
           <Link
             to="/blogs"
@@ -297,11 +297,11 @@ function BlogDetailPage() {
               <div className="mt-8 pt-6 border-t border-[#0032ab]/15 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-600 font-medium">
                 <div className="flex items-center gap-4">
                   <div className="relative h-11 w-11 rounded-2xl bg-white border border-[#0032ab]/15 flex items-center justify-center p-2 shadow-xs shrink-0">
-                    <img src="/g.svg" alt="Gravurtastisch" className="h-full w-full object-contain" />
+                    <img src="/g.svg" alt="Printomation" className="h-full w-full object-contain" />
                   </div>
                   <div>
                     <div className="font-bold text-navy-deep flex items-center gap-1.5">
-                      {t("blogs.editorialTeam", "Gravurtastisch Editorial Team")}
+                      {t("blogs.editorialTeam", "Printomation Editorial Team")}
                       <ShieldCheck className="h-4 w-4 text-brand" />
                     </div>
                     <div className="text-xs text-slate-600">{t("blogs.editorialTeamSub", "Custom engraving & order fulfillment")}</div>
@@ -503,7 +503,7 @@ function BlogDetailPage() {
                           Ready to put custom orders on a clear studio path?
                         </h4>
                         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                          Gravurtastisch connects intake, proofs, and production so every mug and engraved piece ships as promised.
+                          Printomation connects intake, proofs, and production so every mug and engraved piece ships as promised.
                         </p>
                       </div>
                       <a
@@ -529,7 +529,7 @@ function BlogDetailPage() {
                   </div>
                   <h3 className="text-lg font-bold font-display text-navy-deep">{t("blogs.craftQuality", "Craft-quality workflow")}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-700 font-medium">
-                    Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage,
+                    Every personalized job flows through Printomation with proof approval, encrypted artwork storage,
                     and scheduled bench time - no guesswork on the shop floor.
                   </p>
                   <ul className="mt-4 space-y-2 text-xs text-slate-700 font-medium">

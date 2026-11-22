@@ -13,7 +13,7 @@ type LogoProps = {
 };
 
 /**
- * Gravurtastisch brand logo for the sidebar.
+ * Printomation brand logo for the sidebar.
  */
 function Logo(props: LogoProps) {
 	const { className = '' } = props;
@@ -22,7 +22,7 @@ function Logo(props: LogoProps) {
 			<img
 				className="h-12 w-auto max-w-[195px] object-contain block mx-auto dark:brightness-0 dark:invert"
 				src="/gravurtastich.png"
-				alt="Gravurtastisch"
+				alt="Printomation"
 			/>
 		</Root>
 	);

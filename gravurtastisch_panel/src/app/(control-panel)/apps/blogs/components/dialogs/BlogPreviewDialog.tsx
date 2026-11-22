@@ -355,7 +355,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 								</div>
 								<div>
 									<div className="font-semibold text-white flex items-center gap-1.5 text-sm">
-										Gravurtastisch Editorial Team
+										Printomation Editorial Team
 										<FuseSvgIcon size={16} className="text-blue-400">heroicons-solid:check-badge</FuseSvgIcon>
 									</div>
 									<div className="text-xs text-slate-400">
@@ -504,7 +504,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 												Ready to put custom orders on a clear studio path?
 											</h4>
 											<p className="text-xs sm:text-sm text-slate-500 mt-1">
-												Gravurtastisch connects intake, proofs, and production so every mug and engraved piece ships as promised.
+												Printomation connects intake, proofs, and production so every mug and engraved piece ships as promised.
 											</p>
 										</div>
 										<span className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-primary/20 cursor-pointer">
@@ -529,7 +529,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 									Craft-quality workflow
 								</h3>
 								<p className="mt-2 text-xs leading-relaxed text-slate-300">
-									Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage, and scheduled bench time — no guesswork on the shop floor.
+									Every personalized job flows through Printomation with proof approval, encrypted artwork storage, and scheduled bench time — no guesswork on the shop floor.
 								</p>
 
 								<ul className="mt-4 space-y-2 text-xs text-slate-300">

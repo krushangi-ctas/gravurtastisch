@@ -43,21 +43,31 @@ export function Hero() {
       <div className="hidden lg:block absolute top-[54%] right-[3%] w-4 h-4 rounded-full bg-gradient-to-br from-[#a855f7] to-[#6366f1] shadow-md pointer-events-none z-10" />
       <div className="hidden lg:block absolute bottom-[23%] right-[15%] w-6 h-6 rounded-full bg-gradient-to-br from-[#818cf8] to-[#3b82f6] shadow-md pointer-events-none z-10" />
 
-      {/* Left 3D Podium & Mug Composition (home1.png) */}
-      <div className="hidden lg:block absolute left-0 bottom-6 xl:bottom-8 w-[28%] xl:w-[30%] max-w-[480px] xl:max-w-[540px] pointer-events-none select-none z-10">
+      {/* Left 3D Podium & Mug Composition (home1.webp) */}
+      <div className="hidden lg:block absolute left-0 lg:left-2 xl:left-6 2xl:left-10 top-1/2 -translate-y-[48%] w-[25%] xl:w-[27%] max-w-[400px] xl:max-w-[460px] pointer-events-none select-none z-10">
         <div className="relative">
           {/* Subtle 3D Disc & Orbital Ring behind Podium */}
-          <div className="absolute -left-10 bottom-6 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-[#818cf8]/25 via-[#6366f1]/15 to-[#3b82f6]/20 blur-xl pointer-events-none -z-10" />
-          <div className="absolute -left-6 bottom-10 w-[380px] h-[380px] rounded-full border border-indigo-300/35 pointer-events-none -z-10" />
+          <div className="absolute -left-8 top-1/2 -translate-y-1/2 w-[420px] h-[420px] rounded-full bg-gradient-to-br from-[#818cf8]/25 via-[#6366f1]/15 to-[#3b82f6]/20 blur-xl pointer-events-none -z-10" />
+          <div className="absolute -left-4 top-1/2 -translate-y-1/2 w-[390px] h-[390px] rounded-full border border-indigo-300/35 pointer-events-none -z-10 animate-[spin_60s_linear_infinite_reverse]" />
           <img
             src="/home1.webp"
-            alt="Personalized Photo Mug & Laser Engraved Keepsakes"
-            className="w-full h-auto aspect-[900/772] object-contain object-bottom drop-shadow-[0_20px_35px_rgba(0,40,150,0.1)]"
+            alt="Automated Amazon Custom to Print and Laser Engraving Files"
+            className="w-full h-auto aspect-[900/772] object-contain drop-shadow-[0_25px_45px_rgba(20,40,140,0.15)] float-y will-change-transform"
+            style={{ animationDelay: "-3s" }}
             loading="lazy"
             decoding="async"
-            width="480"
-            height="412"
+            width="400"
+            height="343"
           />
+
+          {/* Frosted Glass Pill Badge: Automated Pre-Press -> Machine-Ready Output */}
+          <div className="absolute bottom-[6%] left-[8%] bg-white/85 backdrop-blur-xl border border-white/90 rounded-2xl px-3.5 py-2 shadow-[0_10px_25px_rgba(99,102,241,0.2)] flex items-center gap-2">
+            <span className="text-xs">⚙️</span>
+            <div className="text-left">
+              <p className="text-[11px] font-extrabold text-[#1c22aa] leading-tight">Automated Pre-Press</p>
+              <p className="text-[11px] font-extrabold text-[#7c3aed] leading-tight">Machine-Ready Output</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -70,7 +80,7 @@ export function Hero() {
 
           <img
             src="/home2.webp"
-            alt="Custom Engraved Bottle, Keychain & Photo Frame"
+            alt="Automated File Preparation for Amazon Custom Sellers"
             className="w-full h-auto aspect-[900/772] object-contain drop-shadow-[0_25px_45px_rgba(20,40,140,0.15)] float-y will-change-transform"
             loading="lazy"
             decoding="async"
@@ -78,13 +88,13 @@ export function Hero() {
             height="343"
           />
 
-          {/* Frosted Glass Pill Badge: Your Design Our Craft 💜 */}
-          <div className="absolute bottom-[6%] right-[8%] bg-white/75 backdrop-blur-xl border border-white/90 rounded-2xl px-3.5 py-2 shadow-[0_10px_25px_rgba(99,102,241,0.2)] flex items-center gap-2">
+          {/* Frosted Glass Pill Badge: Amazon Custom Order -> Production File Ready */}
+          <div className="absolute bottom-[6%] right-[8%] bg-white/85 backdrop-blur-xl border border-white/90 rounded-2xl px-3.5 py-2 shadow-[0_10px_25px_rgba(99,102,241,0.2)] flex items-center gap-2">
             <div className="text-left">
-              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">{t("hero.floatingYourDesign", "Your Design")}</p>
-              <p className="text-[11px] font-extrabold text-[#5b21b6] leading-tight">{t("hero.floatingOurCraft", "Our Craft")}</p>
+              <p className="text-[11px] font-extrabold text-[#1c22aa] leading-tight">{t("hero.floatingYourDesign", "Amazon Custom Order")}</p>
+              <p className="text-[11px] font-extrabold text-[#7c3aed] leading-tight">{t("hero.floatingOurCraft", "Production File Ready")}</p>
             </div>
-            <span className="text-xs">💜</span>
+            <span className="text-xs">⚡</span>
           </div>
         </div>
       </div>
@@ -100,16 +110,16 @@ export function Hero() {
 
           {/* Main Headline */}
           <h1 className="font-extrabold tracking-tight text-4xl sm:text-5xl lg:text-[3.5rem] xl:text-[4.25rem] leading-[1.08] text-[#0f172a] text-center">
-            <span>{t("hero.headline") || "Make it"}</span>{" "}
+            <span>{t("hero.headline") || "Automate Amazon Custom into"}</span>{" "}
             <span className="bg-gradient-to-r from-[#7c3aed] to-[#2563eb] bg-clip-text text-transparent">
-              {t("hero.headlineHighlight") || "Uniquely Yours"}
+              {t("hero.headlineHighlight") || "Production-Ready Files"}
             </span>
           </h1>
 
           {/* Description */}
           <p className="mt-6 max-w-2xl text-sm sm:text-base lg:text-lg text-slate-600 leading-[1.65] font-normal text-center mx-auto">
             {t("hero.description") ||
-              "From photo mugs and kitchen accessories to apparel and keepsakes - Gravurtastisch turns your artwork into finished pieces with digital proofs, studio-grade engraving, and dependable delivery."}
+              "Printomation automates the conversion of your Amazon Custom orders and personalisation data into ready-to-use print and laser engraving files. Less manual work, fewer errors, and instant preparation of production files."}
           </p>
 
           {/* CTA Buttons */}
@@ -118,19 +128,19 @@ export function Hero() {
               to="/register"
               className="inline-flex items-center gap-2 rounded-full px-7 py-3 text-sm font-bold text-white bg-gradient-to-r from-[#1c22aa] via-[#2032b5] to-[#2563eb] shadow-[0_8px_24px_rgba(28,34,170,0.38)] hover:shadow-[0_12px_28px_rgba(28,34,170,0.48)] hover:-translate-y-0.5 transition-all duration-300"
             >
-              <span>{t("hero.ctaRegister") || "Place Custom Order"} →</span>
+              <span>{t("hero.ctaRegister") || "Start Free Trial"} →</span>
             </Link>
             <Link
               to="/pricing"
               className="inline-flex items-center gap-2 rounded-full border border-slate-200/90 bg-white hover:bg-slate-50 px-7 py-3 text-sm font-semibold text-slate-800 shadow-xs hover:border-slate-300 transition-all duration-300"
             >
-              {t("hero.ctaPricing") || "See Pricing"}
+              {t("hero.ctaPricing") || "View Subscription Plans"}
             </Link>
           </div>
 
           {/* 3D Bento Luxury Glass Cards */}
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 w-full">
-            {/* Bento Card 1: 48h Proof Turnaround */}
+            {/* Bento Card 1: < 10s File Generation */}
             <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-sky-400 hover:shadow-[0_18px_40px_rgba(14,165,233,0.18)] hover:-translate-y-1 transition-all duration-300">
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between mb-5">
@@ -145,26 +155,26 @@ export function Hero() {
               {/* Metric & Label */}
               <div>
                 <div className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#0f172a] tracking-tight leading-none">
-                  48h
+                  &lt; 10s
                 </div>
                 <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
-                  {t("hero.statSendWindow") || "Proof turnaround"}
+                  {t("hero.statSendWindow") || "File generation"}
                 </p>
                 <p className="text-xs text-slate-600 mt-1 font-medium">
-                  {t("hero.proofSub", "Digital proof ready before production")}
+                  {t("hero.proofSub", "Ready-to-use print & engraving files in seconds")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-sky-800 font-semibold">
-                <span className="flex items-center gap-1">⚡ {t("hero.expressProofing", "Express Proofing")}</span>
+                <span className="flex items-center gap-1">⚡ {t("hero.expressProofing", "Instant Automation")}</span>
                 <span className="flex items-center gap-1">
-                  <Shield className="h-3.5 w-3.5 fill-sky-700 text-sky-700" /> {t("hero.guaranteed", "Guaranteed")}
+                  <Shield className="h-3.5 w-3.5 fill-sky-700 text-sky-700" /> {t("hero.guaranteed", "Machine Ready")}
                 </span>
               </div>
             </div>
 
-            {/* Bento Card 2: 10k+ Happy Clients */}
+            {/* Bento Card 2: 99.9% Error-Free Output */}
             <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-amber-400 hover:shadow-[0_18px_40px_rgba(245,158,11,0.18)] hover:-translate-y-1 transition-all duration-300">
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between mb-5">
@@ -172,31 +182,31 @@ export function Hero() {
                   <Star className="h-5 w-5 fill-amber-600 text-amber-600" />
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-amber-800 bg-amber-100/80 border border-amber-300/70 px-2.5 py-0.5 rounded-full">
-                  ✦ 4.9 {t("hero.ratingBadge", "RATING")}
+                  ✦ {t("hero.ratingBadge", "ZERO ERRORS")}
                 </span>
               </div>
 
               {/* Metric & Label */}
               <div>
                 <div className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#0f172a] tracking-tight leading-none">
-                  10k+
+                  99.9%
                 </div>
                 <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
-                  {t("hero.statReviewLift") || "Happy clients"}
+                  {t("hero.statReviewLift") || "Error-free output"}
                 </p>
                 <p className="text-xs text-slate-600 mt-1 font-medium">
-                  {t("hero.happyClientsSub", "Verified custom orders completed")}
+                  {t("hero.happyClientsSub", "Eliminates manual retyping, typos & misprints")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-amber-800 font-semibold">
-                <span>{t("hero.fiveStarQuality", "Five-Star Quality")}</span>
+                <span>{t("hero.fiveStarQuality", "Pre-Flight Protection")}</span>
                 <span className="text-amber-600 tracking-wider font-bold">★★★★★</span>
               </div>
             </div>
 
-            {/* Bento Card 3: 99.8% On-Time Ship Rate */}
+            {/* Bento Card 3: 85% Less Manual Work */}
             <div className="group relative rounded-[24px] bg-white/95 backdrop-blur-md p-5 sm:p-6 text-left flex flex-col justify-between shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-slate-100 border-b-[3px] border-b-emerald-400 hover:shadow-[0_18px_40px_rgba(16,185,129,0.18)] hover:-translate-y-1 transition-all duration-300">
               {/* Top Row: Icon + Badge */}
               <div className="flex items-center justify-between mb-5">
@@ -204,28 +214,28 @@ export function Hero() {
                   <Truck className="h-5 w-5" />
                 </div>
                 <span className="inline-flex items-center gap-1 text-[10px] font-bold uppercase tracking-wider text-emerald-800 bg-emerald-100/80 border border-emerald-300/70 px-2.5 py-0.5 rounded-full">
-                  ✦ {t("hero.euWideBadge", "EU WIDE")}
+                  ✦ {t("hero.euWideBadge", "EFFICIENCY")}
                 </span>
               </div>
 
               {/* Metric & Label */}
               <div>
                 <div className="text-3xl sm:text-4xl lg:text-[2.6rem] font-black text-[#0f172a] tracking-tight leading-none">
-                  99.8%
+                  85%
                 </div>
                 <p className="text-sm font-bold text-slate-900 mt-2 tracking-tight">
-                  {t("hero.statUptime") || "On-time ship rate"}
+                  {t("hero.statUptime") || "Less manual work"}
                 </p>
                 <p className="text-xs text-slate-600 mt-1 font-medium">
-                  {t("hero.uptimeSub", "Tracked courier dispatch across EU")}
+                  {t("hero.uptimeSub", "Save hours daily on pre-press file preparation")}
                 </p>
               </div>
 
               {/* Bottom Subtle Row */}
               <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between text-[11px] text-emerald-800 font-semibold">
-                <span className="flex items-center gap-1">📦 {t("hero.directStudioShipping", "Direct Studio Shipping")}</span>
+                <span className="flex items-center gap-1">⚙️ {t("hero.directStudioShipping", "SP-API Automated")}</span>
                 <span className="flex items-center gap-1">
-                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" /> {t("hero.insured", "Insured")}
+                  <ShieldCheck className="h-3.5 w-3.5 text-emerald-700" /> {t("hero.insured", "Verified")}
                 </span>
               </div>
             </div>
@@ -235,11 +245,11 @@ export function Hero() {
           <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 text-xs text-slate-700">
             <div className="flex items-center gap-1.5 font-semibold text-slate-800">
               <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span>{t("hero.spApiVerified") || "German craft precision"}</span>
+              <span>{t("hero.spApiVerified") || "Official Amazon SP-API Integration"}</span>
             </div>
             <span className="text-slate-300 mx-1 font-light">|</span>
             <div className="flex items-center gap-1.5">
-              <span className="text-slate-600">{t("hero.stores") || "Channels:"}</span>
+              <span className="text-slate-600">{t("hero.stores") || "Marketplaces:"}</span>
               <FlagDE className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
               <FlagFR className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />
               <FlagGB className="w-3.5 h-2.5 shadow-2xs rounded-[2px]" />

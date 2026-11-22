@@ -22,7 +22,7 @@ export const Route = createFileRoute("/payment/cancel")({
   }),
   head: () =>
     seo({
-      title: "Payment Cancelled - Gravurtastisch",
+      title: "Payment Cancelled - Printomation",
       description: "Payment was cancelled or interrupted. Return to plans or contact support.",
       url: "/payment/cancel",
       noindex: true,

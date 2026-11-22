@@ -39,13 +39,13 @@ export const Route = createFileRoute("/guide")({
   head: () =>
     seo({
       title: i18n.exists("guide.heroBadge")
-        ? `${i18n.t("guide.heroBadge")} - Gravurtastisch Studio Guide`
-        : "Step-by-Step Custom Order Guide - Gravurtastisch",
+        ? `${i18n.t("guide.heroBadge")} - Printomation SaaS Guide`
+        : "Seller Onboarding Guide - Printomation SaaS",
       description: i18n.exists("guide.heroDesc")
         ? i18n.t("guide.heroDesc")
-        : "Follow this guide to submit artwork, approve proofs, track production, and manage custom reorders step by step.",
+        : "Step-by-step guide to connect your Amazon seller account, configure ASIN templates, and download automated production files.",
       url: "/guide",
-      keywords: ["custom order guide", "lasergravur anleitung", "studio workflow", "proofing guide"],
+      keywords: ["amazon custom seller guide", "sp-api setup guide", "asin templates", "printomation"],
     }),
   component: Guide,
 });
@@ -713,7 +713,7 @@ function OrderListingStreamSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Multi-Channel Order Ingestion Radar Console"
+      aria-label="Printomation Multi-Channel Order Ingestion Radar Console"
     >
       <defs>
         <radialGradient id="radar-ambient-cyan" cx="50%" cy="50%" r="50%">
@@ -892,7 +892,7 @@ function AmazonCredentialsConsoleSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Cryptographic OAuth Vault and Channel Gateway Console"
+      aria-label="Printomation Cryptographic OAuth Vault and Channel Gateway Console"
     >
       <defs>
         <radialGradient id="console-bg-glow" cx="50%" cy="30%" r="70%">
@@ -954,29 +954,29 @@ function AmazonCredentialsConsoleSvg() {
         {/* ---------------------------------------------------- */}
         <g transform="translate(24, 28)">
           {/* Status Badge Left */}
-          <rect x="0" y="0" width="176" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />
+          <rect x="0" y="0" width="160" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />
           <circle cx="14" cy="13" r="4.5" fill="#10b981">
             <animate attributeName="opacity" values="1;0.4;1" dur="1.4s" repeatCount="indefinite" />
           </circle>
-          <text x="26" y="17" fill="#0032ab" fontFamily="monospace" fontSize="9" fontWeight="800">
+          <text x="26" y="17" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
             SP-API GATEWAY: ONLINE
           </text>
 
           {/* Center Region Monospace Chip */}
-          <rect x="186" y="0" width="138" height="26" rx="13" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1" />
-          <text x="255" y="16.5" textAnchor="middle" fill="#475569" fontFamily="monospace" fontSize="8.5" fontWeight="700">
+          <rect x="170" y="0" width="130" height="26" rx="13" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1" />
+          <text x="235" y="16.5" textAnchor="middle" fill="#475569" fontFamily="monospace" fontSize="8" fontWeight="700">
             REGION: EU-WEST [DE,FR,UK]
           </text>
 
-          {/* Right Security Encryption Tag */}
-          <g transform="translate(334, 0)">
-            <rect x="0" y="0" width="158" height="26" rx="13" fill="url(#cyber-pill-blue)" />
+          {/* Right Security Encryption Tag (Safe Margin within Rounded Chassis) */}
+          <g transform="translate(310, 0)">
+            <rect x="0" y="0" width="144" height="26" rx="13" fill="url(#cyber-pill-blue)" />
             <path
               d="M 16 8 C 21 8, 23 10, 23 13 C 23 18, 16 21, 16 21 C 16 21, 9 18, 9 13 C 9 10, 11 8, 16 8 Z"
               fill="#FFFFFF"
               opacity="0.9"
             />
-            <text x="78" y="17" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="8.5" fontWeight="900">
+            <text x="76" y="17" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="8" fontWeight="900">
               AES-256 GCM SECURED
             </text>
           </g>
@@ -1187,7 +1187,7 @@ function VisualWorkflowPipelineSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Unified Studio Workflow DAG Pipeline Architecture"
+      aria-label="Printomation Unified Studio Workflow DAG Pipeline Architecture"
     >
       <defs>
         <radialGradient id="dag-glow" cx="50%" cy="30%" r="70%">
@@ -1243,25 +1243,25 @@ function VisualWorkflowPipelineSvg() {
         {/* HEADER: STUDIO WORKFLOW ENGINE TELEMETRY BAR         */}
         {/* ---------------------------------------------------- */}
         <g transform="translate(26, 26)">
-          <rect x="0" y="0" width="230" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />
+          <rect x="0" y="0" width="200" height="26" rx="13" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="1" />
           <circle cx="14" cy="13" r="4.5" fill="#155dfc">
             <animate attributeName="opacity" values="1;0.3;1" dur="1.2s" repeatCount="indefinite" />
           </circle>
-          <text x="26" y="17" fill="#0032ab" fontFamily="monospace" fontSize="8.5" fontWeight="800">
-            • STUDIO WORKFLOW ENGINE // DAG
+          <text x="26" y="17" fill="#0032ab" fontFamily="monospace" fontSize="8" fontWeight="800">
+            • AUTOMATION ENGINE // DAG
           </text>
 
-          <g transform="translate(242, 0)">
-            <rect x="0" y="0" width="154" height="26" rx="13" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1" />
-            <text x="77" y="16.5" textAnchor="middle" fill="#475569" fontFamily="monospace" fontSize="8.5" fontWeight="700">
+          <g transform="translate(212, 0)">
+            <rect x="0" y="0" width="132" height="26" rx="13" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="1" />
+            <text x="66" y="16.5" textAnchor="middle" fill="#475569" fontFamily="monospace" fontSize="8" fontWeight="700">
               100% UNIFIED FLOW
             </text>
           </g>
 
-          <g transform="translate(408, 0)">
-            <rect x="0" y="0" width="140" height="26" rx="13" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
+          <g transform="translate(356, 0)">
+            <rect x="0" y="0" width="128" height="26" rx="13" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
             <circle cx="14" cy="13" r="4" fill="#10b981" />
-            <text x="24" y="17" fill="#047857" fontFamily="monospace" fontSize="8.5" fontWeight="800">
+            <text x="24" y="17" fill="#047857" fontFamily="monospace" fontSize="8" fontWeight="800">
               ZERO CSV CHAOS
             </text>
           </g>
@@ -1447,7 +1447,7 @@ function VisualWorkflowPipelineSvg() {
         </path>
 
         {/* ---------------------------------------------------- */}
-        {/* STAGE 05: VERIFIED FULFILLMENT & 5-STAR REVIEW LOOP  */}
+        {/* STAGE 05: PRODUCTION-READY OUTPUT & AUTOMATED DOWNLOAD */}
         {/* (Clean, Generously Spaced Layout - ZERO Text Cutoff) */}
         {/* ---------------------------------------------------- */}
         <g transform="translate(28, 252)" filter="url(#stepShadow)">
@@ -1458,54 +1458,50 @@ function VisualWorkflowPipelineSvg() {
             height="110"
             rx="18"
             fill="url(#stage-card-grad)"
-            stroke="#f59e0b"
+            stroke="#10b981"
             strokeWidth="1.5"
           />
 
-          {/* Left Sub-Section: Carrier Dispatch Tracking */}
+          {/* Left Sub-Section: Machine File Output */}
           <g transform="translate(18, 14)">
             {/* Header Line: Pill + Title with clear separation */}
-            <rect x="0" y="0" width="82" height="22" rx="11" fill="#f59e0b" />
-            <text x="41" y="15" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="8.5" fontWeight="900">
-              05 VERIFIED
+            <rect x="0" y="0" width="76" height="22" rx="11" fill="#10b981" />
+            <text x="38" y="15" textAnchor="middle" fill="#FFFFFF" fontFamily="monospace" fontSize="8.5" fontWeight="900">
+              05 READY
             </text>
-            <text x="92" y="16" fill="#0b132b" fontFamily="system-ui" fontSize="12" fontWeight="900">
-              Verified Delivery &amp; Feedback
+            <text x="86" y="16" fill="#0b132b" fontFamily="system-ui" fontSize="12" fontWeight="900">
+              Machine-Ready File Generation
             </text>
 
             {/* Description lines */}
             <text x="0" y="38" fill="#475569" fontFamily="system-ui" fontSize="8.5" fontWeight="600">
-              Automated DHL/UPS carrier tracking confirmation
+              Automated vector &amp; print compilation (SVG, PDF, DXF, EZCad)
             </text>
             <text x="0" y="50" fill="#475569" fontFamily="system-ui" fontSize="8.5" fontWeight="600">
-              pushed to Amazon SP-API storefront instantly.
+              Instant download or direct export for laser &amp; UV printers.
             </text>
 
-            {/* Barcode Visual Representation */}
+            {/* File Output Visual Representation */}
             <g transform="translate(0, 58)">
               <rect x="0" y="0" width="250" height="24" rx="6" fill="#f8fafc" stroke="#e2e8f0" strokeWidth="0.8" />
               <text x="10" y="16" fill="#0b132b" fontFamily="monospace" fontSize="7.5" fontWeight="800">
-                TRACK: DHL-DE-9941829410294 [✓ CONFIRMED]
+                FILE: ASIN-B09X_PRODUCTION.DXF [✓ READY]
               </text>
             </g>
           </g>
 
-          {/* Right Sub-Section: 5-Star Feedback Flywheel (Starts at 292px) */}
+          {/* Right Sub-Section: Automation Metrics Card */}
           <g transform="translate(292, 14)">
-            <rect x="0" y="0" width="230" height="82" rx="12" fill="#fffbeb" stroke="#fde68a" strokeWidth="1" />
+            <rect x="0" y="0" width="230" height="82" rx="12" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
             <g transform="translate(14, 14)">
-              {/* Star Rating Graphic */}
-              <text x="0" y="14" fill="#d97706" fontFamily="system-ui" fontSize="14" fontWeight="900">
-                ★ ★ ★ ★ ★
+              <text x="0" y="14" fill="#047857" fontFamily="system-ui" fontSize="13" fontWeight="900">
+                ⚡ SUB-10s GENERATION
               </text>
-              <text x="96" y="13" fill="#b45309" fontFamily="monospace" fontSize="8.5" fontWeight="900">
-                5.0 RATING
+              <text x="0" y="32" fill="#065f46" fontFamily="system-ui" fontSize="9" fontWeight="700">
+                100% Pre-Press Automation
               </text>
-              <text x="0" y="32" fill="#78350f" fontFamily="system-ui" fontSize="9" fontWeight="700">
-                Automated Review Request Sent
-              </text>
-              <text x="0" y="46" fill="#92400e" fontFamily="system-ui" fontSize="8" fontWeight="500">
-                Proof-first customer satisfaction = zero refund risk
+              <text x="0" y="46" fill="#047857" fontFamily="system-ui" fontSize="8" fontWeight="500">
+                Zero manual retyping · Direct machine download
               </text>
             </g>
           </g>

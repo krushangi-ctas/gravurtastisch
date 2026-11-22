@@ -11,12 +11,12 @@ export interface SeoProps {
   author?: string;
 }
 
-export const SITE_NAME = "Gravurtastisch";
+export const SITE_NAME = "Printomation";
 export const DEFAULT_SITE_URL =
   (typeof import.meta !== "undefined" && import.meta.env?.VITE_SITE_URL) ||
   "https://gravurtastisch-web.vercel.app";
 export const DEFAULT_OG_IMAGE = `${DEFAULT_SITE_URL}/home1.webp`;
-export const DEFAULT_TWITTER_HANDLE = "@gravurtastisch";
+export const DEFAULT_TWITTER_HANDLE = "@printomation";
 
 /**
  * Reusable SEO helper to generate consistent Meta and Links for TanStack Router head: () => ...
@@ -114,7 +114,7 @@ export function createOrganizationSchema() {
     "url": DEFAULT_SITE_URL,
     "logo": `${DEFAULT_SITE_URL}/g.svg`,
     "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
-    "email": "info@gravurtastisch.de",
+    "email": "support@printomation.com",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Gertrudstr. 2",
@@ -124,9 +124,9 @@ export function createOrganizationSchema() {
       "addressCountry": "DE"
     },
     "sameAs": [
-      "https://www.linkedin.com/company/gravurtastisch",
-      "https://www.facebook.com/gravurtastisch",
-      "https://www.instagram.com/gravurtastisch"
+      "https://www.linkedin.com/company/printomation",
+      "https://www.facebook.com/printomation",
+      "https://www.instagram.com/printomation"
     ]
   };
 }

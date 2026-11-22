@@ -16,19 +16,19 @@ export const Route = createFileRoute("/")({
   pendingComponent: HomeSkeleton,
   head: () => {
     const { meta, links } = seo({
-      title: i18n.t("meta.indexTitle", "Gravurtastisch - Custom Photo Cups, Laser Engraving & Personalized Gifts"),
+      title: i18n.t("meta.indexTitle", "Printomation - B2B SaaS for Amazon Custom Sellers | Automated Print & Engraving Files"),
       description: i18n.t(
         "meta.indexDesc",
-        "Premium custom studio for photo mugs, laser-engraved kitchenware, apparel, and keepsakes. Free digital proofs, German-craft precision, and reliable delivery."
+        "Automate your Amazon Custom orders into ready-to-use print and laser engraving files. Less manual work, fewer errors, and instant pre-press file preparation for Amazon sellers."
       ),
       url: "/",
       keywords: [
-        "lasergravur",
-        "fototassen",
-        "personalisierte geschenke",
-        "custom engraving",
-        "amazon fba fulfillment",
-        "geschenkideen mit gravur",
+        "amazon custom automation",
+        "b2b saas amazon sellers",
+        "automated print files",
+        "laser engraving automation",
+        "sp-api order sync",
+        "customization pre-press",
       ],
     });
 

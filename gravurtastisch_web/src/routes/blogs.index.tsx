@@ -32,11 +32,11 @@ export const Route = createFileRoute("/blogs/")({
   pendingComponent: BlogsIndexSkeleton,
   head: () =>
     seo({
-      title: "Gravurtastisch Journal - Custom Engraving, Proofing & Studio Craft",
+      title: "Printomation Blog - Amazon Custom Automation, Pre-Press & Scaling",
       description:
-        "Stories on photo mugs, laser engraving, proof workflows, production scheduling, and building a premium personalization studio.",
+        "Expert insights on automating Amazon Custom orders, pre-press file workflows, laser & print machine setup, and scaling personalized e-commerce.",
       url: "/blogs",
-      keywords: ["laser engraving blog", "lasergravur ratgeber", "fototassen tipps", "merchandise studio"],
+      keywords: ["amazon custom blog", "print automation tips", "laser engraving pre-press", "sp-api guide"],
     }),
   component: BlogsPage,
 });
@@ -141,7 +141,7 @@ function BlogsPage() {
             <Reveal className="max-w-3xl mx-auto text-center">
               <div className="section-badge mb-4">
                 <Newspaper className="h-3.5 w-3.5 text-brand shrink-0" />
-                <span>{t('blogs.journalBadge', 'Gravurtastisch Journal & Studio Notes')}</span>
+                <span>{t('blogs.journalBadge', 'Printomation Journal & Studio Notes')}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-display leading-[1.15] text-navy-deep">
@@ -152,7 +152,7 @@ function BlogsPage() {
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed font-medium">
-                {t('blogs.heroDesc', 'Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Gravurtastisch studio team.')}
+                {t('blogs.heroDesc', 'Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Printomation studio team.')}
               </p>
 
               {/* Search Bar */}
@@ -378,7 +378,7 @@ function BlogsPage() {
                   Ready to turn ideas into engraved keepsakes?
                 </h2>
                 <p className="mt-3 text-sm sm:text-base text-white/70 leading-relaxed">
-                  Join makers who use Gravurtastisch to intake orders, approve proofs, and ship photo cups and engraved gifts on time.
+                  Join makers who use Printomation to intake orders, approve proofs, and ship photo cups and engraved gifts on time.
                 </p>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <a

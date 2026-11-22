@@ -12,7 +12,7 @@ function SignOutPageTitle() {
 				<img
 					className="h-10 sm:h-12 w-auto object-contain"
 					src="/gravurtastich.png"
-					alt="Gravurtastisch"
+					alt="Printomation"
 				/>
 				<LanguageSwitcher />
 			</Box>

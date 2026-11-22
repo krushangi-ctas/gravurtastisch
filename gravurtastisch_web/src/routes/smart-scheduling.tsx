@@ -40,12 +40,12 @@ export const Route = createFileRoute("/smart-scheduling")({
   pendingComponent: ServicePageSkeleton,
   head: () =>
     seo({
-      title: "Smart Production & Scheduling - Gravurtastisch Studio",
+      title: "Batch Processing & Production Queue - Printomation SaaS",
       description: i18n.exists("smartScheduling.heroDesc")
         ? i18n.t("smartScheduling.heroDesc")
-        : "Intelligent batch scheduling, laser bed queue balancing, proof locks, and automated transit notifications.",
+        : "Automated batch processing, machine queue management, and ready-to-run file compilation for Amazon Custom sellers.",
       url: "/smart-scheduling",
-      keywords: ["smart scheduling", "fertigungsplanung", "laser bed scheduling", "production pipeline"],
+      keywords: ["batch processing", "amazon custom batch files", "laser file queue", "printomation"],
     }),
   component: SmartSchedulingPage,
 });
@@ -510,7 +510,7 @@ function SmartSchedulingPage() {
                   {t('smartScheduling.timelineHeading') || "From checkout to doorstep"}
                 </h2>
                 <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl mx-auto">
-                  {t('smartScheduling.timelineDesc') || "How Gravurtastisch sequences proof, craft, and ship for personalized orders."}
+                  {t('smartScheduling.timelineDesc') || "How Printomation sequences proof, craft, and ship for personalized orders."}
                 </p>
               </div>
             </Reveal>
@@ -689,7 +689,7 @@ function SmartSchedulingFaqSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Precision Chronometric Astrolabe HUD"
+      aria-label="Printomation Precision Chronometric Astrolabe HUD"
     >
       <defs>
         {/* Soft Ambient Radial Lights */}

@@ -1,20 +1,21 @@
-# Gravurtastisch
+# Printomation
 
-> Premium Custom Laser Engraving, Photo Cups & Personalized Gifts Studio
+> B2B SaaS Automation Platform for Amazon Custom Sellers
 
-Gravurtastisch is a specialized studio offering precision laser engraving, photo cups, custom apparel, and personalized keepsakes with free digital proofs, German-craft quality, and reliable delivery.
+Printomation is the B2B SaaS platform for Amazon sellers offering personalised products. Our software automates the conversion of Amazon Custom orders and buyer personalisation data into ready-to-use print and laser engraving files (SVG, PDF, DXF, EZCad) — saving hours of manual work and eliminating costly errors.
 
-## Key Services
-- Custom laser engraving on wood, metal, slate, and glass
-- High-definition ceramic photo mugs and drinkware
-- Personalized corporate gifts and Amazon FBA fulfillment
-- Vector preflight check and custom order customization
+## Key Features
+- Official Amazon Selling Partner SP-API Integration
+- Automated Buyer Customization Data Ingestion (Text, Photos, Options)
+- ASIN Template Rules, Layout Bounds & Vector Pre-Flight
+- Machine-Ready Multi-Format Export (SVG, PDF, DXF, EZCad)
+- Zero Manual Retyping & Automated Error Prevention
 
 ## Main Links
-- [Home](https://gravurtastisch-web.vercel.app/): Studio overview and custom gift catalog.
-- [Pricing](https://gravurtastisch-web.vercel.app/pricing): Transparent tiered pricing for single and bulk orders.
-- [Guide](https://gravurtastisch-web.vercel.app/guide): Artwork setup, DPI recommendations, and engraving guidelines.
-- [Blogs](https://gravurtastisch-web.vercel.app/blogs): Gift ideas, technical engraving tutorials, and design tips.
-- [Contact](https://gravurtastisch-web.vercel.app/contact): Get in touch with our design and support team.
-- [Register](https://gravurtastisch-web.vercel.app/register): Customer registration for order tracking.
+- [Home](https://gravurtastisch-web.vercel.app/): Platform overview and automated file generation workflow.
+- [Pricing](https://gravurtastisch-web.vercel.app/pricing): Transparent software subscription plans for Amazon Custom sellers.
+- [Guide](https://gravurtastisch-web.vercel.app/guide): SP-API onboarding, ASIN template setup, and export guidelines.
+- [Blogs](https://gravurtastisch-web.vercel.app/blogs): Automation workflows, pre-press best practices, and seller tips.
+- [Contact](https://gravurtastisch-web.vercel.app/contact): Get in touch with our automation support team.
+- [Register](https://gravurtastisch-web.vercel.app/register): Seller account registration and free trial onboarding.
 - [Impressum](https://gravurtastisch-web.vercel.app/impressum): Statutory provider disclosure and legal imprint pursuant to § 5 DDG.

@@ -43,12 +43,12 @@ export const Route = createFileRoute("/order-sync")({
   pendingComponent: ServicePageSkeleton,
   head: () =>
     seo({
-      title: "Real-time Order Synchronization - Gravurtastisch Studio",
+      title: "Real-time Amazon Custom Order Sync - Printomation SaaS",
       description: i18n.exists("orderSync.heroDesc")
         ? i18n.t("orderSync.heroDesc")
-        : "Bi-directional order status synchronization from initial proof approval to final parcel delivery across European marketplaces.",
+        : "Automated ingestion and synchronization of Amazon Custom orders and buyer personalisation data into production-ready files.",
       url: "/order-sync",
-      keywords: ["order synchronization", "bestell synchronisation", "gravur status", "carrier tracking dhl"],
+      keywords: ["amazon custom sync", "order synchronization", "sp-api custom intake", "printomation"],
     }),
   component: OrderSyncPage,
 });
@@ -72,7 +72,7 @@ function OrderSyncPage() {
     {
       step: "02",
       title: t('orderSync.step2Title') || "Delivery Event Ingestion",
-      desc: t('orderSync.step2Desc') || "Gravurtastisch's studio API listener captures the exact carrier delivery timestamp (Amazon Logistics, UPS, FedEx, DHL).",
+      desc: t('orderSync.step2Desc') || "Printomation's studio API listener captures the exact carrier delivery timestamp (Amazon Logistics, UPS, FedEx, DHL).",
       icon: Truck,
     },
     {
@@ -134,16 +134,16 @@ function OrderSyncPage() {
 
   const faqs = [
     {
-      q: "How often does Gravurtastisch sync orders from Amazon?",
-      a: "Gravurtastisch uses real-time studio API order webhooks and high-frequency polling every 5 minutes to ensure your order queue is always up to date.",
+      q: "How often does Printomation sync orders from Amazon?",
+      a: "Printomation uses real-time studio API order webhooks and high-frequency polling every 5 minutes to ensure your order queue is always up to date.",
     },
     {
       q: "Does order sync support both FBA and FBM (Merchant Fulfilled)?",
-      a: "Yes! Gravurtastisch tracks both Fulfillment by Amazon (FBA) and Merchant Fulfilled Network (MFN/FBM) orders, automatically detecting carrier delivery confirmations for both channels.",
+      a: "Yes! Printomation tracks both Fulfillment by Amazon (FBA) and Merchant Fulfilled Network (MFN/FBM) orders, automatically detecting carrier delivery confirmations for both channels.",
     },
     {
       q: "What happens if a buyer requests a return after order delivery?",
-      a: "Our sync engine continuously monitors return and refund events. If a return is initiated, Gravurtastisch automatically suppresses and cancels any pending review solicitation for that order.",
+      a: "Our sync engine continuously monitors return and refund events. If a return is initiated, Printomation automatically suppresses and cancels any pending review solicitation for that order.",
     },
     {
       q: "Can I selectively exclude certain SKUs from being synced or messaged?",
@@ -175,7 +175,7 @@ function OrderSyncPage() {
                 </span>
               </h1>
               <p className="mt-4 text-slate-700 text-base sm:text-lg leading-relaxed max-w-2xl font-medium text-center mx-auto">
-                {t('orderSync.heroDesc') || "Delivered orders flow automatically into Gravurtastisch across all 12+ Amazon marketplaces. Track every package from delivery to review dispatch without spreadsheets."}
+                {t('orderSync.heroDesc') || "Delivered orders flow automatically into Printomation across all 12+ Amazon marketplaces. Track every package from delivery to review dispatch without spreadsheets."}
               </p>
               <div className="mt-7 flex flex-wrap justify-center items-center gap-4">
                 <a
@@ -302,7 +302,7 @@ function OrderSyncPage() {
                   {t('orderSync.bentoSectionHeading') || "Engineered to Protect Your Seller Account"}
                 </h2>
                 <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl text-left">
-                  {t('orderSync.bentoSectionDesc') || "Gravurtastisch's sync engine doesn't just pull order numbers - it actively inspects return statuses, buyer cancellation flags, and delivery confirmations to ensure zero unwanted solicitations."}
+                  {t('orderSync.bentoSectionDesc') || "Printomation's sync engine doesn't just pull order numbers - it actively inspects return statuses, buyer cancellation flags, and delivery confirmations to ensure zero unwanted solicitations."}
                 </p>
               </div>
             </Reveal>
@@ -329,7 +329,7 @@ function OrderSyncPage() {
                       {t('orderSync.bentoCard1Title') || "Continuous 5-Minute Order Stream"}
                     </h3>
                     <p className="mt-3 text-sm text-slate-body leading-relaxed">
-                      {t('orderSync.bentoCard1Desc') || "Orders automatically stream into your Gravurtastisch queue within minutes of being updated in order desk. No manual CSV uploads or babysitting required."}
+                      {t('orderSync.bentoCard1Desc') || "Orders automatically stream into your Printomation queue within minutes of being updated in order desk. No manual CSV uploads or babysitting required."}
                     </p>
 
                     {/* Interactive Live Stream Visualizer */}
@@ -406,7 +406,7 @@ function OrderSyncPage() {
                           </span>
                         </div>
                         <p className="text-xs sm:text-sm text-slate-body leading-relaxed max-w-xl">
-                          {t('orderSync.bentoCap1Desc') || "If a customer initiates a return or cancellation, Gravurtastisch immediately cancels the production job to prevent soliciting dissatisfied buyers."}
+                          {t('orderSync.bentoCap1Desc') || "If a customer initiates a return or cancellation, Printomation immediately cancels the production job to prevent soliciting dissatisfied buyers."}
                         </p>
                       </div>
                     </div>
@@ -580,7 +580,7 @@ function OrderSyncPage() {
                   {t('orderSync.tableHeading') || "Transparent Visibility on Every Package"}
                 </h2>
                 <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl text-left">
-                  {t('orderSync.tableDesc') || "Inside your Gravurtastisch dashboard, you get complete visibility of incoming orders, carrier delivery times, eligibility status, and scheduled review dispatches."}
+                  {t('orderSync.tableDesc') || "Inside your Printomation dashboard, you get complete visibility of incoming orders, carrier delivery times, eligibility status, and scheduled review dispatches."}
                 </p>
                 <div className="mt-6 space-y-3">
                   {[
@@ -748,7 +748,7 @@ function OrderSyncPage() {
                   href="/#how"
                   className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-6 py-2.5 text-xs sm:text-sm font-bold text-[#0032ab] hover:bg-blue-50/50 hover:border-[#0032ab]/40 transition-all shadow-xs"
                 >
-                  {t('orderSync.ctaHow') || "How Gravurtastisch Works"}
+                  {t('orderSync.ctaHow') || "How Printomation Works"}
                 </a>
               </div>
             </div>
@@ -1312,16 +1312,16 @@ function OrderSyncFaqSvg() {
 
         {/* Engine Monospace Title */}
         <text x="46" y="16" fill="#0032ab" fontFamily="monospace" fontSize="9.5" fontWeight="800" letterSpacing="0.8">
-          GRAVURTASTISCH // REAL-TIME LOGISTICS ROUTER
+          PRINTOMATION // REAL-TIME LOGISTICS ROUTER
         </text>
 
         {/* Right Status Badge */}
-        <g transform="translate(354, 0)">
-          <rect width="138" height="24" rx="12" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
+        <g transform="translate(344, 0)">
+          <rect width="128" height="24" rx="12" fill="#ecfdf5" stroke="#a7f3d0" strokeWidth="1" />
           <circle cx="12" cy="12" r="3" fill="#10b981">
             <animate attributeName="opacity" values="1;0.3;1" dur="1.8s" repeatCount="indefinite" />
           </circle>
-          <text x="22" y="15.5" fill="#059669" fontFamily="monospace" fontSize="8" fontWeight="800">
+          <text x="21" y="15.5" fill="#059669" fontFamily="monospace" fontSize="7.8" fontWeight="800">
             CONTINUOUS 5m SYNC
           </text>
         </g>
@@ -1477,7 +1477,7 @@ function OrderSyncFaqSvg() {
           strokeOpacity="0.15"
         />
 
-        {/* SECTION A: Left Half - Return / Cancellation Auto-Suppression */}
+        {/* SECTION A: Left Half - Error Guardrails & Pre-Flight */}
         <g transform="translate(16, 16)">
           <rect width="32" height="32" rx="9" fill="#fef2f2" stroke="#fecaca" strokeWidth="1" />
           <path d="M 16 6 L 24 9.5 C 24 17 20 21.5 16 24 C 12 21.5 8 17 8 9.5 Z" fill="#fee2e2" stroke="#dc2626" strokeWidth="1.6" />
@@ -1485,10 +1485,10 @@ function OrderSyncFaqSvg() {
 
           <g transform="translate(40, 4)">
             <text x="0" y="10" fill="#0b132b" fontFamily="system-ui" fontSize="11" fontWeight="800">
-              Cancel &amp; Hold Guardrails
+              Pre-Flight &amp; Error Guardrails
             </text>
             <text x="0" y="22" fill="#64748b" fontFamily="system-ui" fontSize="8">
-              Buyer cancellation triggers instant production hold
+              Font clipping &amp; low-res artwork auto-detected
             </text>
           </g>
 
@@ -1497,7 +1497,7 @@ function OrderSyncFaqSvg() {
             <rect width="194" height="20" rx="6" fill="#fef2f2" stroke="#fecaca" strokeWidth="0.8" />
             <circle cx="8" cy="10" r="2.5" fill="#dc2626" />
             <text x="16" y="13.5" fill="#b91c1c" fontFamily="monospace" fontSize="7.5" fontWeight="800">
-              0 Bad Custom Orders Solicited
+              0 Corrupt Files to Machine
             </text>
           </g>
 
@@ -1505,7 +1505,7 @@ function OrderSyncFaqSvg() {
             <rect width="194" height="20" rx="6" fill="#f0fdf4" stroke="#bbf7d0" strokeWidth="0.8" />
             <circle cx="8" cy="10" r="2.5" fill="#10b981" />
             <text x="16" y="13.5" fill="#047857" fontFamily="monospace" fontSize="7.5" fontWeight="800">
-              ✓ Automated Return Freeze Active
+              ✓ Auto-Font &amp; DPI Check Active
             </text>
           </g>
         </g>
@@ -1513,39 +1513,39 @@ function OrderSyncFaqSvg() {
         {/* Center Vertical Divider */}
         <line x1="228" y1="14" x2="228" y2="116" stroke="#0032ab" strokeWidth="0.8" strokeOpacity="0.12" />
 
-        {/* SECTION B: Right Half - Amazon 5-30 Day Window Stepper */}
+        {/* SECTION B: Right Half - Automated File Generation Pipeline */}
         <g transform="translate(244, 16)">
           <text x="0" y="10" fill="#0b132b" fontFamily="system-ui" fontSize="11" fontWeight="800">
-            Automated Studio Pipeline
+            Automated File Pipeline
           </text>
-          <rect x="180" y="-2" width="60" height="16" rx="4" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.6" />
-          <text x="210" y="9.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7" fontWeight="800">
-            TOS COMPLIANT
+          <rect x="175" y="-2" width="65" height="16" rx="4" fill="#eff6ff" stroke="#bfdbfe" strokeWidth="0.6" />
+          <text x="207.5" y="9.5" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="7" fontWeight="800">
+            SUB-10s SLA
           </text>
 
           <text x="0" y="24" fill="#64748b" fontFamily="system-ui" fontSize="8">
-            Amazon 5-30 day review solicitation window enforced
+            Instant conversion of buyer customization to production vector
           </text>
 
           {/* Stepper Timeline Visualizer */}
           <g transform="translate(0, 48)">
             {/* Base Horizontal Track */}
             <line x1="10" y1="10" x2="230" y2="10" stroke="#e2e8f0" strokeWidth="3" strokeLinecap="round" />
-            <line x1="10" y1="10" x2="115" y2="10" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" />
+            <line x1="10" y1="10" x2="230" y2="10" stroke="#2563eb" strokeWidth="3" strokeLinecap="round" />
 
-            {/* Step 1: Day 0 */}
+            {/* Step 1: Intake */}
             <g transform="translate(10, 10)">
               <circle cx="0" cy="0" r="6" fill="#2563eb" />
               <circle cx="0" cy="0" r="2" fill="#FFFFFF" />
               <text x="0" y="17" textAnchor="middle" fill="#0b132b" fontFamily="system-ui" fontSize="7.5" fontWeight="800">
-                Day 0
+                SP-API Intake
               </text>
               <text x="0" y="26" textAnchor="middle" fill="#64748b" fontFamily="system-ui" fontSize="6.5">
-                Delivered
+                Order Synced
               </text>
             </g>
 
-            {/* Step 2: Day 5 (Optimal Review Trigger) */}
+            {/* Step 2: Auto-Layout */}
             <g transform="translate(115, 10)">
               <circle cx="0" cy="0" r="10" fill="#F59E0B" fillOpacity="0.2">
                 <animate attributeName="r" values="8;12;8" dur="2s" repeatCount="indefinite" />
@@ -1554,28 +1554,29 @@ function OrderSyncFaqSvg() {
               <polygon points="0,-3 1,-1 3,-1 1.5,0.5 2,2.5 0,1.2 -2,2.5 -1.5,0.5 -3,-1 -1,-1" fill="#FFFFFF" />
               
               <text x="0" y="18" textAnchor="middle" fill="#b45309" fontFamily="system-ui" fontSize="8" fontWeight="800">
-                Day 5 (Optimal)
+                Template Matched
               </text>
               <text x="0" y="27" textAnchor="middle" fill="#0032ab" fontFamily="monospace" fontSize="6.5" fontWeight="700">
-                Auto-Review Sent
+                Auto-Compiled
               </text>
             </g>
 
-            {/* Step 3: Day 30 */}
-            <g transform="translate(230, 10)">
-              <circle cx="0" cy="5" r="5" fill="#94a3b8" />
-              <text x="0" y="17" textAnchor="middle" fill="#64748b" fontFamily="system-ui" fontSize="7.5" fontWeight="700">
-                Day 30
+            {/* Step 3: Production Ready */}
+            <g transform="translate(225, 10)">
+              <circle cx="0" cy="0" r="6" fill="#10b981" />
+              <circle cx="0" cy="0" r="2" fill="#FFFFFF" />
+              <text x="0" y="17" textAnchor="middle" fill="#047857" fontFamily="system-ui" fontSize="7.5" fontWeight="800">
+                Machine Ready
               </text>
-              <text x="0" y="26" textAnchor="middle" fill="#94a3b8" fontFamily="system-ui" fontSize="6.5">
-                Window Closes
+              <text x="0" y="26" textAnchor="middle" fill="#059669" fontFamily="system-ui" fontSize="6.5">
+                SVG • PDF • DXF
               </text>
             </g>
           </g>
 
           {/* Deduplication tag at bottom right */}
           <text x="0" y="98" fill="#64748b" fontFamily="monospace" fontSize="7">
-            ✓ 1-Request Deduplication Lock · Strike Safe
+            ✓ Instant Machine Download · Zero Manual Retyping
           </text>
         </g>
       </g>

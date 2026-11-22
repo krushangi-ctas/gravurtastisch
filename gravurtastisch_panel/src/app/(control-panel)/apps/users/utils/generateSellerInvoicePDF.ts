@@ -112,7 +112,7 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 		doc.setFont('helvetica', 'bold');
 		doc.setFontSize(22);
 		doc.setTextColor(15, 23, 42); // Deep Charcoal / Black
-		doc.text('GRAVURTASTISCH', leftMargin, 22);
+		doc.text('PRINTOMATION', leftMargin, 22);
 
 		// Tagline
 		doc.setFont('helvetica', 'normal');
@@ -341,8 +341,8 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 			? '- Das Bewertungskontingent und die Marktplatzlimits verlängern sich automatisch gemäß Ihrem Plan.'
 			: '- Review quota and marketplace limits renew automatically per your plan schedule.',
 		isDe
-			? '- Bei Fragen, Rechnungs- oder Kontonanliegen wenden Sie sich bitte an info@gravurtastisch.de.'
-			: '- For assistance, invoices or account inquiries, contact info@gravurtastisch.de.'
+			? '- Bei Fragen, Rechnungs- oder Kontonanliegen wenden Sie sich bitte an support@printomation.com.'
+			: '- For assistance, invoices or account inquiries, contact support@printomation.com.'
 	];
 
 	let currentNoteY = notesY + 4.8;
@@ -362,7 +362,7 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 	doc.setFontSize(7.5);
 	doc.setTextColor(120, 120, 120);
 	doc.text(
-		isDe ? 'Gravurtastisch-Plattform - Automatisiertes Abrechnungssystem' : 'Gravurtastisch Platform - Automated Billing System',
+		isDe ? 'Printomation-Plattform - Automatisiertes Abrechnungssystem' : 'Printomation Platform - Automated Billing System',
 		leftMargin,
 		footerY + 5
 	);

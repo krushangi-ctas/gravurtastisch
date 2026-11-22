@@ -105,7 +105,7 @@ export function AmazonShowcase() {
                   <p className="mt-3.5 text-sm sm:text-base text-slate-body leading-relaxed max-w-xl break-words">
                     {t(
                       "amazonShowcase.hubDescription",
-                      "Coordinate artwork intake, free digital proofs, laser engraving, and premium print finishes from a single Gravurtastisch studio workflow."
+                      "Coordinate artwork intake, free digital proofs, laser engraving, and premium print finishes from a single Printomation studio workflow."
                     )}
                   </p>
                 </div>
@@ -227,7 +227,7 @@ export function AmazonShowcase() {
           <Reveal>
             <div className="text-center max-w-3xl mx-auto">
               <span className="section-badge mb-3">
-                {t("amazonShowcase.badge", "GRAVURTASTISCH STUDIO HUB")}
+                {t("amazonShowcase.badge", "PRINTOMATION AUTOMATION HUB")}
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-slate-900">
                 {t("amazonShowcase.headingMain", "Run custom production")}{" "}
@@ -236,7 +236,7 @@ export function AmazonShowcase() {
               <p className="mt-4 text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                 {t(
                   "amazonShowcase.description",
-                  "From artwork intake to laser engraving and delivery - Gravurtastisch keeps proofs, craft cells, and shipping on one clear timeline."
+                  "From artwork intake to laser engraving and delivery - Printomation keeps proofs, craft cells, and shipping on one clear timeline."
                 )}
               </p>
             </div>
@@ -297,7 +297,7 @@ export function AmazonShowcase() {
                 {t("amazonShowcase.comparisonTag", "WORKFLOW COMPARISON")}
               </span>
               <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
-                {t("amazonShowcase.comparisonHeading", "Scattered vendors vs. Gravurtastisch Studio Hub")}
+                {t("amazonShowcase.comparisonHeading", "Scattered vendors vs. Printomation Studio Hub")}
               </h2>
               <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
                 {activeTab === "fba"
@@ -382,7 +382,7 @@ export function AmazonShowcase() {
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <span className="text-sm font-bold text-[#0032ab] dark:text-brand-bright">
-                      {t("amazonShowcase.autoTitle", "Gravurtastisch unified pipeline")}
+                      {t("amazonShowcase.autoTitle", "Printomation unified pipeline")}
                     </span>
                   </div>
                   <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-[#0032ab] text-white font-bold shadow-xs">

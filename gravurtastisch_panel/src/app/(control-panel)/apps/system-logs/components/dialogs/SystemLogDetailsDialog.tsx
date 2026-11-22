@@ -368,7 +368,7 @@ export default function SystemLogDetailsDialog({
 				}
 			}}
 		>
-			{/* Dialog Header - Consistent with Gravurtastisch Branding */}
+			{/* Dialog Header - Consistent with Printomation Branding */}
 			<div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 text-slate-900 dark:text-white px-4 sm:px-6 py-3.5 sm:py-4 flex items-center justify-between shrink-0">
 				<div className="flex items-center gap-3">
 					<div className="flex items-center justify-center w-8 h-8 rounded-lg bg-primary/10 text-primary shrink-0">
@@ -568,7 +568,7 @@ export default function SystemLogDetailsDialog({
 				</Paper>
 			</DialogContent>
 
-			{/* Dialog Footer - Gravurtastisch Primary Action Button */}
+			{/* Dialog Footer - Printomation Primary Action Button */}
 			<DialogActions
 				className="px-4 sm:px-6 py-3 bg-slate-50/90 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 flex justify-end gap-3 shrink-0"
 				sx={{

@@ -472,7 +472,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder={t('siteConfig.companyNamePlaceholder', 'e.g. Gravurtastisch')}
+												placeholder={t('siteConfig.companyNamePlaceholder', 'e.g. Printomation')}
 												inputProps={{ maxLength: 100 }}
 												error={Boolean(errors.company?.name)}
 												helperText={errors.company?.name?.message}
@@ -505,7 +505,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder={t('siteConfig.websiteUrlPlaceholder', 'e.g. https://gravurtastisch.com')}
+												placeholder={t('siteConfig.websiteUrlPlaceholder', 'e.g. https://gravurtastisch-web.vercel.app')}
 												inputProps={{ maxLength: 150 }}
 												error={Boolean(errors.company?.website)}
 												helperText={errors.company?.website?.message}
@@ -598,7 +598,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder={t('siteConfig.copyrightPlaceholder', 'e.g. © 2026 Gravurtastisch. All rights reserved.')}
+												placeholder={t('siteConfig.copyrightPlaceholder', 'e.g. © 2026 Printomation. All rights reserved.')}
 												inputProps={{ maxLength: 150 }}
 												error={Boolean(errors.company?.copyright_text)}
 												helperText={errors.company?.copyright_text?.message}
@@ -655,7 +655,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. info@gravurtastisch.de"
+												placeholder="e.g. support@printomation.com"
 												inputProps={{ maxLength: 100 }}
 												error={Boolean(errors.contact?.email)}
 												helperText={errors.contact?.email?.message}

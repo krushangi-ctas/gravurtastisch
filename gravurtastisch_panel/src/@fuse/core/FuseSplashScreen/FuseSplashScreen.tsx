@@ -1,7 +1,7 @@
 import { memo } from 'react';
 
 /**
- * Splash screen with Gravurtastisch brand mark and progress bar.
+ * Splash screen with Printomation brand mark and progress bar.
  */
 function FuseSplashScreen() {
 	return (
@@ -12,7 +12,7 @@ function FuseSplashScreen() {
 					<img
 						className="splash-logo"
 						src="/gravurtastich.png"
-						alt="Gravurtastisch"
+						alt="Printomation"
 					/>
 				</div>
 				<div className="splash-progress-track">

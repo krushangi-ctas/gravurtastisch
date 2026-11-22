@@ -37,12 +37,12 @@ export const Route = createFileRoute("/contact")({
     seo({
       title: i18n.exists("contact.pageTitle")
         ? i18n.t("contact.pageTitle")
-        : "Contact Us - Gravurtastisch Studio",
+        : "Contact Support & Sales - Printomation SaaS",
       description: i18n.exists("contact.pageDesc")
         ? i18n.t("contact.pageDesc")
-        : "Get in touch with Gravurtastisch. Send us a message about custom products, proofs, orders, or support. We reply within one business day.",
+        : "Get in touch with the Printomation team for technical support, ASIN template setups, or enterprise volume integrations.",
       url: "/contact",
-      keywords: ["contact gravurtastisch", "gravur anfrage", "kundenservice gravur", "studio support"],
+      keywords: ["contact printomation", "amazon custom support", "sp-api integration inquiry", "saas support"],
     }),
   component: ContactPage,
 });
@@ -52,7 +52,7 @@ function ContactPage() {
   const { config } = useWebsiteConfiguration();
   const currentLang = (i18n.language || "en").split("-")[0];
 
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const contactEmail = config?.contact?.email || "support@printomation.com";
   const contactPhone = config?.contact?.phone || "017661055576";
   const contactHours =
     config?.contact?.working_hours ||

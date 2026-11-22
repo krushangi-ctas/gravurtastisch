@@ -11,10 +11,10 @@ export const Route = createFileRoute("/privacy")({
   pendingComponent: LegalPageSkeleton,
   head: () =>
     seo({
-      title: i18n.t("meta.privacyTitle", "Privacy Policy - Gravurtastisch"),
+      title: i18n.t("meta.privacyTitle", "Privacy Policy - Printomation"),
       description: i18n.t(
         "meta.privacyDesc",
-        "How Gravurtastisch collects, uses, and protects your personal information and artwork files."
+        "How Printomation collects, uses, and protects your personal information and artwork files."
       ),
       url: "/privacy",
     }),
@@ -24,7 +24,7 @@ export const Route = createFileRoute("/privacy")({
 function PrivacyPage() {
   const { t } = useTranslation();
   const { config } = useWebsiteConfiguration();
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const contactEmail = config?.contact?.email || "support@printomation.com";
   const isSkeletonPreview = typeof window !== "undefined" && window.location.search.includes("skeleton=true");
 
   if (isSkeletonPreview) {

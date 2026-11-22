@@ -764,7 +764,7 @@ function ContactSection() {
     }
   };
 
-  const supportEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const supportEmail = config?.contact?.email || "support@printomation.com";
   const contactPhone = config?.contact?.phone || "017661055576";
   const workingHours =
     config?.contact?.working_hours ||

@@ -24,71 +24,71 @@ export function ValueProp() {
   const craftProfiles = [
     {
       id: "01",
-      icon: CupSoda,
+      icon: Zap,
       titleKey: "feature1Title",
       bodyKey: "feature1Body",
-      category: t("valueProp.feature1Tag", "Drinkware"),
+      category: t("valueProp.feature1Tag", "SP-API Automation"),
       accent: "from-[#0032ab] to-[#4f6ef7]",
       accentColor: "#0032ab",
-      specMaterial: "Double-Wall Stainless Steel & Matte Ceramic",
-      specTechnique: "360° Rotary Laser Micro-Pass",
-      specDurability: "100% Dishwasher & Fade-Proof",
-      specTurnaround: "Same-Day Digital Proof",
-      badgeText: "Rotary Laser 360°",
-      previewTitle: "Matte Black Insulated Tumbler",
-      previewSub: "Custom laser engraved vector wrap with zero seam overlap",
-      previewMetric: "0.05mm Beam Precision",
+      specMaterial: "Amazon Selling Partner API (SP-API)",
+      specTechnique: "Automated OAuth 2.0 Webhook Intake",
+      specDurability: "Zero Manual Copy-Pasting",
+      specTurnaround: "< 2s Data Extraction",
+      badgeText: "Automated SP-API Sync",
+      previewTitle: "Amazon Custom Personalization Intake",
+      previewSub: "Automatically extracts buyer text, font selections, uploaded photos, and dimensions",
+      previewMetric: "< 2s API Latency",
     },
     {
       id: "02",
-      icon: Sparkles,
+      icon: Layers,
       titleKey: "feature2Title",
       bodyKey: "feature2Body",
-      category: t("valueProp.feature2Tag", "Laser engraving"),
+      category: t("valueProp.feature2Tag", "Vector & Print Output"),
       accent: "from-[#4f6ef7] to-[#155dfc]",
       accentColor: "#4f6ef7",
-      specMaterial: "Solid Oak, Walnut, Slate & Anodized Metal",
-      specTechnique: "120W High-Focal CO2 Laser Beam",
-      specDurability: "Proof-Gated Before Machine Starts",
-      specTurnaround: "Free Digital 3D Mockup Included",
-      badgeText: "Proof-Gated Quality Lock",
-      previewTitle: "Deep Engraved Oak Cutting Board",
-      previewSub: "Approved vector layout verified for food-safe mineral oil finish",
-      previewMetric: "100% Proof Guarantee",
+      specMaterial: "SVG, Vector PDF, DXF, PNG, AI & EZCad",
+      specTechnique: "Precision Vector Bézier Compilation",
+      specDurability: "Production-Machine Calibrated",
+      specTurnaround: "Instant File Download",
+      badgeText: "Machine-Ready Output",
+      previewTitle: "Ready-to-Use Laser & Print Files",
+      previewSub: "Pre-press file compiled with exact coordinates, stroke widths, and machine power presets",
+      previewMetric: "1200 DPI Vector Precision",
     },
     {
       id: "03",
-      icon: Lamp,
+      icon: Sliders,
       titleKey: "feature3Title",
       bodyKey: "feature3Body",
-      category: t("valueProp.feature3Tag", "Lifestyle"),
+      category: t("valueProp.feature3Tag", "ASIN Templates"),
       accent: "from-[#1447e6] to-[#0032ab]",
       accentColor: "#1447e6",
-      specMaterial: "Optical Cast Acrylic & Solid Beechwood",
-      specTechnique: "Precision Laser Cut + UV Color Fill",
-      specDurability: "Dual Warm/Neutral LED Dimming",
-      specTurnaround: "Live Stage Tracking at Every Step",
-      badgeText: "Real-Time Milestone Sync",
-      previewTitle: "Illuminated Acrylic Keepsake Lamp",
-      previewSub: "Laser polished diamond edges with personalized ambient lighting",
-      previewMetric: "Live Status Tracker",
+      specMaterial: "ASIN & SKU Parameter Mapping",
+      specTechnique: "360° Rotary, Flatbed & Print Bleed Layouts",
+      specDurability: "Reusable Multi-Marketplace Presets",
+      specTurnaround: "One-Time Setup per ASIN",
+      badgeText: "Template Automation",
+      previewTitle: "ASIN-Specific Production Rules",
+      previewSub: "Automated text wrapping, font rendering, conical taper compensation, and alignment bounds",
+      previewMetric: "100% Template Fidelity",
     },
     {
       id: "04",
-      icon: Shirt,
+      icon: ShieldCheck,
       titleKey: "feature4Title",
       bodyKey: "feature4Body",
-      category: t("valueProp.feature4Tag", "Apparel"),
+      category: t("valueProp.feature4Tag", "Error Shield"),
       accent: "from-[#0032ab] to-[#3080ff]",
       accentColor: "#3080ff",
-      specMaterial: "350 GSM Organic Combed Cotton",
-      specTechnique: "High-Density Tajima Embroidery",
-      specDurability: "Pantone-Matched Madeira Threads",
-      specTurnaround: "Encrypted Scoped Artwork Vault",
-      badgeText: "AES-256 Vault Protected",
-      previewTitle: "Heavyweight Studio Embroidered Tee",
-      previewSub: "Up to 25,000 stitches with vector-locked typography fidelity",
-      previewMetric: "Zero-Drift Vector Vault",
+      specMaterial: "Automated Image & Glyph Pre-Flight",
+      specTechnique: "DPI Verification & Text Overflow Gate",
+      specDurability: "Zero Wasted Blanks or Misprints",
+      specTurnaround: "Instant Pre-Production Validation",
+      badgeText: "Error Shield Active",
+      previewTitle: "Automated Quality & Preflight Gate",
+      previewSub: "Detects low-res photos, unsupported characters, or out-of-bounds text before printing or laser engraving",
+      previewMetric: "Zero Misprints Guaranteed",
     },
   ];
 
@@ -110,7 +110,7 @@ export function ValueProp() {
       <Container className="relative">
         {/* Section Header */}
         <Reveal>
-          <div className="text-center max-w-3xl mx-auto mb-10">
+          <div className="text-center max-w-3xl mx-auto mb-6">
             <span className="section-badge mb-3">
               {t("valueProp.sectionLabel", "Why customers choose us")}
             </span>
@@ -123,12 +123,14 @@ export function ValueProp() {
             <p className="mt-4 text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
               {t(
                 "valueProp.description",
-                "Every gift and everyday item should carry meaning. Gravurtastisch pairs careful materials with laser-sharp detail - so your photos, names, and messages look premium long after unboxing."
+                "Every gift and everyday item should carry meaning. Printomation pairs careful materials with laser-sharp detail - so your photos, names, and messages look premium long after unboxing."
               )}
             </p>
+          </div>
 
-            {/* Interactive Craft Selector Segmented Bar (NOT repetitive cards!) */}
-            <div className="mt-8 inline-flex flex-wrap items-center justify-center p-1.5 rounded-full bg-slate-200/80 dark:bg-navy/80 border border-slate-300/80 dark:border-white/10 shadow-inner gap-1">
+          {/* Interactive Craft Selector Segmented Bar (All 4 in a single line) */}
+          <div className="flex justify-center mb-10 overflow-x-auto no-scrollbar py-1">
+            <div className="inline-flex flex-nowrap items-center justify-center p-1.5 rounded-full bg-slate-200/80 dark:bg-navy/80 border border-slate-300/80 dark:border-white/10 shadow-inner gap-1">
               {craftProfiles.map((cp, idx) => {
                 const isSelected = activeTab === idx;
                 const Icon = cp.icon;
@@ -137,13 +139,13 @@ export function ValueProp() {
                     key={cp.id}
                     type="button"
                     onClick={() => setActiveTab(idx)}
-                    className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 lg:px-5 py-2 sm:py-2.5 rounded-full text-xs font-bold transition-all cursor-pointer whitespace-nowrap shrink-0 ${
                       isSelected
                         ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/30 scale-102"
                         : "text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white"
                     }`}
                   >
-                    <Icon className="w-4 h-4" />
+                    <Icon className="w-4 h-4 shrink-0" />
                     <span>
                       {cp.id} · {cp.category}
                     </span>
@@ -202,7 +204,7 @@ export function ValueProp() {
 
                   <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
                     <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
-                      Quality Standard
+                      SaaS Standard
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-1 block">
                       {active.specDurability}
@@ -211,7 +213,7 @@ export function ValueProp() {
 
                   <div className="p-3.5 rounded-2xl bg-white/90 dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs">
                     <span className="text-[10px] font-mono uppercase text-slate-600 dark:text-slate-300 block font-bold">
-                      Proof SLA
+                      Generation Speed
                     </span>
                     <span className="text-xs sm:text-sm font-bold text-purple-600 dark:text-purple-400 mt-1 block font-mono">
                       {active.specTurnaround}
@@ -227,7 +229,7 @@ export function ValueProp() {
                   </span>
                   <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#0032ab]/08 border border-[#0032ab]/20 text-xs font-bold text-[#0032ab] dark:text-brand-bright">
                     <ShieldCheck className="w-3.5 h-3.5" />
-                    Digital Proof Lock
+                    SP-API Automation Shield
                   </span>
                 </div>
               </div>
@@ -251,12 +253,12 @@ export function ValueProp() {
                           {active.badgeText}
                         </span>
                         <span className="text-[10px] font-mono text-slate-500">
-                          Calibration: Validated
+                          Status: Production Ready
                         </span>
                       </div>
                     </div>
                     <span className="font-mono text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-400">
-                      PASS QC
+                      READY TO RUN
                     </span>
                   </div>
 

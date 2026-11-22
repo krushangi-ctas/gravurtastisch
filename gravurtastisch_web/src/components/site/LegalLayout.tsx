@@ -30,7 +30,7 @@ export function LegalLayout({
   const { t } = useTranslation();
   const location = useLocation();
   const { config } = useWebsiteConfiguration();
-  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
+  const contactEmail = config?.contact?.email || "support@printomation.com";
 
   const legalTabs = [
     {

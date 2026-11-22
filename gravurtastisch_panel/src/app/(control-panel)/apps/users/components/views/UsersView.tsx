@@ -2343,7 +2343,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 											required
 											type="email"
 											sx={dialogInputSx}
-											placeholder={t('user.emailPlaceholder', 'e.g., alex@gravurtastisch.de')}
+											placeholder={t('user.emailPlaceholder', 'e.g., alex@printomation.com')}
 											value={formEmail}
 											onChange={(e) => {
 												setFormEmail(e.target.value);

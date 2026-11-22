@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Nav } from "@/components/site/Nav";
 import { Footer } from "@/components/site/Footer";
@@ -32,15 +32,19 @@ import { ServicePageSkeleton } from "@/components/skeletons/ServicePageSkeleton"
 import { seo } from "@/utils/seo";
 
 export const Route = createFileRoute("/review-analytics")({
+  beforeLoad: () => {
+    // Automation Analytics page is commented out per requirement
+    throw redirect({ to: "/" });
+  },
   pendingComponent: ServicePageSkeleton,
   head: () =>
     seo({
-      title: "Review Performance Analytics - Gravurtastisch Studio",
+      title: "Automation & Production Analytics - Printomation SaaS",
       description: i18n.exists("reviewAnalytics.heroDesc")
         ? i18n.t("reviewAnalytics.heroDesc")
-        : "Live Amazon review velocity, customer satisfaction ratings, SKU deltas, and fulfillment analytics in one dashboard.",
+        : "Live Amazon Custom automation throughput, file generation speeds, error prevention rates, and ASIN performance metrics.",
       url: "/review-analytics",
-      keywords: ["review analytics", "amazon bewertungen analyse", "sku performance", "seller metrics"],
+      keywords: ["automation analytics", "amazon custom throughput", "asin performance", "printomation"],
     }),
   component: ReviewAnalyticsPage,
 });
@@ -117,12 +121,12 @@ function ReviewAnalyticsPage() {
 
   const faqs = [
     {
-      q: t('reviewAnalytics.faq1Q') || "Does Amazon tell Gravurtastisch which exact buyer left a review?",
-      a: t('reviewAnalytics.faq1A') || "No. In accordance with Amazon's strict Customer Data Protection Policy, Amazon does not link individual customer custom orders directly to specific order IDs. Gravurtastisch provides accurate aggregate review velocity, rating lift deltas, and SKU-level performance metrics.",
+      q: t('reviewAnalytics.faq1Q') || "Does Amazon tell Printomation which exact buyer left a review?",
+      a: t('reviewAnalytics.faq1A') || "No. In accordance with Amazon's strict Customer Data Protection Policy, Amazon does not link individual customer custom orders directly to specific order IDs. Printomation provides accurate aggregate review velocity, rating lift deltas, and SKU-level performance metrics.",
     },
     {
-      q: t('reviewAnalytics.faq2Q') || "How does Gravurtastisch calculate SKU Rating Deltas?",
-      a: t('reviewAnalytics.faq2A') || "Gravurtastisch tracks your listing's average star rating and review count over time before and after automated solicitations are enabled, calculating the net rating improvement and velocity increase per SKU.",
+      q: t('reviewAnalytics.faq2Q') || "How does Printomation calculate SKU Rating Deltas?",
+      a: t('reviewAnalytics.faq2A') || "Printomation tracks your listing's average star rating and review count over time before and after automated solicitations are enabled, calculating the net rating improvement and velocity increase per SKU.",
     },
     {
       q: t('reviewAnalytics.faq3Q') || "How does review velocity affect my Amazon Buy Box and SEO rank?",
@@ -130,7 +134,7 @@ function ReviewAnalyticsPage() {
     },
     {
       q: t('reviewAnalytics.faq4Q') || "Can I export review analytics reports?",
-      a: t('reviewAnalytics.faq4A') || "Yes. You can export detailed CSV and PDF reports from the Gravurtastisch dashboard for your marketing and product development teams.",
+      a: t('reviewAnalytics.faq4A') || "Yes. You can export detailed CSV and PDF reports from the Printomation dashboard for your marketing and product development teams.",
     },
   ];
 
@@ -326,7 +330,7 @@ function ReviewAnalyticsPage() {
                   {t('reviewAnalytics.featureSectionHeading') || "Understand What Drives Your Store's Reputation"}
                 </h2>
                 <p className="mt-2 text-slate-body text-sm sm:text-base leading-relaxed">
-                  {t('reviewAnalytics.featureSectionDesc') || "Go beyond simple review counts. Gravurtastisch gives you granular analytics to pinpoint top-converting ASINs, diagnose underperforming variations, and benchmark across international marketplaces."}
+                  {t('reviewAnalytics.featureSectionDesc') || "Go beyond simple review counts. Printomation gives you granular analytics to pinpoint top-converting ASINs, diagnose underperforming variations, and benchmark across international marketplaces."}
                 </p>
               </div>
             </Reveal>
