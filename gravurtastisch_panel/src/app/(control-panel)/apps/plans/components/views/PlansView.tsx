@@ -344,7 +344,7 @@ function PlansContent({
 				Cell: ({ cell, row }: { cell: any; row: MRT_Row<Plan> }) => {
 					const val = (cell.getValue?.() as string) || row.original?.createdAt;
 					if (!val || !moment(val).isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					const m = moment(val);
 					return (

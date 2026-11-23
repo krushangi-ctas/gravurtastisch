@@ -1,14 +1,11 @@
 import Typography from '@mui/material/Typography';
 import Link from '@fuse/core/Link';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 function ConfirmationRequiredPageTitle() {
 	return (
 		<div className="w-full">
-			<img
-				className="w-40"
-				src="/gravurtastich.png"
-				alt="logo"
-			/>
+			<BrandLogo size="md" />
 
 			<Typography className="mt-8 text-4xl leading-[1.25] font-extrabold tracking-tight">
 				Confirmation required

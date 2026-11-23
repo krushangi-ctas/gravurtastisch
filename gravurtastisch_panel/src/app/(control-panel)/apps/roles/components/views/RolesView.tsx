@@ -380,11 +380,11 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					const m = moment(val);
 					if (!m.isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
@@ -408,7 +408,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 				size: 150,
 				minSize: 130,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>() || '—';
+					const val = cell.getValue<string>() || '-';
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
 							<FuseSvgIcon size={16} className="text-primary shrink-0">
@@ -513,7 +513,7 @@ function RolesView({ managementTab = 'roles' }: RolesViewProps = {}) {
 					}
 
 					if (accessibleSections.length === 0) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 
 					return (

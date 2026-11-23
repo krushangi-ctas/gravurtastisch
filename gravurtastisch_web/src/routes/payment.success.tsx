@@ -14,7 +14,7 @@ export const Route = createFileRoute("/payment/success")({
   }),
   head: () =>
     seo({
-      title: "Payment Successful - Gravurtastisch",
+      title: "Payment Successful - Printomation",
       description: "Payment confirmed. Your quota is active and orders are syncing.",
       url: "/payment/success",
       noindex: true,

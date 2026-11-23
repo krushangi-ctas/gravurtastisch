@@ -11,10 +11,10 @@ export const Route = createFileRoute("/refund")({
   pendingComponent: LegalPageSkeleton,
   head: () =>
     seo({
-      title: i18n.t("meta.refundTitle", "Refund Policy - Gravurtastisch"),
+      title: i18n.t("meta.refundTitle", "Refund Policy - Printomation"),
       description: i18n.t(
         "meta.refundDesc",
-        "Refund and cancellation policy for Gravurtastisch plans and custom orders."
+        "Refund and cancellation policy for Printomation plans and custom orders."
       ),
       url: "/refund",
     }),

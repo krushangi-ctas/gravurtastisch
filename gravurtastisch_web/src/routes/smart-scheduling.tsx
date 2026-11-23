@@ -40,12 +40,12 @@ export const Route = createFileRoute("/smart-scheduling")({
   pendingComponent: ServicePageSkeleton,
   head: () =>
     seo({
-      title: "Smart Production & Scheduling - Gravurtastisch Studio",
+      title: "Batch Processing & Production Queue - Printomation SaaS",
       description: i18n.exists("smartScheduling.heroDesc")
         ? i18n.t("smartScheduling.heroDesc")
-        : "Intelligent batch scheduling, laser bed queue balancing, proof locks, and automated transit notifications.",
+        : "Automated batch processing, machine queue management, and ready-to-run file compilation for Amazon Custom sellers.",
       url: "/smart-scheduling",
-      keywords: ["smart scheduling", "fertigungsplanung", "laser bed scheduling", "production pipeline"],
+      keywords: ["batch processing", "amazon custom batch files", "laser file queue", "printomation"],
     }),
   component: SmartSchedulingPage,
 });
@@ -60,53 +60,53 @@ function SmartSchedulingPage() {
 
   const timelinePhases = [
     {
-      day: "Day 0",
-      title: t('smartScheduling.phase0Title') || "Order received",
-      desc: t('smartScheduling.phase0Desc') || "Checkout completes and personalization fields sync to the studio queue.",
+      day: "Step 01",
+      title: t('smartScheduling.phase0Title') || "1. Learn & Register",
+      desc: t('smartScheduling.phase0Desc') || "Discover our SaaS features, register your seller account, and start your free trial.",
       color: "bg-[#0032ab]/10 text-[#0032ab] border-[#0032ab]/20",
     },
     {
-      day: "Days 1-3",
-      title: t('smartScheduling.phase1Title') || "Proof delivered",
-      desc: t('smartScheduling.phase1Desc') || "Digital mockup sent. Timer starts for your approval window.",
+      day: "Step 02",
+      title: t('smartScheduling.phase1Title') || "2. Choose Subscription",
+      desc: t('smartScheduling.phase1Desc') || "Select a transparent plan matched to your monthly Amazon Custom order volume.",
       color: "bg-[#155dfc]/10 text-[#155dfc] border-[#155dfc]/25",
     },
     {
-      day: "Days 3-5",
-      title: t('smartScheduling.phase2Title') || "Cool-down & revisions",
-      desc: t('smartScheduling.phase2Desc') || "Request tweaks without restarting the whole order - version history stays attached.",
+      day: "Step 03",
+      title: t('smartScheduling.phase2Title') || "3. Connect Amazon Store",
+      desc: t('smartScheduling.phase2Desc') || "Authorize official SP-API integration in one click to stream your custom listings.",
       color: "bg-indigo-50 text-indigo-700 border-indigo-200",
     },
     {
-      day: "Days 5-8",
-      title: t('smartScheduling.phase3Title') || "Production window",
-      desc: t('smartScheduling.phase3Desc') || "Laser, print, or stitch runs in a reserved slot with QC before pack-out.",
+      day: "Step 04",
+      title: t('smartScheduling.phase3Title') || "4. Batch File Compilation",
+      desc: t('smartScheduling.phase3Desc') || "Our engine compiles orders into calibrated SVG, DXF, and 300 DPI PDF files on schedule.",
       color: "bg-emerald-50 text-emerald-700 border-emerald-200",
     },
     {
-      day: "Day 30+",
-      title: t('smartScheduling.phase4Title') || "Ship by promise",
-      desc: t('smartScheduling.phase4Desc') || "Carrier pickup aligned to your quoted delivery date and region.",
-      color: "bg-slate-100 text-slate-700 border-slate-200",
+      day: "Step 05",
+      title: t('smartScheduling.phase4Title') || "5. Download & Produce",
+      desc: t('smartScheduling.phase4Desc') || "Download organized batch ZIPs and load them directly into LightBurn, EZCad, or your RIP.",
+      color: "bg-sky-50 text-sky-700 border-sky-200",
     },
   ];
 
   const faqs = [
     {
-      q: t('smartScheduling.faq1Q') || "Why can't production start immediately?",
-      a: t('smartScheduling.faq1A') || "Custom work needs an approved mockup. Starting early would risk wrong text placement, bad crops, or non-refundable material waste.",
+      q: t('smartScheduling.faq1Q') || "Do you manufacture, print, or ship physical products?",
+      a: t('smartScheduling.faq1A') || "No. We are strictly a B2B SaaS software platform. We do not manufacture, engrave, or ship any physical goods. Our software generates the production-ready files that your own workshop machines or production partners use to print and engrave.",
     },
     {
-      q: t('smartScheduling.faq2Q') || "Can I set different lead times per product?",
-      a: t('smartScheduling.faq2A') || "Yes - configure defaults per product line or SKU so ship estimates match real craft duration.",
+      q: t('smartScheduling.faq2Q') || "How does batch file generation save time for sellers?",
+      a: t('smartScheduling.faq2A') || "Manually creating files in design software takes 4-7 minutes per custom order. Printomation generates 100 calibrated machine files in under 60 seconds, reducing pre-press labor by up to 85%.",
     },
     {
-      q: t('smartScheduling.faq3Q') || "How do you handle holiday peaks?",
-      a: t('smartScheduling.faq3A') || "Capacity rules tighten automatically and we surface honest cutoffs on checkout integrations where supported.",
+      q: t('smartScheduling.faq3Q') || "Which file formats and machines are supported?",
+      a: t('smartScheduling.faq3A') || "We output production-ready vector SVG and DXF files (for LightBurn, EZCad, RDWorks, and CNC routers) as well as 300+ DPI print PDFs (for UV flatbed, sublimation, and direct-to-film printers).",
     },
     {
-      q: t('smartScheduling.faq4Q') || "Can customers see live proof status?",
-      a: t('smartScheduling.faq4A') || "Yes - shareable proof links let buyers approve or comment without logging into your full order desk.",
+      q: t('smartScheduling.faq4Q') || "Can I configure custom batch schedules?",
+      a: t('smartScheduling.faq4A') || "Yes. You can set automated triggers to compile batches at specific times of day (e.g. 08:30 AM before workshop shifts) or run continuous real-time compilation.",
     },
   ];
 
@@ -205,20 +205,20 @@ function SmartSchedulingPage() {
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="absolute text-[11px] font-black text-emerald-600 font-mono">0%</span>
+                    <span className="absolute text-[11px] font-black text-emerald-600 font-mono">5k+</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">{t('smartScheduling.chrono2Tag') || "Quality protected"}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">{t('smartScheduling.chrono2Tag') || "Holiday Scale"}</span>
                     </div>
-                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono2Title') || "Capacity safe"}</p>
-                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono2Sub') || "No overbooking lines"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono2Title') || "High-Volume Batches"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono2Sub') || "5,000+ orders / day"}</p>
                   </div>
                 </div>
               </Reveal>
 
-              {/* Chrono Dial 3: Ship window fit */}
+              {/* Chrono Dial 3: Zero Misprint Shield */}
               <Reveal delay={150}>
                 <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all duration-300 flex items-center gap-4 hover:-translate-y-1">
                   <div className="relative h-13 w-13 shrink-0 flex items-center justify-center">
@@ -236,33 +236,33 @@ function SmartSchedulingPage() {
                         strokeLinecap="round"
                       />
                     </svg>
-                    <span className="absolute text-[10px] font-black text-indigo-600 font-mono">18:30</span>
+                    <span className="absolute text-[10px] font-black text-indigo-600 font-mono">100%</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-indigo-500" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">{t('smartScheduling.chrono3Tag') || "Regional delivery"}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700">{t('smartScheduling.chrono3Tag') || "100% Precision"}</span>
                     </div>
-                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono3Title') || "Ship window fit"}</p>
-                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono3Sub') || "Carrier cutoff aware"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono3Title') || "Zero Misprint Shield"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono3Sub') || "Pre-flight boundary lock"}</p>
                   </div>
                 </div>
               </Reveal>
 
-              {/* Chrono Dial 4: Seasonal readiness */}
+              {/* Chrono Dial 4: Multi-Format Output */}
               <Reveal delay={200}>
                 <div className="group relative rounded-2xl sm:rounded-3xl liquid-glass border border-white/80 p-5 sm:p-6 shadow-[0_8px_30px_rgba(0,50,171,0.06)] hover:shadow-[0_16px_40px_rgba(0,50,171,0.12)] transition-all duration-300 flex items-center gap-4 hover:-translate-y-1">
                   <div className="relative h-13 w-13 shrink-0 rounded-2xl bg-amber-50 border border-amber-200 flex flex-col items-center justify-center text-amber-700 shadow-inner">
-                    <span className="text-[12px] font-black font-mono leading-none">5-30</span>
-                    <span className="text-[8px] font-bold uppercase text-amber-600 mt-0.5">DAYS</span>
+                    <span className="text-[11px] font-black font-mono leading-none">SVG</span>
+                    <span className="text-[8px] font-bold uppercase text-amber-600 mt-0.5">DXF·PDF</span>
                   </div>
                   <div>
                     <div className="flex items-center gap-1.5">
                       <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">{t('smartScheduling.chrono4Tag') || "Peak gifting"}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700">{t('smartScheduling.chrono4Tag') || "Multi-Format"}</span>
                     </div>
-                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono4Title') || "Seasonal readiness"}</p>
-                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono4Sub') || "Holiday surge planning"}</p>
+                    <p className="text-sm font-bold text-navy-deep mt-0.5">{t('smartScheduling.chrono4Title') || "Multi-Format Output"}</p>
+                    <p className="text-[10.5px] text-slate-500">{t('smartScheduling.chrono4Sub') || "Laser & print ready"}</p>
                   </div>
                 </div>
               </Reveal>
@@ -276,20 +276,20 @@ function SmartSchedulingPage() {
             <Reveal>
               <div className="max-w-3xl mb-12">
                 <span className="section-badge mb-3">
-                  {t('smartScheduling.matrixSectionBadge') || "Core algorithm"}
+                  {t('smartScheduling.matrixSectionBadge') || "Batch Engine Capabilities"}
                 </span>
                 <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold tracking-tight text-navy-deep leading-[1.15]">
-                  {t('smartScheduling.matrixHeading') || "Timing matters for custom craft"}
+                  {t('smartScheduling.matrixHeading') || "Smart Queuing for Workshop Efficiency"}
                 </h2>
                 <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl">
-                  {t('smartScheduling.matrixDesc') || "Rushing engraving before proof approval wastes material; delaying shipment misses gifting moments. Smart scheduling balances both."}
+                  {t('smartScheduling.matrixDesc') || "Manually opening orders and retyping text in Illustrator takes 4-7 minutes per job. Printomation's batch scheduler generates hundreds of machine-ready files automatically on your schedule."}
                 </p>
               </div>
             </Reveal>
 
             {/* 2x2 Interactive Control Matrix (Compact Height) */}
             <div className="grid md:grid-cols-2 gap-4 sm:gap-5 items-stretch">
-              {/* Quadrant 1: Hard Gate Before Craft */}
+              {/* Quadrant 1: ASIN & Material Grouping */}
               <Reveal delay={60}>
                 <div className="h-full liquid-glass rounded-2xl p-4 sm:p-5 border border-white/80 shadow-[0_8px_25px_rgba(0,50,171,0.05)] hover:shadow-[0_14px_35px_rgba(0,50,171,0.1)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between group">
                   <div>
@@ -298,50 +298,50 @@ function SmartSchedulingPage() {
                         <ShieldCheck className="h-4.5 w-4.5" />
                       </div>
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
-                        {t('smartScheduling.quad1Tag') || "Proof-first"}
+                        {t('smartScheduling.quad1Tag') || "Batch Grouping"}
                       </span>
                     </div>
 
                     <h3 className="text-base sm:text-lg font-extrabold text-navy-deep leading-snug">
-                      {t('smartScheduling.quad1Title') || "Hard gate before craft"}
+                      {t('smartScheduling.quad1Title') || "ASIN & Material Grouping"}
                     </h3>
                     <p className="mt-1 text-xs sm:text-[13px] text-slate-body leading-relaxed">
-                      {t('smartScheduling.quad1Desc') || "Production slots open only after digital approval - automatic holds if proof expires unapproved."}
+                      {t('smartScheduling.quad1Desc') || "Automatically group orders by blank material (slate, wood, tumblers, acrylic) or machine bed type for uninterrupted production runs."}
                     </p>
 
                     {/* Embedded Widget: 3-Stage Range Gauge */}
                     <div className="mt-3.5 rounded-xl bg-white/90 border border-slate-200/80 p-2.5 sm:p-3 space-y-2 shadow-2xs">
                       <div className="flex items-center justify-between text-[10.5px] font-mono text-slate-500">
-                        <span className="font-semibold text-slate-600">{t('smartScheduling.slaProofGate', 'SLA PROOF GATE')}</span>
+                        <span className="font-semibold text-slate-600">{t('smartScheduling.slaProofGate', 'PRE-FLIGHT VALIDATION')}</span>
                         <span className="text-[#0032ab] font-bold flex items-center gap-1">
                           <CheckCircle2 className="h-3 w-3 text-[#155dfc]" />
                           {t('smartScheduling.autoEnforced', 'AUTO-ENFORCED')}
                         </span>
                       </div>
                       <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex p-0.5 gap-1">
-                        <div className="h-full w-1/4 bg-slate-300 rounded-full" title="Days 0-4 Cooldown" />
-                        <div className="h-full w-2/4 bg-gradient-to-r from-[#0032ab] to-[#155dfc] rounded-full animate-pulse shadow-2xs" title="Days 5-30 Golden Window" />
-                        <div className="h-full w-1/4 bg-slate-300 rounded-full" title="Day 31+ Cutoff" />
+                        <div className="h-full w-1/4 bg-slate-300 rounded-full" title="Intake Queue" />
+                        <div className="h-full w-2/4 bg-gradient-to-r from-[#0032ab] to-[#155dfc] rounded-full animate-pulse shadow-2xs" title="Pre-Flight Verification" />
+                        <div className="h-full w-1/4 bg-emerald-500 rounded-full" title="File Generated" />
                       </div>
                       <div className="flex items-center justify-between text-[10px] pt-0.5">
-                        <span className="text-slate-500 font-medium">{t('smartScheduling.stage1ProofSent', 'Stage 1: Proof Sent')}</span>
+                        <span className="text-slate-500 font-medium">{t('smartScheduling.stage1ProofSent', 'Stage 1: Intake')}</span>
                         <span className="text-[#0032ab] font-bold flex items-center gap-1">
                           <Sparkles className="h-2.5 w-2.5 text-[#155dfc]" />
-                          {t('smartScheduling.stage2Approved', 'Stage 2: Approved')}
+                          {t('smartScheduling.stage2Approved', 'Stage 2: Pre-Flight')}
                         </span>
-                        <span className="text-slate-400 font-medium">{t('smartScheduling.stage3LaserQueued', 'Stage 3: Laser Queued')}</span>
+                        <span className="text-emerald-600 font-medium">{t('smartScheduling.stage3LaserQueued', 'Stage 3: Ready File')}</span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">{t('smartScheduling.materialWastePrevention', 'Material Waste Prevention')}</span>
-                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroBadRuns', 'Zero Bad Custom runs')}</span>
+                    <span className="font-medium">{t('smartScheduling.materialWastePrevention', 'Vector Precision Gate')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroBadRuns', 'Zero Misprint Guarantee')}</span>
                   </div>
                 </div>
               </Reveal>
 
-              {/* Quadrant 2: Stakeholder-Friendly Reminders */}
+              {/* Quadrant 2: Scheduled Queue Runs */}
               <Reveal delay={100}>
                 <div className="h-full liquid-glass rounded-2xl p-4 sm:p-5 border border-white/80 shadow-[0_8px_25px_rgba(0,50,171,0.05)] hover:shadow-[0_14px_35px_rgba(0,50,171,0.12)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between group">
                   <div>
@@ -350,50 +350,50 @@ function SmartSchedulingPage() {
                         <SunMedium className="h-4.5 w-4.5" />
                       </div>
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
-                        {t('smartScheduling.quad2Tag') || "Evening proof drops"}
+                        {t('smartScheduling.quad2Tag') || "Automated Schedule"}
                       </span>
                     </div>
 
                     <h3 className="text-base sm:text-lg font-extrabold text-navy-deep leading-snug">
-                      {t('smartScheduling.quad2Title') || "Stakeholder-friendly reminders"}
+                      {t('smartScheduling.quad2Title') || "Scheduled Queue Runs"}
                     </h3>
                     <p className="mt-1 text-xs sm:text-[13px] text-slate-body leading-relaxed">
-                      {t('smartScheduling.quad2Desc') || "Proof emails and nudges timed for when your team actually reads inbox - not 3 AM server time."}
+                      {t('smartScheduling.quad2Desc') || "Set automated batch compilation schedules (such as daily 08:30 AM before workshop shifts) so machine operators have files waiting."}
                     </p>
 
                     {/* Embedded Widget: Live Multi-Market Timezone Console */}
                     <div className="mt-3.5 rounded-xl bg-white/90 border border-slate-200/80 p-2.5 space-y-1.5 shadow-2xs">
                       <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-50/80 border border-slate-200/70 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-white bg-gradient-to-r from-[#0032ab] to-[#155dfc] px-1.5 py-0.5 rounded shadow-2xs">US</span>
-                          <span className="font-bold text-navy-deep text-[11.5px]">New York (EDT)</span>
+                          <span className="text-[10px] font-bold text-white bg-gradient-to-r from-[#0032ab] to-[#155dfc] px-1.5 py-0.5 rounded shadow-2xs">AM</span>
+                          <span className="font-bold text-navy-deep text-[11.5px]">Morning Shift Batch</span>
                         </div>
                         <span className="font-mono text-[10.5px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2 py-0.5 rounded-md border border-[#0032ab]/20 flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          18:30 Drop Slot
+                          08:30 Auto-Compile
                         </span>
                       </div>
                       <div className="flex items-center justify-between px-2.5 py-1.5 rounded-lg bg-slate-50/80 border border-slate-200/70 text-xs">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-white bg-gradient-to-r from-[#0032ab] to-[#155dfc] px-1.5 py-0.5 rounded shadow-2xs">UK</span>
-                          <span className="font-bold text-navy-deep text-[11.5px]">London (BST)</span>
+                          <span className="text-[10px] font-bold text-white bg-gradient-to-r from-[#0032ab] to-[#155dfc] px-1.5 py-0.5 rounded shadow-2xs">PM</span>
+                          <span className="font-bold text-navy-deep text-[11.5px]">Afternoon Rush Run</span>
                         </div>
                         <span className="font-mono text-[10.5px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2 py-0.5 rounded-md border border-[#0032ab]/20 flex items-center gap-1.5">
                           <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                          19:00 Drop Slot
+                          13:30 Auto-Compile
                         </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">{t('smartScheduling.timezoneIntelligence', 'Timezone Intelligence')}</span>
-                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroMidnightSpam', 'Zero Midnight Spam')}</span>
+                    <span className="font-medium">{t('smartScheduling.timezoneIntelligence', 'Workshop Shift Triggers')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroMidnightSpam', 'Scheduled Batch Runs')}</span>
                   </div>
                 </div>
               </Reveal>
 
-              {/* Quadrant 3: Material-Specific Lead Times */}
+              {/* Quadrant 3: Text-to-Curves & Bleed Validation */}
               <Reveal delay={140}>
                 <div className="h-full liquid-glass rounded-2xl p-4 sm:p-5 border border-white/80 shadow-[0_8px_25px_rgba(0,50,171,0.05)] hover:shadow-[0_14px_35px_rgba(0,50,171,0.12)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between group">
                   <div>
@@ -402,15 +402,15 @@ function SmartSchedulingPage() {
                         <Sliders className="h-4.5 w-4.5" />
                       </div>
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
-                        {t('smartScheduling.quad3Tag') || "SKU-aware delays"}
+                        {t('smartScheduling.quad3Tag') || "Pre-Flight Lock"}
                       </span>
                     </div>
 
                     <h3 className="text-base sm:text-lg font-extrabold text-navy-deep leading-snug">
-                      {t('smartScheduling.quad3Title') || "Material-specific lead times"}
+                      {t('smartScheduling.quad3Title') || "Text-to-Curves & Bleed Validation"}
                     </h3>
                     <p className="mt-1 text-xs sm:text-[13px] text-slate-body leading-relaxed">
-                      {t('smartScheduling.quad3Desc') || "Textiles, ceramic, and deep wood engrave get different default windows based on real studio throughput."}
+                      {t('smartScheduling.quad3Desc') || "The engine converts buyer fonts into vector curves, checks photo resolution (300+ DPI), and locks safe margins before generating files."}
                     </p>
 
                     {/* Embedded Widget: 2 Lead Time Sliders */}
@@ -421,10 +421,10 @@ function SmartSchedulingPage() {
                             <Pill className="h-3 w-3 text-[#155dfc] shrink-0" />
                             Deep Wood Engrave & Slate
                           </span>
-                          <span className="text-[#0032ab] font-bold font-mono shrink-0 ml-2">14h Craft</span>
+                          <span className="text-[#0032ab] font-bold font-mono shrink-0 ml-2">Kerf Locked</span>
                         </div>
                         <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full w-3/4 bg-gradient-to-r from-[#0032ab] to-[#155dfc] rounded-full shadow-2xs" />
+                          <div className="h-full w-full bg-gradient-to-r from-[#0032ab] to-[#155dfc] rounded-full shadow-2xs" />
                         </div>
                       </div>
                       <div>
@@ -433,23 +433,23 @@ function SmartSchedulingPage() {
                             <Headphones className="h-3 w-3 text-[#155dfc] shrink-0" />
                             Laser Tumblers & Flasks
                           </span>
-                          <span className="text-[#0032ab] font-bold font-mono shrink-0 ml-2">5h Rapid</span>
+                          <span className="text-[#0032ab] font-bold font-mono shrink-0 ml-2">360° Mapped</span>
                         </div>
                         <div className="h-2 w-full bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full w-1/3 bg-gradient-to-r from-[#0032ab] to-[#38bdf8] rounded-full shadow-2xs" />
+                          <div className="h-full w-full bg-gradient-to-r from-[#0032ab] to-[#38bdf8] rounded-full shadow-2xs" />
                         </div>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">{t('smartScheduling.skuThrottleRules', 'SKU Throttle Rules')}</span>
-                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.dynamicBatchAllocation', 'Dynamic Batch Allocation')}</span>
+                    <span className="font-medium">{t('smartScheduling.skuThrottleRules', 'ASIN & Machine Routing')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.dynamicBatchAllocation', 'Dynamic Batch Sorting')}</span>
                   </div>
                 </div>
               </Reveal>
 
-              {/* Quadrant 4: Predictable Ship Dates */}
+              {/* Quadrant 4: Peak Holiday Surge Handling */}
               <Reveal delay={180}>
                 <div className="h-full liquid-glass rounded-2xl p-4 sm:p-5 border border-white/80 shadow-[0_8px_25px_rgba(0,50,171,0.05)] hover:shadow-[0_14px_35px_rgba(0,50,171,0.12)] hover:-translate-y-0.5 transition-all duration-300 flex flex-col justify-between group">
                   <div>
@@ -458,22 +458,22 @@ function SmartSchedulingPage() {
                         <TrendingUp className="h-4.5 w-4.5" />
                       </div>
                       <span className="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-[#0032ab]/10 text-[#0032ab] border border-[#0032ab]/20">
-                        {t('smartScheduling.quad4Tag') || "Delivery confidence"}
+                        {t('smartScheduling.quad4Tag') || "Peak Scale"}
                       </span>
                     </div>
 
                     <h3 className="text-base sm:text-lg font-extrabold text-navy-deep leading-snug">
-                      {t('smartScheduling.quad4Title') || "Predictable ship dates"}
+                      {t('smartScheduling.quad4Title') || "Peak Holiday Surge Handling"}
                     </h3>
                     <p className="mt-1 text-xs sm:text-[13px] text-slate-body leading-relaxed">
-                      {t('smartScheduling.quad4Desc') || 'Customers see honest estimates that respect capacity - fewer angry "where is my gift?" messages.'}
+                      {t('smartScheduling.quad4Desc') || "Scale smoothly through Q4, Valentine's, and Mother's Day surges without hiring temporary graphic design staff."}
                     </p>
 
                     {/* Embedded Widget: Stat & 5-Star Telemetry Box */}
                     <div className="mt-3.5 rounded-xl bg-white/90 border border-slate-200/80 p-2.5 sm:p-3 flex items-center justify-between shadow-2xs">
                       <div>
-                        <p className="text-2xl font-extrabold text-navy-deep font-mono tracking-tight leading-none">+38%</p>
-                        <p className="text-[11px] font-medium text-slate-500 mt-1">{t('smartScheduling.onTimeCertainty', 'On-Time Delivery Certainty')}</p>
+                        <p className="text-2xl font-extrabold text-navy-deep font-mono tracking-tight leading-none">85%</p>
+                        <p className="text-[11px] font-medium text-slate-500 mt-1">{t('smartScheduling.onTimeCertainty', 'Pre-Press Labor Saved')}</p>
                       </div>
                       <div className="text-right">
                         <div className="flex items-center justify-end gap-0.5">
@@ -482,15 +482,15 @@ function SmartSchedulingPage() {
                           ))}
                         </div>
                         <span className="text-[10px] font-bold text-[#0032ab] bg-[#0032ab]/10 px-2 py-0.5 rounded-full mt-1 inline-block border border-[#0032ab]/20">
-                          100% Studio Protected
+                          {t('smartScheduling.zeroOverbooking', '10k+ Daily Files')}
                         </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="mt-3.5 pt-2.5 border-t border-slate-200/60 flex items-center justify-between text-[11px] text-slate-500">
-                    <span className="font-medium">{t('smartScheduling.capacityGuardrail', 'Capacity Guardrail')}</span>
-                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroOverbooking', 'Zero Overbooking')}</span>
+                    <span className="font-medium">{t('smartScheduling.capacityGuardrail', 'Holiday Scale Capacity')}</span>
+                    <span className="font-bold text-[#0032ab]">{t('smartScheduling.zeroOverbooking', '10k+ Daily Files')}</span>
                   </div>
                 </div>
               </Reveal>
@@ -510,7 +510,7 @@ function SmartSchedulingPage() {
                   {t('smartScheduling.timelineHeading') || "From checkout to doorstep"}
                 </h2>
                 <p className="mt-4 text-base text-slate-body leading-relaxed max-w-2xl mx-auto">
-                  {t('smartScheduling.timelineDesc') || "How Gravurtastisch sequences proof, craft, and ship for personalized orders."}
+                  {t('smartScheduling.timelineDesc') || "How Printomation sequences proof, craft, and ship for personalized orders."}
                 </p>
               </div>
             </Reveal>
@@ -542,17 +542,17 @@ function SmartSchedulingPage() {
                     <Zap className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <h4 className="font-extrabold text-navy-deep text-base sm:text-lg">{t('smartScheduling.calloutTitle') || "Automatic status updates"}</h4>
+                    <h4 className="font-extrabold text-navy-deep text-base sm:text-lg">{t('smartScheduling.calloutTitle') || "Automated File Delivery"}</h4>
                     <p className="text-xs sm:text-sm text-slate-body mt-1 max-w-xl leading-relaxed">
-                      {t('smartScheduling.calloutDesc') || "When proof approves or parcel ships, statuses flip in your dashboard and optional webhooks fire."}
+                      {t('smartScheduling.calloutDesc') || "When scheduled batch compilation finishes, organized files are immediately available for one-click download in your seller panel."}
                     </p>
                   </div>
                 </div>
                 <a
-                  href="/#register"
+                  href="/register"
                   className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-3 text-xs sm:text-sm font-bold !text-white transition-all shadow-[0_6px_20px_rgba(0,50,171,0.25)] hover:-translate-y-0.5 shrink-0 relative z-10"
                 >
-                  {t('smartScheduling.calloutCta') || "Configure SLAs →"}
+                  {t('smartScheduling.calloutCta') || "Start Free Trial ->"}
                 </a>
               </div>
             </Reveal>
@@ -641,24 +641,24 @@ function SmartSchedulingPage() {
               <div className="relative z-10 max-w-3xl mx-auto">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#0032ab]/10 border border-[#0032ab]/20 text-xs font-semibold uppercase tracking-wider text-[#0032ab] mb-3">
                   <Sparkles className="h-3.5 w-3.5 text-[#155dfc]" />
-                  {t('smartScheduling.ctaBadge') || "Instant Deployment"}
+                  {t('smartScheduling.ctaBadge') || "Scale Your Production"}
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-extrabold text-navy-deep tracking-tight leading-snug">
-                  {t('smartScheduling.ctaHeading') || "Never miss a gifting deadline"}
+                  {t('smartScheduling.ctaHeading') || "Eliminate the File Preparation Bottleneck"}
                 </h2>
                 <p className="mt-2 text-slate-body text-xs sm:text-sm max-w-xl mx-auto leading-relaxed">
-                  {t('smartScheduling.ctaDesc') || "Proof-first scheduling with studio-realistic ship dates."}
+                  {t('smartScheduling.ctaDesc') || "Automate Amazon Custom order compilation into ready-to-use vector and print files. Start your free trial today."}
                 </p>
                 <div className="mt-5 flex flex-wrap justify-center gap-3">
                   <a
-                    href="/#register"
+                    href="/register"
                     className="inline-flex items-center gap-2 rounded-full btn-glass-primary px-6 py-2.5 text-xs sm:text-sm font-bold !text-white transition-all shadow-md shadow-[#0032ab]/20 hover:-translate-y-0.5"
                   >
-                    {t('smartScheduling.ctaButton') || "Register as Seller"}
+                    {t('smartScheduling.ctaButton') || "Start Free Trial"}
                     <ArrowRight className="h-4 w-4" />
                   </a>
                   <a
-                    href="/#pricing"
+                    href="/pricing"
                     className="inline-flex items-center gap-2 rounded-full bg-white border border-[#0032ab]/20 px-6 py-2.5 text-xs sm:text-sm font-bold text-[#0032ab] hover:bg-blue-50/50 hover:border-[#0032ab]/40 transition-all shadow-xs"
                   >
                     {t('smartScheduling.ctaPricing') || "View Pricing Plans"}
@@ -689,7 +689,7 @@ function SmartSchedulingFaqSvg() {
       xmlns="http://www.w3.org/2000/svg"
       className="w-full h-auto select-none"
       role="img"
-      aria-label="Gravurtastisch Precision Chronometric Astrolabe HUD"
+      aria-label="Printomation Precision Chronometric Astrolabe HUD"
     >
       <defs>
         {/* Soft Ambient Radial Lights */}

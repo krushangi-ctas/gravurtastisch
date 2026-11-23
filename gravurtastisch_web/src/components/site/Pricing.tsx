@@ -6,25 +6,79 @@ import { Reveal } from "./Reveal";
 import { createCheckoutSession, getPublicPlans, PlanItem } from "@/lib/api";
 
 const defaultFallbackPlans: PlanItem[] = [
+  // Monthly (billingCycle: 1)
   {
     name: "Starter",
-    price: 15,
-    marketplace: 5,
-    request_quota: 150,
+    price: 49,
+    marketplace: 2,
+    request_quota: 500,
+    billingCycle: 1,
     status: 1,
   },
   {
     name: "Growth",
-    price: 25,
-    marketplace: 10,
-    request_quota: 300,
+    price: 99,
+    marketplace: 5,
+    request_quota: 1500,
+    billingCycle: 1,
     status: 1,
   },
   {
     name: "Scale",
-    price: 99,
-    marketplace: 25,
-    request_quota: 1000,
+    price: 199,
+    marketplace: 10,
+    request_quota: 5000,
+    billingCycle: 1,
+    status: 1,
+  },
+  // Quarterly (billingCycle: 2)
+  {
+    name: "Starter Quarterly",
+    price: 129,
+    marketplace: 2,
+    request_quota: 1500,
+    billingCycle: 2,
+    status: 1,
+  },
+  {
+    name: "Growth Quarterly",
+    price: 269,
+    marketplace: 5,
+    request_quota: 4500,
+    billingCycle: 2,
+    status: 1,
+  },
+  {
+    name: "Scale Quarterly",
+    price: 529,
+    marketplace: 10,
+    request_quota: 15000,
+    billingCycle: 2,
+    status: 1,
+  },
+  // Yearly (billingCycle: 3)
+  {
+    name: "Starter Annual",
+    price: 469,
+    marketplace: 2,
+    request_quota: 6000,
+    billingCycle: 3,
+    status: 1,
+  },
+  {
+    name: "Growth Annual",
+    price: 949,
+    marketplace: 5,
+    request_quota: 18000,
+    billingCycle: 3,
+    status: 1,
+  },
+  {
+    name: "Scale Annual",
+    price: 1899,
+    marketplace: 10,
+    request_quota: 60000,
+    billingCycle: 3,
     status: 1,
   },
 ];
@@ -62,7 +116,9 @@ export function Pricing() {
   const filteredPlans =
     cycleFilter === "all"
       ? plans
-      : plans.filter((p) => (p.billingCycle || 1) === cycleFilter);
+      : plans.filter((p) => (p.billingCycle || 1) === cycleFilter).length > 0
+        ? plans.filter((p) => (p.billingCycle || 1) === cycleFilter)
+        : defaultFallbackPlans.filter((p) => p.billingCycle === cycleFilter);
 
   useEffect(() => {
     let isMounted = true;
@@ -91,49 +147,48 @@ export function Pricing() {
   }, []);
 
   const getTierTag = (index: number, total: number) => {
-    if (index === 0) return t("pricing.tiers.starter.tag") || "SOLO SELLERS";
+    if (index === 0) return t("pricing.tiers.starter.tag") || "STARTER SELLERS";
     if (index === Math.floor(total / 2) || index === 1)
-      return t("pricing.tiers.growth.tag") || "SCALING BRANDS";
-    return t("pricing.tiers.scale.tag") || "MULTI-ACCOUNT";
+      return t("pricing.tiers.growth.tag") || "GROWING BRANDS";
+    return t("pricing.tiers.scale.tag") || "HIGH-VOLUME SCALE";
   };
 
   const getPerks = (plan: PlanItem, index: number, isHighlight: boolean) => {
     const marketplaceText =
       plan.marketplace <= 1
-        ? t("pricing.marketplaceSingle", "1 marketplace")
+        ? t("pricing.marketplaceSingle", "1 Amazon marketplace")
         : t("pricing.marketplacePlural", {
           count: plan.marketplace,
-          defaultValue: `${plan.marketplace} marketplaces`,
+          defaultValue: `${plan.marketplace} Amazon marketplaces`,
         });
-
-    const starterPerks =
-      (t("pricing.tiers.starter.perks", { returnObjects: true }) as string[]) || [];
-    const growthPerks =
-      (t("pricing.tiers.growth.perks", { returnObjects: true }) as string[]) || [];
 
     if (index === 0) {
       return [
-        starterPerks[0] || "Free digital proofs",
-        starterPerks[1] || "Standard turnaround",
-        starterPerks[2] || "Email support",
+        "Automated Amazon Custom file conversion",
+        "SVG, PDF, DXF & EZCad exports",
+        "Pre-flight text & resolution check",
         marketplaceText,
+        "Standard email support",
       ];
     }
 
     if (isHighlight) {
       return [
-        growthPerks[0] || "Priority proof queue",
-        growthPerks[1] || "Saved brand templates",
+        "Everything in Starter",
+        "Priority file generation queue",
+        "Unlimited ASIN template profiles",
         marketplaceText,
-        growthPerks[3] || "Chat support",
+        "Batch ZIP downloads & exports",
+        "Priority technical support",
       ];
     }
 
     return [
-      starterPerks[0] || "Free digital proofs",
-      growthPerks[1] || "Saved brand templates",
-      growthPerks[3] || "Chat support",
+      "Everything in Growth",
+      "High-volume multi-account SP-API sync",
+      "Dedicated template configuration support",
       marketplaceText,
+      "Direct machine hot-folder integration",
     ];
   };
 
@@ -212,58 +267,54 @@ export function Pricing() {
               {t("pricing.description")}
             </p>
 
-            {availableCycles.length > 1 && (
-              <div className="mt-8 flex items-center justify-center">
-                <div className="inline-flex items-center p-1.5 rounded-full bg-white border border-border shadow-xs gap-1">
-                  <button
-                    type="button"
-                    onClick={() => setCycleFilter("all")}
-                    className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === "all"
+            <div className="mt-8 flex items-center justify-center">
+              <div className="inline-flex items-center p-1.5 rounded-full bg-white border border-border shadow-xs gap-1">
+                <button
+                  type="button"
+                  onClick={() => setCycleFilter(1)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    cycleFilter === 1
                       ? "bg-brand !text-white shadow-xs"
                       : "text-slate-body hover:text-brand"
-                      }`}
-                  >
-                    All Plans ({plans.length})
-                  </button>
-                  {availableCycles.includes(1) && (
-                    <button
-                      type="button"
-                      onClick={() => setCycleFilter(1)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 1
-                        ? "bg-brand !text-white shadow-xs"
-                        : "text-slate-body hover:text-brand"
-                        }`}
-                    >
-                      Monthly
-                    </button>
-                  )}
-                  {availableCycles.includes(2) && (
-                    <button
-                      type="button"
-                      onClick={() => setCycleFilter(2)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 2
-                        ? "bg-brand !text-white shadow-xs"
-                        : "text-slate-body hover:text-brand"
-                        }`}
-                    >
-                      Quarterly
-                    </button>
-                  )}
-                  {availableCycles.includes(3) && (
-                    <button
-                      type="button"
-                      onClick={() => setCycleFilter(3)}
-                      className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${cycleFilter === 3
-                        ? "bg-brand !text-white shadow-xs"
-                        : "text-slate-body hover:text-brand"
-                        }`}
-                    >
-                      Yearly
-                    </button>
-                  )}
-                </div>
+                  }`}
+                >
+                  Monthly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCycleFilter(2)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    cycleFilter === 2
+                      ? "bg-brand !text-white shadow-xs"
+                      : "text-slate-body hover:text-brand"
+                  }`}
+                >
+                  Quarterly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCycleFilter(3)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    cycleFilter === 3
+                      ? "bg-brand !text-white shadow-xs"
+                      : "text-slate-body hover:text-brand"
+                  }`}
+                >
+                  Yearly
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCycleFilter("all")}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                    cycleFilter === "all"
+                      ? "bg-brand !text-white shadow-xs"
+                      : "text-slate-body hover:text-brand"
+                  }`}
+                >
+                  All Plans
+                </button>
               </div>
-            )}
+            </div>
           </div>
         </Reveal>
 

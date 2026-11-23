@@ -22,10 +22,10 @@ export const Route = createFileRoute("/impressum")({
   pendingComponent: LegalPageSkeleton,
   head: () =>
     seo({
-      title: i18n.t("meta.impressumTitle", "Legal Notice & Imprint - Gravurtastisch"),
+      title: i18n.t("meta.impressumTitle", "Legal Notice & Imprint - Printomation"),
       description: i18n.t(
         "meta.impressumDesc",
-        "Legal notice, company registration, and statutory provider details pursuant to § 5 DDG for Gravurtastisch."
+        "Legal notice, company registration, and statutory provider details pursuant to § 5 DDG for Printomation."
       ),
       url: "/impressum",
     }),
@@ -35,7 +35,7 @@ export const Route = createFileRoute("/impressum")({
 function ImpressumPage() {
   const { t } = useTranslation();
   const { config } = useWebsiteConfiguration();
-  const companyName = config?.company?.name || "Gravurtastisch Studio";
+  const companyName = config?.company?.name || "Printomation Studio";
   const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
   const contactPhone = config?.contact?.phone || "017661055576";
   const dynamicAddress = (() => {

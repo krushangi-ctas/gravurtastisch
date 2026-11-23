@@ -38,40 +38,40 @@ export function DashboardPreview() {
 
   const initialRows: OrderRow[] = [
     {
-      id: "GT-24018",
-      sku: "CUP-WRAP-11",
-      item: "Insulated Tumbler 750ml",
-      material: "Rotary Laser 360°",
-      d: "12m ago",
-      s: "queued",
-      t: "Proof",
-    },
-    {
-      id: "GT-24017",
-      sku: "KIT-BOARD-02",
-      item: "Solid Oak Board",
-      material: "Deep Laser Engrave",
-      d: "1h ago",
+      id: "304-892104-11",
+      sku: "B09X7K81 (Tumbler)",
+      item: "Text: 'Alexander - Est. 2024'",
+      material: "DXF / SVG Laser File",
+      d: "2m ago",
       s: "sent",
-      t: "Laser",
+      t: "Download",
     },
     {
-      id: "GT-24016",
-      sku: "LIFE-LED-07",
-      item: "Acrylic Light Base",
-      material: "Laser Cut & UV",
-      d: "3h ago",
-      s: "queued",
-      t: "Proof",
+      id: "028-449102-05",
+      sku: "B08Y6M92 (Photo Mug)",
+      item: "Upload: portrait.jpg + Text",
+      material: "300 DPI CMYK PDF",
+      d: "8m ago",
+      s: "sent",
+      t: "Download",
     },
     {
-      id: "GT-24015",
-      sku: "APP-TEE-04",
-      item: "Heavyweight Boxy Tee",
-      material: "12k Stitch Embroidery",
-      d: "6h ago",
+      id: "502-118274-09",
+      sku: "B07W5P19 (Wood Board)",
+      item: "Custom Monogram 'M'",
+      material: "EZCad / Vector Path",
+      d: "15m ago",
+      s: "sent",
+      t: "Download",
+    },
+    {
+      id: "302-771920-14",
+      sku: "B0BK4102 (Acrylic Lamp)",
+      item: "Vector Outline + Names",
+      material: "Laser Cut DXF",
+      d: "28m ago",
       s: "opened",
-      t: "Ship",
+      t: "Download",
     },
   ];
 
@@ -95,28 +95,28 @@ export function DashboardPreview() {
       Icon: Flame,
       titleKey: "feature1Title",
       descKey: "feature1Desc",
-      badge: "VIP High Priority",
+      badge: "Batch Export",
       accent: "text-amber-500 bg-amber-500/10 border-amber-500/20",
     },
     {
       Icon: Bell,
       titleKey: "feature2Title",
       descKey: "feature2Desc",
-      badge: "Auto Dispatch",
+      badge: "Template Rules",
       accent: "text-[#0032ab] bg-[#0032ab]/10 border-[#0032ab]/20",
     },
     {
       Icon: CheckCircle2,
       titleKey: "feature3Title",
       descKey: "feature3Desc",
-      badge: "Proof → QC → Ship",
+      badge: "SP-API Synced",
       accent: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
     },
     {
       Icon: Sparkles,
       titleKey: "feature4Title",
       descKey: "feature4Desc",
-      badge: "1-Click Clone",
+      badge: "Pre-Flight Guard",
       accent: "text-purple-500 bg-purple-500/10 border-purple-500/20",
     },
   ];
@@ -131,28 +131,28 @@ export function DashboardPreview() {
         <Reveal>
           <div className="text-center max-w-3xl mx-auto mb-10">
             <span className="section-badge mb-3">
-              {t("dashboardPreview.sectionLabel", "Order dashboard")}
+              {t("dashboardPreview.sectionLabel", "Seller Panel Preview")}
             </span>
             <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.65rem] font-extrabold tracking-tight text-navy-deep dark:text-white leading-tight">
-              {t("dashboardPreview.heading", "Every custom job, from proof to parcel.")}
+              {t("dashboardPreview.heading", "Every Amazon Custom job, automated and ready to run.")}
             </h2>
             <p className="mt-3.5 text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
-              Real-time studio cockpit for artwork intake, digital proof approvals, laser machine scheduling, and carrier tracking.
+              Real-time cockpit for Amazon Custom orders: live SP-API intake, ASIN template mapping, pre-flight checks, and instant print and laser engraving file downloads.
             </p>
 
             {/* Live Studio Metrics Ribbon */}
             <div className="mt-6 inline-flex flex-wrap items-center justify-center gap-3 sm:gap-4 px-4 py-2 rounded-2xl bg-white dark:bg-navy/80 border border-slate-200/90 dark:border-white/10 shadow-2xs text-xs text-slate-600 dark:text-slate-300">
               <span className="flex items-center gap-1.5 font-semibold text-emerald-600 dark:text-emerald-400">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                {t("dashboardPreview.liveStudioEngine", "Live Studio Engine")}
+                {t("dashboardPreview.liveStudioEngine", "Live Automation Engine")}
               </span>
               <span className="text-slate-300 dark:text-slate-700">|</span>
               <span className="font-mono text-slate-700 dark:text-slate-200">
-                {t("dashboardPreview.avgProofSpeed", "Avg. Proof Speed:")} <strong className="text-navy-deep dark:text-white">18 mins</strong>
+                {t("dashboardPreview.avgProofSpeed", "Avg. File Speed:")} <strong className="text-navy-deep dark:text-white">&lt; 1.2s</strong>
               </span>
               <span className="text-slate-300 dark:text-slate-700">|</span>
               <span className="font-mono text-slate-700 dark:text-slate-200">
-                {t("dashboardPreview.qcMatchRate", "QC Match Rate:")} <strong className="text-emerald-600">99.8%</strong>
+                {t("dashboardPreview.qcMatchRate", "Validation Rate:")} <strong className="text-emerald-600">99.9%</strong>
               </span>
             </div>
           </div>
@@ -171,7 +171,7 @@ export function DashboardPreview() {
                 </div>
                 <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-white/06 border border-slate-200 dark:border-white/10 font-mono text-[11px] text-slate-600 dark:text-slate-300">
                   <Lock className="w-3 h-3 text-emerald-600" />
-                  <span className="truncate">{t("dashboardPreview.mockUrl", "app.gravurtastisch.com/orders")}</span>
+                  <span className="truncate">{t("dashboardPreview.mockUrl", "app.printomation.com/orders")}</span>
                 </div>
               </div>
 

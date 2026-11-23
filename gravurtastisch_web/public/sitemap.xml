@@ -56,12 +56,6 @@
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://gravurtastisch-web.vercel.app/review-analytics</loc>
-    <lastmod>2026-11-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
     <loc>https://gravurtastisch-web.vercel.app/terms</loc>
     <lastmod>2026-11-06</lastmod>
     <changefreq>yearly</changefreq>

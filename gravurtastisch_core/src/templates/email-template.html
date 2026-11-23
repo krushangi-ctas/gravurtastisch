@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light" />
     <meta name="supported-color-schemes" content="light" />
-    <title>Gravurtastisch</title>
+    <title>Printomation</title>
     <link
         href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Montserrat:wght@600;700;800&display=swap"
         rel="stylesheet" />
@@ -26,20 +26,23 @@
     <![endif]-->
     <style>
         /* ============================================================
-           GRAVURTASTISCH EMAIL THEME - ROYAL BLUE BRANDING
+           PRINTOMATION EMAIL THEME - MODERN LIGHT SAAS
            Brand colors (matching website):
-             Primary Deep Midnight (header/footer bg): #0B132B
-             Header badge bg:                 #172554
-             Brand Royal Blue (action/accent):#0032AB
-             Brand Bright / Indigo:           #4F6EF7
-             Soft Blue Tint:                  #EFF6FF
-             Heading text:                    #0B132B
+             Page background:                 #F8FAFC
+             Card background:                 #FFFFFF
+             Card border:                     #E2E8F0
+             Primary Brand Accent:            #2563EB
+             Primary Deep Text:               #0F172A
              Body text:                       #334155
              Muted text:                      #64748B
-             Footer muted text:               #94A3B8
-             Footer link text:                #60A5FA
-             Page background:                 #F8FAFC
-             Card border:                     #E2E8F0
+             Light badge bg:                  #EFF6FF
+             Light badge text:                #1D4ED8
+             Light badge border:              #DBEAFE
+             Footer bg:                       #F8FAFC
+             Footer border:                   #E2E8F0
+             Footer text:                     #64748B
+             Footer link:                     #2563EB
+             Copyright text:                  #94A3B8
            ============================================================ */
         body,
         table,
@@ -78,7 +81,7 @@
             font-size: 22px;
             line-height: 1.3;
             font-weight: 800;
-            color: #0B132B;
+            color: #0F172A;
         }
 
         .content h2 {
@@ -87,7 +90,7 @@
             font-size: 18px;
             line-height: 1.35;
             font-weight: 700;
-            color: #0B132B;
+            color: #0F172A;
         }
 
         .content p {
@@ -99,7 +102,7 @@
         }
 
         .content a {
-            color: #0032AB;
+            color: #2563EB;
             text-decoration: underline;
             font-weight: 600;
         }
@@ -122,17 +125,17 @@
             display: inline-block;
             font-family: 'Inter', Arial, sans-serif;
             font-size: 11px;
-            font-weight: 700;
-            color: #93C5FD;
-            background-color: #172554;
-            padding: 4px 12px;
-            border-radius: 999px;
-            letter-spacing: .3px;
-            border: 1px solid #1E40AF;
+            font-weight: 600;
+            color: #1D4ED8;
+            background-color: #EFF6FF;
+            padding: 5px 13px;
+            border-radius: 9999px;
+            letter-spacing: .2px;
+            border: 1px solid #DBEAFE;
         }
 
         .divider {
-            border-top: 1px solid #E2E8F0;
+            border-top: 1px solid #F1F5F9;
             font-size: 0;
             line-height: 0;
         }
@@ -173,24 +176,29 @@
 
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#F8FAFC;">
         <tr>
-            <td align="center" style="padding:18px 10px;">
+            <td align="center" style="padding:24px 10px;">
 
-                <!-- ===================== BALANCED CARD (680px) ===================== -->
-                <table role="presentation" class="email-wrapper" width="680" cellpadding="0" cellspacing="0"
-                    style="width:680px; max-width:680px; background-color:#ffffff; border:1px solid #E2E8F0; border-radius:14px; overflow:hidden; box-shadow:0 6px 20px rgba(11,19,43,0.06);">
+                <!-- ===================== MODERN LIGHT CARD (640px) ===================== -->
+                <table role="presentation" class="email-wrapper" width="640" cellpadding="0" cellspacing="0"
+                    style="width:640px; max-width:640px; background-color:#ffffff; border:1px solid #E2E8F0; border-radius:16px; overflow:hidden; box-shadow:0 6px 24px rgba(15,23,42,0.06);">
+
+                    <!-- TOP ACCENT LINE -->
+                    <tr>
+                        <td style="height:3px; background-color:#2563EB; font-size:0; line-height:0;">&nbsp;</td>
+                    </tr>
 
                     <!-- HEADER -->
                     <tr>
-                        <td style="background-color:#0B132B; padding:14px 22px; border-bottom:3px solid #0032AB;">
+                        <td style="background-color:#ffffff; padding:18px 26px; border-bottom:1px solid #F1F5F9;">
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="stack-col" align="left" style="vertical-align:middle;">
-                                        <img src="{{LOGO_URL}}" alt="Gravurtastisch" width="132" height="31"
-                                            style="height:31px; width:auto; max-height:33px; max-width:145px; display:block; border:0; outline:none;"
+                                        <img src="{{LOGO_URL}}" alt="Printomation" width="160" height="44"
+                                            style="height:44px; width:auto; max-height:46px; max-width:175px; display:block; border:0; outline:none;"
                                             border="0" />
                                     </td>
-                                    <td class="stack-col" align="right" style="vertical-align:middle;">
-                                        <span class="badge" style="padding:4px 12px; font-size:10.5px;">{{BADGE_TEXT}}</span>
+                                    <td class="stack-col" align="right" style="vertical-align:middle; padding-top:4px;">
+                                        <span class="badge">{{BADGE_TEXT}}</span>
                                     </td>
                                 </tr>
                             </table>
@@ -199,49 +207,51 @@
 
                     <!-- CONTENT -->
                     <tr>
-                        <td class="fluid-pad content" style="padding:22px 24px 14px 24px;">
+                        <td class="fluid-pad content" style="padding:28px 28px 18px 28px; background-color:#ffffff;">
                             {{CONTENT_PLACED_HERE}}
                         </td>
                     </tr>
 
                     <tr>
-                        <td class="fluid-pad" style="padding:0 24px 12px;">
+                        <td class="fluid-pad" style="padding:0 28px 14px;">
                             <div class="divider">&nbsp;</div>
                         </td>
                     </tr>
 
-                    <!-- FOOTER -->
+                    <!-- FOOTER (LIGHT THEME) -->
                     <tr>
-                        <td style="background-color:#0B132B; padding:18px 22px;">
+                        <td style="background-color:#F8FAFC; padding:22px 26px; border-top:1px solid #E2E8F0;">
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
                                 <tr>
                                     <td class="footer-col" style="vertical-align:top;">
-                                        <img src="{{LOGO_URL}}" alt="Gravurtastisch" width="110" height="25"
-                                            style="height:25px; width:auto; max-height:27px; max-width:125px; display:block; border:0; outline:none; margin-bottom:6px;"
+                                        <img src="{{LOGO_URL}}" alt="Printomation" width="135" height="37"
+                                            style="height:37px; width:auto; max-height:40px; max-width:145px; display:block; border:0; outline:none; margin-bottom:8px;"
                                             border="0" />
                                         <p
-                                            style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.5; color:#94A3B8; max-width:260px;">
+                                            style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11.5px; line-height:1.55; color:#64748B; max-width:280px;">
                                             {{FOOTER_DESC}}
                                         </p>
                                     </td>
                                     <td class="footer-col" align="right" style="vertical-align:top;">
                                         <p
-                                            style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11.5px; line-height:1.6; color:#94A3B8;">
+                                            style="margin:0 0 6px; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.5; color:#334155; font-weight:600;">
+                                            Support &amp; Inquiries:
+                                        </p>
+                                        <p
+                                            style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:12px; line-height:1.5;">
                                             <a href="mailto:info@gravurtastisch.de"
-                                                style="color:#60A5FA; text-decoration:none; font-weight:600;">info@gravurtastisch.de</a><br />
-                                            <a href="tel:017661055576"
-                                                style="color:#60A5FA; text-decoration:none; font-weight:600;">017661055576</a>
+                                                style="color:#2563EB; text-decoration:none; font-weight:600;">info@gravurtastisch.de</a>
                                         </p>
                                     </td>
                                 </tr>
                             </table>
 
                             <table role="presentation" width="100%" cellpadding="0" cellspacing="0"
-                                style="margin-top:14px;">
+                                style="margin-top:16px;">
                                 <tr>
-                                    <td style="border-top:1px solid #1E293B; padding-top:10px;">
+                                    <td style="border-top:1px solid #E2E8F0; padding-top:12px;">
                                         <p
-                                            style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:10px; line-height:1.45; color:#64748B;">
+                                            style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.5; color:#94A3B8;">
                                             {{COPYRIGHT_TEXT}}
                                         </p>
                                     </td>
@@ -250,15 +260,15 @@
                         </td>
                     </tr>
                 </table>
-                <!-- ===================== /BALANCED CARD ===================== -->
+                <!-- ===================== /MODERN LIGHT CARD ===================== -->
 
                 <!-- Sub-footer -->
-                <table role="presentation" class="email-wrapper" width="680" cellpadding="0" cellspacing="0"
-                    style="width:680px; max-width:680px;">
+                <table role="presentation" class="email-wrapper" width="640" cellpadding="0" cellspacing="0"
+                    style="width:640px; max-width:640px;">
                     <tr>
-                        <td align="center" style="padding:10px 14px 0;">
+                        <td align="center" style="padding:12px 14px 0;">
                             <p
-                                style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:10.5px; line-height:1.45; color:#64748B;">
+                                style="margin:0; font-family:'Inter',Arial,sans-serif; font-size:11px; line-height:1.5; color:#94A3B8;">
                                 {{SUBFOOTER_TEXT}}
                             </p>
                         </td>

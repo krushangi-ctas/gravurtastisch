@@ -280,9 +280,9 @@ function SupportContent({
 				maxSize: 185,
 				Cell: ({ cell }) => {
 					const dateVal = cell.getValue<string>();
-					if (!dateVal) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					if (!dateVal) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					const m = moment(dateVal);
-					if (!m.isValid()) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					if (!m.isValid()) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
 							<Typography

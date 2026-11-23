@@ -113,7 +113,7 @@ function AuthPagesMessageSection() {
 						maxWidth: 520
 					}}
 				>
-					{t('auth.heroSubtitle', 'Manage customisation orders, digital proofs, and production from one Gravurtastisch desk — built for personalised gifts and engraved goods.')}
+					{t('auth.heroSubtitle', 'Manage customisation orders, digital proofs, and production from one Printomation desk - built for personalised gifts and engraved goods.')}
 				</Typography>
 
 				<div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3.5">

@@ -9,10 +9,10 @@ function SignInPageTitle() {
 				<img
 					className="w-9 h-9"
 					src="/assets/images/logo/gravurstastich-mark.svg"
-					alt="Gravurtastisch"
+					alt="Printomation"
 				/>
 				<Typography sx={{ fontSize: 18, fontWeight: 700, letterSpacing: 0.2, color: 'primary.main' }}>
-					Gravurtastisch
+					Printomation
 				</Typography>
 			</Box>
 

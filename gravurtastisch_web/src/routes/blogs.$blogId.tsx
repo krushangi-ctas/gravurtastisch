@@ -6,6 +6,8 @@ import { Footer } from "@/components/site/Footer";
 import { Container } from "@/components/site/Container";
 import { Reveal } from "@/components/site/Reveal";
 import { getBlogById, getBlogs, BlogItem } from "@/lib/api";
+import { FALLBACK_BLOGS } from "@/lib/blogsFallback";
+import { getLocalizedBlog } from "@/lib/blogsI18n";
 import { LexicalViewer } from "@/components/site/LexicalViewer";
 import {
   ArrowLeft,
@@ -43,8 +45,8 @@ export const Route = createFileRoute("/blogs/$blogId")({
   head: ({ loaderData, params }) => {
     const blog = loaderData?.blog;
     const title = blog?.blog_title
-      ? `${blog.blog_title} - Gravurtastisch Journal`
-      : "Gravurtastisch Journal - Studio Insights";
+      ? `${blog.blog_title} - Printomation Journal`
+      : "Printomation Journal - Studio Insights";
     const description =
       blog?.short_description ||
       "Deep dives on custom engraving workflows, proofing, production scheduling, and gift fulfillment.";
@@ -60,7 +62,7 @@ export const Route = createFileRoute("/blogs/$blogId")({
       type: "article",
       publishedTime: blog?.createdAt,
       modifiedTime: blog?.updatedAt || blog?.createdAt,
-      author: "Gravurtastisch Studio",
+      author: "Printomation Studio",
     });
 
     return {
@@ -97,7 +99,7 @@ function calculateReadingTime(text?: string): number {
 function BlogDetailPage() {
   const { blogId } = Route.useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isSkeletonPreview = typeof window !== "undefined" && window.location.search.includes("skeleton=true");
 
   const [blog, setBlog] = useState<BlogItem | null>(null);
@@ -108,25 +110,37 @@ function BlogDetailPage() {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [failedImages, setFailedImages] = useState<Record<string, boolean>>({});
 
+  const activeBlog = useMemo(() => {
+    if (!blog) return null;
+    return getLocalizedBlog(blog, i18n.language);
+  }, [blog, i18n.language]);
+
+  useEffect(() => {
+    if (activeBlog?.blog_title) {
+      document.title = `${activeBlog.blog_title} | Printomation Blog`;
+    }
+  }, [activeBlog]);
+
   const articleImages = useMemo(() => {
     const list: string[] = [];
-    if (blog?.full_image_urls && Array.isArray(blog.full_image_urls)) {
-      blog.full_image_urls.forEach((url) => {
-        if (url && typeof url === "string" && !list.includes(url)) list.push(url);
-      });
+    const addUrl = (url?: string) => {
+      if (!url || typeof url !== "string") return;
+      let finalUrl = url;
+      if (url.includes("/blogs/blog-")) {
+        const fileName = url.split("/blogs/")[1];
+        finalUrl = `/blogs/${fileName}`;
+      }
+      if (!list.includes(finalUrl)) list.push(finalUrl);
+    };
+
+    if (activeBlog?.full_image_urls && Array.isArray(activeBlog.full_image_urls)) {
+      activeBlog.full_image_urls.forEach(addUrl);
     }
-    if (blog?.description_images && Array.isArray(blog.description_images)) {
-      const baseUrl = (import.meta.env.VITE_API_BASE_URL ?? "https://api.gravurtastisch.com").replace(/\/+$/, "");
-      blog.description_images.forEach((img) => {
-        if (img) {
-          const cleanPath = img.replace(/^\/+/, "");
-          const fullUrl = img.startsWith("http") ? img : `${baseUrl}/${cleanPath}`;
-          if (!list.includes(fullUrl)) list.push(fullUrl);
-        }
-      });
+    if (activeBlog?.description_images && Array.isArray(activeBlog.description_images)) {
+      activeBlog.description_images.forEach(addUrl);
     }
     return list;
-  }, [blog]);
+  }, [activeBlog]);
 
   const validImages = useMemo(() => {
     return articleImages.filter((url) => !failedImages[url]);
@@ -146,7 +160,7 @@ function BlogDetailPage() {
           if (res?.data) {
             setBlog(res.data);
             // Update document title dynamically
-            document.title = `${res.data.blog_title} | Gravurtastisch Blog`;
+            document.title = `${res.data.blog_title} | Printomation Blog`;
 
             // If accessed via raw Mongo ID, transparently redirect to clean SEO slug URL
             if (res.data.slug && blogId !== res.data.slug) {
@@ -157,13 +171,25 @@ function BlogDetailPage() {
               });
             }
           } else {
-            setError("Blog post not found.");
+            const fallback = FALLBACK_BLOGS.find((b) => b.slug === blogId || b._id === blogId || b.id === blogId);
+            if (fallback) {
+              setBlog(fallback);
+              document.title = `${fallback.blog_title} | Printomation Blog`;
+            } else {
+              setError("Blog post not found.");
+            }
           }
         }
       })
       .catch((err) => {
         if (isMounted) {
-          setError(err.message || "Failed to load blog post.");
+          const fallback = FALLBACK_BLOGS.find((b) => b.slug === blogId || b._id === blogId || b.id === blogId);
+          if (fallback) {
+            setBlog(fallback);
+            document.title = `${fallback.blog_title} | Printomation Blog`;
+          } else {
+            setError(err.message || "Failed to load blog post.");
+          }
         }
       })
       .finally(() => {
@@ -212,7 +238,7 @@ function BlogDetailPage() {
     return <BlogDetailSkeleton />;
   }
 
-  if (error || !blog) {
+  if (error || !activeBlog) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-background text-navy-deep dark:text-slate-100 flex flex-col">
         <Nav />
@@ -222,7 +248,7 @@ function BlogDetailPage() {
           </div>
           <h1 className="text-3xl font-extrabold font-display mb-3">{t("blogs.articleNotFound", "Article Not Found")}</h1>
           <p className="text-slate-600 dark:text-slate-400 mb-8 leading-relaxed">
-            {t("blogs.articleNotFoundDesc", "The article you are looking for might have been updated or moved. Check out our latest Gravurtastisch studio guides in our journal.")}
+            {t("blogs.articleNotFoundDesc", "The article you are looking for might have been updated or moved. Check out our latest Printomation studio guides in our journal.")}
           </p>
           <Link
             to="/blogs"
@@ -238,11 +264,11 @@ function BlogDetailPage() {
   }
 
   const readingTime = calculateReadingTime(
-    blog.short_description + " " + JSON.stringify(blog.description || "")
+    activeBlog.short_description + " " + JSON.stringify(activeBlog.description || "")
   );
 
-  const formattedDate = blog.createdAt
-    ? format(new Date(blog.createdAt), "MMMM dd, yyyy")
+  const formattedDate = activeBlog.createdAt
+    ? format(new Date(activeBlog.createdAt), "MMMM dd, yyyy")
     : "Recently Published";
 
   return (
@@ -283,13 +309,13 @@ function BlogDetailPage() {
 
               {/* Title */}
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight font-display leading-[1.15] text-navy-deep">
-                {blog.blog_title}
+                {activeBlog.blog_title}
               </h1>
 
               {/* Short Summary */}
-              {blog.short_description && (
+              {activeBlog.short_description && (
                 <p className="mt-5 text-lg sm:text-xl text-slate-700 leading-relaxed max-w-3xl font-medium">
-                  {blog.short_description}
+                  {activeBlog.short_description}
                 </p>
               )}
 
@@ -297,14 +323,14 @@ function BlogDetailPage() {
               <div className="mt-8 pt-6 border-t border-[#0032ab]/15 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-600 font-medium">
                 <div className="flex items-center gap-4">
                   <div className="relative h-11 w-11 rounded-2xl bg-white border border-[#0032ab]/15 flex items-center justify-center p-2 shadow-xs shrink-0">
-                    <img src="/g.svg" alt="Gravurtastisch" className="h-full w-full object-contain" />
+                    <img src="/g.svg" alt="Printomation" className="h-full w-full object-contain" />
                   </div>
                   <div>
                     <div className="font-bold text-navy-deep flex items-center gap-1.5">
-                      {t("blogs.editorialTeam", "Gravurtastisch Editorial Team")}
+                      {t("blogs.editorialTeam", "Printomation Editorial Team")}
                       <ShieldCheck className="h-4 w-4 text-brand" />
                     </div>
-                    <div className="text-xs text-slate-600">{t("blogs.editorialTeamSub", "Custom engraving & order fulfillment")}</div>
+                    <div className="text-xs text-slate-600">{t("blogs.editorialTeamSub", "Amazon Custom automation & pre-press")}</div>
                   </div>
                 </div>
 
@@ -378,7 +404,7 @@ function BlogDetailPage() {
                         <div className="rounded-2xl overflow-hidden border border-slate-200/80 dark:border-white/10 shadow-lg bg-slate-900/5 dark:bg-slate-900/40">
                           <img
                             src={validImages[0]}
-                            alt={blog.blog_title}
+                            alt={activeBlog.blog_title}
                             className="w-full max-h-[550px] object-contain block mx-auto"
                             loading="lazy"
                             onError={() => {
@@ -492,7 +518,7 @@ function BlogDetailPage() {
 
                   {/* Render Rich Lexical / HTML Content */}
                   <div className="article-rendered-body">
-                    <LexicalViewer content={blog.description} />
+                    <LexicalViewer content={activeBlog.description} />
                   </div>
 
                   {/* End of article tag & support box */}
@@ -503,7 +529,7 @@ function BlogDetailPage() {
                           Ready to put custom orders on a clear studio path?
                         </h4>
                         <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
-                          Gravurtastisch connects intake, proofs, and production so every mug and engraved piece ships as promised.
+                          Printomation connects intake, proofs, and production so every mug and engraved piece ships as promised.
                         </p>
                       </div>
                       <a
@@ -529,7 +555,7 @@ function BlogDetailPage() {
                   </div>
                   <h3 className="text-lg font-bold font-display text-navy-deep">{t("blogs.craftQuality", "Craft-quality workflow")}</h3>
                   <p className="mt-2 text-xs leading-relaxed text-slate-700 font-medium">
-                    Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage,
+                    Every personalized job flows through Printomation with proof approval, encrypted artwork storage,
                     and scheduled bench time - no guesswork on the shop floor.
                   </p>
                   <ul className="mt-4 space-y-2 text-xs text-slate-700 font-medium">
@@ -564,21 +590,22 @@ function BlogDetailPage() {
                     </h3>
                     <div className="space-y-4">
                       {relatedBlogs.map((rel) => {
-                        const relId = rel.slug || rel.id || rel._id || "";
+                        const localizedRel = getLocalizedBlog(rel, i18n.language);
+                        const relId = localizedRel.slug || localizedRel.id || localizedRel._id || "";
                         return (
                           <Link
-                            key={rel.id || rel._id || relId}
+                            key={localizedRel.id || localizedRel._id || relId}
                             to="/blogs/$blogId"
                             params={{ blogId: relId }}
                             className="block group p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors border border-transparent hover:border-slate-200/60 dark:hover:border-white/5"
                           >
                             <h4 className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-slate-200 group-hover:text-brand transition-colors line-clamp-2 leading-snug">
-                              {rel.blog_title}
+                              {localizedRel.blog_title}
                             </h4>
                             <div className="mt-2 flex items-center gap-3 text-[11px] text-slate-400">
                               <span>
-                                {rel.createdAt
-                                  ? format(new Date(rel.createdAt), "MMM dd, yyyy")
+                                {localizedRel.createdAt
+                                  ? format(new Date(localizedRel.createdAt), "MMM dd, yyyy")
                                   : "Article"}
                               </span>
                               <span>•</span>

@@ -95,7 +95,7 @@ const Root = styled(FusePageCarded)(() => ({
 
 function roleLabel(user: User) {
 	if (typeof user.role_id === 'object' && user.role_id) {
-		return user.role_id.role_name || '—';
+		return user.role_id.role_name || '-';
 	}
 	if (typeof user.role_id === 'string' && user.role_id) {
 		return user.role_id;
@@ -891,7 +891,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					const isPaymentCancelled = user?.subscriptionStatus === 3 || user?.subscriptionStatus === 0;
 
 					if (!val || !moment(val).isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					const m = moment(val);
 					return (
@@ -947,7 +947,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 				header: 'Name',
 				size: 140,
 				Cell: ({ cell }) => {
-					const val = cell.getValue<string>() || '—';
+					const val = cell.getValue<string>() || '-';
 
 					return (
 						<Box sx={{ display: 'inline-flex', alignItems: 'center', lineHeight: 1.25, maxWidth: '100%' }}>
@@ -977,7 +977,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 				size: 180,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
-					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 
 					if (isSellersMode) {
 						return (
@@ -1039,7 +1039,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 				size: 140,
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
-					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					if (!val) return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 
 					return (
 						<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -1074,10 +1074,10 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 				accessorFn: (row) => roleLabel(row) || '',
 				Cell: ({ row }) => {
 					const rawLabel = roleLabel(row.original);
-					const label = rawLabel !== '—' ? rawLabel : '—';
+					const label = rawLabel !== '-' ? rawLabel : '-';
 
-					if (!label || label === '—') {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+					if (!label || label === '-') {
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 
 					return (
@@ -1117,7 +1117,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					Cell: ({ cell }) => {
 						const val = cell.getValue<string>();
 						if (!val) {
-							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 						}
 						return (
 							<Tooltip title={val} arrow>
@@ -1175,7 +1175,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 						const displayName = planName || queuedPlan?.name || (isPaymentCancelled ? 'Cancelled' : null);
 
 						if (!displayName) {
-							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 						}
 
 						return (
@@ -1260,12 +1260,12 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 						}
 
 						if (!hasExpiry) {
-							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 						}
 
 						const m = moment(activePlan.expireAt);
 						if (!m.isValid()) {
-							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 						}
 
 						return (
@@ -1310,7 +1310,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					Cell: ({ cell }) => {
 						const val = cell.getValue<number>();
 						if (val === null || val === undefined) {
-							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 						}
 						return (
 							<Tooltip title={`Max Marketplaces: ${val}`} arrow>
@@ -1364,7 +1364,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 					Cell: ({ cell }) => {
 						const val = cell.getValue<number>();
 						if (val === null || val === undefined) {
-							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+							return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 						}
 						const numericVal = Number(val);
 						return (
@@ -1419,7 +1419,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 
 						return (
 							<Tooltip
-								title={`Requests Used: ${used.toLocaleString()} / ${quota > 0 ? quota.toLocaleString() : '—'} (${percent}%)`}
+								title={`Requests Used: ${used.toLocaleString()} / ${quota > 0 ? quota.toLocaleString() : '-'} (${percent}%)`}
 								arrow
 							>
 								<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.4 }}>
@@ -1433,7 +1433,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 									>
 										{used >= 1000 ? `${(used / 1000).toFixed(used % 1000 === 0 ? 0 : 1)}k` : used.toLocaleString()}
 										{' / '}
-										{quota > 0 ? (quota >= 1000 ? `${Math.round(quota / 1000)}k` : quota) : '—'}
+										{quota > 0 ? (quota >= 1000 ? `${Math.round(quota / 1000)}k` : quota) : '-'}
 									</Typography>
 								</Box>
 							</Tooltip>
@@ -1449,7 +1449,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					return (
 						<Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
@@ -2343,7 +2343,7 @@ function UsersAppView({ variant, managementTab }: UsersViewProps) {
 											required
 											type="email"
 											sx={dialogInputSx}
-											placeholder={t('user.emailPlaceholder', 'e.g., alex@gravurtastisch.de')}
+											placeholder={t('user.emailPlaceholder', 'e.g., alex@printomation.com')}
 											value={formEmail}
 											onChange={(e) => {
 												setFormEmail(e.target.value);

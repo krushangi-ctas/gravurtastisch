@@ -304,9 +304,9 @@ export default function PlanFormDialog({ open, onClose, plan }: PlanFormDialogPr
 								helperText={
 									errors.price ||
 									(billingCycle === 3
-										? 'Total billed annually in EUR (€) — set full yearly price'
+										? 'Total billed annually in EUR (€) - set full yearly price'
 										: billingCycle === 2
-											? 'Total billed quarterly in EUR (€) — set full 3-month price'
+											? 'Total billed quarterly in EUR (€) - set full 3-month price'
 											: 'Billed monthly in EUR (€)')
 								}
 							/>

@@ -1,5 +1,5 @@
 /**
- * Secure cookie utility for Gravurtastisch Web Application.
+ * Secure cookie utility for Printomation Web Application.
  * Handles reading, writing, and deleting cookies with strict security flags:
  * - SameSite=Lax / None (CSRF protection)
  * - Secure flag (HTTPS transmission only in production)

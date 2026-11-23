@@ -410,10 +410,10 @@ function ApiDocsView() {
 		<div className={`flex flex-col w-full h-[100dvh] max-h-[100dvh] overflow-hidden bg-slate-50 dark:bg-slate-900 ${isFullscreen ? 'fixed inset-0 z-99999 bg-white' : ''}`}>
 			{/* Scoped CSS for sticky Redoc menu */}
 			<style>{`
-				#gravurtastisch-redoc-container {
+				#printomation-redoc-container {
 					position: relative;
 				}
-				#gravurtastisch-redoc-container .menu-content {
+				#printomation-redoc-container .menu-content {
 					position: sticky !important;
 					top: 0px !important;
 					height: calc(100vh - 65px) !important;
@@ -422,7 +422,7 @@ function ApiDocsView() {
 					z-index: 10 !important;
 					align-self: flex-start !important;
 				}
-				#gravurtastisch-redoc-container .redoc-wrap {
+				#printomation-redoc-container .redoc-wrap {
 					display: flex !important;
 					position: relative !important;
 				}
@@ -831,7 +831,7 @@ function ApiDocsView() {
 
 							<div
 								ref={containerRef}
-								id="gravurtastisch-redoc-container"
+								id="printomation-redoc-container"
 								className="w-full bg-white"
 							/>
 						</div>
@@ -1121,7 +1121,7 @@ function ApiDocsView() {
 													<div className="p-4 rounded-xl bg-indigo-50/60 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-900/60 text-center shadow-2xs">
 														<span className="text-[11px] font-bold uppercase text-indigo-600 dark:text-indigo-400">{t('techDocs.utilErr', 'Error Contracts')}</span>
 														<div className="text-sm font-bold text-indigo-700 dark:text-indigo-300 mt-1">{t('techDocs.utilErrTitle', 'Standardized Output')}</div>
-														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.utilErrDesc', 'Uniform JSON payload response format matching the Gravurtastisch standard.')}</p>
+														<p className="text-xs text-slate-600 dark:text-slate-300 mt-1.5 m-0">{t('techDocs.utilErrDesc', 'Uniform JSON payload response format matching the Printomation standard.')}</p>
 													</div>
 												</div>
 											</div>

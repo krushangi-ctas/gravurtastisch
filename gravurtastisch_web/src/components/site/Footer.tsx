@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Container } from "./Container";
 import { FlagIcon } from "@/components/ui/FlagIcon";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { useWebsiteConfiguration } from "@/hooks/useWebsiteConfiguration";
 import { FooterWaveCanvas } from "./FooterWaveCanvas";
 import {
@@ -39,24 +40,33 @@ export function Footer() {
 
   const companyTagline = currentLang === 'en' && config?.company?.tagline
     ? config.company.tagline
-    : t('footer.tagline', config?.company?.tagline || 'Engraving, custom cups & personalized orders');
+    : t('footer.tagline', 'B2B SaaS Automation for Amazon Custom Sellers');
 
   const companyAbout = currentLang === 'en' && config?.company?.about
     ? config.company.about
-    : t('footer.companyDesc');
+    : t('footer.companyDesc', 'Printomation is a B2B SaaS platform for Amazon sellers who offer personalised products. Our software automates the conversion of Amazon Custom orders and personalisation data into ready-to-use print and engraving files. We do not manufacture, print, ship or sell any physical products ourselves.');
 
   const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
   const contactPhone = config?.contact?.phone || "017661055576";
   const contactAddress = config?.contact?.address || t('footer.officeAddress');
-  const companyWebsite = config?.company?.website || "https://gravurtastisch.com";
-  const companyName = config?.company?.name || "Gravurtastisch";
+  const companyWebsite = config?.company?.website || "https://gravurtastisch-web.vercel.app";
+  const companyName = config?.company?.name || "Printomation";
   const companyLocation = currentLang === 'en'
     ? [config?.contact?.city, config?.contact?.state].filter(Boolean).join(", ") || "Ahmedabad, Gujarat"
     : t('contact.officeLocation');
 
+  const sellerPanelUrl = (
+    (import.meta as any).env?.VITE_PANEL_URL ||
+    (import.meta as any).env?.VITE_SELLER_PANEL_URL ||
+    ""
+  ).trim().replace(/\/+$/, "");
+  const sellerLoginUrl = sellerPanelUrl.endsWith("/sign-in")
+    ? sellerPanelUrl
+    : `${sellerPanelUrl}/sign-in`;
+
   const copyrightText = currentLang === 'en' && config?.company?.copyright_text
     ? config.company.copyright_text
-    : `© ${new Date().getFullYear()} ${companyName}. ${t('footer.copyright')}`;
+    : `© ${new Date().getFullYear()} ${companyName}. ${t('footer.copyright', 'All rights reserved.')}`;
 
   const trustStrip = [
     { icon: ShieldCheck, titleKey: "trust1Title", copyKey: "trust1Copy", iconBg: "bg-blue-50 text-blue-600 border-blue-200/60", border: "hover:border-blue-400/60" },
@@ -70,6 +80,7 @@ export function Footer() {
     [t('footer.colProductLink2'), "/#how"],
     [t('footer.colProductLink3'), "/#dashboard"],
     [t('footer.colProductLink4'), "/register"],
+    [t('nav.sellerLogin') || "Seller Login", sellerLoginUrl],
     [t('footer.colProductLinkGuide') || t('nav.guide') || "Guide", "/guide"],
     [t('footer.colProductLinkBlogs') || t('nav.blogs') || "Blogs", "/blogs"],
     [t('nav.contact') || "Contact", "/contact"],
@@ -93,22 +104,22 @@ export function Footer() {
     {
       icon: Linkedin,
       label: t('footer.socialLinkedin'),
-      href: config?.social_links?.linkedin || 'https://linkedin.com/company/gravurtastisch',
+      href: config?.social_links?.linkedin || 'https://linkedin.com/company/printomation',
     },
     {
       icon: FacebookIcon,
       label: t('footer.socialFacebook'),
-      href: config?.social_links?.facebook || 'https://www.facebook.com/gravurtastisch',
+      href: config?.social_links?.facebook || 'https://www.facebook.com/printomation',
     },
     {
       icon: Youtube,
       label: t('footer.socialYoutube'),
-      href: config?.social_links?.youtube || 'https://www.youtube.com/@gravurtastisch',
+      href: config?.social_links?.youtube || 'https://www.youtube.com/@printomation',
     },
     {
       icon: Instagram,
       label: t('footer.socialInstagram'),
-      href: config?.social_links?.instagram || 'https://instagram.com/gravurtastisch/',
+      href: config?.social_links?.instagram || 'https://instagram.com/printomation/',
     },
   ];
 
@@ -164,15 +175,8 @@ export function Footer() {
           {/* Brand & Interactive Contact Bento (Left Column) */}
           <div className="lg:col-span-4 flex flex-col justify-between space-y-4">
             <div>
-              <a href="#home" aria-label="Gravurtastisch Home" className="inline-flex items-center gap-2.5 group">
-                <img
-                  src="/gravurtastich.png"
-                  className="h-10 md:h-11 w-auto object-contain transition-transform duration-300 group-hover:scale-102"
-                  alt={t('footer.logoAlt') || "Gravurtastisch Studio Logo"}
-                  loading="lazy"
-                  width="180"
-                  height="44"
-                />
+              <a href="#home" aria-label="Printomation Home" className="inline-flex items-center gap-2.5 group">
+                <BrandLogo variant="dark" size="md" />
               </a>
 
               {companyTagline && (

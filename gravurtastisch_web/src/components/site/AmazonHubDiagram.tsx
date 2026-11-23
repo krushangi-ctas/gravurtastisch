@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
-  Flame,
-  ShieldCheck,
   Zap,
-  Globe2,
-  Layers,
-  PackageCheck,
+  ShieldCheck,
   Check,
+  Cpu,
+  Layers,
+  ArrowRight,
+  Download,
+  FileCode,
+  Sliders,
+  CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 
 export function AmazonHubDiagram() {
@@ -16,537 +20,340 @@ export function AmazonHubDiagram() {
 
   const customJobs = [
     {
-      id: "CUP-WRAP-750",
-      channel: "Amazon Handmade",
-      channelBadge: "SP-API Live",
-      productName: "Matte Insulated Tumbler",
-      shortName: "Matte Tumbler",
-      category: "Drinkware",
-      material: "Food-Grade Stainless Steel",
-      craftLine: "360° Rotary Laser Pass",
-      beamSpec: "0.05mm Micro-Focal Spot",
-      powerSpec: "120W Laser · 850mm/s",
-      proofStatus: "Proof Approved · Unlocked",
-      proofShort: "Proof Approved",
-      trackingCode: "DHL Express: #DE-9941824",
-      eta: "Dispatched < 24h",
-      coords: "X: 142.4mm · Y: 88.0mm",
-      accentColor: "#0032ab",
-      type: "tumbler",
+      id: "AMZ-114-8923019-48",
+      marketplace: "Amazon.de",
+      flag: "🇩🇪",
+      productName: "Rotary Powder-Coated Tumbler",
+      shortName: "360° Laser Tumbler",
+      asin: "B09X7K81",
+      buyerText: "Alexander - Est. 2024",
+      buyerFont: "Cinzel Bold",
+      machineProfile: "Rotary Laser (Fiber/CO2)",
+      fileFormat: "SVG & DXF (EZCad)",
+      safeMargin: "15.0mm (Rim & Base Lock)",
+      renderTime: "0.6s",
+      dimensions: "H: 185mm · Ø: 78mm",
+      accent: "#38bdf8",
+      accentBg: "rgba(56, 189, 248, 0.12)",
+      borderColor: "rgba(56, 189, 248, 0.35)",
+      renderCadGraphic: () => (
+        <svg viewBox="0 0 320 180" className="w-full h-full" fill="none">
+          <defs>
+            <pattern id="tumblerGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="320" height="180" fill="#081226" />
+          <rect width="320" height="180" fill="url(#tumblerGrid)" />
+
+          {/* Tumbler wireframe outline */}
+          <path d="M 70 30 L 250 30 L 235 150 L 85 150 Z" fill="rgba(56, 189, 248, 0.05)" stroke="rgba(255,255,255,0.22)" strokeWidth="1.2" strokeDasharray="4 3" />
+          
+          {/* Safe zone boundary */}
+          <rect x="100" y="55" width="120" height="70" rx="4" fill="rgba(56, 189, 248, 0.1)" stroke="#38bdf8" strokeWidth="1.5" strokeDasharray="4 2" />
+          <text x="160" y="48" fill="#38bdf8" fontSize="8.5" fontFamily="monospace" textAnchor="middle" fontWeight="bold">Safe Zone Locked</text>
+
+          {/* Calibrated Vector Text curves */}
+          <text x="160" y="85" fill="#ffffff" fontSize="13" fontFamily="serif" fontWeight="bold" textAnchor="middle" letterSpacing="1.5">Alexander</text>
+          <text x="160" y="103" fill="#38bdf8" fontSize="9.5" fontFamily="sans-serif" textAnchor="middle" letterSpacing="2">- Est. 2024 -</text>
+
+          {/* Vector nodes & handles */}
+          <circle cx="100" cy="55" r="3" fill="#38bdf8" />
+          <circle cx="220" cy="55" r="3" fill="#38bdf8" />
+          <circle cx="100" cy="125" r="3" fill="#38bdf8" />
+          <circle cx="220" cy="125" r="3" fill="#38bdf8" />
+
+          {/* Laser spot crosshairs */}
+          <circle cx="160" cy="92" r="14" fill="none" stroke="#ef4444" strokeWidth="1.2" />
+          <line x1="140" y1="92" x2="180" y2="92" stroke="#ef4444" strokeWidth="1.2" />
+          <line x1="160" y1="72" x2="160" y2="112" stroke="#ef4444" strokeWidth="1.2" />
+          <circle cx="160" cy="92" r="2" fill="#ef4444" />
+
+          {/* Coordinate overlay badge */}
+          <rect x="10" y="152" width="130" height="20" rx="4" fill="rgba(0,0,0,0.6)" stroke="rgba(255,255,255,0.15)" />
+          <text x="75" y="166" fill="#38bdf8" fontSize="8" fontFamily="monospace" textAnchor="middle">Rotary Angle: 0.05°</text>
+        </svg>
+      )
     },
     {
-      id: "BOARD-OAK-02",
-      channel: "Shopify DTC Store",
-      channelBadge: "Shopify Webhook",
-      productName: "Solid Oak Engraved Board",
-      shortName: "Solid Oak Board",
-      category: "Woodcraft",
-      material: "Sustainably Sourced European Oak",
-      craftLine: "Deep Vector Laser Etch (0.8mm)",
-      beamSpec: "High-Contrast Surface Etch",
-      powerSpec: "95W Co2 · Mineral Oil Sealed",
-      proofStatus: "100% Vector Mockup Locked",
-      proofShort: "Vector Locked",
-      trackingCode: "DPD Europe: #AT-8812045",
-      eta: "Dispatched < 36h",
-      coords: "X: 210.0mm · Y: 130.5mm",
-      accentColor: "#4f6ef7",
-      type: "board",
+      id: "AMZ-502-118274-03",
+      marketplace: "Amazon.co.uk",
+      flag: "🇬🇧",
+      productName: "Solid Oak Engraved Serving Board",
+      shortName: "Oak Cutting Board",
+      asin: "B07W5P19",
+      buyerText: "The Miller Family",
+      buyerFont: "Edwardian Script",
+      machineProfile: "CO2 Flatbed Laser & CNC",
+      fileFormat: "Multi-Layer DXF & SVG",
+      safeMargin: "20.0mm (Bevel Clearance)",
+      renderTime: "0.8s",
+      dimensions: "W: 350mm · H: 240mm",
+      accent: "#10b981",
+      accentBg: "rgba(16, 185, 129, 0.12)",
+      borderColor: "rgba(16, 185, 129, 0.35)",
+      renderCadGraphic: () => (
+        <svg viewBox="0 0 320 180" className="w-full h-full" fill="none">
+          <defs>
+            <pattern id="woodGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.06)" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          <rect width="320" height="180" fill="#051a14" />
+          <rect width="320" height="180" fill="url(#woodGrid)" />
+
+          {/* Cutting Board outer cut path (Red line) */}
+          <rect x="40" y="25" width="240" height="130" rx="16" fill="rgba(16, 185, 129, 0.06)" stroke="#ef4444" strokeWidth="1.5" />
+          <circle cx="65" cy="50" r="10" stroke="#ef4444" strokeWidth="1.5" fill="none" />
+          
+          {/* Inner engraving safe zone */}
+          <rect x="85" y="45" width="170" height="90" rx="8" fill="rgba(16, 185, 129, 0.1)" stroke="#10b981" strokeWidth="1.2" strokeDasharray="4 2" />
+
+          {/* Flourish & Monogram */}
+          <path d="M 120 70 Q 170 50 220 70" stroke="#10b981" strokeWidth="1.5" fill="none" />
+          <text x="170" y="90" fill="#ffffff" fontSize="16" fontFamily="serif" fontWeight="bold" textAnchor="middle">M</text>
+          <text x="170" y="110" fill="#a7f3d0" fontSize="11" fontFamily="serif" textAnchor="middle">The Miller Family</text>
+          <path d="M 120 120 Q 170 140 220 120" stroke="#10b981" strokeWidth="1.5" fill="none" />
+
+          {/* Laser Cut/Engrave legend */}
+          <rect x="195" y="152" width="115" height="20" rx="4" fill="rgba(0,0,0,0.6)" stroke="rgba(255,255,255,0.15)" />
+          <circle cx="205" cy="162" r="3" fill="#ef4444" />
+          <text x="214" y="165" fill="#ef4444" fontSize="7.5" fontFamily="monospace">Cut</text>
+          <circle cx="240" cy="162" r="3" fill="#10b981" />
+          <text x="249" y="165" fill="#10b981" fontSize="7.5" fontFamily="monospace">Engrave</text>
+        </svg>
+      )
     },
     {
-      id: "APP-HOOD-12",
-      channel: "Corporate B2B Portal",
-      channelBadge: "Direct B2B Sync",
-      productName: "Heavyweight Studio Hoodie",
-      shortName: "Studio Hoodie",
-      category: "Apparel",
-      material: "350 GSM Organic Cotton",
-      craftLine: "High-Density Tajima Embroidery",
-      beamSpec: "18,500 Precision Stitches",
-      powerSpec: "Pantone-Matched Madeira Threads",
-      proofStatus: "Digital Proof Approved by Brand",
-      proofShort: "Proof Approved",
-      trackingCode: "DHL Express: #B2B-CH-4419",
-      eta: "Dispatched < 48h",
-      coords: "X: 180.0mm · Y: 110.0mm",
-      accentColor: "#155dfc",
-      type: "apparel",
-    },
+      id: "AMZ-028-449102-12",
+      marketplace: "Amazon.fr",
+      flag: "🇫🇷",
+      productName: "Custom Acrylic Photo Plaque",
+      shortName: "Acrylic Photo Plaque",
+      asin: "B08Y6M92",
+      buyerText: "Emma & Lucas - Paris 2024",
+      buyerFont: "Montserrat SemiBold",
+      machineProfile: "UV Flatbed & Contour Laser",
+      fileFormat: "300 DPI PDF (Cut Path)",
+      safeMargin: "3.0mm Bleed Enforced",
+      renderTime: "0.5s",
+      dimensions: "W: 200mm · H: 150mm",
+      accent: "#38bdf8",
+      accentBg: "rgba(56, 189, 248, 0.12)",
+      borderColor: "rgba(56, 189, 248, 0.35)",
+      renderCadGraphic: () => (
+        <svg viewBox="0 0 320 180" className="w-full h-full" fill="none">
+          <defs>
+            <pattern id="acrylicGrid" width="20" height="20" patternUnits="userSpaceOnUse">
+              <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(56,189,248,0.08)" strokeWidth="0.8" />
+            </pattern>
+          </defs>
+          {/* Refined modern Blueprint Sapphire background - NO murky purple */}
+          <rect width="320" height="180" fill="#0c1736" />
+          <rect width="320" height="180" fill="url(#acrylicGrid)" />
+
+          {/* Acrylic Plaque outer frame in crisp Cyan / Sapphire */}
+          <rect x="55" y="25" width="210" height="130" rx="10" fill="rgba(56, 189, 248, 0.08)" stroke="#38bdf8" strokeWidth="1.5" />
+          
+          {/* Photo pre-flight box */}
+          <rect x="70" y="38" width="105" height="104" rx="6" fill="rgba(255,255,255,0.07)" stroke="rgba(56,189,248,0.35)" strokeWidth="1.2" />
+          <circle cx="100" cy="70" r="14" fill="#38bdf8" opacity="0.8" />
+          <polygon points="75,125 110,85 135,110 155,95 170,125" fill="rgba(56,189,248,0.35)" />
+
+          {/* 300 DPI Badge */}
+          <rect x="75" y="45" width="70" height="18" rx="4" fill="#10b981" />
+          <text x="110" y="57" fill="#ffffff" fontSize="8" fontFamily="sans-serif" fontWeight="bold" textAnchor="middle">300 DPI Passed</text>
+
+          {/* Text block */}
+          <text x="190" y="70" fill="#ffffff" fontSize="12" fontFamily="sans-serif" fontWeight="bold">Emma &amp; Lucas</text>
+          <text x="190" y="88" fill="#7dd3fc" fontSize="9.5" fontFamily="sans-serif">Paris, France</text>
+          <text x="190" y="104" fill="#cbd5e1" fontSize="8.5" fontFamily="monospace">15.08.2024</text>
+
+          {/* Registration marks */}
+          <circle cx="65" cy="35" r="4" fill="none" stroke="#ef4444" strokeWidth="1.2" />
+          <circle cx="255" cy="35" r="4" fill="none" stroke="#ef4444" strokeWidth="1.2" />
+          <circle cx="65" cy="145" r="4" fill="none" stroke="#ef4444" strokeWidth="1.2" />
+          <circle cx="255" cy="145" r="4" fill="none" stroke="#ef4444" strokeWidth="1.2" />
+        </svg>
+      )
+    }
   ];
 
   const currentJob = customJobs[activeJobIndex];
 
   return (
-    <div className="relative w-full max-w-[620px] mx-auto select-none py-2 min-w-0">
-      {/* Brand Ambient Glows - Royal Blue & Electric Indigo Caustics */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] bg-gradient-to-tr from-[#0032ab]/10 via-[#4f6ef7]/12 to-transparent rounded-full blur-3xl pointer-events-none" />
+    <div className="relative w-full max-w-[640px] mx-auto select-none py-2 min-w-0 font-sans">
+      {/* Background Soft Glow */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[420px] h-[420px] bg-gradient-to-tr from-[#0032ab]/12 via-[#2563eb]/10 to-transparent rounded-full blur-3xl pointer-events-none" />
 
-      {/* SVG Kinetic Conduits: EXACT 45° DIAGONAL CROSS CONNECTIONS BETWEEN CARDS AND CENTER CIRCLE */}
-      <svg
-        className="absolute inset-0 w-full h-[390px] pointer-events-none z-0"
-        viewBox="0 0 620 390"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <defs>
-          <linearGradient id="laserBeamLight" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#0032ab" stopOpacity="0.5" />
-            <stop offset="50%" stopColor="#4f6ef7" stopOpacity="0.9" />
-            <stop offset="100%" stopColor="#155dfc" stopOpacity="0.5" />
-          </linearGradient>
-        </defs>
-
-        {/* 1. TOP-LEFT DIAGONAL CROSS: Amazon SP-API Card (150, 48) <---> Center Circle Rim (235, 115) */}
-        {/* Base Solid Guide Line */}
-        <line
-          x1="140"
-          y1="48"
-          x2="240"
-          y2="120"
-          stroke="#0032ab"
-          strokeWidth="2"
-          strokeOpacity="0.25"
-        />
-        {/* Animated Dashed Laser Pulse Beam */}
-        <line
-          x1="140"
-          y1="48"
-          x2="240"
-          y2="120"
-          stroke="#0032ab"
-          strokeWidth="2.5"
-          className="flow-dash"
-        />
-        {/* Connector Port Dots */}
-        <circle cx="165" cy="56" r="4" fill="#0032ab" />
-        <circle cx="232" cy="115" r="3.5" fill="#4f6ef7" />
-
-        {/* 2. TOP-RIGHT DIAGONAL CROSS: Shopify DTC Card (480, 48) <---> Center Circle Rim (385, 115) */}
-        {/* Base Solid Guide Line */}
-        <line
-          x1="480"
-          y1="48"
-          x2="380"
-          y2="120"
-          stroke="#4f6ef7"
-          strokeWidth="2"
-          strokeOpacity="0.25"
-        />
-        {/* Animated Dashed Laser Pulse Beam */}
-        <line
-          x1="480"
-          y1="48"
-          x2="380"
-          y2="120"
-          stroke="#4f6ef7"
-          strokeWidth="2.5"
-          className="flow-dash"
-        />
-        {/* Connector Port Dots */}
-        <circle cx="455" cy="56" r="4" fill="#4f6ef7" />
-        <circle cx="388" cy="115" r="3.5" fill="#155dfc" />
-
-        {/* 3. BOTTOM-LEFT DIAGONAL CROSS: B2B Bulk Portal Card (140, 332) <---> Center Circle Rim (240, 260) */}
-        {/* Base Solid Guide Line */}
-        <line
-          x1="140"
-          y1="332"
-          x2="240"
-          y2="260"
-          stroke="#155dfc"
-          strokeWidth="2"
-          strokeOpacity="0.25"
-        />
-        {/* Animated Dashed Laser Pulse Beam */}
-        <line
-          x1="140"
-          y1="332"
-          x2="240"
-          y2="260"
-          stroke="#155dfc"
-          strokeWidth="2.5"
-          className="flow-dash-reverse"
-        />
-        {/* Connector Port Dots */}
-        <circle cx="165" cy="324" r="4" fill="#155dfc" />
-        <circle cx="232" cy="265" r="3.5" fill="#0032ab" />
-
-        {/* 4. BOTTOM-RIGHT DIAGONAL CROSS: DHL Express EU Card (480, 332) <---> Center Circle Rim (380, 260) */}
-        {/* Base Solid Guide Line */}
-        <line
-          x1="480"
-          y1="332"
-          x2="380"
-          y2="260"
-          stroke="#10b981"
-          strokeWidth="2"
-          strokeOpacity="0.25"
-        />
-        {/* Animated Dashed Laser Pulse Beam */}
-        <line
-          x1="480"
-          y1="332"
-          x2="380"
-          y2="260"
-          stroke="#10b981"
-          strokeWidth="2.5"
-          className="flow-dash"
-        />
-        {/* Connector Port Dots */}
-        <circle cx="455" cy="324" r="4" fill="#10b981" />
-        <circle cx="388" cy="265" r="3.5" fill="#10b981" />
-      </svg>
-
-      {/* TOP ROW: Satellite Channel Capsules (Uniform 200px x 56px on sm+, responsive on mobile) */}
-      <div className="relative z-10 flex items-center justify-between gap-2 sm:gap-3 mb-1 w-full min-w-0">
-        {/* Top-Left Satellite: Amazon SP-API */}
-        <div
-          onClick={() => setActiveJobIndex(0)}
-          className={`flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl cursor-pointer transition-all duration-200 border relative ${
-            activeJobIndex === 0
-              ? "bg-white dark:bg-[#0b132b] border-[#0032ab] shadow-md shadow-[#0032ab]/15 ring-2 ring-[#0032ab]/15"
-              : "bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 hover:border-[#0032ab]/50 hover:bg-white"
-          }`}
-        >
-          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-[#0032ab] text-white grid place-items-center shrink-0 shadow-xs">
-            <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      {/* Main Container Card: Modern SaaS Terminal Window */}
+      <div className="relative z-10 rounded-2xl bg-white/95 dark:bg-[#070d1e]/90 border border-slate-200/90 dark:border-white/10 shadow-xl overflow-hidden backdrop-blur-md">
+        
+        {/* Top Header Bar */}
+        <div className="flex items-center justify-between px-4 py-3 bg-slate-100/80 dark:bg-slate-900/80 border-b border-slate-200/80 dark:border-white/10">
+          <div className="flex items-center gap-2">
+            <span className="w-3 h-3 rounded-full bg-[#ef4444] inline-block" />
+            <span className="w-3 h-3 rounded-full bg-[#f59e0b] inline-block" />
+            <span className="w-3 h-3 rounded-full bg-[#10b981] inline-block" />
+            <span className="ml-2 font-mono text-[11px] font-bold text-slate-700 dark:text-slate-300">
+              Printomation // CAD Vector Compiler
+            </span>
           </div>
-          <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
-                Amazon SP-API
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
+
+          <div className="flex items-center gap-2">
+            <div className="px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-mono text-[10px] font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>SP-API Live</span>
             </div>
-            <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
-              Live Intake · 12ms
+            <span className="font-mono text-[11px] text-slate-500 dark:text-slate-400">
+              {currentJob.flag} {currentJob.marketplace}
             </span>
           </div>
         </div>
 
-        {/* Top-Center Orchestrator Live Pill */}
-        <div className="hidden sm:inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-100/90 dark:bg-white/06 border border-slate-200 dark:border-white/10 text-[9.5px] font-mono font-bold text-[#0032ab] dark:text-[#4f6ef7] shrink-0">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#4f6ef7] animate-pulse" />
-          <span>STUDIO ORCHESTRATOR LIVE</span>
-        </div>
-
-        {/* Top-Right Satellite: Shopify DTC */}
-        <div
-          onClick={() => setActiveJobIndex(1)}
-          className={`flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl cursor-pointer transition-all duration-200 border relative ${
-            activeJobIndex === 1
-              ? "bg-white dark:bg-[#0b132b] border-[#4f6ef7] shadow-md shadow-[#4f6ef7]/15 ring-2 ring-[#4f6ef7]/15"
-              : "bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 hover:border-[#4f6ef7]/50 hover:bg-white"
-          }`}
-        >
-          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-[#4f6ef7] text-white grid place-items-center shrink-0 shadow-xs">
-            <Globe2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-          <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
-                Shopify DTC
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-            </div>
-            <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
-              Vector Inflow · 300 DPI
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* CENTRAL STAGE: Compact Precision Optical Laser Dial (Sized 216px, Perfectly Center Aligned) */}
-      <div className="relative z-10 flex items-center justify-center my-3">
-        {/* Outer Circular Calibration Orbit Rings */}
-        <div className="absolute w-[248px] sm:w-[268px] h-[248px] sm:h-[268px] rounded-full border border-dashed border-[#0032ab]/25 dark:border-[#4f6ef7]/30 orbit-spin-slow pointer-events-none" />
-        <div className="absolute w-[264px] sm:w-[284px] h-[264px] sm:h-[284px] rounded-full border border-slate-200/70 dark:border-white/10 orbit-spin-slow-rev pointer-events-none" />
-
-        {/* Degree Markers - Centered directly on optical dial circumference */}
-        <div className="absolute w-[276px] sm:w-[300px] h-[276px] sm:h-[300px] flex items-center justify-between px-1 pointer-events-none text-[8px] font-mono text-[#0032ab]/60 dark:text-[#4f6ef7]/70 font-bold">
-          <span>270°</span>
-          <span>090°</span>
-        </div>
-        <div className="absolute w-[276px] sm:w-[300px] h-[276px] sm:h-[300px] flex flex-col items-center justify-between py-1 pointer-events-none text-[8px] font-mono text-[#0032ab]/60 dark:text-[#4f6ef7]/70 font-bold">
-          <span>000° [CAL]</span>
-          <span>180° [ROT]</span>
-        </div>
-
-        {/* Left Telemetry Wing: Laser Optics */}
-        <div className="hidden md:flex absolute -left-1 w-[120px] flex-col gap-1 p-2.5 rounded-2xl bg-white/95 dark:bg-[#0b132b]/90 border border-slate-200/90 dark:border-white/10 shadow-sm backdrop-blur-md text-[9.5px] font-mono z-20 text-left">
-          <div className="flex items-center gap-1.5 text-[#0032ab] dark:text-[#4f6ef7] font-bold">
-            <Flame className="w-3.5 h-3.5" />
-            <span className="uppercase tracking-wider">Optics</span>
-          </div>
-          <div className="space-y-0.5 pt-1 border-t border-slate-100 dark:border-white/06">
-            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-              <span>Beam</span>
-              <span className="font-bold text-[#0032ab] dark:text-[#4f6ef7]">0.05mm</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-              <span>Power</span>
-              <span className="font-bold text-navy-deep dark:text-white">120W</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-              <span>Speed</span>
-              <span className="font-bold text-navy-deep dark:text-white">850mm/s</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Right Telemetry Wing: Quality Gate */}
-        <div className="hidden md:flex absolute -right-1 w-[120px] flex-col gap-1 p-2.5 rounded-2xl bg-white/95 dark:bg-[#0b132b]/90 border border-slate-200/90 dark:border-white/10 shadow-sm backdrop-blur-md text-[9.5px] font-mono z-20 text-left">
-          <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-bold">
-            <ShieldCheck className="w-3.5 h-3.5" />
-            <span className="uppercase tracking-wider">Quality</span>
-          </div>
-          <div className="space-y-0.5 pt-1 border-t border-slate-100 dark:border-white/06">
-            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-              <span>Proof</span>
-              <span className="font-bold text-emerald-600 dark:text-emerald-400">100% OK</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-              <span>Color</span>
-              <span className="font-bold text-navy-deep dark:text-white">Pantone</span>
-            </div>
-            <div className="flex justify-between items-center text-slate-600 dark:text-slate-300">
-              <span>Route</span>
-              <span className="font-bold text-[#0032ab] dark:text-[#4f6ef7]">DHL 24h</span>
-            </div>
-          </div>
-        </div>
-
-        {/* The Main Circular Optical Craft Lens - Sized 216px */}
-        <div className="relative w-52 h-52 sm:w-56 sm:h-56 rounded-full p-2 bg-gradient-to-tr from-[#0032ab] via-[#4f6ef7] to-[#155dfc] shadow-lg shadow-[#0032ab]/20">
-          {/* Inner Light Craft Lens */}
-          <div className="relative w-full h-full rounded-full bg-gradient-to-b from-white via-slate-50/90 to-blue-50/40 dark:from-[#0b132b] dark:to-[#152238] overflow-hidden border border-white/60 dark:border-white/10 flex flex-col items-center justify-center p-2.5">
-            {/* Concentric Precision Radar Circles */}
-            <div className="absolute inset-3 rounded-full border border-[#0032ab]/12 dark:border-white/10 pointer-events-none" />
-            <div className="absolute inset-8 rounded-full border border-dashed border-[#4f6ef7]/20 pointer-events-none" />
-
-            {/* Crosshair Hairlines */}
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-full h-[1px] bg-gradient-to-r from-transparent via-[#0032ab]/20 to-transparent" />
-            </div>
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="h-full w-[1px] bg-gradient-to-b from-transparent via-[#0032ab]/20 to-transparent" />
-            </div>
-
-            {/* Live Sweeping Laser Beam Line */}
-            <div className="absolute left-4 right-4 h-[2px] bg-gradient-to-r from-transparent via-[#0032ab] to-transparent laser-sweep-line pointer-events-none z-20 shadow-[0_0_8px_#4f6ef7]">
-              <div className="absolute -top-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#4f6ef7] shadow-[0_0_6px_#4f6ef7]" />
-            </div>
-
-            {/* Product Craft Interactive Visualizer */}
-            <div className="relative z-10 flex flex-col items-center justify-center text-center">
-              {/* Product SVG Graphic (Compact & Crisp) */}
-              <div className="relative w-20 h-18 mb-0.5 flex items-center justify-center">
-                {currentJob.type === "tumbler" && (
-                  /* Premium Stainless Steel Tumbler */
-                  <svg className="w-12 h-18 drop-shadow-sm" viewBox="0 0 70 110" fill="none">
-                    <rect x="18" y="4" width="34" height="6" rx="2" fill="#0032ab" />
-                    <path
-                      d="M 16 14 L 54 14 L 48 102 C 48 105, 46 107, 43 107 L 27 107 C 24 107, 22 105, 22 102 Z"
-                      fill="url(#tumblerSilverGrad)"
-                      stroke="#0032ab"
-                      strokeWidth="1.5"
-                    />
-                    <circle cx="35" cy="55" r="10" stroke="#0032ab" strokeWidth="1.2" strokeDasharray="3 2" />
-                    <text x="35" y="58" fill="#0032ab" fontSize="7" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                      GT-26
-                    </text>
-                    <line x1="20" y1="36" x2="50" y2="36" stroke="#4f6ef7" strokeWidth="1" strokeDasharray="2 1" />
-                    <line x1="23" y1="74" x2="47" y2="74" stroke="#4f6ef7" strokeWidth="1" strokeDasharray="2 1" />
-                    <defs>
-                      <linearGradient id="tumblerSilverGrad" x1="0" y1="0" x2="1" y2="0">
-                        <stop offset="0%" stopColor="#f8fafc" />
-                        <stop offset="30%" stopColor="#e2e8f0" />
-                        <stop offset="60%" stopColor="#ffffff" />
-                        <stop offset="100%" stopColor="#cbd5e1" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                )}
-
-                {currentJob.type === "board" && (
-                  /* Solid European Oak Board */
-                  <svg className="w-16 h-16 drop-shadow-sm" viewBox="0 0 90 90" fill="none">
-                    <rect
-                      x="10"
-                      y="14"
-                      width="70"
-                      height="62"
-                      rx="10"
-                      fill="url(#oakWoodBlonde)"
-                      stroke="#d97706"
-                      strokeWidth="1.5"
-                    />
-                    <polygon points="45,26 62,56 28,56" stroke="#0032ab" strokeWidth="1.2" fill="none" strokeDasharray="3 2" />
-                    <text x="45" y="50" fill="#0032ab" fontSize="8" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                      EST. 2026
-                    </text>
-                    <line x1="22" y1="64" x2="68" y2="64" stroke="#b45309" strokeWidth="1" />
-                    <defs>
-                      <linearGradient id="oakWoodBlonde" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#fef3c7" />
-                        <stop offset="50%" stopColor="#fde68a" />
-                        <stop offset="100%" stopColor="#fef3c7" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                )}
-
-                {currentJob.type === "apparel" && (
-                  /* Studio Hoodie */
-                  <svg className="w-16 h-16 drop-shadow-sm" viewBox="0 0 90 90" fill="none">
-                    <path
-                      d="M 30 18 L 45 26 L 60 18 L 82 30 L 72 45 L 63 38 L 63 76 L 27 76 L 27 38 L 18 45 L 8 30 Z"
-                      fill="url(#hoodieCleanGrad)"
-                      stroke="#0032ab"
-                      strokeWidth="1.5"
-                    />
-                    <rect x="36" y="42" width="18" height="18" rx="3" stroke="#4f6ef7" strokeWidth="1.2" strokeDasharray="2 1" />
-                    <text x="45" y="54" fill="#0032ab" fontSize="7.5" fontWeight="bold" textAnchor="middle" fontFamily="monospace">
-                      18.5K
-                    </text>
-                    <defs>
-                      <linearGradient id="hoodieCleanGrad" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#ffffff" />
-                        <stop offset="60%" stopColor="#f1f5f9" />
-                        <stop offset="100%" stopColor="#e2e8f0" />
-                      </linearGradient>
-                    </defs>
-                  </svg>
-                )}
-              </div>
-
-              {/* Target Reticle Text */}
-              <div className="space-y-0.5">
-                <span className="text-[9px] font-mono text-[#0032ab] dark:text-[#4f6ef7] font-bold block uppercase tracking-wider">
-                  {currentJob.id}
+        {/* 2-Column Core Architecture Pipeline */}
+        <div className="p-4 sm:p-5 grid grid-cols-1 md:grid-cols-12 gap-4">
+          
+          {/* Left Column (5 Cols): Amazon Custom Order Intake */}
+          <div className="md:col-span-5 min-w-0 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-white/5">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  01 · Amazon Custom Intake
                 </span>
-                <p className="text-xs sm:text-[13px] font-extrabold text-navy-deep dark:text-white tracking-tight">
-                  {currentJob.shortName}
-                </p>
-                <span className="text-[9px] font-mono text-slate-500 dark:text-slate-400 block font-medium">
-                  {currentJob.coords}
+                <span className="text-[9.5px] font-mono font-bold text-[#0032ab] dark:text-brand-bright">
+                  {currentJob.renderTime}
                 </span>
               </div>
 
-              {/* Compact Proof Badge - Safe in center vertical flow, NEVER cut off! */}
-              <div className="mt-1 px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-[8.5px] font-mono font-bold text-emerald-700 dark:text-emerald-300 inline-flex items-center gap-1 shadow-2xs">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                <span>{currentJob.proofShort.toUpperCase()}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* BOTTOM ROW: Satellite Channel Capsules (Uniform 200px x 56px on sm+, responsive on mobile) */}
-      <div className="relative z-10 flex items-center justify-between gap-2 sm:gap-3 mt-1 w-full min-w-0">
-        {/* Bottom-Left Satellite: Corporate B2B Portal */}
-        <div
-          onClick={() => setActiveJobIndex(2)}
-          className={`flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl cursor-pointer transition-all duration-200 border relative ${
-            activeJobIndex === 2
-              ? "bg-white dark:bg-[#0b132b] border-[#155dfc] shadow-md shadow-[#155dfc]/15 ring-2 ring-[#155dfc]/15"
-              : "bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 hover:border-[#155dfc]/50 hover:bg-white"
-          }`}
-        >
-          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-[#155dfc] text-white grid place-items-center shrink-0 shadow-xs">
-            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-          <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
-                B2B Bulk Portal
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-            </div>
-            <span className="text-[9px] sm:text-[10px] font-mono text-slate-500 dark:text-slate-400 block truncate">
-              Proof-Gated · Tiered
-            </span>
-          </div>
-        </div>
-
-        {/* Bottom-Right Satellite: DHL Express EU */}
-        <div className="flex-1 sm:w-[200px] sm:flex-initial h-[52px] sm:h-[56px] min-w-0 flex items-center gap-2 sm:gap-2.5 px-2 sm:px-3 rounded-xl sm:rounded-2xl border bg-white/95 dark:bg-[#0b132b]/80 border-slate-200/90 dark:border-white/10 relative">
-          <div className="h-7 w-7 sm:h-8 sm:w-8 rounded-lg sm:rounded-xl bg-emerald-600 text-white grid place-items-center shrink-0 shadow-xs">
-            <PackageCheck className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-          <div className="min-w-0 text-left">
-            <div className="flex items-center gap-1 sm:gap-1.5">
-              <span className="text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
-                DHL Express EU
-              </span>
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 shrink-0" />
-            </div>
-            <span className="text-[9px] sm:text-[10px] font-mono text-emerald-600 dark:text-emerald-400 block font-bold truncate">
-              {currentJob.eta}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* INTERACTIVE CRAFT STUDIO SWITCHER: Equal Uniform Size for ALL 3 Options */}
-      <div className="relative z-10 mt-5 flex flex-col items-center gap-2 w-full min-w-0">
-        <span className="text-[10px] font-mono text-slate-500 dark:text-slate-400 uppercase tracking-widest font-bold text-center">
-          Select Custom Studio Line to Simulate:
-        </span>
-
-        {/* Uniform Grid: 3 Equal-Sized Options */}
-        <div className="w-full max-w-[620px] grid grid-cols-1 sm:grid-cols-3 gap-2 sm:gap-2.5 p-1.5 rounded-2xl bg-slate-100/90 dark:bg-white/06 border border-slate-200/90 dark:border-white/10 min-w-0">
-          {customJobs.map((job, idx) => {
-            const isActive = activeJobIndex === idx;
-            return (
-              <button
-                key={job.id}
-                type="button"
-                onClick={() => setActiveJobIndex(idx)}
-                className={`w-full h-11 px-3 sm:px-3.5 rounded-xl text-[11px] sm:text-[11.5px] font-bold transition-all duration-200 cursor-pointer flex items-center justify-between gap-1.5 min-w-0 ${
-                  isActive
-                    ? "bg-[#0032ab] text-white shadow-md shadow-[#0032ab]/25"
-                    : "bg-white dark:bg-[#0b132b]/80 text-navy-deep dark:text-white border border-slate-200/70 dark:border-white/10 hover:border-[#0032ab]/40"
-                }`}
-              >
-                <div className="flex items-center gap-1.5 min-w-0 truncate">
-                  {isActive && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-cyan-300 shrink-0" />
-                  )}
-                  <span className="truncate">{job.shortName}</span>
+              {/* Order Pill */}
+              <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/5 space-y-2">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-mono font-bold text-navy-deep dark:text-white truncate">
+                    {currentJob.id}
+                  </span>
+                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-brand/10 text-brand font-bold shrink-0">
+                    {currentJob.asin}
+                  </span>
                 </div>
-                <span
-                  className={`text-[8.5px] font-mono px-1.5 py-0.5 rounded uppercase font-bold shrink-0 ${
+
+                <div className="text-[11px] space-y-1 pt-1 border-t border-slate-200/60 dark:border-white/5">
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>Buyer Input:</span>
+                    <span className="font-bold text-navy-deep dark:text-white truncate max-w-[120px]">
+                      "{currentJob.buyerText}"
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>Font Chosen:</span>
+                    <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
+                      {currentJob.buyerFont}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-slate-600 dark:text-slate-400">
+                    <span>Dimensions:</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">
+                      {currentJob.dimensions}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Automation Pipeline Checkmarks */}
+            <div className="p-2.5 rounded-xl bg-emerald-500/5 border border-emerald-500/20 text-[11px] space-y-1.5 text-emerald-800 dark:text-emerald-300">
+              <div className="flex items-center gap-1.5 font-medium">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Text-to-Curves Outline Lock</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-medium">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>Safe Margin: {currentJob.safeMargin}</span>
+              </div>
+              <div className="flex items-center gap-1.5 font-medium">
+                <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                <span>0 Retyping Misprints Guaranteed</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column (7 Cols): Live CAD Machine Vector Output */}
+          <div className="md:col-span-7 min-w-0 flex flex-col justify-between space-y-3">
+            <div>
+              <div className="flex items-center justify-between pb-2 mb-2 border-b border-slate-100 dark:border-white/5">
+                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                  02 · Machine File Generation
+                </span>
+                <span className="text-[9.5px] font-mono font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+                  <CheckCircle2 className="w-3 h-3" />
+                  Pre-Press Verified
+                </span>
+              </div>
+
+              {/* Interactive Vector CAD Screen */}
+              <div className="relative rounded-xl overflow-hidden border border-slate-200/90 dark:border-white/10 shadow-inner aspect-[16/9] w-full">
+                {currentJob.renderCadGraphic()}
+
+                {/* Corner Machine Profile Pill */}
+                <div className="absolute top-2.5 right-2.5 px-2.5 py-1 rounded-lg bg-slate-900/90 backdrop-blur-md border border-white/20 text-[9.5px] font-mono font-bold text-white flex items-center gap-1.5 shadow-sm">
+                  <Cpu className="w-3 h-3 text-cyan-400" />
+                  <span>{currentJob.machineProfile}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom Output Format Bar */}
+            <div className="flex items-center justify-between gap-2 p-2 rounded-xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/5 w-full min-w-0 overflow-hidden">
+              <div className="flex items-center gap-1.5 min-w-0 flex-1">
+                <FileCode className="w-3.5 h-3.5 text-brand shrink-0" />
+                <span className="font-mono text-[11px] sm:text-xs font-bold text-navy-deep dark:text-white truncate">
+                  {currentJob.fileFormat}
+                </span>
+              </div>
+              <button
+                type="button"
+                className="px-2.5 py-1.5 rounded-lg bg-brand text-white font-mono text-[10.5px] font-semibold flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer hover:bg-brand-bright transition-colors"
+              >
+                <Download className="w-3.5 h-3.5 shrink-0" />
+                <span>Download File</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Bottom Simulation Selector Tabs */}
+        <div className="px-4 py-3 bg-slate-50/90 dark:bg-slate-900/90 border-t border-slate-200/80 dark:border-white/10">
+          <div className="flex items-center justify-between gap-2 mb-2">
+            <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400">
+              Select Simulated Custom Line:
+            </span>
+            <span className="text-[9.5px] font-mono text-slate-400">
+              Click to switch preview
+            </span>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2">
+            {customJobs.map((job, idx) => {
+              const isActive = activeJobIndex === idx;
+              return (
+                <button
+                  key={job.id}
+                  type="button"
+                  onClick={() => setActiveJobIndex(idx)}
+                  className={`h-10 px-2.5 rounded-xl text-xs font-semibold transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5 truncate border ${
                     isActive
-                      ? "bg-white/20 text-white"
-                      : "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400"
+                      ? "bg-brand !text-white border-brand shadow-sm shadow-brand/25 scale-[1.02]"
+                      : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-white/10 hover:border-brand/40 hover:bg-slate-50"
                   }`}
                 >
-                  {job.category}
-                </span>
-              </button>
-            );
-          })}
+                  <span className="text-sm shrink-0">{job.flag}</span>
+                  <span className="truncate">{job.shortName}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
-        {/* Dynamic Detail Breadcrumb Bar */}
-        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 text-xs text-slate-600 dark:text-slate-300 mt-1 max-w-full px-2">
-          <div className="flex items-center gap-1.5">
-            <span className="font-mono text-[11px] font-bold text-[#0032ab] dark:text-[#4f6ef7]">Channel:</span>
-            <span className="font-semibold text-navy-deep dark:text-white">{currentJob.channel}</span>
-          </div>
-          <span className="text-slate-300 dark:text-white/20">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="font-mono text-[11px] font-bold text-[#0032ab] dark:text-[#4f6ef7]">Craft Line:</span>
-            <span className="font-semibold text-navy-deep dark:text-white">{currentJob.craftLine}</span>
-          </div>
-          <span className="text-slate-300 dark:text-white/20">•</span>
-          <div className="flex items-center gap-1.5">
-            <span className="font-mono text-[11px] font-bold text-emerald-600 dark:text-emerald-400">Tracking:</span>
-            <span className="font-mono text-emerald-600 dark:text-emerald-400 font-bold">{currentJob.trackingCode}</span>
-          </div>
-        </div>
       </div>
     </div>
   );

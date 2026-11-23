@@ -3,6 +3,7 @@ import { Link, useRouterState } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Container } from "./Container";
 import { FlagIcon } from "@/components/ui/FlagIcon";
+import { BrandLogo } from "@/components/ui/BrandLogo";
 import { SUPPORTED_LANGUAGES } from "@/i18n/config";
 import {
   Menu,
@@ -65,27 +66,41 @@ export function Nav() {
   }, [pathname]);
 
   const solid = scrolled || !hasDarkHero || mobileMenuOpen;
-  const logoURl = !solid ? "/white-gravurtastisch.png" : "/gravurtastich.png";
+
+  const sellerPanelUrl = (
+    (import.meta as any).env?.VITE_PANEL_URL ||
+    (import.meta as any).env?.VITE_SELLER_PANEL_URL ||
+    ""
+  ).trim();
+  const sellerLoginUrl = sellerPanelUrl.endsWith("/sign-in")
+    ? sellerPanelUrl
+    : `${sellerPanelUrl}/sign-in`;
 
   const serviceItems = [
     {
       href: "/amazon-sp-api",
-      label: t("footer.colPlatformLink1") || "Studio Integrations",
+      label: t("nav.service1Label") || t("footer.colPlatformLink1") || "Amazon SP-API",
       icon: ShieldCheck,
-      description: t("nav.service1Desc", "Secure shop connections & artwork intake"),
+      description: t("nav.service1Desc", "Official SP-API connection for Amazon Custom orders"),
     },
     {
       href: "/order-sync",
-      label: t("footer.colPlatformLink2") || "Order Desk",
+      label: t("nav.service2Label") || t("footer.colPlatformLink2") || "Order Sync & Automation",
       icon: RefreshCw,
-      description: t("nav.service2Desc", "Live custom-order tracking from proof to ship"),
+      description: t("nav.service2Desc", "Automated intake of buyer text, photos & options"),
     },
     {
       href: "/smart-scheduling",
-      label: t("footer.colPlatformLink3") || "Production Timing",
+      label: t("nav.service3Label") || t("footer.colPlatformLink3") || "Batch Processing",
       icon: CalendarClock,
-      description: t("nav.service3Desc", "Craft slots timed around proofs & capacity"),
+      description: t("nav.service3Desc", "Instant conversion to ready-to-run print & engraving files"),
     },
+    // {
+    //   href: "/review-analytics",
+    //   label: t("nav.service4Label", "Automation Analytics"),
+    //   icon: BarChart3,
+    //   description: t("nav.service4Desc", "Throughput, error prevention & ASIN performance"),
+    // },
   ];
 
   const isServiceActive = serviceItems.some((s) => pathname === s.href);
@@ -94,15 +109,15 @@ export function Nav() {
     | { type: "services"; href?: undefined; hash?: undefined; label?: undefined }
     | { type?: undefined; href: string; hash?: string; label: string }
   > = [
-    { href: "/#home", hash: "home", label: t("nav.home") },
-    { href: "/pricing", label: t("nav.pricing") },
-    { type: "services" },
-    { href: "/#how", hash: "how", label: t("nav.howItWorks") },
-    { href: "/contact", label: t("nav.contact") },
-    { href: "/guide", label: t("nav.guide") || "Guide" },
-    { href: "/blogs", label: t("nav.blogs") || "Blogs" },
-    { href: "/register", label: t("nav.registration") || "Registration" },
-  ];
+      { href: "/#home", hash: "home", label: t("nav.home") },
+      { href: "/pricing", label: t("nav.pricing") },
+      { type: "services" },
+      { href: "/#how", hash: "how", label: t("nav.howItWorks") },
+      { href: "/contact", label: t("nav.contact") },
+      { href: "/guide", label: t("nav.guide") || "Guide" },
+      { href: "/blogs", label: t("nav.blogs") || "Blogs" },
+      { href: "/register", label: t("nav.registration") || "Registration" },
+    ];
 
   const checkIsActive = (item: (typeof mainLinks)[number]) => {
     if (item.type === "services") {
@@ -131,25 +146,23 @@ export function Nav() {
   };
 
   const getLinkClasses = (isActive: boolean) =>
-    `relative transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-lg select-none text-xs xl:text-sm font-medium cursor-pointer ${
-      isActive
-        ? solid
-          ? "text-brand font-bold"
-          : "text-white font-bold underline underline-offset-4 decoration-brand"
-        : solid
-          ? "hover:text-navy-deep text-slate-body"
-          : "hover:text-white text-white/80"
+    `relative transition-colors whitespace-nowrap px-2.5 py-1.5 rounded-lg select-none text-xs xl:text-sm font-medium cursor-pointer ${isActive
+      ? solid
+        ? "text-brand font-bold"
+        : "text-white font-bold underline underline-offset-4 decoration-brand"
+      : solid
+        ? "hover:text-navy-deep text-slate-body"
+        : "hover:text-white text-white/80"
     }`;
 
   const getTriggerClasses = (isActive: boolean) =>
-    `group inline-flex items-center gap-1 transition-colors cursor-pointer py-1.5 px-2.5 rounded-lg select-none outline-none focus:outline-none focus-visible:outline-none border-none ring-0 bg-transparent hover:bg-transparent shadow-none text-xs xl:text-sm font-medium ${
-      isActive
-        ? solid
-          ? "!text-brand font-bold"
-          : "!text-white font-bold underline underline-offset-4 decoration-brand"
-        : solid
-          ? "text-slate-body hover:!text-navy-deep data-[state=open]:!text-navy-deep"
-          : "text-white/80 hover:!text-white data-[state=open]:!text-white"
+    `group inline-flex items-center gap-1 transition-colors cursor-pointer py-1.5 px-2.5 rounded-lg select-none outline-none focus:outline-none focus-visible:outline-none border-none ring-0 bg-transparent hover:bg-transparent shadow-none text-xs xl:text-sm font-medium ${isActive
+      ? solid
+        ? "!text-brand font-bold"
+        : "!text-white font-bold underline underline-offset-4 decoration-brand"
+      : solid
+        ? "text-slate-body hover:!text-navy-deep data-[state=open]:!text-navy-deep"
+        : "text-white/80 hover:!text-white data-[state=open]:!text-white"
     }`;
 
   const currentLang =
@@ -158,11 +171,10 @@ export function Nav() {
 
   return (
     <header
-      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        solid
+      className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${solid
           ? "backdrop-blur-xl bg-white/95 border-b border-[#0032ab]/12 shadow-[0_4px_24px_rgba(0,50,171,0.06)]"
           : "bg-transparent"
-      }`}
+        }`}
     >
       {/* EcomRetails-style Liquid Top Accent Line */}
       <div className="absolute top-0 left-0 right-0 h-[2.5px] overflow-hidden pointer-events-none">
@@ -176,20 +188,13 @@ export function Nav() {
       </div>
       <Container className="h-16 lg:h-17 flex items-center justify-between">
         <Link to="/" className="flex items-center gap-2 group">
-          <img
-            src={logoURl}
-            className="h-10 md:h-11 lg:h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105"
-            alt={t("nav.logoAlt") || "Gravurtastisch Logo"}
-            width="180"
-            height="48"
-          />
+          <BrandLogo variant={solid ? "dark" : "light"} size="md" />
         </Link>
 
         {/* Desktop Navigation */}
         <NavigationMenu
-          className={`hidden lg:flex max-w-none transition-colors ${
-            solid ? "text-slate-body" : "text-white/80"
-          }`}
+          className={`hidden lg:flex max-w-none transition-colors ${solid ? "text-slate-body" : "text-white/80"
+            }`}
         >
           <NavigationMenuList className="flex items-center gap-1.5 xl:gap-2.5 2xl:gap-3.5 list-none m-0 p-0">
             {mainLinks.map((item, idx) => {
@@ -210,28 +215,25 @@ export function Nav() {
                             <NavigationMenuLink asChild key={service.href}>
                               <Link
                                 to={service.href}
-                                className={`group/item flex items-start gap-2.5 p-2.5 rounded-xl transition-all duration-200 outline-none ${
-                                  isSubActive
+                                className={`group/item flex items-start gap-2.5 p-2.5 rounded-xl transition-all duration-200 outline-none ${isSubActive
                                     ? "bg-brand/10 text-brand ring-1 ring-brand/20 shadow-xs"
                                     : "hover:bg-slate-100/90 dark:hover:bg-white/[0.08] text-slate-body hover:text-navy-deep"
-                                }`}
+                                  }`}
                               >
                                 <div
-                                  className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 transition-all duration-200 shadow-xs ${
-                                    isSubActive
+                                  className={`h-8 w-8 rounded-lg grid place-items-center shrink-0 transition-all duration-200 shadow-xs ${isSubActive
                                       ? "bg-brand text-white shadow-brand/30"
                                       : "bg-brand/10 text-brand group-hover/item:bg-brand group-hover/item:text-white group-hover/item:scale-105"
-                                  }`}
+                                    }`}
                                 >
                                   <Icon className="w-4 h-4" />
                                 </div>
                                 <div className="flex flex-col min-w-0 flex-1">
                                   <span
-                                    className={`text-xs font-bold leading-snug transition-colors ${
-                                      isSubActive
+                                    className={`text-xs font-bold leading-snug transition-colors ${isSubActive
                                         ? "text-brand"
                                         : "text-navy-deep group-hover/item:text-brand"
-                                    }`}
+                                      }`}
                                   >
                                     {service.label}
                                   </span>
@@ -305,10 +307,9 @@ export function Nav() {
                 <NavigationMenuTrigger
                   aria-label={t("nav.languageSwitcherLabel")}
                   className={`h-9 md:h-10 min-h-[44px] md:min-h-[40px] w-auto min-w-[50px] md:min-w-[130px] text-xs md:text-sm font-medium rounded-full border px-3 md:px-4 bg-transparent cursor-pointer transition-all inline-flex items-center justify-between gap-1.5 shadow-none
-                    ${
-                      solid
-                        ? "text-slate-body border-border hover:border-navy-deep hover:bg-slate-100/50 data-[state=open]:border-navy-deep"
-                        : "text-white/80 border-white/20 hover:border-white/50 hover:bg-white/10 data-[state=open]:border-white/50"
+                    ${solid
+                      ? "text-slate-body border-border hover:border-navy-deep hover:bg-slate-100/50 data-[state=open]:border-navy-deep"
+                      : "text-white/80 border-white/20 hover:border-white/50 hover:bg-white/10 data-[state=open]:border-white/50"
                     }`}
                 >
                   <span className="flex items-center gap-2">
@@ -326,11 +327,10 @@ export function Nav() {
                           key={lang.code}
                           type="button"
                           onClick={() => i18n.changeLanguage(lang.code)}
-                          className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-left outline-none ${
-                            isSelected
+                          className={`w-full flex items-center justify-between gap-2 px-2.5 py-1.5 rounded-lg text-xs font-medium cursor-pointer transition-colors text-left outline-none ${isSelected
                               ? "bg-brand/10 text-brand font-bold"
                               : "text-slate-body hover:bg-slate-100 dark:hover:bg-white/[0.08] hover:text-navy-deep"
-                          }`}
+                            }`}
                         >
                           <span className="flex items-center gap-2">
                             <FlagIcon code={lang.code} className="w-4 h-2.5 rounded-[2px]" />
@@ -352,8 +352,8 @@ export function Nav() {
             to="/register"
             className="h-9 md:h-10 min-h-[44px] md:min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-full btn-glass-primary !py-0 px-4 md:px-5 text-xs md:text-sm font-semibold !text-white shadow-[0_4px_16px_rgba(0,50,171,0.3)] hover:-translate-y-0.5 transition-all duration-300 whitespace-nowrap"
           >
-            <span className="hidden sm:inline">{t("nav.registerAsSeller")}</span>
-            <span className="sm:hidden">{t("nav.registerShort") || "Register"}</span>
+            <span className="hidden sm:inline">{t("nav.registerAsSeller", "Start Free Trial")}</span>
+            <span className="sm:hidden">{t("nav.registerShort") || "Free Trial"}</span>
             <span aria-hidden>→</span>
           </Link>
 
@@ -361,11 +361,10 @@ export function Nav() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className={`lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-lg border transition-colors ${
-              solid
+            className={`lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center p-2 rounded-lg border transition-colors ${solid
                 ? "border-border text-navy-deep hover:bg-slate-100"
                 : "border-white/20 text-white hover:bg-white/10"
-            }`}
+              }`}
             aria-label="Toggle navigation menu"
             aria-expanded={mobileMenuOpen}
           >
@@ -390,17 +389,15 @@ export function Nav() {
                       type="button"
                       onClick={() => setMobileServicesOpen(!mobileServicesOpen)}
                       aria-expanded={mobileServicesOpen}
-                      className={`flex items-center justify-between w-full py-2 text-sm font-medium transition-colors ${
-                        isServiceActive
+                      className={`flex items-center justify-between w-full py-2 text-sm font-medium transition-colors ${isServiceActive
                           ? "text-brand font-bold"
                           : "text-slate-body hover:text-navy-deep"
-                      }`}
+                        }`}
                     >
                       <span>{t("nav.services") || "Services"}</span>
                       <ChevronDown
-                        className={`w-4 h-4 transition-transform duration-200 ${
-                          mobileServicesOpen ? "rotate-180" : ""
-                        }`}
+                        className={`w-4 h-4 transition-transform duration-200 ${mobileServicesOpen ? "rotate-180" : ""
+                          }`}
                       />
                     </button>
                     {mobileServicesOpen && (
@@ -412,17 +409,15 @@ export function Nav() {
                             <Link
                               key={s.href}
                               to={s.href}
-                              className={`flex items-center gap-2.5 py-2 px-2.5 rounded-lg text-xs font-medium transition-colors ${
-                                isActive
+                              className={`flex items-center gap-2.5 py-2 px-2.5 rounded-lg text-xs font-medium transition-colors ${isActive
                                   ? "bg-brand/10 text-brand font-bold"
                                   : "text-slate-body hover:bg-slate-100 hover:text-navy-deep"
-                              }`}
+                                }`}
                               onClick={() => setMobileMenuOpen(false)}
                             >
                               <Icon
-                                className={`w-3.5 h-3.5 ${
-                                  isActive ? "text-brand" : "text-slate-400"
-                                }`}
+                                className={`w-3.5 h-3.5 ${isActive ? "text-brand" : "text-slate-400"
+                                  }`}
                               />
                               <span>{s.label}</span>
                             </Link>
@@ -435,11 +430,10 @@ export function Nav() {
               }
 
               const isActive = checkIsActive(item);
-              const linkClasses = `py-2 text-sm font-medium transition-colors ${
-                isActive
+              const linkClasses = `py-2 text-sm font-medium transition-colors ${isActive
                   ? "text-brand font-bold"
                   : "text-slate-body hover:text-navy-deep"
-              }`;
+                }`;
 
               if (item.hash) {
                 return (
@@ -477,6 +471,22 @@ export function Nav() {
                 </Link>
               );
             })}
+
+            <div className="pt-3 mt-2 border-t border-border flex flex-col gap-2">
+              <a
+                href={sellerLoginUrl}
+                className="w-full text-center py-2.5 px-4 rounded-xl border border-border text-sm font-semibold text-navy-deep hover:bg-slate-100 transition"
+              >
+                {t("nav.sellerLogin", "Seller Login")}
+              </a>
+              <Link
+                to="/register"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full text-center py-2.5 px-4 rounded-xl btn-glass-primary text-sm font-semibold !text-white shadow-md transition"
+              >
+                {t("nav.registerAsSeller", "Start Free Trial")} →
+              </Link>
+            </div>
           </nav>
         </div>
       )}

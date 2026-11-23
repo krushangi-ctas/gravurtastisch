@@ -361,7 +361,7 @@ function OrdersTable({
         enableSorting: true,
         Cell: ({ row }) => {
           if (!row.original || !row.original.buyerEmail) {
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
           }
           if (!row.original.isFirstRow) {
             return null;
@@ -479,7 +479,7 @@ function OrdersTable({
 
           if (!canUpdateOrders) {
             return (
-              <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>
+              <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>
             );
           }
 
@@ -546,7 +546,7 @@ function OrdersTable({
         Cell: ({ row }) => {
           const asin = row.original.orderItem?.ASIN;
           if (!asin)
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -587,7 +587,7 @@ function OrdersTable({
         Cell: ({ row }) => {
           const itemId = row.original.orderItem?.orderItemId;
           if (!itemId)
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -623,7 +623,7 @@ function OrdersTable({
         Cell: ({ row }) => {
           const orderItem = row.original.orderItem;
           if (!orderItem)
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 
           const isGift = orderItem.isGift;
           const isTransparency = orderItem.isTransparency;
@@ -702,7 +702,7 @@ function OrdersTable({
         Cell: ({ row }) => {
           const orderItem = row.original.orderItem;
           if (!orderItem)
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
@@ -763,12 +763,12 @@ function OrdersTable({
           const fulfillment = row.original?.fulfillmentChannel;
           const sales = row.original?.salesChannel;
           if (!fulfillment && !sales) {
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
           }
           const isAFN = fulfillment === 'AFN' || fulfillment === 'FBA';
 
           return (
-            <Tooltip title={`Fulfillment: ${fulfillment || '—'} · Channel: ${sales || '—'}`} arrow>
+            <Tooltip title={`Fulfillment: ${fulfillment || '-'} · Channel: ${sales || '-'}`} arrow>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                 <Box
                   sx={{
@@ -795,7 +795,7 @@ function OrdersTable({
                     lineHeight: 1,
                   }}
                 >
-                  {fulfillment || '—'}
+                  {fulfillment || '-'}
                 </Box>
                 <Typography
                   sx={{
@@ -822,11 +822,11 @@ function OrdersTable({
         Cell: ({ row }) => {
           const edd = row.original?.earliestDeliveryDate;
           if (!edd) {
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
           }
           const m = moment(edd);
           if (!m.isValid()) {
-            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+            return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
           }
           const daysDiff =
             row.original?.daysDifference ??

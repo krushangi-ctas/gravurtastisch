@@ -316,61 +316,61 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 				{/* ==================================================== */}
 				{/* 1. HERO SECTION (MATCHING WEBSITE BLOG DESIGN) */}
 				{/* ==================================================== */}
-				<section className="relative px-6 py-10 sm:px-12 sm:py-14 bg-gradient-to-b from-[#0b132b] via-[#152238] to-[#1e293b] text-white border-b border-white/10 overflow-hidden">
-					<div className="absolute -top-24 right-1/4 w-80 h-80 bg-primary/20 rounded-full blur-[120px] pointer-events-none" />
-					<div className="absolute bottom-0 left-10 w-72 h-72 bg-blue-500/15 rounded-full blur-[100px] pointer-events-none" />
+				<section className="relative px-6 py-10 sm:px-12 sm:py-14 bg-gradient-to-b from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border-b border-[#0032ab]/12 overflow-hidden">
+					<div className="absolute -top-24 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-[120px] pointer-events-none" />
+					<div className="absolute bottom-0 left-10 w-72 h-72 bg-blue-400/15 rounded-full blur-[100px] pointer-events-none" />
 
 					<div className="relative max-w-4xl mx-auto text-left">
 						{/* Navigation back simulation */}
 						<div className="mb-6">
-							<span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-slate-400">
-								<FuseSvgIcon size={14} className="text-blue-400">heroicons-outline:arrow-left</FuseSvgIcon>
+							<span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-600">
+								<FuseSvgIcon size={14} className="text-[#0032ab]">heroicons-outline:arrow-left</FuseSvgIcon>
 								Back to all articles
 							</span>
 						</div>
 
 						{/* Category / Badge */}
-						<div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-primary/20 border border-primary/40 text-blue-300 text-xs font-semibold uppercase tracking-wider mb-5 backdrop-blur-md">
+						<div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/70 border border-[#0032ab]/20 text-[#0032ab] text-xs font-semibold uppercase tracking-wider mb-5 shadow-xs backdrop-blur-md">
 							<FuseSvgIcon size={14}>heroicons-outline:sparkles</FuseSvgIcon>
 							<span>Studio craft &amp; personalization</span>
 						</div>
 
 						{/* Title */}
-						<h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-white font-display">
+						<h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight leading-tight text-[#001858] font-display">
 							{blog.blog_title}
 						</h1>
 
 						{/* Short Summary */}
 						{blog.short_description && (
-							<p className="mt-4 text-base sm:text-lg text-slate-300 leading-relaxed max-w-3xl">
+							<p className="mt-4 text-base sm:text-lg text-slate-700 leading-relaxed max-w-3xl font-medium">
 								{blog.short_description}
 							</p>
 						)}
 
 						{/* Metadata Bar */}
-						<div className="mt-8 pt-6 border-t border-white/10 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-400">
+						<div className="mt-8 pt-6 border-t border-[#0032ab]/15 flex flex-wrap items-center justify-between gap-6 text-sm text-slate-600 font-medium">
 							<div className="flex items-center gap-4">
-								<div className="relative h-11 w-11 rounded-2xl bg-primary border border-white/20 flex items-center justify-center p-2 shadow-md shrink-0">
-									<span className="font-extrabold text-base text-white">G</span>
+								<div className="relative h-11 w-11 rounded-2xl bg-white border border-[#0032ab]/15 flex items-center justify-center p-2 shadow-xs shrink-0">
+									<img src="/g.svg" alt="Printomation" className="h-full w-full object-contain" />
 								</div>
 								<div>
-									<div className="font-semibold text-white flex items-center gap-1.5 text-sm">
-										Gravurtastisch Editorial Team
-										<FuseSvgIcon size={16} className="text-blue-400">heroicons-solid:check-badge</FuseSvgIcon>
+									<div className="font-bold text-[#001858] flex items-center gap-1.5 text-sm">
+										Printomation Editorial Team
+										<FuseSvgIcon size={16} className="text-blue-600">heroicons-solid:check-badge</FuseSvgIcon>
 									</div>
-									<div className="text-xs text-slate-400">
-										Custom engraving &amp; order fulfillment
+									<div className="text-xs text-slate-600">
+										Amazon Custom automation &amp; pre-press
 									</div>
 								</div>
 							</div>
 
-							<div className="flex items-center gap-6 text-xs sm:text-sm text-slate-300">
+							<div className="flex items-center gap-6 text-xs sm:text-sm text-slate-700">
 								<div className="flex items-center gap-2">
-									<FuseSvgIcon size={16} className="text-[#DECAA8]">heroicons-outline:calendar</FuseSvgIcon>
+									<FuseSvgIcon size={16} className="text-[#0032ab]">heroicons-outline:calendar</FuseSvgIcon>
 									<span>{formattedDate}</span>
 								</div>
 								<div className="flex items-center gap-2">
-									<FuseSvgIcon size={16} className="text-amber-400">heroicons-outline:clock</FuseSvgIcon>
+									<FuseSvgIcon size={16} className="text-amber-600">heroicons-outline:clock</FuseSvgIcon>
 									<span>{readingTime} min read</span>
 								</div>
 							</div>
@@ -504,7 +504,7 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 												Ready to put custom orders on a clear studio path?
 											</h4>
 											<p className="text-xs sm:text-sm text-slate-500 mt-1">
-												Gravurtastisch connects intake, proofs, and production so every mug and engraved piece ships as promised.
+												Printomation connects intake, proofs, and production so every mug and engraved piece ships as promised.
 											</p>
 										</div>
 										<span className="shrink-0 inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md shadow-primary/20 cursor-pointer">
@@ -519,36 +519,36 @@ export default function BlogPreviewDialog({ open, onClose, blog }: BlogPreviewDi
 						{/* Sidebar Column (Matching Website Blog Sidebar) */}
 						<div className="lg:col-span-4 space-y-6">
 							{/* Studio Craft Workflow Card */}
-							<div className="p-6 rounded-3xl bg-gradient-to-br from-[#0b132b] via-[#152238] to-[#0032ab]/30 text-white border border-primary/30 shadow-xl relative overflow-hidden">
-								<div className="absolute -top-12 -right-12 w-32 h-32 bg-primary/30 rounded-full blur-2xl pointer-events-none" />
-								<div className="absolute -bottom-8 -left-8 w-24 h-24 bg-blue-500/15 rounded-full blur-xl pointer-events-none" />
-								<div className="h-10 w-10 rounded-xl bg-primary/25 flex items-center justify-center mb-4 text-blue-300 border border-primary/40 shadow-sm">
+							<div className="p-6 rounded-3xl bg-gradient-to-br from-[#c6dbf2] via-[#d5e4f7] to-[#bfd6f0] text-slate-800 border border-[#0032ab]/20 shadow-lg relative overflow-hidden">
+								<div className="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
+								<div className="absolute -bottom-8 -left-8 w-24 h-24 bg-amber-500/10 rounded-full blur-xl pointer-events-none" />
+								<div className="h-10 w-10 rounded-xl bg-white border border-[#0032ab]/15 flex items-center justify-center mb-4 text-[#0032ab] shadow-xs">
 									<FuseSvgIcon size={20}>heroicons-solid:shield-check</FuseSvgIcon>
 								</div>
-								<h3 className="text-lg font-bold font-display text-white">
+								<h3 className="text-lg font-bold font-display text-[#001858]">
 									Craft-quality workflow
 								</h3>
-								<p className="mt-2 text-xs leading-relaxed text-slate-300">
-									Every personalized job flows through Gravurtastisch with proof approval, encrypted artwork storage, and scheduled bench time — no guesswork on the shop floor.
+								<p className="mt-2 text-xs leading-relaxed text-slate-700 font-medium">
+									Every personalized job flows through Printomation with proof approval, encrypted artwork storage, and scheduled bench time - no guesswork on the shop floor.
 								</p>
 
-								<ul className="mt-4 space-y-2 text-xs text-slate-300">
+								<ul className="mt-4 space-y-2 text-xs text-slate-700 font-medium">
 									<li className="flex items-center gap-2">
-										<FuseSvgIcon size={14} className="text-blue-400 shrink-0">heroicons-solid:bolt</FuseSvgIcon>
+										<FuseSvgIcon size={14} className="text-[#0032ab] shrink-0">heroicons-solid:bolt</FuseSvgIcon>
 										<span>Proof-before-production on every SKU</span>
 									</li>
 									<li className="flex items-center gap-2">
-										<FuseSvgIcon size={14} className="text-blue-400 shrink-0">heroicons-solid:bolt</FuseSvgIcon>
+										<FuseSvgIcon size={14} className="text-[#0032ab] shrink-0">heroicons-solid:bolt</FuseSvgIcon>
 										<span>Encrypted uploads &amp; scoped shop tokens</span>
 									</li>
 									<li className="flex items-center gap-2">
-										<FuseSvgIcon size={14} className="text-blue-400 shrink-0">heroicons-solid:bolt</FuseSvgIcon>
+										<FuseSvgIcon size={14} className="text-[#0032ab] shrink-0">heroicons-solid:bolt</FuseSvgIcon>
 										<span>Webshop, wholesale &amp; counter orders</span>
 									</li>
 								</ul>
 
-								<div className="mt-6 pt-4 border-t border-white/10">
-									<div className="w-full py-2.5 px-4 rounded-xl bg-white text-slate-900 font-bold text-xs hover:bg-slate-100 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-md">
+								<div className="mt-6 pt-4 border-t border-[#0032ab]/15">
+									<div className="w-full py-2.5 px-4 rounded-xl bg-white text-[#001858] font-bold text-xs hover:bg-slate-50 border border-[#0032ab]/15 transition-colors uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer shadow-xs">
 										<span>Start a custom order</span>
 										<FuseSvgIcon size={14}>heroicons-outline:arrow-right</FuseSvgIcon>
 									</div>

@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 675" width="1200" height="675">
+  <defs>
+    <linearGradient id="bgGrad_sp_api" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#031410" />
+      <stop offset="100%" stop-color="#064e3b" />
+    </linearGradient>
+    <pattern id="grid_sp_api" width="40" height="40" patternUnits="userSpaceOnUse">
+      <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+    </pattern>
+    <filter id="glow_sp_api" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="35" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Solid Gradient Background -->
+  <rect width="1200" height="675" fill="url(#bgGrad_sp_api)" />
+  <rect width="1200" height="675" fill="url(#grid_sp_api)" />
+
+  <!-- Ambient Glowing Orbs -->
+  <circle cx="220" cy="160" r="240" fill="#10b981" opacity="0.14" filter="url(#glow_sp_api)" />
+  <circle cx="1000" cy="480" r="280" fill="#10b981" opacity="0.12" filter="url(#glow_sp_api)" />
+
+  <!-- Outer Glass Frame -->
+  <rect x="50" y="45" width="1100" height="585" rx="24" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.12)" stroke-width="1.5" />
+
+  <!-- Window Header Bar -->
+  <g transform="translate(85, 75)">
+    <circle cx="12" cy="12" r="6" fill="#ef4444" opacity="0.85" />
+    <circle cx="32" cy="12" r="6" fill="#f59e0b" opacity="0.85" />
+    <circle cx="52" cy="12" r="6" fill="#10b981" opacity="0.85" />
+    <text x="75" y="17" fill="rgba(255,255,255,0.45)" font-family="monospace" font-size="12" font-weight="600">PRINTOMATION // CAD &amp; SP-API PIPELINE // SP_API</text>
+  </g>
+
+  <!-- Tag Pill -->
+  <g transform="translate(85, 125)">
+    <rect width="260" height="36" rx="18" fill="rgba(255,255,255,0.08)" stroke="#34d399" stroke-width="1.5" />
+    <circle cx="20" cy="18" r="4.5" fill="#34d399" />
+    <text x="36" y="23" fill="#34d399" font-family="system-ui, -apple-system, sans-serif" font-size="12" font-weight="800" letter-spacing="1">SP-API AUTOMATION PIPELINE</text>
+  </g>
+
+  <!-- Main Title -->
+  <g transform="translate(85, 225)">
+    <text x="0" y="0" fill="#ffffff" font-family="system-ui, -apple-system, sans-serif" font-size="38" font-weight="800" letter-spacing="-0.5">
+      <tspan x="0" dy="0">Connecting Amazon SP-API</tspan>
+      <tspan x="0" dy="50" fill="#34d399">End Manual CSV Copy-Pasting</tspan>
+    </text>
+  </g>
+
+  <!-- Subtitle -->
+  <g transform="translate(85, 360)">
+    <text x="0" y="0" fill="rgba(255,255,255,0.78)" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="400">
+      Direct LWA OAuth 2.0 Webhooks streaming customer inputs in real-time
+    </text>
+  </g>
+
+  <!-- Badges in Footer of Banner -->
+  <g transform="translate(85, 475)">
+    <rect x="0" y="0" width="180" height="44" rx="10" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" />
+    <text x="90" y="27" fill="#f1f5f9" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">Official SP-API OAuth</text>
+
+    <rect x="195" y="0" width="190" height="44" rx="10" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" />
+    <text x="290" y="27" fill="#f1f5f9" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">Official SP-API</text>
+
+    <rect x="400" y="0" width="180" height="44" rx="10" fill="rgba(255,255,255,0.07)" stroke="rgba(255,255,255,0.18)" />
+    <text x="490" y="27" fill="#f1f5f9" font-family="monospace" font-size="13" font-weight="700" text-anchor="middle">&lt; 10s Automated</text>
+  </g>
+
+  <!-- Right Side Interactive Graphic / Machine HUD -->
+  <g transform="translate(730, 140)">
+    <!-- Tech HUD Container -->
+    <rect width="370" height="370" rx="20" fill="rgba(3, 7, 18, 0.85)" stroke="#34d399" stroke-width="1.5" />
+    
+    <!-- Coordinate Target Circle -->
+    <circle cx="185" cy="170" r="130" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+    <circle cx="185" cy="170" r="90" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1" stroke-dasharray="4 4" />
+    <circle cx="185" cy="170" r="50" fill="none" stroke="#34d399" stroke-width="1.5" opacity="0.35" />
+
+    <!-- Specific Visual Elements per Topic -->
+    
+      <!-- API Node diagram -->
+      <rect x="50" y="80" width="100" height="60" rx="10" fill="rgba(255,255,255,0.08)" stroke="#34d399" stroke-width="1.5" />
+      <text x="100" y="115" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle">AMAZON</text>
+      
+      <rect x="210" y="80" width="100" height="60" rx="10" fill="rgba(255,255,255,0.08)" stroke="#34d399" stroke-width="1.5" />
+      <text x="260" y="115" fill="#ffffff" font-family="monospace" font-size="12" text-anchor="middle">PRINTOMATION</text>
+
+      <path d="M 150 110 L 210 110" stroke="#34d399" stroke-width="3" stroke-dasharray="6 4" />
+      <polygon points="208,106 216,110 208,114" fill="#34d399" />
+
+      <!-- Pulse signal line -->
+      <path d="M 50 220 L 110 220 L 130 180 L 150 250 L 170 200 L 190 220 L 310 220" fill="none" stroke="#34d399" stroke-width="3" />
+      <circle cx="150" cy="250" r="5" fill="#ffffff" />
+    
+
+    <!-- Bottom HUD Spec Pill -->
+    <rect x="25" y="305" width="320" height="40" rx="10" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.15)" />
+    <text x="185" y="330" fill="#ffffff" font-family="monospace" font-size="12" font-weight="700" text-anchor="middle">LWA LIVE WEBHOOK PULSE</text>
+  </g>
+</svg>

@@ -16,8 +16,8 @@ function loadLogoImage(): Promise<string | null> {
 		img.onload = () => {
 			try {
 				const canvas = document.createElement('canvas');
-				canvas.width = img.naturalWidth || img.width || 420;
-				canvas.height = img.naturalHeight || img.height || 139;
+				canvas.width = img.naturalWidth || img.width || 400;
+				canvas.height = img.naturalHeight || img.height || 110;
 				const ctx = canvas.getContext('2d');
 				if (ctx) {
 					ctx.drawImage(img, 0, 0);
@@ -31,10 +31,28 @@ function loadLogoImage(): Promise<string | null> {
 		};
 
 		img.onerror = () => {
-			resolve(null);
+			// Fallback attempt to white-gravurtastisch.png or logo
+			const fallback = new Image();
+			fallback.crossOrigin = 'anonymous';
+			fallback.onload = () => {
+				try {
+					const c = document.createElement('canvas');
+					c.width = fallback.naturalWidth || 400;
+					c.height = fallback.naturalHeight || 110;
+					const cx = c.getContext('2d');
+					if (cx) {
+						cx.drawImage(fallback, 0, 0);
+						resolve(c.toDataURL('image/png'));
+						return;
+					}
+				} catch { }
+				resolve(null);
+			};
+			fallback.onerror = () => resolve(null);
+			fallback.src = '/white-gravurtastisch.png';
 		};
 
-		img.src = '/gravurtastich.png';
+		img.src = '/printomation-logo.png';
 	});
 }
 
@@ -67,13 +85,13 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 		? cycleNum === 3
 			? 'Jährlich (Jährliche Abrechnung)'
 			: cycleNum === 2
-			? 'Vierteljährlich (Alle 3 Monate)'
-			: 'Monatlich'
+				? 'Vierteljährlich (Alle 3 Monate)'
+				: 'Monatlich'
 		: cycleNum === 3
-		? 'Annual (Billed Yearly)'
-		: cycleNum === 2
-		? 'Quarterly (Billed 3-Monthly)'
-		: 'Monthly';
+			? 'Annual (Billed Yearly)'
+			: cycleNum === 2
+				? 'Quarterly (Billed 3-Monthly)'
+				: 'Monthly';
 	const quota = Number(paidPlan?.request_quota) || Number(user.planLimits?.maxReviewRequestsPerMonth) || 1000;
 	const marketplaces = Number(paidPlan?.marketplace) || Number(user.planLimits?.maxMarketplaces) || 1;
 
@@ -94,31 +112,31 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 	// === 1. TOP HEADER ===
 	const logoDataUrl = await loadLogoImage();
 	const taglineText = isDe
-		? 'Personalisierte Produktprüfungs- und Fulfillment-Plattform'
-		: 'Personalized Product Proofing & Fulfillment Platform';
+		? 'B2B SaaS-Plattform für automatisierte Amazon Custom-Aufträge'
+		: 'B2B SaaS Automation Engine for Amazon Custom Orders';
 
 	if (logoDataUrl) {
-		// 420x139 aspect ratio is ~ 3.02:1
-		// Width: 52mm, Height: 17.2mm
-		doc.addImage(logoDataUrl, 'PNG', leftMargin, 16, 52, 17.2);
+		// 400x110 aspect ratio is ~ 3.636:1
+		// Width: 52mm, Height: 14.3mm
+		doc.addImage(logoDataUrl, 'PNG', leftMargin, 16, 52, 14.3);
 
 		// Tagline below logo
 		doc.setFont('helvetica', 'normal');
 		doc.setFontSize(8.5);
 		doc.setTextColor(80, 80, 80);
-		doc.text(taglineText, leftMargin, 39);
+		doc.text(taglineText, leftMargin, 36);
 	} else {
 		// Fallback to text brand title
 		doc.setFont('helvetica', 'bold');
 		doc.setFontSize(22);
 		doc.setTextColor(15, 23, 42); // Deep Charcoal / Black
-		doc.text('GRAVURTASTISCH', leftMargin, 22);
+		doc.text('PRINTOMATION', leftMargin, 22);
 
 		// Tagline
 		doc.setFont('helvetica', 'normal');
 		doc.setFontSize(8.5);
 		doc.setTextColor(80, 80, 80);
-		doc.text(taglineText, leftMargin, 28);
+		doc.text(taglineText, leftMargin, 36);
 	}
 
 	// Top Right - INVOICE title
@@ -273,8 +291,8 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 		? cycleNum === 3
 			? 'Jährlich'
 			: cycleNum === 2
-			? 'Vierteljährlich'
-			: 'Monatlich'
+				? 'Vierteljährlich'
+				: 'Monatlich'
 		: cycleText.split(' ')[0];
 	doc.text(cycleShort, colPeriodX, textY);
 
@@ -362,7 +380,7 @@ export async function generateSellerInvoicePDF(user: User, lang?: string): Promi
 	doc.setFontSize(7.5);
 	doc.setTextColor(120, 120, 120);
 	doc.text(
-		isDe ? 'Gravurtastisch-Plattform - Automatisiertes Abrechnungssystem' : 'Gravurtastisch Platform - Automated Billing System',
+		isDe ? 'Printomation-Plattform - Automatisiertes Abrechnungssystem' : 'Printomation Platform - Automated Billing System',
 		leftMargin,
 		footerY + 5
 	);

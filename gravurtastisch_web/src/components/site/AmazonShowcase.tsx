@@ -105,7 +105,7 @@ export function AmazonShowcase() {
                   <p className="mt-3.5 text-sm sm:text-base text-slate-body leading-relaxed max-w-xl break-words">
                     {t(
                       "amazonShowcase.hubDescription",
-                      "Coordinate artwork intake, free digital proofs, laser engraving, and premium print finishes from a single Gravurtastisch studio workflow."
+                      "Coordinate artwork intake, free digital proofs, laser engraving, and premium print finishes from a single Printomation studio workflow."
                     )}
                   </p>
                 </div>
@@ -176,17 +176,17 @@ export function AmazonShowcase() {
               <Reveal delay={120}>
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-1">
                   <a
-                    href="#amazon-ecosystem"
-                    className="inline-flex items-center justify-center px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider liquid-glass border border-[#0032ab]/15 text-slate-700 hover:border-[#0032ab]/40 hover:text-[#0032ab] shadow-2xs hover:shadow-xs transition-all text-center"
+                    href="#how"
+                    className="inline-flex items-center justify-center h-11 px-6 rounded-full text-sm font-semibold border border-slate-300 dark:border-white/20 bg-white hover:bg-slate-50 dark:bg-slate-800 text-slate-800 dark:text-white shadow-xs hover:border-slate-400 transition-all text-center"
                   >
-                    {t("amazonShowcase.btnExplore", "Explore the studio hub")}
+                    <span>{t("amazonShowcase.btnExplore", "Explore How It Works")}</span>
                   </a>
 
                   <a
                     href="/#contact"
-                    className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider btn-glass-primary !text-white shadow-sm shadow-[#0032ab]/30 hover:scale-[1.02] transition-all text-center"
+                    className="inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full text-sm font-semibold bg-gradient-to-r from-[#1c22aa] via-[#2032b5] to-[#2563eb] !text-white shadow-[0_6px_20px_rgba(28,34,170,0.3)] hover:shadow-[0_8px_24px_rgba(28,34,170,0.4)] hover:-translate-y-0.5 transition-all text-center"
                   >
-                    <span className="!text-white">{t("amazonShowcase.btnTalk", "Talk to our team")}</span>
+                    <span className="!text-white">{t("amazonShowcase.btnTalk", "Contact Sales & Support")}</span>
                     <ArrowRight className="w-4 h-4 text-white shrink-0" />
                   </a>
                 </div>
@@ -227,7 +227,7 @@ export function AmazonShowcase() {
           <Reveal>
             <div className="text-center max-w-3xl mx-auto">
               <span className="section-badge mb-3">
-                {t("amazonShowcase.badge", "GRAVURTASTISCH STUDIO HUB")}
+                {t("amazonShowcase.badge", "PRINTOMATION AUTOMATION HUB")}
               </span>
               <h2 className="mt-4 text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight leading-tight text-slate-900">
                 {t("amazonShowcase.headingMain", "Run custom production")}{" "}
@@ -236,7 +236,7 @@ export function AmazonShowcase() {
               <p className="mt-4 text-slate-600 text-base sm:text-lg leading-relaxed max-w-2xl mx-auto">
                 {t(
                   "amazonShowcase.description",
-                  "From artwork intake to laser engraving and delivery - Gravurtastisch keeps proofs, craft cells, and shipping on one clear timeline."
+                  "From artwork intake to laser engraving and delivery - Printomation keeps proofs, craft cells, and shipping on one clear timeline."
                 )}
               </p>
             </div>
@@ -297,7 +297,7 @@ export function AmazonShowcase() {
                 {t("amazonShowcase.comparisonTag", "WORKFLOW COMPARISON")}
               </span>
               <h2 className="mt-3 text-3xl sm:text-4xl lg:text-[2.75rem] font-extrabold text-navy-deep tracking-tight leading-[1.15]">
-                {t("amazonShowcase.comparisonHeading", "Scattered vendors vs. Gravurtastisch Studio Hub")}
+                {t("amazonShowcase.comparisonHeading", "Scattered vendors vs. Printomation Studio Hub")}
               </h2>
               <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed max-w-2xl mx-auto">
                 {activeTab === "fba"
@@ -382,7 +382,7 @@ export function AmazonShowcase() {
                       <CheckCircle2 className="w-4 h-4" />
                     </div>
                     <span className="text-sm font-bold text-[#0032ab] dark:text-brand-bright">
-                      {t("amazonShowcase.autoTitle", "Gravurtastisch unified pipeline")}
+                      {t("amazonShowcase.autoTitle", "Printomation unified pipeline")}
                     </span>
                   </div>
                   <span className="text-[10px] font-mono uppercase px-2.5 py-0.5 rounded-full bg-[#0032ab] text-white font-bold shadow-xs">

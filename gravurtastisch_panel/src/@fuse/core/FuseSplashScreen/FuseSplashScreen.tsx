@@ -1,7 +1,8 @@
 import { memo } from 'react';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 /**
- * Splash screen with Gravurtastisch brand mark and progress bar.
+ * Splash screen with Printomation brand mark and progress bar.
  */
 function FuseSplashScreen() {
 	return (
@@ -9,11 +10,7 @@ function FuseSplashScreen() {
 			<div className="splash-container">
 				<div className="splash-logo-wrapper">
 					<div className="splash-logo-glow" />
-					<img
-						className="splash-logo"
-						src="/gravurtastich.png"
-						alt="Gravurtastisch"
-					/>
+					<BrandLogo size="lg" />
 				</div>
 				<div className="splash-progress-track">
 					<div className="splash-progress-bar" />

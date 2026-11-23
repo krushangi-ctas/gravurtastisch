@@ -11,10 +11,10 @@ export const Route = createFileRoute("/terms")({
   pendingComponent: LegalPageSkeleton,
   head: () =>
     seo({
-      title: i18n.t("meta.termsTitle", "Terms and Conditions - Gravurtastisch"),
+      title: i18n.t("meta.termsTitle", "Terms and Conditions - Printomation"),
       description: i18n.t(
         "meta.termsDesc",
-        "Terms and conditions for using the Gravurtastisch website and custom order services."
+        "Terms and conditions for using the Printomation website and custom order services."
       ),
       url: "/terms",
     }),

@@ -7,6 +7,8 @@ import { Container } from "@/components/site/Container";
 import { Reveal } from "@/components/site/Reveal";
 import { Input } from "@/components/ui/input";
 import { getBlogs, BlogItem } from "@/lib/api";
+import { FALLBACK_BLOGS } from "@/lib/blogsFallback";
+import { getLocalizedBlog } from "@/lib/blogsI18n";
 import {
   BookOpen,
   Sparkles,
@@ -32,11 +34,11 @@ export const Route = createFileRoute("/blogs/")({
   pendingComponent: BlogsIndexSkeleton,
   head: () =>
     seo({
-      title: "Gravurtastisch Journal - Custom Engraving, Proofing & Studio Craft",
+      title: "Printomation Blog - Amazon Custom Automation, Pre-Press & Scaling",
       description:
-        "Stories on photo mugs, laser engraving, proof workflows, production scheduling, and building a premium personalization studio.",
+        "Expert insights on automating Amazon Custom orders, pre-press file workflows, laser & print machine setup, and scaling personalized e-commerce.",
       url: "/blogs",
-      keywords: ["laser engraving blog", "lasergravur ratgeber", "fototassen tipps", "merchandise studio"],
+      keywords: ["amazon custom blog", "print automation tips", "laser engraving pre-press", "sp-api guide"],
     }),
   component: BlogsPage,
 });
@@ -48,22 +50,21 @@ function calculateReadingTime(text?: string): number {
 }
 
 function BlogsPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const isSkeletonPreview = typeof window !== "undefined" && window.location.search.includes("skeleton=true");
 
-  const [blogs, setBlogs] = useState<BlogItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [blogs, setBlogs] = useState<BlogItem[]>(FALLBACK_BLOGS);
+  const [isLoading, setIsLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTag, setSelectedTag] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalResults, setTotalResults] = useState(0);
+  const [totalPages, setTotalPages] = useState(Math.ceil(FALLBACK_BLOGS.length / 9) || 1);
+  const [totalResults, setTotalResults] = useState(FALLBACK_BLOGS.length);
 
   const pageSize = 9;
 
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true);
 
     getBlogs({
       page: currentPage,
@@ -71,14 +72,14 @@ function BlogsPage() {
       search: searchQuery.trim(),
     })
       .then((res) => {
-        if (isMounted && res?.data) {
+        if (isMounted && res?.data && res.data.length > 0) {
           setBlogs(res.data);
           setTotalPages(res.pagination?.totalPages || 1);
           setTotalResults(res.pagination?.totalResults || res.data.length);
         }
       })
       .catch((err) => {
-        console.error("Failed to fetch blogs:", err);
+        console.warn("Could not load blogs from API, using fallback blogs:", err);
       })
       .finally(() => {
         if (isMounted) setIsLoading(false);
@@ -91,30 +92,116 @@ function BlogsPage() {
 
   const categories = ["All", "Intake & Integrations", "Production Scheduling", "Order Pipeline", "Craft & Gifts"];
 
+  const getCategoryLabel = (cat: string) => {
+    if (cat === "All") return t("blogs.catAll", "All");
+    if (cat === "Intake & Integrations") return t("blogs.catIntake", "Intake & Integrations");
+    if (cat === "Production Scheduling") return t("blogs.catScheduling", "Production Scheduling");
+    if (cat === "Order Pipeline") return t("blogs.catPipeline", "Order Pipeline");
+    if (cat === "Craft & Gifts") return t("blogs.catCraft", "Craft & Gifts");
+    return cat;
+  };
+
+  // Localize blogs dynamically based on active language (de / nl / en)
+  const localizedBlogs = useMemo(() => {
+    return blogs.map((b) => getLocalizedBlog(b, i18n.language));
+  }, [blogs, i18n.language]);
+
   // Filter by tag client-side if selected
   const filteredBlogs = useMemo(() => {
-    if (selectedTag === "All") return blogs;
-    return blogs.filter((b) => {
+    if (selectedTag === "All") return localizedBlogs;
+    return localizedBlogs.filter((b) => {
       const text = `${b.blog_title} ${b.short_description}`.toLowerCase();
-      if (selectedTag === "Intake & Integrations") return text.includes("intake") || text.includes("shop") || text.includes("integration") || text.includes("oauth") || text.includes("webhook");
-      if (selectedTag === "Production Scheduling") return text.includes("scheduling") || text.includes("production") || text.includes("laser") || text.includes("bench");
-      if (selectedTag === "Order Pipeline") return text.includes("order") || text.includes("sync") || text.includes("proof") || text.includes("pipeline");
-      if (selectedTag === "Craft & Gifts") return text.includes("mug") || text.includes("engrav") || text.includes("gift") || text.includes("personal") || text.includes("cup");
+      if (selectedTag === "Intake & Integrations") {
+        return (
+          text.includes("intake") ||
+          text.includes("sp-api") ||
+          text.includes("integration") ||
+          text.includes("anbindung") ||
+          text.includes("oauth") ||
+          text.includes("webhook") ||
+          text.includes("cross-border") ||
+          text.includes("grenzüberschreitend") ||
+          text.includes("marketplace") ||
+          text.includes("marktplatz")
+        );
+      }
+      if (selectedTag === "Production Scheduling") {
+        return (
+          text.includes("vector") ||
+          text.includes("vektor") ||
+          text.includes("scheduling") ||
+          text.includes("production") ||
+          text.includes("fertigung") ||
+          text.includes("laser") ||
+          text.includes("dxf") ||
+          text.includes("svg") ||
+          text.includes("ezcad") ||
+          text.includes("fiber") ||
+          text.includes("faser")
+        );
+      }
+      if (selectedTag === "Order Pipeline") {
+        return (
+          text.includes("order") ||
+          text.includes("bestell") ||
+          text.includes("pipeline") ||
+          text.includes("batch") ||
+          text.includes("stapel") ||
+          text.includes("seconds") ||
+          text.includes("sekunden") ||
+          text.includes("misprint") ||
+          text.includes("fehldruck") ||
+          text.includes("photo") ||
+          text.includes("foto") ||
+          text.includes("dpi")
+        );
+      }
+      if (selectedTag === "Craft & Gifts") {
+        return (
+          text.includes("tumbler") ||
+          text.includes("becher") ||
+          text.includes("wood") ||
+          text.includes("holz") ||
+          text.includes("acrylic") ||
+          text.includes("acryl") ||
+          text.includes("jewelry") ||
+          text.includes("schmuck") ||
+          text.includes("glyph") ||
+          text.includes("safe zone") ||
+          text.includes("sicherheitszone") ||
+          text.includes("rotary") ||
+          text.includes("rundgravur") ||
+          text.includes("gift") ||
+          text.includes("geschenk") ||
+          text.includes("personal")
+        );
+      }
       return true;
     });
-  }, [blogs, selectedTag]);
+  }, [localizedBlogs, selectedTag]);
 
   function getBlogThumbnail(blog: BlogItem): string | null {
-    if (blog.full_image_urls && blog.full_image_urls.length > 0 && blog.full_image_urls[0]) {
-      return blog.full_image_urls[0];
+    const normalize = (url?: string) => {
+      if (!url || typeof url !== "string") return null;
+      if (url.includes("/blogs/blog-")) {
+        const fileName = url.split("/blogs/")[1];
+        return `/blogs/${fileName}`;
+      }
+      return url;
+    };
+
+    if (blog.full_image_urls && blog.full_image_urls.length > 0) {
+      const clean = normalize(blog.full_image_urls[0]);
+      if (clean) return clean;
     }
-    if (blog.description_images && blog.description_images.length > 0 && blog.description_images[0]) {
-      return blog.description_images[0];
+    if (blog.description_images && blog.description_images.length > 0) {
+      const clean = normalize(blog.description_images[0]);
+      if (clean) return clean;
     }
     if (typeof blog.description === "string") {
       const match = blog.description.match(/<img[^>]+src=["']([^"']+)["']/i);
       if (match && match[1]) {
-        return match[1];
+        return normalize(match[1]);
       }
     }
     return null;
@@ -141,7 +228,7 @@ function BlogsPage() {
             <Reveal className="max-w-3xl mx-auto text-center">
               <div className="section-badge mb-4">
                 <Newspaper className="h-3.5 w-3.5 text-brand shrink-0" />
-                <span>{t('blogs.journalBadge', 'Gravurtastisch Journal & Studio Notes')}</span>
+                <span>{t('blogs.journalBadge', 'Printomation Journal & Studio Notes')}</span>
               </div>
 
               <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight font-display leading-[1.15] text-navy-deep">
@@ -152,7 +239,7 @@ function BlogsPage() {
               </h1>
 
               <p className="mt-4 text-base sm:text-lg text-slate-700 max-w-2xl mx-auto leading-relaxed font-medium">
-                {t('blogs.heroDesc', 'Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Gravurtastisch studio team.')}
+                {t('blogs.heroDesc', 'Ideas for sharper proofs, happier gift buyers, and a calmer engraving floor - written by the Printomation studio team.')}
               </p>
 
               {/* Search Bar */}
@@ -195,7 +282,7 @@ function BlogsPage() {
                         : "bg-white/80 text-slate-700 hover:bg-white hover:text-navy-deep border border-[#0032ab]/15"
                     }`}
                   >
-                    {cat}
+                    {getCategoryLabel(cat)}
                   </button>
                 ))}
               </div>
@@ -275,9 +362,27 @@ function BlogsPage() {
                       blog.short_description + " " + (typeof blog.description === "string" ? blog.description : "")
                     );
 
+                    const thumbnail = getBlogThumbnail(blog);
+
                     return (
                       <Reveal key={blogId}>
-                        <article className="group flex flex-col h-full rounded-2xl bg-white dark:bg-navy-deep/70 border border-slate-200/80 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-brand/40 hover:-translate-y-1 transition-all duration-300 p-6 sm:p-7">
+                        <article className="group flex flex-col h-full rounded-2xl bg-white dark:bg-navy-deep/70 border border-slate-200/80 dark:border-white/10 shadow-sm hover:shadow-xl hover:border-brand/40 hover:-translate-y-1 transition-all duration-300 p-6 sm:p-7 overflow-hidden">
+                          {/* Card Thumbnail Image Banner */}
+                          {thumbnail && (
+                            <Link
+                              to="/blogs/$blogId"
+                              params={{ blogId: blogSlugOrId }}
+                              className="block mb-5 -mx-6 -mt-6 sm:-mx-7 sm:-mt-7 overflow-hidden aspect-[16/9] bg-slate-900/10 border-b border-slate-100 dark:border-white/5"
+                            >
+                              <img
+                                src={thumbnail}
+                                alt={blog.blog_title}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
+                              />
+                            </Link>
+                          )}
+
                           {/* Metadata Bar & Badge */}
                           <div className="flex items-center justify-between gap-2 text-xs text-slate-500 dark:text-slate-400 mb-4 pb-3 border-b border-slate-100 dark:border-white/5">
                             <div className="flex items-center gap-2">
@@ -378,7 +483,7 @@ function BlogsPage() {
                   Ready to turn ideas into engraved keepsakes?
                 </h2>
                 <p className="mt-3 text-sm sm:text-base text-white/70 leading-relaxed">
-                  Join makers who use Gravurtastisch to intake orders, approve proofs, and ship photo cups and engraved gifts on time.
+                  Join makers who use Printomation to intake orders, approve proofs, and ship photo cups and engraved gifts on time.
                 </p>
                 <div className="mt-6 flex flex-wrap items-center gap-3">
                   <a

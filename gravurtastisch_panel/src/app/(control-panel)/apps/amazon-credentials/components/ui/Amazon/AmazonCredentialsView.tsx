@@ -893,7 +893,7 @@ function AmazonCredentialsFormContent({
                         {t('amazon.sellerId', 'Seller ID')}
                       </span>
                       <span className="text-[12px] font-bold text-slate-900 dark:text-white font-mono block truncate">
-                        {sellerId || '—'}
+                        {sellerId || '-'}
                       </span>
                     </div>
 
@@ -902,7 +902,7 @@ function AmazonCredentialsFormContent({
                         {t('amazon.clientId', 'Client ID')}
                       </span>
                       <span className="text-[12px] font-bold text-slate-900 dark:text-white font-mono block truncate">
-                        {clientId ? `${clientId.substring(0, 10)}...` : '—'}
+                        {clientId ? `${clientId.substring(0, 10)}...` : '-'}
                       </span>
                     </div>
                   </div>

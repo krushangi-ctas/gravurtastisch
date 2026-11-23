@@ -127,7 +127,7 @@ const createCheckoutSession = async ({ planId, email, name, userId, currency: re
                   ? { interval: 'month', interval_count: 3 }
                   : { interval: 'month', interval_count: 1 },
             product_data: {
-              name: `Gravurtastisch - ${plan.name}`,
+              name: `Printomation - ${plan.name}`,
               description: `${plan.request_quota || 0} units/${Number(plan.billingCycle) === 3
                 ? 'yr'
                 : Number(plan.billingCycle) === 2
@@ -452,7 +452,7 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
   // 1. Send confirmation email to the seller / customer
   if (payment.email) {
     try {
-      const customerSubject = `Payment Confirmed — Welcome to Gravurtastisch (${planName})`;
+      const customerSubject = `Payment Confirmed - Welcome to Printomation (${planName})`;
       const customerContent = `
         <div style="text-align:center; padding:0 0 16px;">
           <div style="display:inline-block; width:46px; height:46px; line-height:46px; border-radius:50%; background-color:#ECFDF5; border:2px solid #10B981; text-align:center; margin-bottom:8px;">
@@ -460,7 +460,7 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
           </div>
           <h1 style="margin:0 0 6px; font-size:22px; font-weight:800; color:#0B132B; font-family:'Montserrat','Inter',Arial,sans-serif;">Payment Successful!</h1>
           <p style="margin:0 auto; max-width:540px; font-size:13.5px; line-height:1.55; color:#334155; font-family:'Inter',Arial,sans-serif;">
-            Hi <strong>${payment.name || payment.email}</strong>, thank you for subscribing to <strong>Gravurtastisch</strong>. Your payment has been received and your seller account is now fully active.
+            Hi <strong>${payment.name || payment.email}</strong>, thank you for subscribing to <strong>Printomation</strong>. Your payment has been received and your seller account is now fully active.
           </p>
         </div>
 
@@ -561,7 +561,7 @@ const notifyPaymentPaid = async (payment: any, plan: any) => {
 
       const customerHtml = await emailService.getMailBody(
         customerContent,
-        `Payment confirmed for your Gravurtastisch ${planName} plan.`
+        `Payment confirmed for your Printomation ${planName} plan.`
       );
 
       await emailService.sendEmail(payment.email, customerSubject, '', customerHtml);
@@ -609,162 +609,162 @@ const handleCancelPayment = async ({
       `Handling payment cancellation: session=${sessionId || 'none'}, planId=${planId || 'none'}, email=${email || 'none'}`
     );
 
-  let payment: any = null;
-  if (sessionId) {
-    payment = await PaymentModel.findOne({ stripeSessionId: sessionId });
-  }
-  if (!payment && stripeSubscriptionId) {
-    payment = await PaymentModel.findOne({ stripeSubscriptionId });
-  }
-  if (!payment && stripePaymentIntentId) {
-    payment = await PaymentModel.findOne({
-      $or: [
-        { stripePaymentIntentId },
-        { 'metadata.paymentIntentId': stripePaymentIntentId },
-      ],
-    });
-  }
-  if (!payment && email) {
-    payment = await PaymentModel.findOne({
-      email: String(email).trim().toLowerCase(),
-    }).sort({ createdAt: -1 });
-  }
-  if (!payment && planId && mongoose.Types.ObjectId.isValid(planId)) {
-    payment = await PaymentModel.findOne({ planId }).sort({ createdAt: -1 });
-  }
-
-  // Retrieve Stripe session details if available to get email/name
-  let stripeSessionObj: any = null;
-  if (sessionId && String(sessionId).startsWith('cs_') && config.stripe.secretKey) {
-    try {
-      const stripe = getStripe();
-      stripeSessionObj = await stripe.checkout.sessions.retrieve(sessionId).catch(() => null);
-    } catch (e: any) {
-      logger.warn(`Could not retrieve Stripe session during cancel: ${e.message}`);
+    let payment: any = null;
+    if (sessionId) {
+      payment = await PaymentModel.findOne({ stripeSessionId: sessionId });
     }
-  }
-
-  const effectiveEmail = (
-    payment?.email ||
-    stripeSessionObj?.customer_details?.email ||
-    stripeSessionObj?.customer_email ||
-    stripeSessionObj?.metadata?.email ||
-    email ||
-    ''
-  )
-    .trim()
-    .toLowerCase();
-
-  const effectiveName = (
-    payment?.name ||
-    stripeSessionObj?.customer_details?.name ||
-    stripeSessionObj?.metadata?.name ||
-    ''
-  ).trim();
-
-  const effectivePlanId =
-    payment?.planId ||
-    stripeSessionObj?.metadata?.planId ||
-    (planId && mongoose.Types.ObjectId.isValid(planId) ? planId : null);
-
-  if (payment) {
-    payment.status = 'canceled';
-    if (eventId && !payment.processedEventIds.includes(eventId)) {
-      payment.processedEventIds = [...(payment.processedEventIds || []), eventId];
+    if (!payment && stripeSubscriptionId) {
+      payment = await PaymentModel.findOne({ stripeSubscriptionId });
     }
-    await payment.save();
+    if (!payment && stripePaymentIntentId) {
+      payment = await PaymentModel.findOne({
+        $or: [
+          { stripePaymentIntentId },
+          { 'metadata.paymentIntentId': stripePaymentIntentId },
+        ],
+      });
+    }
+    if (!payment && email) {
+      payment = await PaymentModel.findOne({
+        email: String(email).trim().toLowerCase(),
+      }).sort({ createdAt: -1 });
+    }
+    if (!payment && planId && mongoose.Types.ObjectId.isValid(planId)) {
+      payment = await PaymentModel.findOne({ planId }).sort({ createdAt: -1 });
+    }
 
-    await systemLog(
-      'UPDATE',
-      payment.toObject ? payment.toObject() : payment,
-      payment.userId,
-      'cancel-payment',
-      {},
-      'admin'
-    );
-  }
-
-  const plan = effectivePlanId ? await PlanModel.findById(effectivePlanId) : null;
-
-  // Locate existing seller user or create a new inactive seller
-  let user: any = null;
-  if (payment?.userId) {
-    user = await User.findById(payment.userId);
-  }
-  if (!user && effectiveEmail) {
-    user = await User.findOne({ email: effectiveEmail, status: { $ne: 2 } });
-  }
-
-  if (user) {
-    user.status = 0; // Inactive
-    user.subscriptionStatus = 3; // 3: canceled
-
-    if (Array.isArray(user.plans) && user.plans.length > 0) {
-      const matchedIdx = user.plans.findIndex(
-        (p: any) =>
-          (payment?.stripeSessionId && p.stripeSessionId === payment.stripeSessionId) ||
-          (effectivePlanId && String(p.planId) === String(effectivePlanId))
-      );
-      if (matchedIdx !== -1) {
-        user.plans[matchedIdx].status = 0; // inactive / pending
-        user.plans[matchedIdx].paymentStatus = 2; // failed / canceled
-      } else {
-        user.plans[0].status = 0;
-        user.plans[0].paymentStatus = 2;
+    // Retrieve Stripe session details if available to get email/name
+    let stripeSessionObj: any = null;
+    if (sessionId && String(sessionId).startsWith('cs_') && config.stripe.secretKey) {
+      try {
+        const stripe = getStripe();
+        stripeSessionObj = await stripe.checkout.sessions.retrieve(sessionId).catch(() => null);
+      } catch (e: any) {
+        logger.warn(`Could not retrieve Stripe session during cancel: ${e.message}`);
       }
-    } else if (plan) {
-      user.plans = [
-        {
-          planId: plan._id,
-          name: plan.name,
-          price: Number(plan.price) || 0,
-          marketplace: Number(plan.marketplace) || 1,
-          request_quota: Number(plan.request_quota) || 1000,
-          billingCycle: Number(plan.billingCycle) || 1,
-          status: 0,
-          paymentStatus: 2,
-          stripeSessionId: sessionId || payment?.stripeSessionId || null,
-          selectedAt: new Date(),
-        },
-      ];
     }
 
-    if (plan && !user.currentPlanId) {
-      user.currentPlanId = plan._id;
-    }
+    const effectiveEmail = (
+      payment?.email ||
+      stripeSessionObj?.customer_details?.email ||
+      stripeSessionObj?.customer_email ||
+      stripeSessionObj?.metadata?.email ||
+      email ||
+      ''
+    )
+      .trim()
+      .toLowerCase();
 
-    await user.save();
-    if (payment && !payment.userId) {
-      payment.userId = user._id;
+    const effectiveName = (
+      payment?.name ||
+      stripeSessionObj?.customer_details?.name ||
+      stripeSessionObj?.metadata?.name ||
+      ''
+    ).trim();
+
+    const effectivePlanId =
+      payment?.planId ||
+      stripeSessionObj?.metadata?.planId ||
+      (planId && mongoose.Types.ObjectId.isValid(planId) ? planId : null);
+
+    if (payment) {
+      payment.status = 'canceled';
+      if (eventId && !payment.processedEventIds.includes(eventId)) {
+        payment.processedEventIds = [...(payment.processedEventIds || []), eventId];
+      }
       await payment.save();
-    }
-  } else if (effectiveEmail) {
-    // Seller was not registered yet — create new seller record with inactive status
-    const cycle = Number(plan?.billingCycle) || 1;
-    const displayName = effectiveName || effectiveEmail.split('@')[0];
 
-    const newUser = await User.create({
-      email: effectiveEmail,
-      name: displayName,
-      businessName: effectiveName || '',
-      status: 0, // INACTIVE
-      userType: 'seller',
-      isSellerAdmin: true,
-      isSuperAdmin: false,
-      parentId: null,
-      role_id: null,
-      currentPlanId: plan ? plan._id : null,
-      planLimits: plan
-        ? {
+      await systemLog(
+        'UPDATE',
+        payment.toObject ? payment.toObject() : payment,
+        payment.userId,
+        'cancel-payment',
+        {},
+        'admin'
+      );
+    }
+
+    const plan = effectivePlanId ? await PlanModel.findById(effectivePlanId) : null;
+
+    // Locate existing seller user or create a new inactive seller
+    let user: any = null;
+    if (payment?.userId) {
+      user = await User.findById(payment.userId);
+    }
+    if (!user && effectiveEmail) {
+      user = await User.findOne({ email: effectiveEmail, status: { $ne: 2 } });
+    }
+
+    if (user) {
+      user.status = 0; // Inactive
+      user.subscriptionStatus = 3; // 3: canceled
+
+      if (Array.isArray(user.plans) && user.plans.length > 0) {
+        const matchedIdx = user.plans.findIndex(
+          (p: any) =>
+            (payment?.stripeSessionId && p.stripeSessionId === payment.stripeSessionId) ||
+            (effectivePlanId && String(p.planId) === String(effectivePlanId))
+        );
+        if (matchedIdx !== -1) {
+          user.plans[matchedIdx].status = 0; // inactive / pending
+          user.plans[matchedIdx].paymentStatus = 2; // failed / canceled
+        } else {
+          user.plans[0].status = 0;
+          user.plans[0].paymentStatus = 2;
+        }
+      } else if (plan) {
+        user.plans = [
+          {
+            planId: plan._id,
+            name: plan.name,
+            price: Number(plan.price) || 0,
+            marketplace: Number(plan.marketplace) || 1,
+            request_quota: Number(plan.request_quota) || 1000,
+            billingCycle: Number(plan.billingCycle) || 1,
+            status: 0,
+            paymentStatus: 2,
+            stripeSessionId: sessionId || payment?.stripeSessionId || null,
+            selectedAt: new Date(),
+          },
+        ];
+      }
+
+      if (plan && !user.currentPlanId) {
+        user.currentPlanId = plan._id;
+      }
+
+      await user.save();
+      if (payment && !payment.userId) {
+        payment.userId = user._id;
+        await payment.save();
+      }
+    } else if (effectiveEmail) {
+      // Seller was not registered yet — create new seller record with inactive status
+      const cycle = Number(plan?.billingCycle) || 1;
+      const displayName = effectiveName || effectiveEmail.split('@')[0];
+
+      const newUser = await User.create({
+        email: effectiveEmail,
+        name: displayName,
+        businessName: effectiveName || '',
+        status: 0, // INACTIVE
+        userType: 'seller',
+        isSellerAdmin: true,
+        isSuperAdmin: false,
+        parentId: null,
+        role_id: null,
+        currentPlanId: plan ? plan._id : null,
+        planLimits: plan
+          ? {
             maxMarketplaces: Number(plan.marketplace) || 1,
             maxReviewRequestsPerMonth: Number(plan.request_quota) || 1000,
           }
-        : {
+          : {
             maxMarketplaces: 1,
             maxReviewRequestsPerMonth: 1000,
           },
-      plans: plan
-        ? [
+        plans: plan
+          ? [
             {
               planId: plan._id,
               name: plan.name,
@@ -778,25 +778,25 @@ const handleCancelPayment = async ({
               selectedAt: new Date(),
             },
           ]
-        : [],
-      subscriptionStatus: 3, // 3: canceled
-    });
+          : [],
+        subscriptionStatus: 3, // 3: canceled
+      });
 
-    if (payment) {
-      payment.userId = newUser._id;
-      await payment.save();
+      if (payment) {
+        payment.userId = newUser._id;
+        await payment.save();
+      }
+      user = newUser;
     }
-    user = newUser;
-  }
 
-  return {
-    status: httpStatus.OK,
-    message: 'Payment canceled and seller status set to inactive.',
-    data: {
-      payment,
-      user,
-    },
-  };
+    return {
+      status: httpStatus.OK,
+      message: 'Payment canceled and seller status set to inactive.',
+      data: {
+        payment,
+        user,
+      },
+    };
   } catch (error) {
     errorHandler.errorM({
       action_type: 'cancel-payment',

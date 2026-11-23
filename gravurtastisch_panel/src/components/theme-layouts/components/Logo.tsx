@@ -1,5 +1,6 @@
 import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 const Root = styled('div')(() => ({
 	display: 'flex',
@@ -10,20 +11,18 @@ const Root = styled('div')(() => ({
 
 type LogoProps = {
 	className?: string;
+	variant?: 'dark' | 'light' | 'auto';
+	size?: 'sm' | 'md' | 'lg';
 };
 
 /**
- * Gravurtastisch brand logo for the sidebar.
+ * Printomation brand logo for the sidebar.
  */
 function Logo(props: LogoProps) {
-	const { className = '' } = props;
+	const { className = '', variant = 'auto', size = 'md' } = props;
 	return (
-		<Root className={clsx('flex w-full items-center justify-center', className)}>
-			<img
-				className="h-12 w-auto max-w-[195px] object-contain block mx-auto dark:brightness-0 dark:invert"
-				src="/gravurtastich.png"
-				alt="Gravurtastisch"
-			/>
+		<Root className={clsx('flex w-full items-center justify-center py-2', className)}>
+			<BrandLogo variant={variant} size={size} />
 		</Root>
 	);
 }
