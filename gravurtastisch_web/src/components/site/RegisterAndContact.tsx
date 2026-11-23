@@ -382,8 +382,8 @@ function RegisterSection() {
                       {currentPlan.billingCycle === 3
                         ? "/yr"
                         : currentPlan.billingCycle === 2
-                        ? "/qtr"
-                        : "/mo"}{" "}
+                          ? "/qtr"
+                          : "/mo"}{" "}
                       · {currentPlan.request_quota.toLocaleString()} requests/mo
                     </span>
                   )}
@@ -399,11 +399,10 @@ function RegisterSection() {
                 >
                   <SelectTrigger
                     id="register-plan"
-                    className={`h-12 w-full rounded-xl bg-white border px-4 py-3 text-sm text-foreground shadow-xs hover:border-brand/40 focus:outline-none focus:ring-2 transition [&>svg]:text-brand cursor-pointer ${
-                      errors.plan && touched.plan
+                    className={`h-12 w-full rounded-xl bg-white border px-4 py-3 text-sm text-foreground shadow-xs hover:border-brand/40 focus:outline-none focus:ring-2 transition [&>svg]:text-brand cursor-pointer ${errors.plan && touched.plan
                         ? "border-red-500 focus:ring-red-200"
                         : "border-border focus:ring-brand/20 focus:border-brand"
-                    }`}
+                      }`}
                   >
                     <SelectValue placeholder="Select a subscription plan">
                       {currentPlan && (
@@ -415,8 +414,8 @@ function RegisterSection() {
                               {currentPlan.billingCycle === 3
                                 ? "/yr"
                                 : currentPlan.billingCycle === 2
-                                ? "/qtr"
-                                : "/mo"}
+                                  ? "/qtr"
+                                  : "/mo"}
                             </span>
                           </span>
                           <span className="hidden sm:inline-block text-xs text-muted-foreground font-mono ml-3 shrink-0">
@@ -439,8 +438,8 @@ function RegisterSection() {
                         p.billingCycle === 3
                           ? "/yr"
                           : p.billingCycle === 2
-                          ? "/qtr"
-                          : "/mo";
+                            ? "/qtr"
+                            : "/mo";
                       return (
                         <SelectItem
                           key={planId}
@@ -530,8 +529,8 @@ function RegisterSection() {
                       {currentPlan.billingCycle === 3
                         ? "/yr"
                         : currentPlan.billingCycle === 2
-                        ? "/qtr"
-                        : "/mo"})
+                          ? "/qtr"
+                          : "/mo"})
                     </span>
                     <Sparkles className="w-4 h-4 text-white" />
                   </>
@@ -616,11 +615,10 @@ function Field({
         autoComplete={name === "phone" ? "tel" : name === "email" ? "email" : name === "seller" ? "name" : "organization"}
         aria-invalid={hasError}
         aria-describedby={hasError ? `register-${name}-error` : undefined}
-        className={`h-12 rounded-xl border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-xs focus-visible:outline-none focus-visible:ring-2 transition ${
-          hasError
+        className={`h-12 rounded-xl border px-4 py-3 text-sm text-foreground placeholder:text-muted-foreground shadow-xs focus-visible:outline-none focus-visible:ring-2 transition ${hasError
             ? "border-red-500 bg-red-50/20 focus-visible:border-red-500 focus-visible:ring-red-200 text-red-900"
             : "bg-slate-50 border-slate-200 focus-visible:border-brand focus-visible:bg-white focus-visible:ring-brand/20"
-        }`}
+          }`}
       />
       {hasError && (
         <p id={`register-${name}-error`} role="alert" className="text-xs text-red-500 font-medium flex items-center gap-1 mt-1">
@@ -764,7 +762,7 @@ function ContactSection() {
     }
   };
 
-  const supportEmail = config?.contact?.email || "support@printomation.com";
+  const supportEmail = config?.contact?.email || "info@gravurtastisch.de";
   const contactPhone = config?.contact?.phone || "017661055576";
   const workingHours =
     config?.contact?.working_hours ||
@@ -833,11 +831,10 @@ function ContactSection() {
                   {t("contact.fieldMessage")} <span className="text-red-500">*</span>
                 </Label>
                 <span
-                  className={`text-[11px] font-mono ${
-                    formValues.message.length > 950
+                  className={`text-[11px] font-mono ${formValues.message.length > 950
                       ? "text-amber-600 font-semibold"
                       : "text-muted-foreground"
-                  }`}
+                    }`}
                 >
                   {formValues.message.length}/1000
                 </span>
@@ -858,11 +855,10 @@ function ContactSection() {
                 )}
                 aria-invalid={isMessageError}
                 aria-describedby={isMessageError ? "contact-message-error" : undefined}
-                className={`w-full min-h-[140px] rounded-xl border px-4 py-3.5 text-sm text-navy-deep placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 resize-y transition ${
-                  isMessageError
+                className={`w-full min-h-[140px] rounded-xl border px-4 py-3.5 text-sm text-navy-deep placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 resize-y transition ${isMessageError
                     ? "border-red-500 bg-red-50/20 focus-visible:border-red-500 focus-visible:ring-red-200 text-red-900"
                     : "border-border bg-white focus-visible:border-brand focus-visible:ring-brand/20"
-                }`}
+                  }`}
               />
               {isMessageError && (
                 <p
@@ -1015,11 +1011,10 @@ function PlainField({
         disabled={disabled}
         aria-invalid={hasError}
         aria-describedby={hasError ? `contact-${name}-error` : undefined}
-        className={`h-12 rounded-xl border px-4 py-3 text-sm text-navy-deep placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 shadow-none transition ${
-          hasError
+        className={`h-12 rounded-xl border px-4 py-3 text-sm text-navy-deep placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 shadow-none transition ${hasError
             ? "border-red-500 bg-red-50/20 focus-visible:border-red-500 focus-visible:ring-red-200 text-red-900"
             : "border-border bg-white focus-visible:border-brand focus-visible:ring-brand/20"
-        }`}
+          }`}
       />
       {hasError && (
         <p id={`contact-${name}-error`} role="alert" className="text-xs text-red-500 font-medium flex items-center gap-1 mt-1">

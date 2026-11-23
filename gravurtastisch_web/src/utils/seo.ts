@@ -114,7 +114,7 @@ export function createOrganizationSchema() {
     "url": DEFAULT_SITE_URL,
     "logo": `${DEFAULT_SITE_URL}/g.svg`,
     "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
-    "email": "support@printomation.com",
+    "email": "info@gravurtastisch.de",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "Gertrudstr. 2",

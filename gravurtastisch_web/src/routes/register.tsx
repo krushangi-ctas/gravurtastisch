@@ -165,7 +165,7 @@ function RegisterPage() {
     },
     {
       q: t("register.faq4Q", "How do ASIN templates work?"),
-      a: t("register.faq4A", "You configure a template once per ASIN—specifying text boundaries, font rules, 360° rotary wrap offsets, and print bleed. When an order arrives, Printomation automatically places the buyer's text and photos into that template and compiles the file."),
+      a: t("register.faq4A", "You configure a template once per ASIN-specifying text boundaries, font rules, 360° rotary wrap offsets, and print bleed. When an order arrives, Printomation automatically places the buyer's text and photos into that template and compiles the file."),
     },
     {
       q: t("register.faq5Q", "Can multi-brand sellers register multiple storefronts?"),

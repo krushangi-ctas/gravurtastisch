@@ -655,7 +655,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. support@printomation.com"
+												placeholder="e.g. info@gravurtastisch.de"
 												inputProps={{ maxLength: 100 }}
 												error={Boolean(errors.contact?.email)}
 												helperText={errors.contact?.email?.message}
@@ -858,7 +858,7 @@ function SiteConfigurationView({ isInsideSettings = false }: SiteConfigurationVi
 												{...field}
 												fullWidth
 												size="small"
-												placeholder="e.g. Mon–Fri, 10:30 AM – 8:30 PM IST"
+												placeholder="e.g. Mon-Fri, 10:30 AM - 8:30 PM IST"
 												inputProps={{ maxLength: 100 }}
 												error={Boolean(errors.contact?.working_hours)}
 												helperText={errors.contact?.working_hours?.message}

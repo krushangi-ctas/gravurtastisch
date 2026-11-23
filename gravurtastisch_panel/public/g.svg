@@ -5,17 +5,18 @@
       <stop offset="0.5" stop-color="#2032b5"/>
       <stop offset="1" stop-color="#2563eb"/>
     </linearGradient>
-    <linearGradient id="fav-stem-grad" x1="12" y1="6" x2="38" y2="42" gradientUnits="userSpaceOnUse">
+    <linearGradient id="fav-bg-grad" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#002888"/>
+      <stop offset="1" stop-color="#001858"/>
+    </linearGradient>
+    <linearGradient id="fav-stem-grad" x1="14" y1="6" x2="38" y2="42" gradientUnits="userSpaceOnUse">
       <stop stop-color="#ffffff"/>
-      <stop offset="0.45" stop-color="#93c5fd"/>
-      <stop offset="1" stop-color="#38bdf8"/>
+      <stop offset="0.6" stop-color="#e0f2fe"/>
+      <stop offset="1" stop-color="#bae6fd"/>
     </linearGradient>
   </defs>
-  <rect width="48" height="48" rx="12" fill="url(#fav-p-grad)"/>
-  <rect x="2" y="2" width="44" height="44" rx="10" fill="#001858"/>
-  <circle cx="36" cy="12" r="5" fill="#38bdf8" opacity="0.4"/>
-  <path d="M14 10C14 8.9 14.9 8 16 8H27C33.08 8 38 12.92 38 19C38 25.08 33.08 30 27 30H20V38C20 39.1 19.1 40 18 40C16.9 40 16 39.1 16 38V12C16 10.9 15.1 10 14 10Z" fill="url(#fav-stem-grad)"/>
-  <path d="M22 14H27C29.76 14 32 16.24 32 19C32 21.76 29.76 24 27 24H22V14Z" fill="#001858"/>
-  <circle cx="22" cy="19" r="3" fill="#38bdf8"/>
-  <path d="M22 19L36 19" stroke="#38bdf8" stroke-width="2" stroke-linecap="round" stroke-dasharray="2 2"/>
+  <rect width="48" height="48" rx="14" fill="url(#fav-p-grad)"/>
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#fav-bg-grad)"/>
+  <circle cx="38" cy="10" r="5" fill="#38bdf8" opacity="0.6"/>
+  <path fill-rule="evenodd" clip-rule="evenodd" d="M14 8C14 6.9 14.9 6 16 6H27C33.08 6 38 10.92 38 17C38 23.08 33.08 28 27 28H20V40C20 41.1 19.1 42 18 42H16C14.9 42 14 41.1 14 40V8ZM20 12V22H27C29.76 22 32 19.76 32 17C32 14.24 29.76 12 27 12H20Z" fill="url(#fav-stem-grad)"/>
 </svg>

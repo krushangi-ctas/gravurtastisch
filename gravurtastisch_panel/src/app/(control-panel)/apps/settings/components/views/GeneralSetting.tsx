@@ -85,13 +85,13 @@ function GeneralSetting({
     }
   }, [generalSetting, reset]);
 
-  // Days array 0–31
+  // Days array 0-31
   const days = Array.from({ length: 32 }, (_, i) => i);
 
-  // Hours 0–23
+  // Hours 0-23
   const hours = Array.from({ length: 24 }, (_, i) => i);
 
-  // Minutes/Seconds 0–59
+  // Minutes/Seconds 0-59
   const minsSecs = Array.from({ length: 60 }, (_, i) => i);
 
   const isPending = generalSettingMutation.isPending;

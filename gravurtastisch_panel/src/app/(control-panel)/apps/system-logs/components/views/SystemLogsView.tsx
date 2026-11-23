@@ -494,7 +494,7 @@ export default function SystemLogsView() {
 										textOverflow: 'ellipsis'
 									}}
 								>
-									{fullName || item.email || '—'}
+									{fullName || item.email || '-'}
 								</Typography>
 							</Tooltip>
 						</div>
@@ -508,7 +508,7 @@ export default function SystemLogsView() {
 				Cell: ({ cell }) => {
 					const email = cell.getValue<string>();
 					if (!email) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					return (
 						<Tooltip title={email} arrow>
@@ -571,7 +571,7 @@ export default function SystemLogsView() {
 								whiteSpace: 'nowrap'
 							}}
 						>
-							{displayOp || '—'}
+							{displayOp || '-'}
 						</Typography>
 					);
 				}
@@ -609,11 +609,11 @@ export default function SystemLogsView() {
 				header: t('th.ip_address', 'IP Address'),
 				size: 140,
 				Cell: ({ cell }) => {
-					const ip = cell.getValue<string>() || '—';
+					const ip = cell.getValue<string>() || '-';
 					return (
 						<div className="flex items-center gap-1 text-[11px] font-mono text-slate-600 dark:text-slate-400">
 							<span>{ip}</span>
-							{ip !== '—' && <TableCopyButton text={ip} tooltip="Copy IP" />}
+							{ip !== '-' && <TableCopyButton text={ip} tooltip="Copy IP" />}
 						</div>
 					);
 				}
@@ -625,7 +625,7 @@ export default function SystemLogsView() {
 				Cell: ({ cell }) => {
 					const dateVal = cell.getValue<string>();
 					if (!dateVal || !moment(dateVal).isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					const m = moment(dateVal);
 					return (

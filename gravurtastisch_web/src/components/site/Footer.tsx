@@ -46,7 +46,7 @@ export function Footer() {
     ? config.company.about
     : t('footer.companyDesc', 'Printomation is a B2B SaaS platform for Amazon sellers who offer personalised products. Our software automates the conversion of Amazon Custom orders and personalisation data into ready-to-use print and engraving files. We do not manufacture, print, ship or sell any physical products ourselves.');
 
-  const contactEmail = config?.contact?.email || "support@printomation.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
   const contactPhone = config?.contact?.phone || "017661055576";
   const contactAddress = config?.contact?.address || t('footer.officeAddress');
   const companyWebsite = config?.company?.website || "https://gravurtastisch-web.vercel.app";

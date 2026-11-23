@@ -36,7 +36,7 @@ function ImpressumPage() {
   const { t } = useTranslation();
   const { config } = useWebsiteConfiguration();
   const companyName = config?.company?.name || "Printomation Studio";
-  const contactEmail = config?.contact?.email || "support@printomation.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
   const contactPhone = config?.contact?.phone || "017661055576";
   const dynamicAddress = (() => {
     if (config?.contact) {

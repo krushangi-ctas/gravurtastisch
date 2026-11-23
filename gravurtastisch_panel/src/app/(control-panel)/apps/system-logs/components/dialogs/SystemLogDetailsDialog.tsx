@@ -25,7 +25,7 @@ interface SystemLogDetailsDialogProps {
  * Format system log action keys into clean, human-readable display names
  */
 export function formatActionKey(key: string, t?: any): string {
-	if (!key) return '—';
+	if (!key) return '-';
 	const map: Record<string, string> = {
 		'update-amazon-credentials': 'Update Amazon Authorization',
 		'update-amazon-authorisation': 'Update Amazon Authorization',
@@ -131,7 +131,7 @@ export function formatFieldLabel(key: string, t?: any): string {
  */
 function renderFormattedValue(value: any, t?: any): React.ReactNode {
 	if (value === null || value === undefined || value === '') {
-		return <span className="text-slate-400 dark:text-slate-500 italic text-[12px]">—</span>;
+		return <span className="text-slate-400 dark:text-slate-500 italic text-[12px]">-</span>;
 	}
 
 	if (typeof value === 'boolean') {
@@ -215,7 +215,7 @@ function renderFormattedValue(value: any, t?: any): React.ReactNode {
 	if (typeof value === 'object') {
 		const keys = Object.keys(value).filter((k) => !isIdField(k));
 		if (keys.length === 0) {
-			return <span className="text-slate-400 italic text-[12px]">—</span>;
+			return <span className="text-slate-400 italic text-[12px]">-</span>;
 		}
 		return (
 			<div className="space-y-1 py-1">
@@ -424,7 +424,7 @@ export default function SystemLogDetailsDialog({
 									{fullName}
 								</Typography>
 								<Typography sx={{ fontSize: 12, color: 'text.secondary' }}>
-									{log.email || '—'} {log.role_name ? `• ${log.role_name}` : ''}
+									{log.email || '-'} {log.role_name ? `• ${log.role_name}` : ''}
 								</Typography>
 							</div>
 						</div>

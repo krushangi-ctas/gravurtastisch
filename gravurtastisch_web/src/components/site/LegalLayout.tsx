@@ -30,7 +30,7 @@ export function LegalLayout({
   const { t } = useTranslation();
   const location = useLocation();
   const { config } = useWebsiteConfiguration();
-  const contactEmail = config?.contact?.email || "support@printomation.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
 
   const legalTabs = [
     {
@@ -127,11 +127,10 @@ export function LegalLayout({
                 <Link
                   key={tab.to}
                   to={tab.to}
-                  className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${
-                    tab.isActive
+                  className={`flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 ${tab.isActive
                       ? "bg-white dark:bg-navy-deep text-brand dark:text-white shadow-sm border border-brand/10 font-bold"
                       : "text-slate-600 dark:text-slate-400 hover:text-navy-deep dark:hover:text-white hover:bg-white/50 dark:hover:bg-slate-800/50"
-                  }`}
+                    }`}
                 >
                   <Icon className={`w-4 h-4 ${tab.isActive ? "text-brand" : "opacity-70"}`} />
                   <span>{tab.label}</span>

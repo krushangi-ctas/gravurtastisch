@@ -280,11 +280,11 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					const m = moment(val);
 					if (!m.isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					return (
 						<Tooltip title={m.format('DD MMM YYYY, hh:mm:ss A')} arrow>
@@ -307,7 +307,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 				header: 'SECTION NAME',
 				size: 200,
 				Cell: ({ row }) => {
-					const val = row.original.title || row.original.name || '—';
+					const val = row.original.title || row.original.name || '-';
 					return (
 						<Tooltip title={val} arrow>
 							<Typography
@@ -332,7 +332,7 @@ function SectionsView({ managementTab = 'sections' }: SectionsViewProps = {}) {
 				header: 'SECTION PATH',
 				size: 200,
 				Cell: ({ row }) => {
-					const val = row.original.name || '—';
+					const val = row.original.name || '-';
 					return (
 						<Tooltip title={val} arrow>
 							<Typography

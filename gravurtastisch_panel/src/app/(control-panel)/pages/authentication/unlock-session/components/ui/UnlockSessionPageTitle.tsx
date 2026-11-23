@@ -1,13 +1,10 @@
 import Typography from '@mui/material/Typography';
+import { BrandLogo } from '@/components/ui/BrandLogo';
 
 function UnlockSessionPageTitle() {
 	return (
 		<div className="w-full">
-			<img
-				className="w-40"
-				src="/gravurtastich.png"
-				alt="logo"
-			/>
+			<BrandLogo size="md" />
 
 			<Typography className="mt-8 text-4xl leading-[1.25] font-extrabold tracking-tight">
 				Unlock your session

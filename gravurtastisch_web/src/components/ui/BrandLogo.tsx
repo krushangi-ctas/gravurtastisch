@@ -55,31 +55,19 @@ export function BrandLogo({
             xmlns="http://www.w3.org/2000/svg"
             className="relative z-10"
           >
-            {/* Vertical Precision Stem */}
+            {/* Precision Letter "P" with Clean Hole - No Dots */}
             <path
-              d="M6 4.5C6 3.67 6.67 3 7.5 3H13C16.31 3 19 5.69 19 9C19 12.31 16.31 15 13 15H9V20C9 20.55 8.55 21 8 21C7.45 21 7 20.55 7 20V5.5C7 4.95 6.55 4.5 6 4.5Z"
+              fillRule="evenodd"
+              clipRule="evenodd"
+              d="M7 4C7 3.45 7.45 3 8 3H13.5C16.54 3 19 5.46 19 8.5C19 11.54 16.54 14 13.5 14H10V20C10 20.55 9.55 21 9 21H8C7.45 21 7 20.55 7 20V4ZM10 6V11H13.5C14.88 11 16 9.88 16 8.5C16 7.12 14.88 6 13.5 6H10Z"
               fill="url(#p-stem-grad)"
-            />
-            {/* Inner Precision Cutout */}
-            <path
-              d="M10 6.5H13C14.38 6.5 15.5 7.62 15.5 9C15.5 10.38 14.38 11.5 13 11.5H10V6.5Z"
-              fill="#001858"
-            />
-            {/* Automation Cyan Laser Beam / Dot */}
-            <circle cx="10" cy="9" r="1.75" fill="#38bdf8" />
-            <path
-              d="M10 9L18 9"
-              stroke="#38bdf8"
-              strokeWidth="1.2"
-              strokeLinecap="round"
-              strokeDasharray="1.5 1.5"
             />
 
             <defs>
-              <linearGradient id="p-stem-grad" x1="6" y1="3" x2="19" y2="21" gradientUnits="userSpaceOnUse">
+              <linearGradient id="p-stem-grad" x1="7" y1="3" x2="19" y2="21" gradientUnits="userSpaceOnUse">
                 <stop stopColor="#ffffff" />
-                <stop offset="0.45" stopColor="#93c5fd" />
-                <stop offset="1" stopColor="#38bdf8" />
+                <stop offset="0.6" stopColor="#e0f2fe" />
+                <stop offset="1" stopColor="#bae6fd" />
               </linearGradient>
             </defs>
           </svg>

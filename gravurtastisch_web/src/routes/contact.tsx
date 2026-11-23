@@ -52,7 +52,7 @@ function ContactPage() {
   const { config } = useWebsiteConfiguration();
   const currentLang = (i18n.language || "en").split("-")[0];
 
-  const contactEmail = config?.contact?.email || "support@printomation.com";
+  const contactEmail = config?.contact?.email || "info@gravurtastisch.de";
   const contactPhone = config?.contact?.phone || "017661055576";
   const contactHours =
     config?.contact?.working_hours ||
@@ -62,21 +62,21 @@ function ContactPage() {
   const studioLocation =
     currentLang === "en"
       ? (() => {
-          if (
-            config?.contact?.city ||
-            config?.contact?.state ||
-            config?.contact?.country
-          ) {
-            const cityState = [config.contact.city, config.contact.state]
-              .filter(Boolean)
-              .join(", ");
-            return (
-              [cityState, config.contact.country].filter(Boolean).join(" · ") ||
-              contactAddress
-            );
-          }
-          return contactAddress;
-        })()
+        if (
+          config?.contact?.city ||
+          config?.contact?.state ||
+          config?.contact?.country
+        ) {
+          const cityState = [config.contact.city, config.contact.state]
+            .filter(Boolean)
+            .join(", ");
+          return (
+            [cityState, config.contact.country].filter(Boolean).join(" · ") ||
+            contactAddress
+          );
+        }
+        return contactAddress;
+      })()
       : t("contact.officeLocation", "Ahmedabad, Gujarat · Indien");
 
   const contactFaqs = [

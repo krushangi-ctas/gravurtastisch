@@ -236,7 +236,7 @@ function BlogsContent({
 					const count = row.original.description_images?.length ?? 0;
 					if (count === 0) {
 						return (
-							<span className="text-xs text-slate-400 font-medium">—</span>
+							<span className="text-xs text-slate-400 font-medium">-</span>
 						);
 					}
 					return (
@@ -258,7 +258,7 @@ function BlogsContent({
 				Cell: ({ cell }) => {
 					const val = cell.getValue<string>();
 					if (!val || !moment(val).isValid()) {
-						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>—</Typography>;
+						return <Typography sx={{ fontSize: 12, color: 'text.disabled' }}>-</Typography>;
 					}
 					const m = moment(val);
 					return (

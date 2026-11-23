@@ -153,8 +153,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "name": "Printomation",
           "url": DEFAULT_SITE_URL,
           "logo": `${DEFAULT_SITE_URL}/g.svg`,
-          "description": "Premium custom laser engraving, photo cups, and personalized gift studio with free digital proofs and German-craft precision.",
-          "email": "support@printomation.com",
+          "description": "Printomation is the B2B SaaS platform for Amazon sellers offering personalised products. Automate conversion of Amazon Custom orders into ready-to-use print and laser engraving files.",
+          "email": "info@gravurtastisch.de",
           "address": {
             "@type": "PostalAddress",
             "streetAddress": "Gertrudstr. 2",

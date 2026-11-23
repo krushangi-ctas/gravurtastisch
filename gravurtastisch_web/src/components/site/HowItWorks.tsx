@@ -105,7 +105,7 @@ export function HowItWorks() {
                 <p className="mt-2 text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                   {t(
                     "howItWorks.step2Desc",
-                    "Create your seller account in less than two minutes. No complex software installations—everything runs securely in the cloud."
+                    "Create your seller account in less than two minutes. No complex software installations-everything runs securely in the cloud."
                   )}
                 </p>
               </div>

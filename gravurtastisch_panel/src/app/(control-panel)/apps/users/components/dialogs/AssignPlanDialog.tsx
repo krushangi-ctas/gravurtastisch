@@ -252,7 +252,7 @@ export default function AssignPlanDialog({ open, onClose, user }: AssignPlanDial
 							<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
 								<div>
 									<Typography sx={{ fontSize: 14, fontWeight: 700, color: '#0F172A' }}>
-										{user.name || '—'}
+										{user.name || '-'}
 									</Typography>
 									<Typography sx={{ fontSize: 12, color: '#64748B' }}>
 										{user.email} {user.businessName ? `• ${t('assignPlanDialog.brand')}: ${user.businessName}` : ''}
